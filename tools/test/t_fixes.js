@@ -10,7 +10,7 @@ module.exports = async (p) => {
   log('talk target after phone:', await p.evaluate(() => { const ph = z.list.find((s) => s.id === 'phone'); At.position.set(ph.x, 0, ph.z + 1); xe.scan(); xe.run('interact'); const t = xe.lastTarget; return t && t.def ? 'creature ' + t.def.name : t ? 'station ' + t.id : 'none'; }));
   await clear(); await p.evaluate(() => { try { _t.close(); } catch (e) {} });
   // 3. MUSHROOM stays up on his desk during an Event without Seeds
-  await p.evaluate(() => { Kt.rewards.seeds = !1; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Kt.rewards.seeds = !1; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   await W(4000);
   log('Mushroom y during a no-Seeds Event:', await p.evaluate(() => It.byId.drifter.group.position.y.toFixed(3) + ' busy ' + It.byId.drifter.busy + ' event ' + me.active));
   await p.evaluate(() => { try { me.wrap(); } catch (e) {} });

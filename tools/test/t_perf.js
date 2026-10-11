@@ -80,7 +80,7 @@ module.exports = async (p) => {
   // ---- 2 and 3: CPU and allocations per frame. Headless rendering runs in another process, so left to itself the
   // page sits idle between a handful of frames; instead the game's own frame (captured from requestAnimationFrame
   // as the page starts, see the init script) is called FRAMES times back to back while the profilers run.
-  if (process.env.EVENT) await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  if (process.env.EVENT) await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   else await p.evaluate(() => At.position.set(-6, 0, 12));
   await W(3000);
   const FRAMES = +(process.env.FRAMES || 300);

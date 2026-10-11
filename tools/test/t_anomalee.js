@@ -17,7 +17,7 @@ module.exports = async (p) => {
   await clear(); await W(500);
   await p.evaluate(() => { Kt.blossoms = 2; te(It.byId.blinker, !0); }); await W(3000); log('Blossom line:', await look());
   await clear(); await W(4000); log('after it:', await look());
-  await p.evaluate(() => { Kt.rewards.seeds = !0; z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Kt.rewards.seeds = !0; (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   for (let k = 0; k < 40 && !(await p.evaluate(() => It.byId.blinker.busy === 'finale' && !It.byId.blinker.moving && bt.live)); k++) await W(1000);
   await p.evaluate(() => { const e = It.byId.blinker, q = e.group.position; At.position.set(q.x + 2.4, 0, q.z + 0.5); te(e); }); await W(3000); log('Talk line at the Event:', await look());
   log('err', await p.evaluate(() => Re.errors));

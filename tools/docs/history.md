@@ -72,9 +72,9 @@ decisions, with the PR that carried them.
   - Mama Gorbo is a bright, vibrant peach, with colourful goo dripping out of her (animated like goo, never
     clipping, no see-through ends), and shoots goo at the player when given a Blossom (#38).
   - Vignettes play with a 15% chance.
-- **Quests:** the Ancient Artifacts come from Dance battles, one from each Dancer's first win (#42, #44). The
-  Summoning Stone is owned from the start, and all three quests start complete, only for testing (`TEST_QUESTS`,
-  #43; see the [release steps](../README.md#the-final-pass-release-minify-pack)).
+- **Quests:** the Ancient Artifacts come from Dance battles, one from each Dancer's first win (#42, #44). For a
+  while the Summoning Stone was owned from the start and all three quests started complete, only for testing
+  (`TEST_QUESTS`, #43); that head start was removed, so a game starts with no quest or item progress.
 - **The Garden Event:** it starts only from the Summoning Stone, whose runes stay dark until the player uses it
   holding the Stone (#36, #38). Without Seeds it is bare; with them the plants are the ones the creatures plant
   (#42), the first two Events each grow a batch and later ones grow nothing (#47), and plants persist for the

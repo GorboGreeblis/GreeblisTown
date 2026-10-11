@@ -10,13 +10,13 @@ module.exports = async (p) => {
   // 1. a battle, then the Event starts while it is open
   await p.evaluate(() => { Kt.blossoms = 5; At.position.set(0, 0, 3); Dbt.start(It.byId.p_glyph); });
   await W(500); log('battle open', await state());
-  await p.evaluate(() => { try { z.list.find((s) => s.id === 'campfire').run(); } catch (e) { console.error('campfire run during battle: ' + e.message); } });
+  await p.evaluate(() => { try { (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); } catch (e) { console.error('campfire run during battle: ' + e.message); } });
   await W(300); log('after stone tap during battle', await state(), 'panel', await p.evaluate(() => _t.state && _t.state.kind));
   await p.evaluate(() => { try { oe.yes && oe.yes(); } catch (e) {} try { _t.close(); } catch (e) {} });
   // 2. a pizza call right as the Event starts
   await p.evaluate(() => { t.pizza.callDelayMs = 300; try { ue.call(); } catch (e) { console.error('pizza call: ' + e.message); } });
   await W(1500); await clear();
-  if (!(await p.evaluate(() => me.active))) await p.evaluate(() => { Kt.rewards.seeds = !0; z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  if (!(await p.evaluate(() => me.active))) await p.evaluate(() => { Kt.rewards.seeds = !0; (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   log('event started', await state());
   // 3. during the event: talk to everyone, Blossoms, the shop, SPARKAKUS, a battle, the stone again
   await W(3000);
@@ -27,7 +27,7 @@ module.exports = async (p) => {
   await p.evaluate(() => { try { _t.close(); } catch (e) {} try { z.list.find((s) => s.id === 'gshop').run(); } catch (e) { console.error('shop during event ' + e.message); } }); await W(500);
   log('shop during event panel:', await p.evaluate(() => _t.state && _t.state.kind)); await p.evaluate(() => { try { _t.close(); } catch (e) {} });
   await p.evaluate(() => { try { z.list.find((s) => s.id === 'stump').run(); } catch (e) { console.error('library during event ' + e.message); } }); await W(800); await clear();
-  await p.evaluate(() => { try { z.list.find((s) => s.id === 'campfire').run(); } catch (e) { console.error('stone again ' + e.message); } }); await W(500);
+  await p.evaluate(() => { try { (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); } catch (e) { console.error('stone again ' + e.message); } }); await W(500);
   log('stone during event panel:', await p.evaluate(() => _t.state && _t.state.kind), await state()); await p.evaluate(() => { try { _t.close(); } catch (e) {} });
   // the player stands right on the garden walk where the ring forms
   await p.evaluate(() => At.position.set(17.3, 0, 0));
@@ -35,7 +35,7 @@ module.exports = async (p) => {
   const dur = await waitT(400, '!me.active'); log('event took (game s)', dur.toFixed ? dur.toFixed(0) : dur, await state());
   await waitT(40, 'It.all.every((e) => !e.busy)'); await W(2000); log('after event:', await homeCheck(), await state());
   // 5. no Seeds event
-  await p.evaluate(() => { Kt.rewards.seeds = !1; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Kt.rewards.seeds = !1; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   const d2 = await waitT(300, '!me.active'); log('no-seeds event took', d2.toFixed ? d2.toFixed(0) : d2, await state());
   await W(2000); log('after no-seeds:', await homeCheck());
   // 6. battle with each dancer after the event, bow out spam

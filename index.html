@@ -36,8 +36,6 @@
 </script>
 <script>
 "use strict";
-// FOR TESTING ONLY: the three main quests (Seeds, Summoning Stone, Snacks) start complete. Set to !1 for release.
-const TEST_QUESTS = !0;
 // JGP mobile test mode flag (temporary): phones (not Quest) or ?mobile=1; ?mobile=0 forces it off
 window.__jgpMobile = (() => {
 	const q = location.search;
@@ -1124,8 +1122,7 @@ function Be(t, e, o, a) {
 		(t.dest = new c(r[0], 0, r[1])),
 		(t.goHome = !0),
 		(t.trek = !1),
-		(t.wanderAt = a + 120),
-		(t.pst = null);
+		(t.wanderAt = a + 120);
 }
 const Fe = new THREE.Frustum(),
 	We = new THREE.Matrix4();
@@ -1168,8 +1165,7 @@ function De(t, e, o, a) {
 			(t.gcNav = null),
 			(t.goHome = !1),
 			(t.gcNavHome = !1),
-			(t.gcStuckN = 0),
-			void (t.pst = null)
+			void (t.gcStuckN = 0)
 		);
 	// (a creature that works inside a kiosk or behind a bar goes back in by its way in, not straight;
 	// one already in there with its home just goes to it)
@@ -2686,7 +2682,7 @@ function ho(e, o, a) {
 				const e = t.gcNav.shift();
 				return t.dest.set(e[0], 0, e[1]), !0;
 			})(e) ||
-				(e.goHome && ((e.goHome = !1), (e.gcNavHome = !1), (e.gcStuckN = 0), (e.pst = null)));
+				(e.goHome && ((e.goHome = !1), (e.gcNavHome = !1), (e.gcStuckN = 0)));
 }
 const po = () => [M.white, M.lime, M.teal, M.pink, M.yellow, "#ffb0d8", "#b39ae8"];
 function fo(t, e) {
@@ -3147,7 +3143,6 @@ const Ut = (() => {
 						(o.textContent = t),
 						(o.style.background = a || M.purple),
 						(e.style.display = "block"),
-						(m.openedAt = performance.now()),
 						jt.push("dialogue"),
 						u());
 			},
@@ -3176,7 +3171,6 @@ const Ut = (() => {
 			get isOpen() {
 				return p;
 			},
-			openedAt: 0,
 		};
 		return m;
 	})(),
@@ -3272,15 +3266,18 @@ const Ut = (() => {
 		// the three main quests are the Seeds (bought at Garden Supplies), the Summoning Stone (GEMTOE
 		// trades it for the Ancient Gem SPARKAKUS gives you for the Ancient Artifacts) and the Snacks
 		// (NEXTESSA's pizza delivery).
-		// FOR TESTING ONLY, all three start complete (TEST_QUESTS; set it to !1 for the real game).
-		rewards: { seeds: TEST_QUESTS, artifacts: !1, stone: TEST_QUESTS, snacks: TEST_QUESTS },
+		// (every game starts with none of them: no quest or item progress is given)
+		rewards: { seeds: !1, artifacts: !1, stone: !1, snacks: !1 },
 		gem: !1,
 		artifacts: 0,
 		blossoms: 0,
+		// the phone (and so NEXTESSA's pizza) works only once MUSHROOM has been given a Blossom, and from then
+		// on for the rest of the session (even in testing)
+		phone: !1,
 		equip: { hat: null, shoes: null, dress: null },
 		// the Dancers whose Dance battle reward you already have
 		danceWins: new Set(),
-		owned: new Set(TEST_QUESTS ? ["seeds"] : []),
+		owned: new Set(),
 		talkState: {},
 		met: new Set(),
 	};
@@ -3288,8 +3285,10 @@ function te(t, e) {
 	const o = t.def,
 		a = t.id;
 	let n;
+	// (a Blossom is given only from one in hand: so a Dance battle, which only a Blossom starts, always costs one)
+	if (e && Kt.blossoms < 1) return;
 	// (gifting: this dialogue is the creature's Blossom line, not its Talk line)
-	if ((Kt.met.add(a), (xe.lastTarget = t), (t.gifting = !!e), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t);
+	if ((Kt.met.add(a), (xe.lastTarget = t), (t.gifting = !!e), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t), "drifter" === a && (Kt.phone = !0);
 	else if ("p_gemtoe" === a && Kt.gem)
 		// GEMTOE trades the Summoning Stone for the Ancient Gem
 		return (
@@ -3629,7 +3628,7 @@ const ee = (function () {
 		// outro() plays the tag on the next bar and the tune ends on its long high D
 		let outroAt = -1;
 		const barFor = (o) => (o < 2 ? o : outroAt >= 0 && o >= outroAt ? (o - outroAt < 4 ? 20 + o - outroAt : -1) : 2 + ((o - 2) % 18));
-		(y.sweep = (t) => sweep(t)), (y.pendingNotes = () => done.length);
+		y.pendingNotes = () => done.length;
 		y.outro = () => {
 			c && outroAt < 0 && (outroAt = p);
 		};
@@ -4866,7 +4865,6 @@ const xe = (() => {
 			const h = {
 				c: s,
 				g: i,
-				tex: l,
 				mesh: c,
 				w: t,
 				h: e,
@@ -6501,34 +6499,7 @@ const xe = (() => {
 			};
 			Ze.addEventListener("click", t), addEventListener("keydown", t);
 		}
-		return (
-			(o.headPos = n),
-			(o.enter = je),
-			(o.enterDesktop = enterDesktop),
-			(o._dk = dk),
-			(o.settings = H),
-			(o.state = () => ({
-				presenting: o.presenting,
-				level: Ge.level,
-				ema: Ge.ema,
-				budget: Ge.budget,
-				rebuilds: Ge.rebuilds,
-				culled: Ve.length,
-				sharpened: We.length,
-				menu: ae.open,
-				drift: s.length(),
-				head: n.toArray(),
-				rigYaw: f.rotation.y,
-				vig: F.vig,
-				placed: F.placed,
-			})),
-			(o._ui = F),
-			(o._select = J),
-			(o._pickNow = $),
-			(o._sharpen = De),
-			(o._finaleSafeguard = Fe),
-			o
-		);
+		return (o.headPos = n), o;
 	})();
 function Te(e, o) {
 	const a = At.position,
@@ -6745,7 +6716,7 @@ const Ho = (() => {
 		f.addEventListener("webglcontextrestored", () => {
 			(o.contextLost = !1), c(), h(), requestAnimationFrame(c);
 		}),
-		Object.assign(o, { capture: i, restore: c, touchAll: h })
+		Object.assign(o, { capture: i, restore: c })
 	);
 })();
 /* PULLED-MODELS-BEGIN */
@@ -10271,8 +10242,9 @@ const JGP = (() => {
 		// thigh stump, an iron-banded wooden socket, then a tapered peg with a rubber tip
 		skin && R(new THREE.BoxGeometry(0.26, 0.28, 0.3), skin, peg, [0, -0.08, 0.03], [0.15, 0, 0]);
 		R(new THREE.CylinderGeometry(0.17, 0.13, 0.24, 8), wood, peg, [0, -0.3, 0.03]);
-		[-0.2, -0.4].forEach((yy) => R(new THREE.CylinderGeometry(yy > -0.3 ? 0.172 : 0.14, yy > -0.3 ? 0.172 : 0.14, 0.04, 8), iron, peg, [0, yy, 0.03]));
-		for (let k = 0; k < 4; k++) R(new THREE.SphereGeometry(0.022, 6, 4), iron, peg, [0.17 * Math.sin((k * Math.PI) / 2 + 0.4), -0.2, 0.03 + 0.17 * Math.cos((k * Math.PI) / 2 + 0.4)]);
+		// (each band 1.5 cm in from the socket's end, so no face of it lies level with the socket's own top or bottom)
+		[-0.215, -0.385].forEach((yy) => R(new THREE.CylinderGeometry(yy > -0.3 ? 0.172 : 0.14, yy > -0.3 ? 0.172 : 0.14, 0.04, 8), iron, peg, [0, yy, 0.03]));
+		for (let k = 0; k < 4; k++) R(new THREE.SphereGeometry(0.022, 6, 4), iron, peg, [0.172 * Math.sin((k * Math.PI) / 2 + 0.4), -0.215, 0.03 + 0.172 * Math.cos((k * Math.PI) / 2 + 0.4)]);
 		R(new THREE.CylinderGeometry(0.075, 0.05, 0.5, 8), wood, peg, [0, -0.66, 0.03]);
 		R(new THREE.CylinderGeometry(0.07, 0.08, 0.06, 8), new THREE.MeshPhongMaterial({ color: "#26262c", shininess: 10, flatShading: !0 }), peg, [0, -0.93, 0.03]);
 		// a knot and a little nailed-on patch for the comedy
@@ -10430,6 +10402,9 @@ const JGP = (() => {
 			// the rug over the reading ground (its fringe reaches 0.2 m past each end) and the height of its top
 			rug: [-5.5, -6.8, 5.5, 1.0],
 			rugTop: 0.03,
+			// one book stands face-out, its cover showing, OVERCOMING SHYNESS: [case, side (1 = its +z face), shelf,
+			// x along the case]: the front-left case, on the face towards the front, on the shelf at eye level
+			feature: [0, 1, 2, 0.46],
 		};
 	})();
 	function buildLibrary(o) {
@@ -10459,7 +10434,7 @@ const JGP = (() => {
 			}
 		};
 		// one freestanding double-sided bookcase, 2.2 m long, built in its own frame and placed
-		const bookcase = ([cx, cz, al]) => {
+		const bookcase = ([cx, cz, al], ci) => {
 			const list = [],
 				Q = {
 					box: (color, px, py, pz, w, h, d, rx = 0, ry = 0, rz = 0) => list.push([color, px, py, pz, w, h, d, rx, ry, rz]),
@@ -10468,11 +10443,34 @@ const JGP = (() => {
 			[-1.07, 1.07].forEach((px) => Q.box(wood, px, HH / 2, 0, 0.06, HH, 0.56));
 			Q.box(wood, 0, HH + 0.03, 0, 2.24, 0.06, 0.6), Q.box(dark, 0, 0.05, 0, 2.06, 0.1, 0.5), Q.box(dark, 0, HH / 2 + 0.05, 0, 2.06, HH - 0.1, 0.03);
 			SH.forEach((y) => Q.box(wood, 0, y - 0.02, 0, 2.08, 0.04, 0.52));
-			[-1, 1].forEach((sd) => SH.forEach((y) => row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0)));
+			const [fk, fs, fsh, fx] = LIB_LAYOUT.feature, ft = fk === ci;
+			[-1, 1].forEach((sd) =>
+				SH.forEach((y, j) =>
+					// (the featured book's shelf leaves it a gap: the books to its left stop short, as the last of a
+					// row can reach 7 cm past where it stops)
+					ft && sd === fs && j === fsh ? (row(Q, -1.02, fx - 0.24, y, 0.13 * sd, 0.42, sd < 0), row(Q, fx + 0.15, 1.02, y, 0.13 * sd, 0.42, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0),
+				),
+			);
 			const ry = al ? Math.PI / 2 : 0,
 				cs = Math.cos(ry),
-				sn = Math.sin(ry);
-			list.forEach(([color, px, py, pz, w, h, d, rx, ry2, rz]) => G.box(color, cx + px * cs + pz * sn, py, cz - px * sn + pz * cs, w, h, d, rx, ry + ry2, rz));
+				sn = Math.sin(ry),
+				at = (px, pz) => [cx + px * cs + pz * sn, cz - px * sn + pz * cs];
+			list.forEach(([color, px, py, pz, w, h, d, rx, ry2, rz]) => G.box(color, at(px, pz)[0], py, at(px, pz)[1], w, h, d, rx, ry + ry2, rz));
+			if (!ft) return;
+			// OVERCOMING SHYNESS: a blue cloth hardback standing face-out in its gap, leaning back a little, its
+			// cover printed in gold and cream
+			const [bx, bz] = at(fx, 0.13 * fs), bk = new THREE.Group();
+			bk.position.set(bx, SH[fsh] + 0.152, bz), bk.rotation.set(-0.08 * fs, ry + (fs < 0 ? Math.PI : 0), 0, "YXZ"), o.add(bk);
+			R(T.box(0.22, 0.3, 0.035), x.clay("#24466e"), bk);
+			const cover = b(256, 352, (c) => {
+				(c.fillStyle = "#24466e"), c.fillRect(0, 0, 256, 352);
+				(c.strokeStyle = "#d8b860"), (c.lineWidth = 5), c.strokeRect(14, 14, 228, 324), (c.lineWidth = 2), c.strokeRect(24, 24, 208, 304);
+				(c.fillStyle = "#f2e8cc"), (c.textAlign = "center"), (c.font = "bold 34px Georgia, serif"), c.fillText("OVERCOMING", 128, 136), (c.font = "bold 46px Georgia, serif"), c.fillText("SHYNESS", 128, 190);
+				// (a little sprout under the title)
+				(c.strokeStyle = "#d8b860"), (c.lineWidth = 4), c.beginPath(), c.moveTo(128, 290), c.lineTo(128, 236), c.stroke();
+				(c.fillStyle = "#d8b860"), c.beginPath(), c.ellipse(114, 246, 14, 7, -0.5, 0, l), c.ellipse(142, 252, 14, 7, 0.5, 0, l), c.fill();
+			}, { smooth: !0 });
+			R(new THREE.PlaneGeometry(0.2, 0.28), new THREE.MeshLambertMaterial({ map: cover }), bk, [0, 0, 0.0215]);
 		};
 		LIB_LAYOUT.cases.forEach(bookcase);
 		// THE RUG over the reading ground, under the bookcases and the table, woven from the Buns' clothes in
@@ -11402,7 +11400,7 @@ const JGP = (() => {
 	const GARDEN_R = 15,
 		GATHER_S = 0.5, // seconds before planting starts (everyone walks straight into the garden)
 		// (round: how many Events with planters there have been; see beginPlanting)
-		garden = { slots: [], plants: [], startAt: 0, round: 0 },
+		garden = { plants: [], startAt: 0, round: 0 },
 		// the three Dancers, who wander the dance floor
 		FLOOR_ROAMERS = ["p_etcher", "p_glyph", "w_mont"],
 		// the keep-clear zones a roamer stays out of, sorted once (rebuilt if any are added): solid ones
@@ -11916,27 +11914,8 @@ const JGP = (() => {
 			for (let j = 0; j < P.count; j++) sv.fromBufferAttribute(P, j).applyMatrix4(m.matrix), (reach = Math.max(reach, Math.hypot(sv.x - m.position.x, sv.z - m.position.z))), (top = Math.max(top, sv.y));
 			garden.stones.push([m.position.x, m.position.z, reach, top]);
 		}
-		// tilled rows: raised rings every 2 m, with a planting slot every ~1.4 m along each
-		for (let r = 2.6, ri = 0; r < GARDEN_R - 1; r += 2, ri++) {
-			R(T.torus(r, 0.26, 6, Math.max(48, Math.round(6 * r))), ridge, o, [0, 0.04, 0], [Math.PI / 2, 0, 0], [1, 1, 0.35]);
-			const nn = Math.floor((l * r) / 1.4);
-			for (let k = 0; k < nn; k++) {
-				const a = ((k + 0.5 * ri) / nn) * l,
-					x0 = r * Math.cos(a),
-					z0 = r * Math.sin(a);
-				// (no slot on a stepping stone: a plant would grow up through it)
-				let onStone = !1;
-				for (let q = 0; q < 4 && !onStone; q++)
-					for (let rs = 2; rs < GARDEN_R; rs += 1.1) {
-						const as = (q / 4) * l + l / 8;
-						if (Math.hypot(x0 - rs * Math.cos(as), z0 - rs * Math.sin(as)) < 0.62) {
-							onStone = !0;
-							break;
-						}
-					}
-				onStone || garden.slots.push({ x: x0, z: z0, plant: null });
-			}
-		}
+		// tilled rows: raised rings every 2 m
+		for (let r = 2.6; r < GARDEN_R - 1; r += 2) R(T.torus(r, 0.26, 6, Math.max(48, Math.round(6 * r))), ridge, o, [0, 0.04, 0], [Math.PI / 2, 0, 0], [1, 1, 0.35]);
 		// four stepping-stone paths from the edge to the centre
 		for (let q = 0; q < 4; q++)
 			for (let r = 2; r < GARDEN_R; r += 1.1) {
@@ -12012,145 +11991,415 @@ const JGP = (() => {
 	// Each kind stands on its own origin, its stem going into the soil there; nothing reaches lower than
 	// 0.11 m (0.26 m once drawn at PLANT_SIZE) except the stem, so the leaves stay clear of a garden row's
 	// ridge (13 cm at its crest).
-	// PLANT_KINDS: [name, colour for its Talk line, builder(add)] (see the test row, where each stands on show)
+	// PLANT_KINDS: [name, the flower it is, builder(add)] (JGP.plantShow puts one on show, for renders)
 	const PLANT_KINDS = (() => {
+		// (LO: building the light version, its flat parts from about half the outline points: see plantGeo)
+		let LO = 0;
 		const M4 = THREE.Matrix4,
 			at = (x, y, z) => new M4().makeTranslation(x, y, z),
 			ry = (a) => new M4().makeRotationY(a),
 			rx = (a) => new M4().makeRotationX(a),
-			rz = (a) => new M4().makeRotationZ(a),
 			sc = (x, y, z) => new M4().makeScale(x, y, z),
 			mul = (...ms) => ms.reduce((a, b2) => a.multiply(b2), new M4()),
-			SPH = () => T.sphere(1, 10, 8),
-			stem = (add, h, col = "#3f8a2a", r = 0.02) => add(T.cyl(0.8 * r, r, h, 6), col, at(0, h / 2, 0)),
-			// a leaf: a flattened ellipsoid w wide and len long, its base at height y, reaching out at angle a
-			// and tipped up by tilt
-			leaf = (add, y, a, len, w, tilt, col) => add(SPH(), col, mul(at(0, y, 0), ry(a), rx(-tilt), at(0, 0, len / 2), sc(w, 0.012, len / 2))),
-			// n petals round a centre at height y (the head tipped by lean), each out at r and leaning out by tilt
-			ring = (add, n, y, r, tilt, size, col, a0 = 0, lean = 0) => {
-				for (let k = 0; k < n; k++) add(SPH(), "function" == typeof col ? col(k) : col, mul(at(0, y, 0), rx(lean), ry(a0 + (k / n) * l), at(0, 0, r), rx(tilt), sc(...size)));
-			};
-		return [
-			// PLANT #1: a red tulip cup, yellow inside, on a straight stem between two long blade leaves
-			["PLANT #1", "#e8301e", (add) => {
-				stem(add, 0.56);
-				[0, Math.PI].forEach((a, k) => add(SPH(), "#4f9a2a", mul(at(0, 0.13 + 0.04 * k, 0), ry(a), rz(0.32), at(0, 0.18, 0), sc(0.045, 0.2, 0.014))));
-				add(SPH(), "#f2c21a", mul(at(0, 0.58, 0), sc(0.03, 0.03, 0.03)));
-				ring(add, 3, 0.6, 0.026, 0.12, [0.045, 0.085, 0.02], "#c81e18", 0);
-				ring(add, 3, 0.605, 0.03, 0.22, [0.045, 0.085, 0.02], "#e8301e", Math.PI / 3);
-			}],
-			// PLANT #2: a daisy, white rays round a golden disc, its head tipped forward, over a rosette of leaves
-			["PLANT #2", "#f2c21a", (add) => {
-				stem(add, 0.64, "#4a9a30", 0.016);
-				for (let k = 0; k < 6; k++) leaf(add, 0.12 + 0.012 * (k % 2), (k / 6) * l + 0.3, 0.16, 0.035, 0.35, k % 2 ? "#4f9a2a" : "#5aa83a");
-				add(SPH(), "#3f8a2a", mul(at(0, 0.64, 0), rx(0.6), sc(0.032, 0.016, 0.032)));
-				ring(add, 14, 0.655, 0.07, -0.15, [0.018, 0.005, 0.05], (k) => (k % 2 ? "#ffffff" : "#f4f0e6"), 0, 0.6);
-				add(SPH(), "#f2c21a", mul(at(0, 0.655, 0), rx(0.6), at(0, 0.01, 0), sc(0.036, 0.016, 0.036)));
-			}],
-			// PLANT #3: a lupin, a tall spike of little bells, deep violet at the bottom to pale lilac at the
-			// tip, over a hand of narrow leaflets
-			["PLANT #3", "#7a5ae8", (add) => {
-				stem(add, 0.95, "#3f8a2a", 0.018);
-				for (let k = 0; k < 7; k++) leaf(add, 0.16, (k / 7) * l, 0.13, 0.022, 0.5, "#4f9a2a");
-				const lo = new THREE.Color("#4a32c8"),
-					hi = new THREE.Color("#d8ccff");
-				for (let j = 0; j < 8; j++) {
-					const u = j / 7,
-						c = "#" + lo.clone().lerp(hi, u).getHexString();
-					ring(add, 6 - (j >> 2), 0.46 + 0.065 * j, 0.05 - 0.035 * u, 0.5, [0.022, 0.03, 0.022], c, j * 0.5);
+			// FLAT PARTS (leaves, rays): built once from their triangles, both faces drawn, flat-shaded; a thin
+			// petal (lit) lit the same on its back as on its face, as the light comes through it
+			part = (name, make, lit) => {
+				const C0 = part.c || (part.c = {});
+				if (LO) name += "~";
+				if (C0[name]) return C0[name];
+				const P = [], N = [], e1 = new THREE.Vector3(), e2 = new THREE.Vector3(), nn = new THREE.Vector3();
+				for (const t of make()) {
+					e1.set(t[1][0] - t[0][0], t[1][1] - t[0][1], t[1][2] - t[0][2]), e2.set(t[2][0] - t[0][0], t[2][1] - t[0][1], t[2][2] - t[0][2]), nn.crossVectors(e1, e2).normalize();
+					t.forEach((p) => (P.push(...p), N.push(nn.x, nn.y, nn.z)));
+					lit || nn.negate();
+					[t[0], t[2], t[1]].forEach((p) => (P.push(...p), N.push(nn.x, nn.y, nn.z)));
 				}
-				add(SPH(), "#e8e0ff", mul(at(0, 0.98, 0), sc(0.016, 0.03, 0.016)));
-			}],
-			// PLANT #4: pink bells hanging in a row from an arching stem, a fan of fern-like leaves below
-			["PLANT #4", "#ff5fb0", (add) => {
-				// the arch: a quarter circle from the top of the upright stem, out along +x and down
-				stem(add, 0.42, "#4a8a3a", 0.016);
-				const R0 = 0.3,
-					pt = (q) => [R0 - R0 * Math.cos(q), 0.42 + R0 * Math.sin(q)];
-				for (let k = 0; k < 6; k++) {
-					const q0 = (k / 6) * (Math.PI / 2),
-						q1 = ((k + 1) / 6) * (Math.PI / 2),
-						[x0, y0] = pt(q0),
-						[x1, y1] = pt(q1),
-						len = Math.hypot(x1 - x0, y1 - y0);
-					add(T.cyl(0.011, 0.013, len, 5), "#4a8a3a", mul(at((x0 + x1) / 2, (y0 + y1) / 2, 0), rz(-Math.atan2(x1 - x0, y1 - y0)), sc(1, 1, 1)));
+				const g = new THREE.BufferGeometry();
+				return (g.name = name), g.setAttribute("position", new THREE.Float32BufferAttribute(P, 3)), g.setAttribute("normal", new THREE.Float32BufferAttribute(N, 3)), (C0[name] = g);
+			},
+			// an outline (x, z round from beside its base at the origin, one unit long along +z) fanned from the
+			// origin into a flat blade, curved by y = bend z²
+			blade = (pts, bend = 0, lift = 0) => (LO && (pts = pts.filter((_, i) => i % 2 === 0 || i === pts.length - 1)), pts.slice(0, -1).map(([x, z], i) => [[0, lift, 0], [x, bend * z * z + lift, z], [pts[i + 1][0], bend * pts[i + 1][1] * pts[i + 1][1] + lift, pts[i + 1][1]]])),
+			// a leaf along its midrib: side is one edge's outline [x, z, extra lift] from base to tip, mirrored; the
+			// blade folded up from the midrib (fold) and drooping towards its tip (droop), lifted by lift
+			ribLeaf = (name, side, fold, droop, lift = 0) =>
+				part(name, () => {
+					const out = [], Y = (x, z, w) => fold * x - droop * z * z + w + lift;
+					for (const sx of [1, -1])
+						for (let i = 0; i + 1 < side.length; i++) {
+							const [ax, az, aw] = side[i], [bx, bz, bw] = side[i + 1];
+							out.push([[0, Y(0, az, 0), az], [sx * ax, Y(ax, az, aw), az], [sx * bx, Y(bx, bz, bw), bz]], [[0, Y(0, az, 0), az], [sx * bx, Y(bx, bz, bw), bz], [0, Y(0, bz, 0), bz]]);
+						}
+					return out;
+				}),
+			// a thistle leaf: cut into five pointed lobes a side (the tips alternately up and down, so the edge is
+			// wavy), folded up a little along the midrib, drooping towards its tip
+			thistleSide = () => {
+				const n = 5, side = [[0.04, 0, 0]];
+				for (let j = 1; j <= 2 * n; j++) {
+					const z = j / (2 * n + 1), env = Math.pow(Math.sin(Math.PI * Math.min(1, z * 1.08)), 0.6);
+					side.push(j % 2 ? [0.34 * env, z, ((j >> 1) % 2 ? 1 : -1) * 0.04] : [0.11 * env, z, 0]);
 				}
-				[0.3, 0.6, 0.85, 1.1].forEach((q, k) => {
-					const [x, y] = pt(q),
-						h = 0.05 + 0.012 * k;
-					add(T.cyl(0.004, 0.004, h, 4), "#4a8a3a", at(x, y - h / 2, 0));
-					add(T.cone(0.045 - 0.004 * k, 0.07, 10), "#ff5fb0", at(x, y - h - 0.03, 0));
-					add(SPH(), "#ffffff", mul(at(x, y - h - 0.07, 0), sc(0.016, 0.022, 0.016)));
-				});
-				for (let k = 0; k < 5; k++) leaf(add, 0.13, (k / 5) * l + 0.6, 0.2, 0.05, 0.55, k % 2 ? "#5aa83a" : "#3f8a2a");
-			}],
-			// PLANT #5: a marigold bush, three stems of orange pompoms (gold-tipped frills round each)
-			// over a mound of dark leaves
-			["PLANT #5", "#ff8a1a", (add) => {
-				for (let k = 0; k < 7; k++) leaf(add, 0.12 + 0.02 * (k % 3), (k / 7) * l, 0.15, 0.045, 0.6, k % 2 ? "#2f6a22" : "#3a7a2a");
-				[[0, 0.48, 0], [0.09, 0.38, 2.1], [-0.08, 0.42, 4.2]].forEach(([dx, h, a]) => {
-					const m = mul(ry(a), at(Math.abs(dx), 0, 0));
-					add(T.cyl(0.012, 0.015, h, 5), "#3f7a2a", mul(m.clone(), at(0, h / 2, 0)));
-					add(SPH(), "#ff8a1a", mul(m.clone(), at(0, h + 0.04, 0), sc(0.055, 0.045, 0.055)));
-					const fr = (n, y, r, t, col) => {
-						for (let j = 0; j < n; j++) add(SPH(), col, mul(m.clone(), at(0, h + y, 0), ry((j / n) * l), at(0, 0, r), rx(t), sc(0.03, 0.02, 0.035)));
+				return side.push([0, 1, 0]), side;
+			},
+			thistleLeaf = () => ribLeaf("thistle", thistleSide(), 0.28, 0.16),
+			// its pale midrib, a hair above the blade
+			thistleRib = () => ribLeaf("thistlerib", thistleSide().map(([x2, z]) => [Math.min(x2, 0.012), z, 0]), 0.28, 0.16, 0.006),
+			// and a pale spine at every lobe's tip, reaching out and forward
+			thistleSpines = () =>
+				part("thistlespines", () => {
+					const out = [], Y = (x2, z, w2) => 0.28 * x2 - 0.16 * z * z + w2;
+					thistleSide().forEach(([x2, z, w2], j) => {
+						if (j % 2 === 0 || j > 10) return;
+						for (const sx of [1, -1]) {
+							const y = Y(x2, z, w2);
+							out.push([[sx * x2, y, z - 0.012], [sx * x2, y, z + 0.012], [sx * (x2 + 0.06), y + 0.01, z + 0.05]]);
+						}
+					});
+					return out;
+				}),
+			// a milkweed leaf: a broad smooth oval, a little folded and drooping, and its pale midrib laid along it
+			milkSide = (w, n = LO ? 7 : 12) => Array.from({ length: n }, (_, k) => { const z = k / (n - 1); return [w * Math.pow(Math.sin(Math.PI * Math.min(0.999, 0.03 + 0.97 * z)), 0.75), z, 0]; }),
+			milkLeaf = () => ribLeaf("milk", milkSide(0.36), 0.22, 0.12),
+			milkRib = () => ribLeaf("milkrib", milkSide(0.014), 0.22, 0.12, 0.012),
+			// a mallow leaf: round, with five shallow lobes and a toothed edge, its stalk in a notch at the base,
+			// cupped a little (fanned from its centre, half a unit along +z)
+			mallowLeaf = () =>
+				part("mallow", () => {
+					const out = [], c = [0, 0.04, 0.5], N0 = LO ? 20 : 40, pt = (k) => {
+						const t = -Math.PI / 2 + 0.25 + (k / N0) * (2 * Math.PI - 0.5), r = 0.5 * (1 + 0.1 * Math.cos(5 * (t + Math.PI / 2)) + 0.04 * (k % 2));
+						return [r * Math.cos(t), 0.12 * r * r, 0.5 + r * Math.sin(t)];
 					};
-					fr(10, 0.03, 0.045, 0.5, "#ffb02a"), fr(7, 0.065, 0.025, 0.9, "#ff9a1a");
+					for (let k = 0; k < N0; k++) out.push([c, pt(k), pt(k + 1)]);
+					return out.push([c, pt(N0), [0, 0, 0.02]], [c, [0, 0, 0.02], pt(0)]), out;
+				}),
+			mallowPetal = () => part("mpetal", () => blade([[0.12, 0.02], [0.34, 0.45], [0.42, 0.8], [0.3, 0.97], [0.12, 0.98], [0, 0.9], [-0.12, 0.98], [-0.3, 0.97], [-0.42, 0.8], [-0.34, 0.45], [-0.12, 0.02]], 0.12), 1),
+			// a vein streak, a hair above the petal
+			mallowVein = () => part("mvein", () => blade([[0.045, 0.05], [0.03, 0.55], [0, 0.8], [-0.03, 0.55], [-0.045, 0.05]], 0.12, 0.02)),
+			// a chicory ray's darker vein, a hair above it
+			chicVein = () => part("chicvein", () => blade([[0.02, 0.1], [0.015, 0.7], [0, 0.82], [-0.015, 0.7], [-0.02, 0.1]], -0.04, 0.02)),
+			// a small pointed leaf (a bract at a stem joint, a sepal behind a petal)
+			lance = () => part("lance", () => blade([[0.12, 0.08], [0.2, 0.4], [0.12, 0.78], [0, 1], [-0.12, 0.78], [-0.2, 0.4], [-0.12, 0.08]], -0.1)),
+			// a milkweed leaf's paler side veins, angled out from the midrib towards the tip
+			milkVeins = () =>
+				part("milkveins", () => {
+					const out = [], W = 0.36, Y = (x2, z) => 0.22 * x2 - 0.12 * z * z + 0.013, env = (z) => W * Math.pow(Math.sin(Math.PI * Math.min(0.999, 0.03 + 0.97 * z)), 0.75);
+					for (let k = 1; k <= 6; k++) {
+						const z = k / 7.5, z2 = Math.min(0.97, z + 0.16), x2 = 0.8 * env(z2);
+						for (const sx of [1, -1]) out.push([[0, Y(0, z), z - 0.008], [0, Y(0, z), z + 0.008], [sx * x2, Y(x2, z2), z2]]);
+					}
+					return out;
+				}),
+			// a mallow leaf's veins, five fanning from its centre out towards the edge, a hair above its face
+			mallowVeins = () =>
+				part("mallowveins", () =>
+					Array.from({ length: 5 }, (_, k) => {
+						const t = -Math.PI / 2 + 0.25 + ((k + 0.5) / 5) * (2 * Math.PI - 0.5), nx = -0.014 * Math.sin(t), nz = 0.014 * Math.cos(t);
+						return [[nx, 0.052, 0.5 + nz], [-nx, 0.052, 0.5 - nz], [0.43 * Math.cos(t), 0.043, 0.5 + 0.43 * Math.sin(t)]];
+					}),
+				),
+			// the green cup of bracts under a flower head: a lower half-sphere
+			cup = () => part.cup || (part.cup = new THREE.SphereGeometry(1, 8, 3, 0, l, Math.PI / 2, Math.PI / 2)),
+			// a fine, feathery leaf (mayweed): a midrib with thread-thin segments in pairs, each forked once
+			threadLeaf = () =>
+				part("thread", () => {
+					const out = [], Y = (z) => -0.2 * z * z, w = 0.02;
+					out.push([[-w, 0, 0], [w, 0, 0], [0, Y(1), 1]]);
+					for (let k = 1; k <= 7; k += LO ? 2 : 1) {
+						const z = k / 8.2, L = 0.3 * Math.sin(Math.PI * (0.15 + 0.8 * z));
+						for (const sx of [1, -1]) {
+							const tip = [sx * L * 0.75, Y(z) + 0.03, z + L * 0.6], mid = [sx * L * 0.4, Y(z) + 0.015, z + L * 0.3];
+							out.push([[0, Y(z), z - 0.02], [0, Y(z), z + 0.02], tip]);
+							out.push([mid, [mid[0], mid[1], mid[2] + 0.02], [sx * L * 0.25, Y(z) + 0.02, z + L * 0.75]]);
+							out.push([mid, [mid[0], mid[1], mid[2] + 0.02], [sx * L * 0.95, Y(z) + 0.025, z + L * 0.45]]);
+						}
+					}
+					return out;
+				}),
+			// a mayweed's ray: a narrow white oval
+			mayRay = () => part("mayray", () => blade([[0.2, 0.02], [0.42, 0.25], [0.45, 0.6], [0.36, 0.88], [0.17, 0.99], [0.1, 0.93], [0, 1], [-0.1, 0.93], [-0.17, 0.99], [-0.36, 0.88], [-0.45, 0.6], [-0.42, 0.25], [-0.2, 0.02]]), 1),
+			// a chicory ray: a strap widening to a square tip cut into five teeth
+			chicRay = () =>
+				part("chicray", () =>
+					blade([[0.08, 0.02], [0.14, 0.25], [0.22, 0.86], [0.2, 0.95], [0.14, 0.89], [0.1, 0.97], [0.05, 0.9], [0, 0.98], [-0.05, 0.9], [-0.1, 0.97], [-0.14, 0.89], [-0.2, 0.95], [-0.22, 0.86], [-0.14, 0.25], [-0.08, 0.02]], -0.04),
+					1,
+				),
+			// STEMS: each { n: its nodes from the ground up, side: branches [node k, how far to node k+1, to],
+			// h: heads [from node k (or "s0", "s1"... for its branches), at, kind], lv: leaves [node k, how far to
+			// node k+1, angle, length] }; each stem piece a thin tapered cylinder, each head on its own stalk
+			seg = (add, p, q, r, col) => {
+				const d = new THREE.Vector3(q[0] - p[0], q[1] - p[1], q[2] - p[2]), len = d.length(),
+					m = new M4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()));
+				add(T.cyl(0.8 * r, r, len, 5), col, mul(at((p[0] + q[0]) / 2, (p[1] + q[1]) / 2, (p[2] + q[2]) / 2), m));
+			},
+			lerp3 = (p, q, t) => p.map((v0, i) => v0 + (q[i] - v0) * t),
+			stems = (add, STEMS, o) =>
+				STEMS.forEach((S0) => {
+					for (let k = 0; k + 1 < S0.n.length; k++) seg(add, S0.n[k], S0.n[k + 1], k ? o.r1 : o.r0, o.stem);
+					const sides = S0.side.map(([k, t, to]) => (seg(add, lerp3(S0.n[k], S0.n[k + 1], t), to, 0.75 * o.r1, o.branch), to));
+					S0.h.forEach(([k, p, kind]) => {
+						const from = "string" == typeof k ? sides[+k.slice(1)] : S0.n[k];
+						seg(add, from, [p[0], p[1] - 0.02, p[2]], 0.55 * o.r1, o.stalk), o.head(p, kind, from);
+					});
+					S0.lv.forEach(([k, t, a, len], j) => {
+						const [x, y, z] = lerp3(S0.n[k], S0.n[k + 1], t);
+						const M = () => mul(at(x, y, z), ry(a), rx(-o.leafTilt), sc(o.leafW * len, len, len));
+						add(o.leaf(), o.leafCol[j % 2], M());
+						(o.leafPlus || []).forEach(([g, col]) => add(g(), col, M()));
+					});
+				}),
+			// a flower head's frame: at p, facing away from where its stalk comes from (tipped by lean, 0 = up)
+			faceFrom = (p, from, lean) => mul(at(...p), ry(Math.atan2(p[0] - from[0], p[2] - from[2])), rx(-lean));
+		// (The five plant models below, each built only from the owner's photos, are final: keep them as they are.)
+		const kinds = [
+			// PLANT #1: a creeping thistle (only from the owner's photos): three stems from a rosette of spiny, deeply
+			// lobed leaves, one leaning far out, one tall, one short, each splitting at the top into a loose spray
+			// of heads on purplish egg-shaped buds: fluffy pink-mauve puffs, a few gone to tan seed fluff, and
+			// closed buds; smaller spiny leaves along the stems
+			["PLANT #1", "creeping thistle", (add) => {
+				const E = () => T.sphere(1, 7, 5), ribs = [[thistleRib, "#9ac070"], [thistleSpines, "#d8d890"]];
+				stems(add, [
+					// leaning far out (the photos' left)
+					{ n: [[0, 0, 0], [-0.05, 0.24, 0.03], [-0.18, 0.44, 0.05]], side: [[1, 0.5, [-0.1, 0.34, 0.04]]],
+					  h: [[2, [-0.2, 0.52, 0.05], 0], [2, [-0.27, 0.49, 0.08], 0], [2, [-0.25, 0.46, -0.01], 1], [2, [-0.15, 0.5, 0.1], 2], [2, [-0.3, 0.44, 0.02], 0], ["s0", [-0.16, 0.4, 0.12], 0], ["s0", [-0.13, 0.38, -0.03], 2]],
+					  lv: [[0, 0.3, 2.0, 0.2], [0, 0.55, 3.4, 0.19], [0, 0.8, 1.0, 0.17], [1, 0.25, 4.3, 0.14], [1, 0.6, 2.6, 0.11]] },
+					// the tall one
+					{ n: [[0, 0, 0], [0.02, 0.3, -0.01], [0.05, 0.56, 0]], side: [[1, 0.55, [0.035, 0.44, -0.005]]],
+					  h: [[2, [0.05, 0.65, 0], 0], [2, [0.12, 0.61, 0.02], 0], [2, [-0.02, 0.62, 0.04], 2], [2, [0.09, 0.58, -0.06], 1], [2, [0, 0.6, -0.05], 0], ["s0", [0.13, 0.5, 0.03], 0], ["s0", [0.12, 0.47, -0.03], 2]],
+					  lv: [[0, 0.3, 0.5, 0.21], [0, 0.55, 2.9, 0.2], [0, 0.8, 4.8, 0.18], [1, 0.15, 1.6, 0.15], [1, 0.45, 3.9, 0.12], [1, 0.7, 5.6, 0.1]] },
+					// the short one
+					{ n: [[0, 0, 0], [0.05, 0.2, 0.05], [0.12, 0.36, 0.09]], side: [],
+					  h: [[2, [0.15, 0.43, 0.1], 0], [2, [0.18, 0.4, 0.14], 1], [2, [0.1, 0.41, 0.15], 2], [2, [0.2, 0.37, 0.06], 2]],
+					  lv: [[0, 0.45, 1.3, 0.18], [0, 0.8, 5.5, 0.15], [1, 0.4, 0.6, 0.12]] },
+				], {
+					r0: 0.014, r1: 0.011, stem: "#5f8a36", branch: "#6a7e3c", stalk: "#74703e", leaf: thistleLeaf, leafCol: ["#336a20", "#3a7826"], leafTilt: 0.55, leafW: 0.8, leafPlus: ribs,
+					// (0 in flower, 1 gone to seed, 2 a closed bud). A flower is a brush of fine florets fanning out of
+					// the top of its bud; gone to seed, a ragged tan tuft
+					head: ([x, y, z], kind) => {
+						add(E(), kind === 2 ? "#6e4a5a" : "#665060", mul(at(x, y, z), sc(0.016, 0.024, 0.016)));
+						// (the green cup of bracts round its base: a lower half-sphere just outside the bud)
+						add(cup(), "#5a7040", mul(at(x, y - 0.002, z), sc(0.0175, 0.0245, 0.0175)));
+						// (a closed bud's tip: the florets' purple just showing)
+						if (kind === 2) return void add(E(), "#8a4a7a", mul(at(x, y + 0.02, z), sc(0.007, 0.007, 0.007)));
+						const cols = kind ? ["#d6c29a", "#e8dcbc", "#c4ae86"] : ["#d68ad8", "#e6a6e8", "#c47ac8"], n = (kind ? 16 : 24) >> LO, hl = kind ? 0.042 : 0.032;
+						add(E(), cols[0], mul(at(x, y + 0.02, z), sc(0.017, 0.012, 0.017)));
+						for (let j = 0; j < n; j++) add(T.cone(LO ? 0.007 : 0.005, hl, 3), cols[j % 3], mul(at(x, y + 0.018, z), ry(2.4 * j), rx((kind ? 0.25 : 0.1) + (kind ? 0.75 : 0.95) * ((j % 5) / 4)), at(0, hl / 2, 0)));
+					},
 				});
+				// the rosette, fanned round the stems a little above the soil (clear of a row's ridge)
+				for (let k = 0; k < 9; k++) {
+					const m = mul(at(0, 0.12 + 0.006 * (k % 3), 0), ry((k / 9) * l + 0.2), rx(-0.2 - 0.06 * (k % 3)), sc(0.25 + 0.03 * (k % 2), 0.25, 0.25 + 0.03 * (k % 2)));
+					add(thistleLeaf(), k % 2 ? "#30661f" : "#387224", m), ribs.forEach(([g, col]) => add(g(), col, m.clone()));
+				}
+			}],
+			// PLANT #2: a scentless mayweed (only from the owner's photos): a sprawl of branching stems over fine, feathery
+			// thread-leaves, each stem ending in daisy heads, a domed yellow centre ringed by white rays, the older
+			// heads' rays swept right back, the centres taller; a few tight green buds
+			["PLANT #2", "scentless mayweed", (add) => {
+				stems(add, [
+					{ n: [[0, 0, 0], [-0.05, 0.25, 0.02], [-0.11, 0.46, 0.04]], side: [[1, 0.6, [-0.2, 0.5, 0]], [1, 0.4, [-0.02, 0.48, 0.11]], [1, 0.2, [-0.18, 0.4, -0.06]]],
+					  h: [[2, [-0.12, 0.55, 0.05], 0], ["s0", [-0.21, 0.55, 0], 1], ["s1", [-0.02, 0.53, 0.12], 0], ["s2", [-0.2, 0.45, -0.08], 0], [1, [-0.15, 0.36, -0.04], 2], ["s0", [-0.26, 0.5, 0.04], 2]],
+					  lv: [[0, 0.3, 2.4, 0.16], [0, 0.6, 4.0, 0.15], [0, 0.85, 0.8, 0.13], [1, 0.3, 4.4, 0.12], [1, 0.7, 1.6, 0.1]] },
+					{ n: [[0, 0, 0], [0.02, 0.3, -0.02], [0.04, 0.52, -0.03]], side: [[1, 0.6, [0.12, 0.47, 0.04]], [1, 0.3, [-0.06, 0.44, -0.12]]],
+					  h: [[2, [0.05, 0.61, -0.03], 1], [2, [0.13, 0.57, -0.07], 0], [2, [-0.03, 0.58, -0.1], 2], ["s0", [0.13, 0.53, 0.05], 0], ["s1", [-0.09, 0.5, -0.15], 0], ["s0", [0.2, 0.5, 0.02], 2]],
+					  lv: [[0, 0.25, 0.3, 0.16], [0, 0.55, 2.2, 0.15], [0, 0.85, 4.6, 0.13], [1, 0.4, 3.2, 0.11]] },
+					{ n: [[0, 0, 0], [0.06, 0.2, 0.05], [0.15, 0.36, 0.08]], side: [[1, 0.5, [0.2, 0.32, 0.15]]],
+					  h: [[2, [0.17, 0.43, 0.09], 0], [2, [0.24, 0.39, 0.05], 2], [2, [0.1, 0.42, 0.15], 1], ["s0", [0.24, 0.38, 0.18], 0]],
+					  lv: [[0, 0.4, 1.6, 0.14], [0, 0.8, 5.6, 0.12], [1, 0.5, 3.0, 0.1]] },
+					{ n: [[0, 0, 0], [-0.06, 0.18, -0.06], [-0.14, 0.32, -0.14]], side: [],
+					  h: [[2, [-0.16, 0.39, -0.16], 0], [2, [-0.21, 0.35, -0.1], 2]],
+					  lv: [[0, 0.5, 3.9, 0.12], [1, 0.5, 5.2, 0.1]] },
+				], {
+					r0: 0.011, r1: 0.008, stem: "#6a9a3a", branch: "#6a9a3a", stalk: "#7aa848", leaf: threadLeaf, leafCol: ["#5aa83a", "#4f9a30"], leafTilt: 0.5, leafW: 1,
+					// (0 fresh, 1 older: rays swept back and a taller centre, 2 a bud)
+					head: (p, kind, from) => {
+						const F = faceFrom(p, from, kind ? 0.35 : 0.55);
+						// (each head on a shallow green cup of bracts)
+						add(cup(), "#5e8a3a", mul(F.clone(), at(0, kind === 2 ? 0 : 0.002, 0), kind === 2 ? sc(0.0135, 0.012, 0.0135) : sc(0.018, 0.01, 0.018)));
+						if (kind === 2) return void add(T.sphere(1, 6, 5), "#a8c850", mul(F, sc(0.013, 0.012, 0.013)));
+						add(T.sphere(1, 8, 6), kind ? "#e8b414" : "#f2c21a", mul(F.clone(), at(0, 0.006, 0), sc(0.021, kind ? 0.026 : 0.017, 0.021)));
+						for (let k = 0; k < 13; k++) add(mayRay(), k % 2 ? "#ffffff" : "#f2f0ea", mul(F.clone(), ry((k / 13) * l), at(0, 0, 0.015), rx(kind ? 1.05 : 0.18), sc(0.032, 0.042, 0.042)));
+					},
+				});
+				// fine leaves round the base (clear of a row's ridge)
+				for (let k = 0; k < 10; k++) add(threadLeaf(), k % 2 ? "#5aa83a" : "#4a9530", mul(at(0, 0.12 + 0.005 * (k % 3), 0), ry((k / 10) * l + 0.4), rx(-0.25 - 0.08 * (k % 3)), sc(0.2, 0.2, 0.2)));
+			}],
+			// PLANT #3: a chicory (only from the owner's photo): stiff, bare, branching stems with sky-blue flowers
+			// facing out, each a ring of strap-shaped rays with square, toothed tips round pale blue stamens;
+			// small spiky green buds along the stems and a withered head or two
+			["PLANT #3", "chicory", (add) => {
+				stems(add, [
+					{ n: [[0, 0, 0], [0.01, 0.35, 0], [-0.03, 0.6, 0.02], [0.02, 0.8, 0]], side: [[2, 0.2, [0.19, 0.69, 0.05]]],
+					  h: [[3, [0.02, 0.83, 0], 0], ["s0", [0.22, 0.7, 0.06], 0], [2, [-0.07, 0.63, 0.05], 2], [1, [0.04, 0.42, 0.04], 2], [2, [0.03, 0.64, -0.05], 1], ["s0", [0.11, 0.68, 0.0], 2]],
+					  lv: [[0, 0.98, 1.2, 0.05], [0, 0.97, 4.4, 0.04], [1, 0.97, 2.6, 0.045], [2, 0.2, 5.2, 0.04], [2, 0.97, 0.4, 0.035]] },
+					{ n: [[0, 0, 0], [-0.05, 0.3, -0.03], [-0.16, 0.54, -0.06]], side: [],
+					  h: [[2, [-0.19, 0.59, -0.07], 0], [1, [-0.12, 0.47, -0.01], 2], [1, [-0.08, 0.43, -0.09], 2]],
+					  lv: [[0, 0.97, 3.0, 0.045], [1, 0.6, 0.8, 0.04], [1, 0.97, 5.0, 0.035]] },
+				], {
+					r0: 0.012, r1: 0.009, stem: "#5c8a4a", branch: "#5c8a4a", stalk: "#5c8a4a", leaf: lance, leafCol: ["#5a8a40", "#4f8036"], leafTilt: 0.7, leafW: 1,
+					// (0 in flower, 1 withered, 2 a bud)
+					head: (p, kind, from) => {
+						const F = faceFrom(p, from, kind ? 0.85 : 0.35);
+						if (kind) {
+							add(T.sphere(1, 6, 5), "#6f9a3e", mul(F.clone(), sc(0.012, 0.02, 0.012)));
+							if (kind === 1) return void add(T.sphere(1, 6, 4), "#6a5070", mul(F.clone(), at(0, 0.022, 0), sc(0.01, 0.014, 0.01)));
+							for (let k = 0; k < 3; k++) add(T.cone(0.004, 0.022, 4), "#7aa848", mul(F.clone(), ry((k / 3) * l), rx(0.5), at(0, 0.012, 0.006)));
+							return;
+						}
+						add(T.sphere(1, 6, 5), "#6f9a3e", mul(F.clone(), at(0, -0.01, 0), sc(0.012, 0.016, 0.012)));
+						// about twenty sky-blue rays in two rings, then the stamens: dark blue threads with pale tips
+						for (let k = 0; k < 21; k++) {
+							const m = mul(F.clone(), ry((k / 21) * l + (k % 2) * 0.08), at(0, 0.002 * (k % 2), 0.006), rx(-0.06 - 0.06 * (k % 2)), sc(0.038, 0.085, 0.085));
+							add(chicRay(), k % 3 ? "#5c6ade" : "#5060d4", m), add(chicVein(), "#4048b8", m.clone());
+						}
+						for (let k = 0; k < 7; k++) {
+							const a2 = (k / 7) * l, M = () => mul(F.clone(), ry(a2), rx(0.35), at(0, 0.014, 0));
+							add(T.cyl(0.0012, 0.0016, 0.022, 3), "#3e4cb0", M()), add(T.sphere(1, 4, 3), "#d8deff", mul(M(), at(0, 0.012, 0), sc(0.0028, 0.0028, 0.0028)));
+						}
+					},
+				});
+			}],
+			// PLANT #4: a common milkweed (only from the owner's photo): a stout stem with broad oval leaves in opposite
+			// pairs, each pair turned a quarter from the one below, every leaf with a pale pink midrib; at the top a
+			// round umbel of small flowers on purple-red stalks, each flower's dusky mauve petals turned down under
+			// a white-pink crown, a few still closed buds
+			["PLANT #4", "common milkweed", (add) => {
+				seg(add, [0, 0, 0], [0.01, 0.6, 0], 0.017, "#6a8a4a");
+				[[0.15, 0, 0.36], [0.27, 1, 0.34], [0.39, 0, 0.3], [0.5, 1, 0.22]].forEach(([y, q, len], k) =>
+					[0, Math.PI].forEach((a) => {
+						const m = () => mul(at(0.004, y, 0), ry(a + (q * Math.PI) / 2 + 0.2), rx(-0.38 + 0.08 * k), sc(len, len, len));
+						add(milkLeaf(), k === 3 ? "#5a9040" : k % 2 ? "#3e7030" : "#487a36", m()), add(milkRib(), "#8a6a6e", m()), add(milkVeins(), "#78a060", m());
+					}),
+				);
+				// an umbel: florets on stalks fanned over a dome (golden-angle spacing), a few closed
+				const umbel = (U, R, n) => {
+					for (let k = 0; k < n; k++) {
+						const yy = 1 - (1.55 * (k + 0.5)) / n, rr = Math.sqrt(Math.max(0, 1 - yy * yy)), a = 2.4 * k,
+							tip = [U[0] + R * rr * Math.cos(a), U[1] + R * yy, U[2] + R * rr * Math.sin(a)];
+						seg(add, U, tip, 0.0026, "#7a2a4a");
+						if (k % 6 === 5) {
+							add(T.sphere(1, 6, 4), "#8a3a5a", mul(at(...tip), sc(0.011, 0.013, 0.011)));
+							continue;
+						}
+						add(T.cone(0.015, 0.02, 5), k % 2 ? "#9a4466" : "#ac5478", mul(at(tip[0], tip[1] - 0.005, tip[2]), rx(Math.PI)));
+						// (the crown: five pale hoods standing round a pink centre)
+						if (LO) add(T.sphere(1, 5, 3), "#f4e2ea", mul(at(tip[0], tip[1] + 0.007, tip[2]), sc(0.012, 0.008, 0.012)));
+						else for (let j = 0; j < 5; j++) add(T.sphere(1, 5, 3), (k + j) % 3 ? "#f4e2ea" : "#f0d4e2", mul(at(tip[0], tip[1] + 0.007, tip[2]), ry((j / 5) * l + k), at(0, 0, 0.0065), sc(0.0045, 0.0075, 0.0045)));
+						add(T.sphere(1, 5, 3), "#d890b0", mul(at(tip[0], tip[1] + 0.009, tip[2]), sc(0.0045, 0.0045, 0.0045)));
+					}
+				};
+				umbel([0.01, 0.62, 0], 0.072, 40);
+			}],
+			// PLANT #5: a zebra mallow (only from the owner's photo): an upright stem with two arms reaching out sideways,
+			// big round scalloped leaves on long stalks, and flowers of five broad notched petals, pale pink with dark
+			// purple veins streaking out from a pink stamen column; clusters of round green buds in the leaf joints
+			["PLANT #5", "zebra mallow", (add) => {
+				const stem = "#6a9a48", leafCol = ["#437a2c", "#4c8634"];
+				seg(add, [0, 0, 0], [0.005, 0.66, 0.01], 0.015, stem);
+				seg(add, [0.003, 0.3, 0.005], [0.2, 0.4, 0.04], 0.009, stem), seg(add, [0.004, 0.36, 0.006], [-0.21, 0.42, -0.03], 0.009, stem);
+				// leaves: [node, direction, stalk length, leaf size, how far up the leaf is tipped]
+				[[[0, 0.14, 0], 0.4, 0.1, 0.27, 0.22], [[0, 0.16, 0], 2.6, 0.11, 0.28, 0.22], [[0, 0.19, 0], 4.6, 0.09, 0.26, 0.28], [[0, 0.26, 0], 1.5, 0.09, 0.23, 0.32], [[0, 0.33, 0], 3.6, 0.08, 0.22, 0.36], [[0, 0.42, 0], 5.6, 0.07, 0.19, 0.4], [[0, 0.52, 0], 2.2, 0.06, 0.15, 0.45], [[0.1, 0.35, 0.02], 1.0, 0.05, 0.15, 0.4], [[-0.1, 0.39, -0.01], 4.0, 0.05, 0.15, 0.4]].forEach(([p, a, sl, size, up], k) => {
+					const q = [p[0] + sl * Math.sin(a), p[1] + 0.35 * sl, p[2] + sl * Math.cos(a)];
+					seg(add, p, q, 0.005, stem);
+					const m = mul(at(...q), ry(a), rx(-up), sc(size, size, size));
+					add(mallowLeaf(), leafCol[k % 2], m), add(mallowVeins(), "#7aa85a", m.clone());
+				});
+				// a flower facing out from where its stalk comes from
+				const flower = (p, from, lean) => {
+					seg(add, from, p, 0.004, stem);
+					const F = () => faceFrom(p, from, lean);
+					for (let k = 0; k < 5; k++) {
+						const P = (dy) => mul(F(), ry((k / 5) * l), at(0, dy, 0.004), rx(-0.22), sc(0.075, 0.075, 0.075));
+						add(mallowPetal(), k % 2 ? "#fbeef6" : "#f8e6f2", P(0));
+						[-0.36, -0.18, 0, 0.18, 0.36].forEach((d, j) => add(mallowVein(), j % 2 ? "#8a2478" : "#74145e", mul(P(0), ry(d * 0.75), sc(1, 1, 1 - 0.18 * Math.abs(d) / 0.18))));
+					}
+					for (let k = 0; k < 5; k++) add(lance(), "#5e8a3a", mul(F(), ry(((k + 0.5) / 5) * l), at(0, -0.004, 0.003), rx(0.2), sc(0.022, 0.03, 0.03)));
+					add(T.cyl(0.005, 0.006, 0.02, 5), "#e8a8d8", mul(F(), at(0, 0.01, 0)));
+					add(T.sphere(1, 6, 4), "#f0c8e8", mul(F(), at(0, 0.021, 0), sc(0.009, 0.008, 0.009)));
+					// (its tip a fuzz of pale anthers)
+					for (let k = 0; k < 9; k++) add(T.sphere(1, 4, 3), k % 2 ? "#f8e8f4" : "#e8c0dc", mul(F(), ry(2.4 * k), rx(0.5 + 0.12 * (k % 3)), at(0, 0.021 + 0.004 * (k % 2), 0.007), sc(0.003, 0.003, 0.003)));
+				};
+				const buds = (p, n) => {
+					for (let k = 0; k < n; k++) add(T.sphere(1, 6, 5), k % 2 ? "#8ab85a" : "#7aa84a", mul(at(p[0] + 0.013 * Math.cos(2.4 * k), p[1] + 0.008 * k, p[2] + 0.013 * Math.sin(2.4 * k)), sc(0.011, 0.012, 0.011)));
+				};
+				flower([0.1, 0.47, 0.07], [0.004, 0.44, 0.008], 0.75);
+				flower([-0.11, 0.5, -0.05], [0.004, 0.46, 0.008], 0.8);
+				buds([0.006, 0.68, 0.01], 5), buds([0.03, 0.5, 0.04], 3), buds([-0.03, 0.42, -0.04], 3), buds([0.2, 0.41, 0.04], 2), buds([-0.21, 0.43, -0.03], 3);
 			}],
 		];
+		return (kinds.lo = (v) => (LO = v)), kinds;
 	})();
 	// (every kind is drawn at 2.4 times the size it is modelled at above, so the plants stand out)
 	const PLANT_SIZE = 2.4;
-	const plantGeo = (kind) => {
-		const G0 = garden.geos || (garden.geos = []);
-		if (G0[kind]) return G0[kind];
+	// Each kind has its full model and a light one for further off (lo): the same parts, the flat ones (leaves,
+	// rays, petals) from about half their outline points, the round ones with fewer facets, and the finest
+	// (spines, fine veins, anthers and other specks under ~1.5 cm) left out. `plantMesh` shows the full one within PLANT_NEAR m of the eye, the light one beyond.
+	const LO_SKIP = new Set(["thistlespines", "thistlerib", "milkveins", "mallowveins", "chicvein"]),
+		loGeo = (geo) => {
+			const q = geo.parameters, k = geo.type;
+			if (!q) return geo;
+			const C0 = loGeo.c || (loGeo.c = new Map());
+			if (C0.has(geo)) return C0.get(geo);
+			const g =
+				"SphereGeometry" === k
+					? new THREE.SphereGeometry(q.radius, Math.max(4, Math.round(0.55 * q.widthSegments)), Math.max(3, Math.round(0.6 * q.heightSegments)), q.phiStart, q.phiLength, q.thetaStart, q.thetaLength)
+					: "CylinderGeometry" === k || "ConeGeometry" === k
+						? new THREE.CylinderGeometry(q.radiusTop || 0, q.radiusBottom, q.height, Math.min(q.radialSegments, 3), 1, q.openEnded)
+						: geo;
+			return C0.set(geo, g), g;
+		};
+	const PLANT_NEAR = 7;
+	const plantGeo = (kind, lo) => {
+		const G0 = garden.geos || (garden.geos = []), key = kind + (lo ? 8 : 0);
+		if (G0[key]) return G0[key];
 		const parts = [],
 			big = new THREE.Matrix4().makeScale(PLANT_SIZE, PLANT_SIZE, PLANT_SIZE);
-		PLANT_KINDS[kind][2]((geo, color, m) => parts.push({ geo, color, matrix: big.clone().multiply(m) }));
-		return (G0[kind] = v(parts));
+		PLANT_KINDS.lo(lo ? 1 : 0);
+		PLANT_KINDS[kind][2]((geo, color, m) => {
+			if (lo) {
+				if (geo.name && LO_SKIP.has(geo.name.replace("~", ""))) return;
+				geo.boundingSphere || geo.computeBoundingSphere();
+				if (geo.boundingSphere.radius * m.getMaxScaleOnAxis() < 0.006) return;
+				geo = loGeo(geo);
+			}
+			parts.push({ geo, color, matrix: big.clone().multiply(m) });
+		});
+		return PLANT_KINDS.lo(0), (G0[key] = v(parts));
 	};
 	const plantMat = () => garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 }));
+	// a plant's full and light meshes in g (at y), one shown at a time by the distance from the eye
+	function plantMesh(g, kind, y = 0) {
+		const hi = R(plantGeo(kind), plantMat(), g, [0, y, 0]), lo = R(plantGeo(kind, 1), plantMat(), g, [0, y, 0]);
+		(lo.visible = !1), (garden.lods || (garden.lods = [])).push([g, hi, lo]);
+	}
+	// (checked a few times a second, with a metre's grace so a plant at the edge doesn't flick back and forth)
+	{
+		const eye = new THREE.Vector3(), at = new THREE.Vector3();
+		let next = 0;
+		L.push((tt) => {
+			if (tt < next || !garden.lods) return;
+			(next = tt + 0.25), we.presenting && we.headPos ? eye.copy(we.headPos) : B.getWorldPosition(eye);
+			for (const [g, hi, lo] of garden.lods) {
+				const d = g.getWorldPosition(at).distanceTo(eye), near = hi.visible ? d < PLANT_NEAR + 1 : d < PLANT_NEAR;
+				near !== hi.visible && ((hi.visible = near), (lo.visible = !near));
+			}
+		});
+	}
 	function putPlant(x0, z0, ry, grow, kind) {
 		const g = new THREE.Group();
 		g.position.set(x0, 0.05, z0), (g.rotation.y = ry), g.scale.setScalar(0.01);
-		R(plantGeo(kind), plantMat(), g);
+		plantMesh(g, kind);
 		(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
 		const p = { g, grow, water: 0, kind };
 		return garden.plants.push(p), p;
 	}
-	// THE PLANT TEST ROW (for testing the plant designs): one of each kind on a little mound of soil,
-	// spaced along the east side where the old line-up stood (between the duck pond and the fence),
-	// facing in. Each has a Talk option (testing only) that says which plant it is.
-	function plantRow() {
-		const soil = x.clay("#5e4028", { shininess: 4 });
-		PLANT_KINDS.forEach(([name, col], k) => {
-			const X = 34,
-				Z = -12 + 5.77 * k,
-				g = new THREE.Group();
-			g.position.set(X, 0, Z), (g.rotation.y = -Math.PI / 2 + 0.5), (g.userData.keepInFinale = !0), (g.userData.jgpKeep = !0), C.add(g);
-			// (the mound is 16 cm high, and the plant's lowest leaves 31 cm up over it)
-			R(T.sphere(1, 20, 8), soil, g, [0, 0, 0], null, [0.85, 0.16, 0.85]);
-			R(plantGeo(k), plantMat(), g, [0, 0.05, 0]);
-			// (its collider is kept when the engine's scenery is cleared)
-			F.add(X, Z, 0.85), (F.list[F.list.length - 1].keep = !0), E.add(X, Z, 1.8, "scenery");
-			z.add({
-				id: "plant" + (k + 1),
-				x: X,
-				z: Z,
-				r: 3,
-				solidR: 0.85,
-				markerTop: () => 2.8,
-				label: () => "Talk",
-				run: () => qt.open(name, col, "I'm " + name.replace("PLANT", "Plant") + "."),
-			});
-		});
+	// (for the tests and renders: a full-grown plant of a kind on show at (x, z), turned by ry; returns its group)
+	function plantShow(kind, x0, z0, ry = 0) {
+		const g = new THREE.Group();
+		return g.position.set(x0, 0, z0), (g.rotation.y = ry), plantMesh(g, kind), C.add(g), g;
 	}
 	const PLANT_COLS = ["#e8301e", "#ffd23a", "#ff5fb0", "#9a6bff", "#ff8a1a"];
-	function makePlant(slot) {
-		const p = putPlant(slot.x + 0.15 * (rnd() - 0.5), slot.z + 0.15 * (rnd() - 0.5), rnd() * l, 0, (rnd() * PLANT_KINDS.length) | 0);
-		return (slot.plant = p), p;
-	}
+
 	// unique planting animation per creature (same transform format as the old concert dances)
 	const MOVES = {
 		// the current cast all garden: digging, patting the soil down, or scattering seeds
@@ -12250,13 +12499,17 @@ const JGP = (() => {
 		rings.forEach(([r, cap], ri) => {
 			const k = Math.min(cap, left);
 			for (let j = 0; j < k; j++) {
-				const a = ((j + 0.5 * ri + (second ? 0.5 : 0)) / k) * l + 0.3;
+				let a = ((j + 0.5 * ri + (second ? 0.5 : 0)) / k) * l + 0.3;
+				// (turned along the ring until the soil it digs, 0.9 m nearer the middle, is 0.75 m clear of the
+				// stepping-stone paths, which run out from the middle at l/8 and every quarter turn on)
+				const rs = r - 0.9, d = (((a % (l / 4)) + l / 4) % (l / 4)) - l / 8, need = Math.asin(Math.min(1, 0.75 / rs));
+				Math.abs(d) < need && (a += (d < 0 ? -1 : 1) * (need - Math.abs(d)));
 				spots.push({ x: r * Math.cos(a), z: r * Math.sin(a) });
 			}
 			left -= k;
 		});
 		list.forEach((ent, k) => {
-			(ent.finaleSlot = spots[k]), (ent.plantNext = now + rr(2, 5)), (ent.watching = !1);
+			(ent.finaleSlot = spots[k]), (ent.watching = !1);
 		});
 	}
 	// FORTIZMO doesn't plant: she walks to the garden's edge to play. The librarian SPARKAKUS (who leaves
@@ -12285,32 +12538,21 @@ const JGP = (() => {
 			});
 		},
 		eventActor = (ent) => !!ent && AT_POST.includes(ent.id);
+	// ONE FLOWER PER PLANTER PER EVENT, right where it does its planting: a moment into its first dig at its
+	// spot, in the soil 0.9 m in front of it (on a row: see beginPlanting). It stays at that spot and keeps
+	// planting; nothing more comes up. From the third Event on it only digs: the garden stays as the first two
+	// left it.
 	function plantTick(ent, now) {
-		if (ent.moving || now < (ent.plantNext || 0) || ent.hornWant || ent.watching || noPlant(ent) || ("dialogue" === jt.top && xe.lastTarget === ent)) return;
-		ent.plantNext = now + rr(5, 9);
-		ent.plantCount = (ent.plantCount || 0) + 1;
-		const p = ent.group.position;
-		if (ent.finaleSlot && ent.plantCount % 4 == 0) {
-			const sl = ent.finaleSlot,
-				r = Math.hypot(sl.x, sl.z) || 1,
-				a = Math.atan2(sl.z, sl.x) + 3.2 / r;
-			ent.finaleSlot = { x: r * Math.cos(a), z: r * Math.sin(a) };
-		}
-		// the plant goes in right where the creature is seen planting: the free slot nearest the spot just in
-		// front of it (within 1.3 m; with none that close it digs, but nothing comes up). From the third
-		// Event on it only digs: the garden stays as the first two left it.
-		if (garden.round > 2) return;
-		const ry = ent.group.rotation.y,
+		if (ent.moving || ent.hornWant || ent.watching || noPlant(ent) || ("dialogue" === jt.top && xe.lastTarget === ent) || ent.plantRound === garden.round) return;
+		const w = ent.plantWait;
+		if (!w || w[0] !== garden.round) return void (ent.plantWait = [garden.round, now + 1.5]);
+		if (now < w[1]) return;
+		if (((ent.plantRound = garden.round), garden.round > 2)) return;
+		const p = ent.group.position,
+			ry = ent.group.rotation.y,
 			fx = p.x + 0.9 * Math.sin(ry),
 			fz = p.z + 0.9 * Math.cos(ry);
-		let best = null,
-			bd = 1.3;
-		for (const sl of garden.slots) {
-			if (sl.plant) continue;
-			const d = Math.hypot(sl.x - fx, sl.z - fz);
-			d < bd && ((bd = d), (best = sl));
-		}
-		if (best) makePlant(best), Ut.at(best.x, 1.7, best.z, "✿", f(PLANT_COLS));
+		putPlant(fx, fz, rnd() * l, 0, (rnd() * PLANT_KINDS.length) | 0), Ut.at(fx, 1.7, fz, "✿", f(PLANT_COLS));
 	}
 	L.push((tt, dt) => {
 		dt = dt || 0.016;
@@ -12916,9 +13158,7 @@ const JGP = (() => {
 			pose(e, lastE < 0 ? 0 : Math.min(0.1, e - lastE)), (lastE = e);
 		});
 		return {
-			buildModel,
 			shape,
-			flapWings,
 			busy: () => active,
 			start: (now) => start(null == now ? Re.t : now),
 			// for testing: show him at time e of his visit (no side effects except the effects' state)
@@ -14222,7 +14462,8 @@ const JGP = (() => {
 			B.geo("plain", GABLE.slopes, "#c8ccd0", 0, 12.1, 2.5, 5.6, 2.6, 14, 0, Math.PI / 2, 0).geo("stone", GABLE.ends, wh, 0, 12.1, 2.5, 5.4, 2.6, 13.6, 0, Math.PI / 2, 0);
 			B.box("boards", "#5a3a22", 0, 2.9, 0.06, 2.4, 3.0, 0.1).geo("lit", halfDisc, "#56646e", 0, 4.45, 0.05, 2.4, 2.4, 1);
 			for (let k = 0; k < 4; k++) B.box("stone", st, 0, 1.4 - 0.35 * (k + 0.5), 5.2 + 0.45 * k, 9 - 0.2 * k, 0.35, 0.5);
-			// clock tower: brick base, clock stage with four faces, louvred cupola, copper dome and spire
+			// clock tower: brick base, clock stage with four faces, louvred cupola, copper dome and spire, topped with a
+			// gilded ball (no cross on it)
 			B.box("brick", brick, 0, h + 2, -D / 2, 7, 4, 7).box("stone", st, 0, h + 4.1, -D / 2, 7.4, 0.3, 7.4);
 			B.box("plain", wh, 0, h + 6.5, -D / 2, 5.6, 4.6, 5.6);
 			[0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach((a) => B.sign("clock", 2.82 * Math.sin(a), h + 6.5, -D / 2 + 2.82 * Math.cos(a), 3.8, 3.8, a));
@@ -14234,9 +14475,7 @@ const JGP = (() => {
 			B.geo("plain", usph(16, !0), "#5aa890", 0, h + 12.1, -D / 2, 4.8, 5.0, 4.8)
 				.geo("plain", ucyl(8), wh, 0, h + 14.9, -D / 2, 0.9, 1.2, 0.9)
 				.geo("plain", ucone(8), "#5aa890", 0, h + 16.4, -D / 2, 1.0, 1.8, 1.0)
-				.geo("plain", usph(8), "#d8b040", 0, h + 17.4, -D / 2, 0.3, 0.3, 0.3)
-				.box("plain", "#2a2a2e", 0, h + 18.1, -D / 2, 0.04, 1.2, 0.04)
-				.box("plain", "#2a2a2e", 0, h + 18.3, -D / 2, 1.0, 0.04, 0.04);
+				.geo("plain", usph(8), "#d8b040", 0, h + 17.4, -D / 2, 0.3, 0.3, 0.3);
 			// foundation shrubs
 			for (let k = -4; k <= 4; k++) Math.abs(k) > 1 && B.geo("plain", crownGeo(k & 3, 1), "#3a6e30", 3 * k, 0.7, 0.8, 1.3, 0.9, 0.9);
 			return B;
@@ -14247,8 +14486,12 @@ const JGP = (() => {
 				h = 8.5,
 				wh = "#f6f4ee",
 				roof = "#4a4a52";
-			// the walls start just inside the stone base (a floor flush with its top flickered against it)
-			B.box("stone", "#a89c8a", 0, 0.4, -D / 2, w + 0.4, 0.8, D + 0.4).box("siding", wh, 0, 0.75 + h / 2 + 0.025, -D / 2, w, h + 0.05, D);
+			// the walls start just inside the stone base (a floor flush with its top flickered against it). The base
+			// is a ring round the walls (it looks the same from outside), so the floor inside is at ground level
+			[-1, 1].forEach((sx) => B.box("stone", "#a89c8a", sx * (w / 2 - 0.05), 0.4, -D / 2, 0.5, 0.8, D + 0.4));
+			[-D - 0.2 + 0.25, -0.05].forEach((bz) => B.box("stone", "#a89c8a", 0, 0.4, bz, w - 0.6, 0.8, 0.5));
+			// (the walls' box reaches down below the inside floor: its bottom face shows from inside)
+			B.box("siding", wh, 0, (0.8 + h - 0.01) / 2, -D / 2, w, 0.8 + h + 0.01, D);
 			// the roof's slopes meet the tops of the side walls (the 0.6 m eaves hang below them, so no gap
 			// shows between roof and wall), and the gable ends fill up to the same slopes
 			const RH = 5.5,
@@ -14263,6 +14506,173 @@ const JGP = (() => {
 					Sd.box("lit", glassC[(k + 1) % 4], px, 6.2, -0.02, 0.92, 0.92, 0.08, 0, 0, Math.PI / 4).box("plain", wh, px, 6.2, 0.02, 1.15, 1.15, 0.06, 0, 0, Math.PI / 4);
 				});
 			});
+			// THE INSIDE, a secret play area (the player gets in through the right-hand Garden window, marked only by
+			// a small painted X under it: see the church's parts), built only from the owner's photo of a slug at
+			// night: floor, walls and ceiling are all the same damp, gritty olive-grey ground, flecked with pale shell
+			// bits and orange and blue-grey grains, lit best at the floor and least at the ceiling, as by a flash;
+			// on the floor lie pebbles, a few big flat dark stones, white flakes of shell, dark cracks and strands of
+			// dry grass; and across the middle crawls a big, glossy, near-black slug that can be talked to. Its walls
+			// stand 35 cm inside the outer ones (whose faces only show from outside), the floor at ground level.
+			// (The room and the slug, built only from that photo, are final: keep them as they are.)
+			{
+				let seed = 7;
+				const rnd2 = () => ((seed = (16807 * seed) % 2147483647) / 2147483647),
+					grit = b(512, 512, (c, W) => {
+						(c.fillStyle = "#5e5c46"), c.fillRect(0, 0, W, W);
+						// mottled ground, then the fine grit, the bigger grains and shell flecks, and a few cracks
+						for (let k = 0; k < 260; k++) {
+							const g = 70 + 40 * rnd2();
+							(c.fillStyle = `rgba(${g + 12 | 0},${g + 10 | 0},${g - 18 | 0},0.22)`), c.beginPath(), c.arc(W * rnd2(), W * rnd2(), 8 + 40 * rnd2(), 0, l), c.fill();
+						}
+						for (let k = 0; k < 9000; k++) {
+							const g = 40 + 110 * rnd2();
+							(c.fillStyle = `rgba(${g | 0},${g | 0},${g - 22 | 0},0.55)`), c.fillRect(W * rnd2(), W * rnd2(), 1 + 2 * rnd2(), 1 + 2 * rnd2());
+						}
+						const GR = ["#d8d4c6", "#e8e4da", "#b8864c", "#c89a5a", "#6a7a80", "#7a8a8e", "#2a2a24", "#9a9888"];
+						for (let k = 0; k < 420; k++) {
+							(c.fillStyle = GR[(rnd2() * GR.length) | 0]), c.beginPath();
+							c.ellipse(W * rnd2(), W * rnd2(), 1.5 + 4 * rnd2() * rnd2() * 3, 1 + 3 * rnd2(), l * rnd2(), 0, l), c.fill();
+						}
+						(c.strokeStyle = "rgba(24,24,18,0.75)"), (c.lineWidth = 1.5);
+						for (let k = 0; k < 5; k++) {
+							let x = W * rnd2(), y = W * rnd2();
+							c.beginPath(), c.moveTo(x, y);
+							for (let j = 0; j < 9; j++) (x += 18 * (rnd2() - 0.5) + 8), (y += 14 * (rnd2() - 0.4)), c.lineTo(x, y);
+							c.stroke();
+						}
+					}),
+					// (each surface its own copy of the texture, tiled about every 1.8 m; the photo is dim and flash-lit,
+					// so the floor is lit best, the walls less and the ceiling least)
+					mat = (rx2, ry2, col) => {
+						const t2 = grit.clone();
+						return (t2.wrapS = t2.wrapT = THREE.RepeatWrapping), t2.repeat.set(rx2, ry2), (t2.needsUpdate = !0), new THREE.MeshLambertMaterial({ map: t2, color: col });
+					},
+					inner = new THREE.Group(),
+					IX = w / 2 - 0.35,
+					ZB = -D + 0.34,
+					ZF = -1.32,
+					zc = (ZB + ZF) / 2,
+					L0 = ZF - ZB,
+					HT = 9.22;
+				inner.position.set(cx, 0, cz), (inner.rotation.y = ry), (inner.userData.keepInFinale = !0), C.add(inner);
+				R(T.box(2 * IX, 0.03, L0), mat((2 * IX) / 1.8, L0 / 1.8, 0xa8a68a), inner, [0, 0.015, zc]);
+				[-1, 1].forEach((sx) => R(T.box(0.04, HT, L0), mat(L0 / 1.8, HT / 1.8, 0xb0b298), inner, [sx * (IX + 0.02), 0.03 + HT / 2, zc]));
+				[ZB - 0.02, ZF + 0.02].forEach((zz) => R(T.box(2 * IX - 0.02, HT, 0.04), mat((2 * IX) / 1.8, HT / 1.8, 0xb0b298), inner, [0, 0.03 + HT / 2, zz]));
+				R(T.box(2 * IX - 0.02, 0.04, L0 - 0.02), mat((2 * IX) / 1.8, L0 / 1.8, 0x8a8c76), inner, [0, 9.24, zc]);
+				// on the floor (one merged mesh, none under the slug): pebbles, pale, rusty, blue-grey and dark, half
+				// sunk into it; a few big flat dark stones; white flakes of shell; dark cracks; and strands of dry grass
+				const PB = ["#c8c4b8", "#b07a44", "#6a7a80", "#3a3a32", "#9a9888", "#dcd8cc"], peb = [],
+					spot = (pad) => {
+						for (;;) {
+							const px = (2 * rnd2() - 1) * (IX - pad), pz = ZB + pad + rnd2() * (L0 - 2 * pad);
+							if (Math.abs(px) > 1.3 || pz < -13.9 || pz > -9.4) return [px, pz];
+						}
+					},
+					flat = (pts, y) => ({ geo: new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(pts.flatMap(([x, z]) => [x, y, z]), 3)).setAttribute("normal", new THREE.Float32BufferAttribute(pts.flatMap(() => [0, 1, 0]), 3)) });
+				for (let k = 0; k < 46; k++) {
+					const [px, pz] = spot(0.4), r0 = 0.04 + 0.14 * rnd2() * rnd2();
+					peb.push({ geo: T.dodeca(1, 0), color: PB[k % PB.length], matrix: S(px, 0.03 + 0.25 * r0, pz, rnd2() * 3, rnd2() * 3, 0, r0, 0.55 * r0, 1.2 * r0) });
+				}
+				for (let k = 0; k < 9; k++) {
+					const [px, pz] = spot(0.6), r0 = 0.2 + 0.18 * rnd2();
+					peb.push({ geo: T.dodeca(1, 0), color: k % 2 ? "#3a3a30" : "#4a483c", matrix: S(px, 0.03, pz, 0, rnd2() * 3, 0, r0, 0.12 * r0, 0.8 * r0) });
+				}
+				for (let k = 0; k < 140; k++) {
+					const [px, pz] = spot(0.2), a = l * rnd2(), r0 = 0.01 + 0.025 * rnd2(), c0 = Math.cos(a) * r0, s0 = Math.sin(a) * r0;
+					peb.push({ ...flat([[px - c0, pz - s0], [px + s0 * 0.7, pz - c0 * 0.7], [px + c0, pz + s0], [px - c0, pz - s0], [px + c0, pz + s0], [px - s0 * 0.6, pz + c0 * 0.6]], 0.033), color: k % 3 ? "#e8e4da" : "#d4d0c2", matrix: S(0, 0, 0) });
+				}
+				for (let k = 0; k < 7; k++) {
+					let [px, pz] = spot(1), a = l * rnd2();
+					const pts = [];
+					for (let j = 0; j < 8; j++) {
+						const nx = px + 0.18 * Math.cos(a), nz = pz + 0.18 * Math.sin(a), w0 = 0.012 * (1 - j / 9), ox = -w0 * Math.sin(a), oz = w0 * Math.cos(a);
+						pts.push([px - ox, pz - oz], [px + ox, pz + oz], [nx, nz], [px - ox, pz - oz], [nx, nz], [nx - ox, nz - oz]), (px = nx), (pz = nz), (a += 0.8 * (rnd2() - 0.5));
+					}
+					peb.push({ ...flat(pts, 0.032), color: "#1e1e18", matrix: S(0, 0, 0) });
+				}
+				for (let k = 0; k < 5; k++) {
+					const [px, pz] = spot(1), a = l * rnd2(), pts = [];
+					for (let j = 0; j < 6; j++) pts.push(new THREE.Vector3(px + 0.12 * j * Math.cos(a + 0.15 * j), 0.036 + 0.01 * Math.sin(j), pz + 0.12 * j * Math.sin(a + 0.15 * j)));
+					peb.push({ geo: new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.004, 3), color: k % 2 ? "#b8a478" : "#a89468", matrix: S(0, 0, 0) });
+				}
+				R(v(peb), new THREE.MeshLambertMaterial({ vertexColors: !0, color: 11579568, side: THREE.DoubleSide }), inner);
+				// THE SLUG: a glossy, near-black tube, thin at the tail and blunt at the head, curving across the
+				// floor (low and oval in section, lying on it), the mantle a smooth hump over its front third, two
+				// long eye-stalks with knobs and two short tentacles below; a wet highlight runs along its back
+				{
+					// (its skin: near-black with a brown cast, fine grooves running along the body, a few pale flecks)
+					const skinTex = b(256, 64, (c) => {
+							(c.fillStyle = "#3a2c22"), c.fillRect(0, 0, 256, 64);
+							for (let k = 0; k < 64; k += 3) (c.fillStyle = k % 6 ? "#241a14" : "#140e0a"), c.fillRect(0, k, 256, 1);
+							for (let k = 0; k < 40; k++) (c.fillStyle = "rgba(200,190,170,0.5)"), c.fillRect(256 * rnd2(), 64 * rnd2(), 1, 1);
+						}),
+						slug = new THREE.Group(), skin = new THREE.MeshPhongMaterial({ map: skinTex, color: 7368816, specular: 9474192, shininess: 90 }),
+						path = [[-0.7, -13.4], [-0.45, -12.7], [-0.05, -12.0], [0.2, -11.2], [0.3, -10.5], [0.55, -9.9]],
+						pts = path.map(([px, pz]) => [px, 0.15, pz]);
+					inner.add(slug), slug.scale.set(1, 0.62, 1);
+					// (tail to middle, tapering in; middle to head)
+					R(ao(pts.slice(0, 4), 0.03, 0.2, 40, 14), skin, slug);
+					R(ao(pts.slice(3), 0.2, 0.16, 24, 14), skin, slug);
+					R(T.sphere(0.16, 14, 10), skin, slug, [0.55, 0.15, -9.9]);
+					// (the tail: the tube closed off with a small round tip)
+					R(T.sphere(0.032, 8, 6), skin, slug, [-0.7, 0.15, -13.4]);
+					// the mantle: a smooth hump over the front third, a touch wider than the body, lying along it
+					// (and on its right side, towards the back, the breathing pore: a small dark opening)
+					const mantle = new THREE.Group();
+					mantle.position.set(0.26, 0.22, -10.75), mantle.rotation.set(0, 0.25, 0), mantle.scale.set(0.22, 0.13, 0.55), slug.add(mantle);
+					R(T.sphere(1, 16, 10), skin, mantle);
+					const pore = R(T.sphere(0.16, 8, 6), new THREE.MeshPhongMaterial({ color: 1708040, specular: 9474192, shininess: 90 }), mantle, [-0.93, 0.25, -0.22]);
+					const head = new THREE.Group();
+					head.position.set(0.62, 0.2, -9.82), (head.rotation.y = -0.45), inner.add(head);
+					const stalks = [];
+					// (the upper pair long and fine with a small knob at the tip, the lower pair short stubs)
+					[[-1, 0.3, 0.55, 0.014], [1, 0.3, 0.55, 0.014], [-1, 0.07, 0.15, 0.012], [1, 0.07, 0.15, 0.012]].forEach(([sx, len, up, r], k) => {
+						const st = new THREE.Group();
+						st.position.set(0.05 * sx, k < 2 ? 0.03 : -0.03, 0.09), st.rotation.set(-up, 0.32 * sx, 0), head.add(st);
+						R(T.cyl(0.55 * r, r, len, 8), skin, st, [0, 0, len / 2], [Math.PI / 2, 0, 0]);
+						k < 2 && R(T.sphere(0.85 * r, 8, 6), skin, st, [0, 0, len]);
+						stalks.push([st, up, k]);
+					});
+					H(inner);
+					// IT NEVER MOVES FROM ITS SPOT; it only lives where it lies. Idle, the eye-stalks sway slowly, now and
+					// then one pulls in short and creeps back out, the head looks a little this way and that, and the
+					// mantle swells and settles as it breathes, the pore opening and closing with it. And, as every
+					// creature does, it has its own Talk, Dance and Planting moves, all done lying where it is:
+					//   Talk: it lifts its head (not turning to the player), stalks reaching up, and nods along with its words;
+					//   Dance (while FORTIZMO plays at the Event): head bobbing on the beat, stalks swinging in turn,
+					//     the body rocking and squashing with it;
+					//   Planting (while the Event plants): head dipping to the ground and back, stalks pulled short.
+					// Talk comes first (one being talked to stops dancing or planting for it, as the creatures do).
+					[slug, head, mantle, pore, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
+					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray(), W = 5.45;
+					let talking = 0, look = 0, kT = 0, kD = 0, kP = 0;
+					// one Talk, and no Blossom: it is not one of the town's creatures (from anywhere round it, inside)
+					z.add({ id: "slug", x: wx, z: wz, r: 3.2, solidR: 0.6, top: 0.8, label: () => "Talk", run: () => ((talking = 1), qt.open("SLUG", "#9a7a5a", "Shhh... You found the secret room. Mind the pebbles, and mind me.")) });
+					JGP.slug = { body: slug, head, mantle, stalks: stalks.map(([st]) => st), mode: () => (kT > 0.5 ? "talk" : kD > 0.5 ? "dance" : kP > 0.5 ? "plant" : "idle") };
+					L.push((tt, dt) => {
+						dt = Math.min(dt || 0.016, 0.1);
+						talking = talking && qt.isOpen ? 1 : 0;
+						const ev = talking ? null : JGP.eventMove, e2 = Math.min(1, 3 * dt);
+						(kT += (talking - kT) * e2), (kD += (("dance" === ev) - kD) * e2), (kP += (("plant" === ev) - kP) * e2);
+						// (a slow look round, held still while talking)
+						look += ((talking ? 0 : 0.25 * Math.sin(0.21 * tt) + 0.1 * Math.sin(0.53 * tt)) - look) * Math.min(1, 2 * dt);
+						const beat = Math.sin(W * tt), bob = Math.abs(beat), dig = Math.max(0, Math.sin(1.8 * tt));
+						(head.rotation.y = -0.45 + look * (1 - kD) + kD * 0.3 * Math.sin(0.5 * W * tt)),
+							(head.rotation.x = -kT * (0.22 + 0.05 * Math.abs(Math.sin(5 * tt))) - kD * (0.1 + 0.18 * bob) + kP * 0.3 * dig);
+						// (the body rocks and squashes on the beat, staying where it lies)
+						(slug.rotation.z = kD * 0.035 * Math.sin(0.5 * W * tt)), (slug.scale.y = 0.62 * (1 + kD * 0.06 * bob));
+						const br = Math.sin(0.9 * tt) * (1 - kD) + kD * beat;
+						mantle.scale.set(0.22 * (1 + 0.025 * br), 0.13 * (1 + 0.04 * br), 0.55), pore.scale.setScalar(0.6 + 0.4 * Math.max(0, br));
+						stalks.forEach(([st, up, k]) => {
+							// (every 11 s or so one upper stalk pulls in for a moment; all pulled short while planting)
+							const ph = (tt + 5.5 * k) % 11, pull = Math.max(k < 2 && ph < 2.2 ? Math.sin((Math.PI * ph) / 2.2) : 0, kP * (0.4 + 0.4 * dig)), sx = k % 2 ? 1 : -1;
+							(st.rotation.x = -up - 0.25 * kT - 0.12 * Math.sin(0.6 * tt + k) - kD * 0.2 * Math.sin(W * tt + k * Math.PI)),
+								(st.rotation.y = sx * (0.35 + 0.1 * Math.sin(0.45 * tt + 2 * k)) + kD * 0.4 * Math.sin(0.5 * W * tt + k * Math.PI)),
+								(st.scale.z = 1 - 0.7 * pull);
+						});
+					});
+				}
+			}
 			// steeple: tower, louvred belfry, cornice, tall spire, gilded finial
 			B.box("siding", wh, 0, 6.8, 1.0, 4.4, 13.6, 4.4);
 			// (door, frame and the line between the leaves each at their own depth, none in the tower's face)
@@ -14313,6 +14723,8 @@ const JGP = (() => {
 					const Sd = B.sub((sx * w) / 2, -D / 2, (sx * Math.PI) / 2);
 					Sd.geo("stone", new THREE.ExtrudeGeometry(sfr, { depth: 0.14, bevelEnabled: !1, curveSegments: 16 }), "#e6dfcf", 0, SY, 0.01);
 					Sd.box("stone", "#d8d0be", 0, SY - 0.11, 0.12, SW + 0.6, 0.22, 0.26);
+					// (under the right-hand one, a small red X painted on the wall: the secret way in is here)
+					sx > 0 && Sd.box("plain", "#b3261e", 0, 1.14, 0.008, 0.34, 0.045, 0.012, 0, 0, Math.PI / 4).box("plain", "#b3261e", 0, 1.14, 0.012, 0.34, 0.045, 0.012, 0, 0, -Math.PI / 4);
 					const st = b(576, 1536, (c) => (c.scale(1.5, 1.5), paintGardenWindow(c, sx < 0)), { smooth: !0 });
 					st.anisotropy = tex.anisotropy;
 					const sm = new THREE.MeshLambertMaterial({ map: st, emissiveMap: st, emissive: 16777215, emissiveIntensity: 0.32 }),
@@ -14613,19 +15025,6 @@ const JGP = (() => {
 			keepAt.push([X, Z]);
 			for (let k = 0; k < 6; k++) keepAt.push([X + 2.4 * Math.cos((k * l) / 6), Z + 2.4 * Math.sin((k * l) / 6)]);
 		};
-		const FLOWER_COLS = ["#e8303a", "#ffd23a", "#9a5ae0", "#ffffff", "#ff8a1a", "#ff7ab8"];
-		const flowerBed = (X, Z, r0) => {
-			put("brick", ucyl(24), "#a8483a", S(X, 0.18, Z, 0, 0, 0, 2 * r0 + 0.5, 0.36, 2 * r0 + 0.5)), put("plain", ucyl(24), "#4a3424", S(X, 0.37, Z, 0, 0, 0, 2 * r0, 0.02, 2 * r0));
-			for (let k = 0; k < 7; k++) put("plain", crownGeo(k % 5, 1), k % 2 ? "#3f7a32" : "#4a8a38", S(X + 0.65 * r0 * Math.cos(k), 0.5, Z + 0.65 * r0 * Math.sin(k), 0, k, 0, 0.55, 0.32, 0.55));
-			for (let k = 0; k < 80; k++) {
-				const a = rnd() * l,
-					rd = r0 * Math.sqrt(rnd()) * 0.92,
-					px = X + rd * Math.cos(a),
-					pz = Z + rd * Math.sin(a);
-				put("plain", flowerGeo, FLOWER_COLS[k % 6], S(px, 0.6 + 0.12 * rnd(), pz, 0, rnd() * l, 0, 0.1, 0.1, 0.1));
-			}
-			E.add(X, Z, r0 + 0.6, "scenery");
-		};
 		// a five-petal flower (tinted per placement) with a darker throat
 		const flowerGeo = cached("flower", () => {
 			const tris = [];
@@ -14756,7 +15155,6 @@ const JGP = (() => {
 		[-30, -15, 0, 15, 30].forEach((u) => (u && lampPost(u, 40.6 + ZS), lampPost(u, -40.6)));
 		[-30, -15, 0, 15, 30, 45].forEach((u) => (lampPost(40.6, u), lampPost(-40.6, u)));
 		gazebo(GAZEBO[0], GAZEBO[1]);
-		flowerBed(14, 26, 2.2);
 		[
 			[22, 34 + ZS, 1.2, 0],
 			[31, -33.5, 1.15, 0],
@@ -14919,7 +15317,46 @@ const JGP = (() => {
 			const CA = CHURCH_AT;
 			CHURCH(CA.x, CA.z, CA.ry, CA.D);
 			// solid: the nave, the tower and the steps (creatures go round one box over all three)
-			F.addBuilding(CA.x, CA.z, CA.ry, [-6.2, -CA.D - 0.2, 6.2, 4.8], [[-6.2, -CA.D - 0.2, 6.2, 0.2], [-2.2, -1.2, 2.2, 3.5], [-2.05, 3.3, 2.05, 4.8]], "church");
+			// creatures go round it (its hull); the player meets only its parts: the walls, with a gap where the
+			// right-hand Garden window is (the secret way in, under the little X), the tower and the steps, and inside, the
+			// slug
+			F.addBuilding(
+				CA.x,
+				CA.z,
+				CA.ry,
+				[-6.2, -CA.D - 0.2, 6.2, 4.8],
+				[
+					[-6.2, -CA.D - 0.2, -5.62, 0.2],
+					[5.62, -CA.D - 0.2, 6.2, -CA.D / 2 - 1.3],
+					[5.62, -CA.D / 2 + 1.3, 6.2, 0.2],
+					[-6.2, -CA.D - 0.2, 6.2, -CA.D + 0.38],
+					[-6.2, -1.34, 6.2, 0.2],
+					[-2.2, -1.2, 2.2, 3.5],
+					[-2.05, 3.3, 2.05, 4.8],
+					[-0.95, -13.65, 0.95, -9.55],
+				],
+				"church",
+			);
+			// NO CREATURE EVER GOES INSIDE (the secret room is the player's alone): they path round its hull and
+			// never pick a spot in it, and should one still end up inside (a push, a teleport, a vignette's
+			// step), it is put straight back outside, and any destination inside it is moved out
+			{
+				const CB = F.buildings[F.buildings.length - 1];
+				JGP.churchGuard = { moved: 0 };
+				L.push(() => {
+					for (let k = 0; k < It.all.length; k++) {
+						const e = It.all[k], P = e.group && e.group.position;
+						if (P && F.inHull(CB, P.x, P.z)) {
+							const [ox, oz] = F.outside(P.x, P.z, (e.bodyR || 1) + 0.3);
+							P.set(ox, P.y, oz), JGP.churchGuard.moved++;
+						}
+						if (e.dest && F.inHull(CB, e.dest.x, e.dest.z)) {
+							const [dx, dz] = F.outside(e.dest.x, e.dest.z, (e.bodyR || 1) + 0.8);
+							e.dest.set(dx, e.dest.y, dz);
+						}
+					}
+				});
+			}
 			// no pickups or lawn tufts in its footprint
 			for (let s = CA.sFront; s <= CA.sFront + CA.D + 5; s += 3) {
 				const [ex, ez] = CA.at(s);
@@ -15484,7 +15921,7 @@ const JGP = (() => {
 					sheriff: [4.6, 4.6, 4.6, 1.2, 1, 1],
 					garden: [4.6, 4.6, 4.6, 1.2, 1, 1],
 					shop: [2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 0.85, 4.3, 4.3],
-					church: [8, 14, 0.8],
+					church: [9.3, 9.3, 9.3, 9.3, 9.3, 14, 0.8, 0.3],
 					juice: [1.15, 1.15, 3],
 				},
 				INSET = { post: [0, 0, 0, 0, 0, 0, 0.5] },
@@ -15536,7 +15973,8 @@ const JGP = (() => {
 		for (let k = 0; k < 1750 * LOD; k++) {
 			const X = rr(-37.5, 37.5),
 				Z = rr(-37.5, 37.5 + ZS);
-			if (Math.hypot(X, Z) < GARDEN_R + 0.8 || onWalk(X, Z) || onDance(X, Z) || keepAt.some(([x0, z0]) => Math.hypot(X - x0, Z - z0) < 3.4)) continue;
+			// (and none inside a building: the church's secret room has a floor of its own)
+			if (Math.hypot(X, Z) < GARDEN_R + 0.8 || onWalk(X, Z) || onDance(X, Z) || keepAt.some(([x0, z0]) => Math.hypot(X - x0, Z - z0) < 3.4) || F.buildings.some((B) => F.inHull(B, X, Z))) continue;
 			put("plain", tuftGeo(k & 3), ["#5f9a32", "#6faa3a", "#4f8a2a", "#7ab842"][k & 3], S(X, -0.02, Z, 0, rnd() * l, 0, rr(0.8, 1.4), rr(0.8, 1.3), rr(0.8, 1.4)));
 			k % 6 || put("plain", flowerGeo, ["#ffffff", "#ffd23a", "#ffffff", "#f4e04a"][k % 4], S(X + 0.12, 0.08, Z, 0, rnd() * l, 0, 0.05, 0.05, 0.05));
 		}
@@ -15633,9 +16071,12 @@ const JGP = (() => {
 				};
 				ufo.visible = !0;
 			};
+			// (for the tests: a pass now)
+			let at0 = 0;
+			JGP.ufoNow = () => me.active || fly || launch(at0);
 			L.push((tt, dt) => {
 				if (null === t0) t0 = tt;
-				const now = tt - t0;
+				const now = (at0 = tt - t0);
 				// never during the Event: a pass under way leaves at once, and the next waits a while after it
 				if (me.active) return void (fly && ((fly = null), (ufo.visible = !1)), (next = Math.max(next, now + 60)));
 				if (!fly) {
@@ -15683,7 +16124,7 @@ const JGP = (() => {
 		buildGarden,
 		beginPlanting,
 		plantTick,
-		plantRow,
+		plantShow,
 		noPlant,
 		plantMove,
 		danceMove,
@@ -15879,10 +16320,8 @@ if (
 							C.add(o),
 							E.add(0, 0, JGP.GARDEN_R + 1, "campfire");
 						JGP.buildGarden(o),
-							// the plant test row on the east side
-							JGP.plantRow(),
 							// the Summoning Stone in the centre starts the Event (once it is yours: the Summoning
-							// Stone quest's reward, owned from the start for testing)
+							// Stone quest's reward)
 							F.add(0, 0, 1.15),
 							z.add({
 								id: "campfire",
@@ -16077,7 +16516,6 @@ if (
 								r: 3.4,
 								solidR: 1.9,
 								waypointR: 3.8,
-								markerTop: () => (st.group ? st.group.getWorldPosition(new c()) : { y: 1 }).y + st.height + 0.5,
 								label: () => (st.away() ? null : "Talk to " + i.name),
 								run: () => {
 									st.away() || LIB.talk();
@@ -16196,8 +16634,9 @@ if (
 								solidR: 0.3,
 								waypointR: 2.2,
 								label: () => (me.active ? null : s.phoneLabel),
+								// (until MUSHROOM has had a Blossom, it rings and no one answers)
 								run: () => {
-									me.active || ((h = 0), G.textTick && G.textTick(), ue.call());
+									me.active || (Kt.phone ? ((h = 0), G.textTick && G.textTick(), ue.call()) : qt.open("PHONE", "#d8352e", s.busy));
 								},
 							});
 					})(-7.2, 23.9),
@@ -16223,6 +16662,8 @@ if (
 							// while FORTIZMO plays at the Event, everyone round the garden dances
 							// (the tune of this Event: an earlier Event's tag still sounding at a restart is not it)
 							music = me.active && ee.playing && bt.live && "playing" === gcHorn.phase;
+						// (the church's slug, not one of the creatures, follows it lying where it is)
+						JGP.eventMove = music ? "dance" : o ? "plant" : null;
 						for (const t of It.all) {
 							// (the pizza courier never dances or plants, and is not kept after she leaves)
 							if ("courier" === t.kind) continue;

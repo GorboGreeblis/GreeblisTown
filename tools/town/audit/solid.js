@@ -21,7 +21,7 @@ module.exports = async (p, out) => {
   const tests = [['church', [0, -24], [0, 12]], ['church', [-9, -8], [9, -8]], ['post', [0, -5], [0, 6]], ['shop', [0, -5], [1, 6]], ['juice', [-5, 0], [3, 0]]];
   for (const [bn, a, b] of tests) {
     const res = await p.evaluate(([bn, a, b]) => {
-      const B = F.buildings.find(q => q.name === bn), e = It.byId.m_glyph || It.all.find(q => q.def && q.def.name === 'GLYPH');
+      const B = F.buildings.find(q => q.name === bn), e = It.byId.p_glyph;
       const [ax, az] = F.world(B, a[0], a[1]), [bx, bz] = F.world(B, b[0], b[1]);
       e.group.position.set(ax, 0, az); e.busy = null;
       Be(e, bx, bz, performance.now() / 1e3); window.__tgt = [bx, bz]; window.__e = e; window.__maxIn = 0;

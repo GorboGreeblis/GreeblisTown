@@ -19,7 +19,7 @@ module.exports = async (p) => {
     await W(600); await p.screenshot({ path: shots + '_' + i + '.png' }); await p.evaluate(() => clearInterval(__lock));
   }
   // the Event: she gets up and floats to the garden
-  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   for (let k = 0; k < 6; k++) { await W(1500); log('Event', JSON.stringify(await low())); }
   log('err', await p.evaluate(() => Re.errors));
 };

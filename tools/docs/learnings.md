@@ -482,8 +482,8 @@ The old tools went with their repos unless a Town path is given.
 Checked against `index.html` (about 1.1 MB, readable) and `tools/` on 11 Oct 2026.
 
 1. **[Worth bringing to Town] Pack it:** minify, then the Woods coder, with the round trip checked every build.
-2. **[Worth bringing to Town] `/*<dbg>*/` markers, stripped and asserted** (Woods), for test hooks such as
-   `TEST_QUESTS` (see the release steps in the [tools README](../README.md#the-final-pass-release-minify-pack)).
+2. **[Worth bringing to Town] `/*<dbg>*/` markers, stripped and asserted** (Woods), for test hooks (such as
+   the testing head start, `TEST_QUESTS`, since removed).
 3. **[Worth bringing to Town] Detect a VR-blocked frame up front and link out.** Town only shows text after
    `requestSession` fails. Woods (`gcXrAllowed`, `gcXrLink`) asks `document.permissionsPolicy.allowsFeature("xr-spatial-tracking")` before the
    player tries, says so on the start screen and rewrites `/preview/` to `/content/` as a link (case-insensitively);
