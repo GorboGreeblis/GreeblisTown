@@ -8218,13 +8218,17 @@ const JGP = (() => {
 		// a little gold envelope for a badge
 		const cap = new THREE.Group();
 		(cap.position.y = 0.7), (cap.rotation.x = -0.08), puff.add(cap);
+		// (the crown's top, the piping and the badge's flap meet the parts under them in the same surface:
+		// each is drawn a hair nearer in depth (a polygon offset, no change to its shape), so they never flicker)
 		const navy = KIT.surf("felt", "#2a3a6a", { rep: 2, bump: 0.02, shine: 15 }),
+			ahead = (m) => Object.assign(m.clone(), { polygonOffset: !0, polygonOffsetFactor: -1, polygonOffsetUnits: -4 }),
 			blackM = x.clay("#141418", { shininess: 90, specular: 8947848 }),
-			goldM = x.clay("#e8b830", { shininess: 90, specular: 16777215 });
+			goldM = x.clay("#e8b830", { shininess: 90, specular: 16777215 }),
+			pipe = ahead(x.clay("#f6f4ee"));
 		R(T.cyl(0.5, 0.48, 0.22, 28), x.clay("#1e2440", { shininess: 30 }), cap, [0, 0.07, 0]);
-		R(T.cyl(0.6, 0.5, 0.2, 28), navy, cap, [0, 0.27, 0]), R(T.cyl(0.6, 0.6, 0.05, 28), navy, cap, [0, 0.39, 0]);
-		R(T.torus(0.6, 0.018, 6, 32), x.clay("#f6f4ee"), cap, [0, 0.37, 0], [Math.PI / 2, 0, 0]);
-		R(T.torus(0.495, 0.015, 6, 32), x.clay("#f6f4ee"), cap, [0, 0.17, 0], [Math.PI / 2, 0, 0]);
+		R(T.cyl(0.6, 0.5, 0.2, 28), navy, cap, [0, 0.27, 0]), R(T.cyl(0.6, 0.6, 0.05, 28), ahead(navy), cap, [0, 0.39, 0]);
+		R(T.torus(0.6, 0.018, 6, 32), pipe, cap, [0, 0.37, 0], [Math.PI / 2, 0, 0]);
+		R(T.torus(0.495, 0.015, 6, 32), pipe, cap, [0, 0.17, 0], [Math.PI / 2, 0, 0]);
 		// (the visor is a thin solid half-disc, so it shows from every side, above and below)
 		R(new THREE.CylinderGeometry(0.5, 0.5, 0.03, 24, 1, !1, -Math.PI / 2, Math.PI), blackM, cap, [0, 0.0, 0.42], [0.38, 0, 0], [1, 1, 0.75]);
 		R(T.box(0.62, 0.035, 0.03), blackM, cap, [0, 0.0, 0.48], [0, 0, 0]);
@@ -8235,7 +8239,7 @@ const JGP = (() => {
 		R(T.box(0.2, 0.13, 0.024), goldM, badge);
 		const flap = new THREE.Shape([new THREE.Vector2(-0.1, 0.065), new THREE.Vector2(0.1, 0.065), new THREE.Vector2(0, -0.012)]),
 			fold = x.clay("#c8962a", { shininess: 70, specular: 16777215 });
-		R(new THREE.ExtrudeGeometry(flap, { depth: 0.008, bevelEnabled: !1 }), goldM, badge, [0, 0, 0.012]);
+		R(new THREE.ExtrudeGeometry(flap, { depth: 0.008, bevelEnabled: !1 }), ahead(goldM), badge, [0, 0, 0.012]);
 		[-1, 1].forEach((sx) => {
 			R(T.box(0.112, 0.007, 0.006), fold, badge, [0.05 * sx, 0.027, 0.022], [0, 0, 0.66 * sx]);
 			R(T.box(0.1, 0.007, 0.004), fold, badge, [0.052 * sx, -0.038, 0.014], [0, 0, -0.5 * sx]);
@@ -10567,6 +10571,101 @@ const JGP = (() => {
 		G.done(o);
 	}
 
+	// NO Z-FIGHTING IN MERGED SCENERY (Greeblis Park's load-time fix): given the parts of a merge ({geo, matrix},
+	// world or merge space), every part's flat faces are grouped by plane; wherever two parts have faces in
+	// the same plane (within 4 mm) overlapping by more than a centimetre each way, the smaller part moves.
+	// Faces looking the same way (a sign, a window or a mat lying on a wall or a pavement, a cubby's back on
+	// its frame) both show, so the smaller one stands 8 mm proud of the bigger; faces pressed back to back
+	// (a box standing on another) are hidden, and the smaller one sinks 1 cm into the bigger. Up to three
+	// passes, as moving one part can bring it onto another. Used on the town's bins and every goods() merge
+	// (the kiosks, the Library, the Juice Bar, the drum kit); never on a creature.
+	function unfightParts(all) {
+		const t0 = performance.now(),
+			V3 = THREE.Vector3,
+			a = new V3(),
+			b2 = new V3(),
+			c = new V3(),
+			n = new V3(),
+			e1 = new V3(),
+			e2 = new V3(),
+			// a part's flat faces, grouped by plane in world space; kept until the part moves. Planes are keyed by
+			// number: the normal in 1/40ths (folded to one side, with which side kept apart) and the offset in 5 mm steps
+			cache = new Map(),
+			planesOf = (pt) => {
+				let got = cache.get(pt);
+				if (got) return got;
+				const P = pt.geo.attributes.position,
+					I = pt.geo.index,
+					cnt = I ? I.count : P.count,
+					m = pt.matrix,
+					out = new Map();
+				if (cnt > 3000) return cache.set(pt, []), [];
+				for (let k = 0; k < cnt; k += 3) {
+					a.fromBufferAttribute(P, I ? I.getX(k) : k).applyMatrix4(m);
+					b2.fromBufferAttribute(P, I ? I.getX(k + 1) : k + 1).applyMatrix4(m);
+					c.fromBufferAttribute(P, I ? I.getX(k + 2) : k + 2).applyMatrix4(m);
+					n.crossVectors(e1.subVectors(b2, a), e2.subVectors(c, a));
+					const ar = n.length() / 2;
+					if (ar < 2e-4) continue;
+					n.normalize();
+					const ax = Math.abs(n.x) >= Math.abs(n.y) && Math.abs(n.x) >= Math.abs(n.z) ? n.x : Math.abs(n.y) >= Math.abs(n.z) ? n.y : n.z,
+						sg = ax < 0 ? -1 : 1,
+						d = sg * n.dot(a),
+						key = ((Math.round(sg * n.x * 40) + 40) * 81 + Math.round(sg * n.y * 40) + 40) * 81 + Math.round(sg * n.z * 40) + 40,
+						id = (key * 2 + (sg > 0 ? 1 : 0)) * 4e6 + Math.round(d * 200) + 2e6;
+					let pl = out.get(id);
+					if (!pl) {
+						const cn = n.clone().multiplyScalar(sg),
+							u = (Math.abs(cn.y) < 0.9 ? new V3(0, 1, 0) : new V3(1, 0, 0)).cross(cn).normalize();
+						out.set(id, (pl = { key, d, n: n.clone(), area: 0, u, v: cn.clone().cross(u), r: [1e9, -1e9, 1e9, -1e9], pt }));
+					}
+					pl.area += ar;
+					for (let j = 0; j < 3; j++) {
+						const q = j ? (j > 1 ? c : b2) : a,
+							qu = q.dot(pl.u),
+							qv = q.dot(pl.v);
+						qu < pl.r[0] && (pl.r[0] = qu), qu > pl.r[1] && (pl.r[1] = qu), qv < pl.r[2] && (pl.r[2] = qv), qv > pl.r[3] && (pl.r[3] = qv);
+					}
+				}
+				got = [];
+				out.forEach((p0) => p0.area > 0.002 && got.push(p0));
+				return cache.set(pt, got), got;
+			},
+			size = (pt) => (pt.geo.boundingSphere || pt.geo.computeBoundingSphere(), pt.geo.boundingSphere.radius * pt.matrix.getMaxScaleOnAxis());
+		for (let pass = 0; pass < 3; pass++) {
+			// (buckets: the plane's normal and its offset in 5 mm steps; each is checked against itself and the next)
+			const byKey = new Map();
+			for (const pt of all)
+				for (const pl of planesOf(pt)) {
+					const k = pl.key * 4e6 + Math.round(pl.d * 200) + 2e6;
+					(byKey.get(k) || byKey.set(k, []).get(k)).push(pl);
+				}
+			const moved = new Set();
+			let n0 = 0;
+			byKey.forEach((list, k) => {
+				const nx = byKey.get(k + 1);
+				for (let i = 0; i < list.length; i++) {
+					const p0 = list[i];
+					for (let j = i + 1, L2 = list.length + (nx ? nx.length : 0); j < L2; j++) {
+						const q = j < list.length ? list[j] : nx[j - list.length];
+						if (p0.pt === q.pt || moved.has(p0.pt) || moved.has(q.pt) || Math.abs(p0.d - q.d) > 0.004) continue;
+						if (Math.min(p0.r[1], q.r[1]) - Math.max(p0.r[0], q.r[0]) < 0.01 || Math.min(p0.r[3], q.r[3]) - Math.max(p0.r[2], q.r[2]) < 0.01) continue;
+						const [big, small] = size(p0.pt) >= size(q.pt) ? [p0, q] : [q, p0],
+							step = big.n.dot(small.n) > 0 ? 0.008 : -0.01;
+						small.pt.matrix = small.pt.matrix.clone();
+						const el = small.pt.matrix.elements;
+						(el[12] += big.n.x * step), (el[13] += big.n.y * step), (el[14] += big.n.z * step);
+						cache.delete(small.pt), moved.add(small.pt), n0++;
+					}
+				}
+			});
+			unfightParts.moved = (unfightParts.moved || 0) + n0;
+			if (!n0) break;
+		}
+		// (how many parts it moved, and how long it has taken in all: for the tests)
+		unfightParts.ms = (unfightParts.ms || 0) + performance.now() - t0;
+	}
+
 	// small goods are collected per kiosk and merged into one vertex-coloured mesh
 	const goods = () => {
 		const list = [],
@@ -10577,7 +10676,7 @@ const JGP = (() => {
 			m,
 			add: (geo, color, mat) => list.push({ geo, color, matrix: mat }),
 			box: (color, px, py, pz, w, h, d, rx = 0, ry = 0, rz = 0) => list.push({ geo: UBX, color, matrix: m(px, py, pz, rx, ry, rz, w, h, d) }),
-			done: (o) => list.length && R(v(list), V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })), o),
+			done: (o) => list.length && (unfightParts(list), R(v(list), V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })), o)),
 		};
 	};
 	const capGeo = new THREE.SphereGeometry(1, 16, 8, 0, l, 0, Math.PI / 2),
@@ -15367,6 +15466,67 @@ const JGP = (() => {
 				return y;
 			};
 		}
+		// THE HEAD GUARD (VR): the body can't walk into anything solid, but a head can lean into it, and
+		// seeing the inside of a wall or a bookcase is disorienting. So when the headset comes within 20 cm of
+		// a solid structure the view darkens, and it is fully black from 8 cm (the near plane is at 15 cm);
+		// it clears again as the head comes back out. Solids: every building's parts (in its own frame, each
+		// as tall as what stands there) and the round colliders (the Summoning Stone, the portal's pillars).
+		{
+			// how tall each part is ([part index] → top, by building), and how far in a rough-edged one starts
+			const TOPS = {
+					post: [4.6, 4.6, 4.6, 1.2, 1, 1, 2.6],
+					sheriff: [4.6, 4.6, 4.6, 1.2, 1, 1],
+					garden: [4.6, 4.6, 4.6, 1.2, 1, 1],
+					shop: [2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 0.85, 4.3, 4.3],
+					church: [8, 14, 0.8],
+					juice: [1.15, 1.15, 3],
+				},
+				INSET = { post: [0, 0, 0, 0, 0, 0, 0.5] },
+				blk = new THREE.Mesh(
+					new THREE.SphereGeometry(0.25, 12, 8),
+					new THREE.MeshBasicMaterial({ color: 0, side: THREE.BackSide, transparent: !0, opacity: 0, depthTest: !1, depthWrite: !1, fog: !1 }),
+				);
+			(blk.renderOrder = 10010), (blk.frustumCulled = !1), (blk.visible = !1), (blk.userData.xrUI = !0), B.add(blk);
+			// signed distance from (x, y, z) to the nearest solid: positive outside, negative inside
+			const sdist = (x, y, z) => {
+				let best = 9;
+				for (const Bd of F.buildings) {
+					const [lx, lz] = F.local(Bd, x, z),
+						tops = TOPS[Bd.name] || [],
+						ins = INSET[Bd.name] || [];
+					Bd.parts.forEach((P0, k) => {
+						const m = ins[k] || 0,
+							x0 = P0[0] + m,
+							z0 = P0[1] + m,
+							x1 = P0[2] - m,
+							z1 = P0[3] - m,
+							top = tops[k] || 3,
+							dx = Math.max(x0 - lx, 0, lx - x1),
+							dz = Math.max(z0 - lz, 0, lz - z1),
+							dy = Math.max(y - top, 0);
+						best = Math.min(best, dx || dz || dy ? Math.hypot(dx, dy, dz) : -Math.min(lx - x0, x1 - lx, lz - z0, z1 - lz, top - y));
+					});
+				}
+				for (const f of F.list) {
+					if (f.keep || f.r > 2) continue; // (the test plants and the pond are not solid at head height)
+					const dh = Math.hypot(x - f.x, z - f.z) - 0.55 * f.r,
+						dy = Math.max(y - 3, 0);
+					best = Math.min(best, dh > 0 || dy > 0 ? Math.hypot(Math.max(dh, 0), dy) : dh);
+				}
+				return best;
+			};
+			let dark = 0;
+			// (at: a head position to test with, outside VR; tools/test/t_headguard.js)
+			JGP.headGuard = { sdist, level: () => dark, at: null };
+			L.push((tt, dt) => {
+				dt = dt || 0.016;
+				const H0 = JGP.headGuard.at || (we.presenting && we.headPos);
+				const want = H0 ? Math.max(0, Math.min(1, (0.2 - sdist(H0.x, H0.y, H0.z)) / 0.12)) : 0;
+				// (in at once, out over a fifth of a second)
+				dark = want > dark ? want : Math.max(want, dark - 5 * dt);
+				(blk.visible = dark > 0.01), (blk.material.opacity = dark);
+			});
+		}
 		for (let k = 0; k < 1750 * LOD; k++) {
 			const X = rr(-37.5, 37.5),
 				Z = rr(-37.5, 37.5 + ZS);
@@ -15384,6 +15544,12 @@ const JGP = (() => {
 					Z = pt.matrix.elements[14] - ZS / 2;
 				return Math.max(Math.abs(X), Math.abs(Z)) < 46 ? "q" + (X < 0 ? 0 : 1) + (Z < 0 ? 0 : 1) : "s" + (Math.floor(((Math.atan2(Z, X) + Math.PI) / l) * 8) % 8);
 			};
+		{
+			const all = [];
+			for (const key in bins) for (const pt of bins[key]) all.push(pt);
+			// (no z-fighting: see unfightParts)
+			unfightParts(all);
+		}
 		for (const key in bins) {
 			if (!bins[key].length) continue;
 			if (triCount(bins[key]) < 12e3) {
@@ -15503,6 +15669,8 @@ const JGP = (() => {
 	}
 
 	return {
+		// (the load-time z-fight fix: stats in unfightParts.moved / .ms)
+		unfightParts,
 		GARDEN_R,
 		GATHER_S,
 		garden,

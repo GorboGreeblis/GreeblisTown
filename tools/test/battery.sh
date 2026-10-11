@@ -19,4 +19,9 @@ echo "== walking soak"; NOSHOT=1 timeout 600 node shot2.js $U x.png ./soak.js 2>
 echo "== King Dino's jazz"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_jazz.js 2>&1 | grep -v "^$" | tail -14 | cut -c1-300
 echo "== Somlet asleep on her side"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_somlet.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
 echo "== roamers (short; ROAM_S/TRAP_S longer for a full check)"; VW=320 VH=240 ROAM_S=40 TRAP_S=40 NOSHOT=1 timeout 1800 node shot2.js $U x.png ./t_roam.js 2>&1 | grep -v "^$" | tail -17 | cut -c1-300
+echo "== plant test row"; VW=320 VH=240 NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_plants.js 2>&1 | grep -v "^$" | tail -6 | cut -c1-300
+echo "== the avatar's walk (test modes)"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_avatar.js 2>&1 | grep -v "^$" | tail -2
+echo "== VR head guard"; VW=320 VH=240 NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_headguard.js 2>&1 | grep -v "^$" | tail -10
+echo "== Sparkakus browsing"; VW=320 VH=240 NOSHOT=1 timeout 900 node shot2.js $U x.png ./t_library.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-300
+echo "== z-fighting (visible clashes; check any with t_zcheck.js)"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_zfight.js 2>&1 | grep -v "^$" | sed -n "1p;\$p"
 echo "== DONE"

@@ -312,6 +312,14 @@ Goo that runs down a body and moves like goo, without clipping:
     specks, her cream chest bow in the middle, a cream fringe at each end. The prints are the Woods 128-pixel
     tiles (same seeds and colours) drawn seamlessly and painted at 0.6 scale. It is a 4 cm slab with its top
     at 3 cm (1 cm over a walk, 5 cm over the lawn) and is part of `JGP.groundAt`; Sparkakus stands on it.
+- **Plant test row (testing the Garden Event's plant designs):** five placeholder plants, one of each kind in
+  `PLANT_KINDS` (a red tulip, a daisy, a lupin spike, arching pink bells, a marigold bush), drawn at `PLANT_SIZE`
+  2.4 so they stand out, each on a soil mound along the east side where the old line-up stood (x 34, every
+  5.77 m). Each is a station whose Talk line says which plant it is (testing only). The Garden Event grows these
+  same kinds, picked at random per plant. Leaves stay 0.26 m up so they clear a garden row's ridge.
+- **The avatar in the test modes:** `dkAnim` strides her legs, swings her arms against them (held 0.21 rad out so
+  the hands clear the skirt), bobs her on each step, sways the skirt and bounces the pigtails a beat behind; still,
+  she breathes, glances about and blinks. Desktop and mobile only (VR has no body to see).
 - **Ancient Artifacts (placeholder):** for now three pickups hidden round town. In the final game each of the
   three Dancers gives one unique artifact for winning a Dance battle, and the player must hold all three to
   complete that part of the quest and move on.
@@ -409,6 +417,24 @@ plane.
 - **Z-fighting:** any two faces in one plane flicker; offset them by 1 cm or more. That includes faces seen only
   from inside a building, because double-sided bins show both sides of a wall.
 - **Single-sided planes** disappear from behind. Use thin boxes or double-sided materials.
+- **Merged scenery fixes itself at load:** `unfightParts()` (Greeblis Park's fix) runs on the town's bins and every
+  `goods()` merge (kiosks, Library, Juice Bar, drum kit) before they are merged. Wherever two parts' faces share a
+  plane (within 4 mm, overlapping over 1 cm each way), the smaller part moves: 8 mm proud when both faces look
+  the same way (a sign, window or mat on a wall or pavement, the cubbies' back on their frame), 1 cm into the
+  bigger part when they press back to back. It moved about 5,900 parts and costs about 0.5 s at load (stats in
+  `JGP.unfightParts.moved` / `.ms`). It is never run on a creature.
+- **Locked creatures:** where a final model's own parts share a surface (Somlet's cap: the crown's top, the white
+  piping, the badge's flap), give the overlay a cloned material with `polygonOffset` (factor −1, units −4). The
+  depth changes, the shape does not.
+- **Finding it:** `test/t_zfight.js` lists coplanar overlaps that the player's eyes can see, and `test/t_zcheck.js`
+  shows which of those really flicker (the near plane nudged with nothing moving: changed pixels are fights).
+  Moving the camera instead, even by millimetres, reports fine textures as flicker; and an eye straight below a
+  point makes `lookAt` spin.
+- **The head guard (VR):** a head can lean into what the body can't walk into. `JGP.headGuard` darkens the view from
+  20 cm off any solid structure (building parts with their real heights, the portal's pillars, the Summoning Stone)
+  to fully black at 8 cm, and clears as the head comes out.
+- **The sky dome must fit inside the far plane** (`0.85 · t.far`), or its middle is cut away and a pale disc turns
+  with the view.
 
 ## Checking the work
 
