@@ -18,7 +18,7 @@ module.exports = async (p) => {
   { const vs = p.viewportSize(); await p.mouse.click(vs.width / 2, vs.height / 2); } await W(2500);
   // ---- 1. views
   const views = await p.evaluate(() => {
-    const SPOTS = { spawn: [0, 20, Math.PI], garden_edge: [0, 17, Math.PI], dance_floor: [-28, 10, Math.PI / 2], library: [-18, -18, -3 * Math.PI / 4], post_office: [18, -18, 3 * Math.PI / 4], plant_row: [30, 0, -Math.PI / 2], south_gate: [0, 45, 0], juice_bar: [-30, -2, Math.PI / 2] };
+    const SPOTS = { spawn: [0, 2, Math.PI], garden_edge: [0, 17, Math.PI], dance_floor: [-28, 10, Math.PI / 2], library: [-18, -18, -3 * Math.PI / 4], post_office: [18, -18, 3 * Math.PI / 4], plant_row: [30, 0, -Math.PI / 2], south_gate: [0, 45, 0], juice_bar: [-30, -2, Math.PI / 2] };
     const cam = new THREE.PerspectiveCamera(100, 1, 0.15, B.far), out = {}, info = O.info;
     // who a mesh belongs to: a creature, a named part (the town's bins), the building or station it stands in,
     // the garden, or else where it is
@@ -58,11 +58,23 @@ module.exports = async (p) => {
       const where = new Map(); per.forEach(([n, w]) => w.startsWith('at ') && where.set(w, (where.get(w) || 0) + 1));
       out[name] = { calls, tris, meshesInView: per.length, top: per.slice(0, 5).map(([n, w]) => `${w} ${n}`).join(' | '), by: [...by.entries()].sort((a, b) => b[1][0] - a[1][0]).slice(0, 14).map(([g, [m, t]]) => `${g} ${m}d/${(t / 1e3).toFixed(1)}k`).join(', '), where: [...where.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([w, k]) => `${w.slice(3)}:${k}`).join(' ') };
     }
+    // the whole scene by owner: drawable meshes (each one draw when in view) and triangles
+    const all = new Map();
+    C.traverse((o) => {
+      if (!o.isMesh || !o.visible || !o.geometry || !o.geometry.attributes.position) return;
+      for (let a = o.parent; a; a = a.parent) if (!a.visible) return;
+      o.geometry.boundingSphere || o.geometry.computeBoundingSphere();
+      const c = o.geometry.boundingSphere.center.clone().applyMatrix4(o.matrixWorld), w = ownerOf(o, c), g = w.startsWith('at ') ? 'elsewhere' : w.replace(/_[sq]\d+$/, ''), r = all.get(g) || [0, 0];
+      r[0] += Array.isArray(o.material) ? o.material.length : 1; r[1] += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3 * (o.isInstancedMesh ? o.count : 1);
+      all.set(g, r);
+    });
+    out.__scene = [...all.entries()].sort((a, b) => b[1][1] - a[1][1]).slice(0, 30).map(([g, [m, t]]) => `${g} ${m}m/${(t / 1e3).toFixed(1)}k`).join(', ');
     info.autoReset = !0; O.setSize(innerWidth, innerHeight);
     let meshes = 0, mats = new Set(); C.traverse((o) => { if (o.isMesh) { meshes++; (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => mats.add(m)); } });
     return { views: out, programs: info.programs.length, textures: info.memory.textures, geometries: info.memory.geometries, meshes, materials: mats.size };
   });
   log('== views (max over 4 headings; draw calls / triangles; the draws of the forward view itemised)');
+  log('== the whole scene by owner (meshes/triangles), top 30: ' + views.views.__scene); delete views.views.__scene;
   for (const [k, v] of Object.entries(views.views)) log(`  ${k.padEnd(12)} ${String(v.calls).padStart(4)} draws ${String(v.tris).padStart(8)} tris ${String(v.meshesInView).padStart(4)} meshes   biggest: ${v.top}\n      draws by owner (draws/triangles): ${v.by}\n      'elsewhere' draws at: ${v.where}`);
   log(`== totals: programs ${views.programs}, textures ${views.textures}, geometries ${views.geometries}, meshes ${views.meshes}, materials ${views.materials}`);
   // ---- 2 and 3: CPU and allocations per frame. Headless rendering runs in another process, so left to itself the

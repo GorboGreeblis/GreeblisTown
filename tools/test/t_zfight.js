@@ -21,7 +21,9 @@ module.exports = async (p) => {
       const own = owner(o); if (own && !CRE) return;
       const pid = parts.length;
       parts.push({ name: o.name || '', col: mt.color ? '#' + mt.color.getHexString() : '?', own: own || (o.userData && o.userData.bld) || '', ds: mt.side === THREE.DoubleSide, ro: o.renderOrder, tr: !!mt.transparent });
-      const P = o.geometry.attributes.position, I = o.geometry.index;
+      const P = o.geometry.attributes.position, I = o.geometry.index, VC = o.geometry.attributes.color;
+      // (a merge's parts differ only by vertex colour: each triangle is named by its own, tinted by the material's)
+      const hex = (i) => '#' + [0, 1, 2].map((j) => Math.round(255 * Math.min(1, VC.array[i * VC.itemSize + j] * (mt.color ? mt.color.toArray()[j] : 1))).toString(16).padStart(2, '0')).join('');
       const n = I ? I.count : P.count, inst = o.isInstancedMesh ? o.count : 1;
       for (let k = 0; k < inst; k++) {
         if (o.isInstancedMesh) { o.getMatrixAt(k, mi); m4.multiplyMatrices(o.matrixWorld, mi); } else m4.copy(o.matrixWorld);
@@ -30,7 +32,7 @@ module.exports = async (p) => {
           const A = new V().fromBufferAttribute(P, ia).applyMatrix4(m4), B = new V().fromBufferAttribute(P, ib).applyMatrix4(m4), Cc = new V().fromBufferAttribute(P, ic).applyMatrix4(m4);
           const nn = new V().subVectors(B, A).cross(new V().subVectors(Cc, A)); const ar = nn.length() / 2; if (ar < 2e-5) continue;
           nn.normalize();
-          tris.push({ A, B, C: Cc, n: nn, d: nn.dot(A), pid });
+          tris.push({ A, B, C: Cc, n: nn, d: nn.dot(A), pid, col: VC ? hex(ia) : parts[pid].col });
         }
       }
     });
@@ -38,7 +40,8 @@ module.exports = async (p) => {
     const key = (n, s) => [Math.round(n.x * s * 20), Math.round(n.y * s * 20), Math.round(n.z * s * 20)].join(',');
     const buckets = new Map();
     for (const t of tris) {
-      const s = t.n.x < -1e-6 || (Math.abs(t.n.x) <= 1e-6 && (t.n.y < -1e-6 || (Math.abs(t.n.y) <= 1e-6 && t.n.z < 0))) ? -1 : 1;
+      // (folded by the normal's largest component: a flat face's x and z are float noise either side of 0)
+      const ax = Math.abs(t.n.x), ay = Math.abs(t.n.y), az = Math.abs(t.n.z), s = (ax >= ay && ax >= az ? t.n.x : ay >= az ? t.n.y : t.n.z) < 0 ? -1 : 1;
       t.s = s; t.k = key(t.n, s); t.dq = Math.floor((s * t.d) / TOL);
       const kk = t.k + '|' + t.dq; (buckets.get(kk) || buckets.set(kk, []).get(kk)).push(t);
     }
@@ -89,7 +92,9 @@ module.exports = async (p) => {
             const cr = clip(T1.uv, T2.uv), ov = cr.a;
             if (ov < MINA) continue;
             const pa = parts[T1.pid], pb = parts[T2.pid];
-            const name = [pa.col + ' ' + pa.name + (pa.own ? ' (' + pa.own + ')' : ''), pb.col + ' ' + pb.name + (pb.own ? ' (' + pb.own + ')' : '')].sort().join('  x  ');
+            // (unnamed scenery is told apart by where it is, to the nearest 4 m)
+            const at4 = pa.name || pa.own ? '' : ` near ${Math.round(T1.A.x / 4) * 4},${Math.round(T1.A.z / 4) * 4}`;
+            const name = [T1.col + ' ' + pa.name + (pa.own ? ' (' + pa.own + ')' : ''), T2.col + ' ' + pb.name + (pb.own ? ' (' + pb.own + ')' : '')].sort().join('  x  ') + at4;
             const c = clashes.get(name) || { n: 0, area: 0, at: null, gap: 1 };
             c.n++, (c.area += ov), (c.gap = Math.min(c.gap, Math.abs(T1.s * T1.d - T2.s * T2.d)));
             c.at || (c.at = T1.A.toArray().map((x) => +x.toFixed(2)));
