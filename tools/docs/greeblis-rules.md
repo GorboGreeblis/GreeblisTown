@@ -1,32 +1,33 @@
-# Greeblis games: standing rules for Claude
+# Greeblis Town USA: standing rules for Claude
 
-This private repo holds the guides, tools and readable game sources for the Greeblis VR games
-(GreeblisPark, GreeblisWoods, GreeblisCity, JurassicGreeblisPark, ...). Everything is divided by game: each game
-has its own folder under `guides/`, `games/` and `tools/` (see below). Read the guides before building or
-changing a game.
+Greeblis Town USA is the one Greeblis game being worked on, and this repo (GreeblisTown) is the only repo: the
+game is `index.html`, and everything used to make it (tools, guides, notes) is in `tools/`. The earlier games
+(Greeblis City, Park and Woods) and the GreeblisGuides repo are gone; what was worth keeping from them is in
+[`learnings.md`](learnings.md). Read the guides here before changing the game.
 
-## Rules (from the owner, apply to every game)
+## Rules (from the owner)
 
-1. **Every game must be fully playable as a Bitcoin ordinal.** A game is one self-contained `index.html`:
-   no external URLs, network requests, storage APIs, `eval` or `new Function`. It must boot under ord's
+1. **The game must be fully playable as a Bitcoin ordinal.** It is one self-contained `index.html`: no external
+   URLs, network requests, storage APIs, `eval` or `new Function`. It must boot under ord's
    Content-Security-Policy, both opened directly (`/content/<id>`) and inside a sandboxed `allow-scripts`
-   iframe. Keep it under ~400 KB. Run the ord test (for example
-   `tools/greeblis-city/test/ordtest.js`) before every push.
-2. **Only `index.html` is pushed to a game repo.** Tools, sources and notes live here, in GreeblisGuides.
+   iframe. Keep it under ~400 KB. Run the ord test (`tools/test/ordtest.js`, desktop and `MOBILE=1`) before every
+   push.
+2. **The game is `index.html`; everything else lives in `tools/`.** Tools, guides and notes go in `tools/`, never
+   anywhere else.
 3. **Never cut content to save size or time.** Size and speed come from minifying, packing and smarter code.
-4. **Always default to the smallest file**, even when it unpacks more slowly (see `guides/greeblis-city/ordinal-packing.md`
-   and `guides/greeblis-woods/ordinal-packing.md`).
+4. **Always default to the smallest file**, even when it unpacks more slowly (see the packing recipes in
+   [`learnings.md`](learnings.md)).
 5. **Creature models and their characteristics are protected.** Never simplify a creature's shape, palette,
-   signature parts or personality without asking first (see each game's `construction.md`).
+   signature parts or personality without asking first (see [`construction.md`](construction.md)).
 6. Commit and push to the branch you are given. Open a PR when asked. If the previous PR is merged, restart
    the branch from `main`.
-7. **Write down how every game's creatures and environments were built**, as guides here (a folder per game
-   under `guides/<game>/`, with its `construction.md` and per-creature profiles), so the next game starts from them. Creature models and their characteristics are the
-   most important part of these games.
-8. **Tools count as documentation.** Every tool created and needed to make a game (build, pack, extract,
+7. **Write down how the game's creatures and environments were built** in [`construction.md`](construction.md)
+   and the per-creature [`creature-profiles.md`](creature-profiles.md). Creature models and their characteristics
+   are the most important part of the game.
+8. **Tools count as documentation.** Every tool created and needed to make the game (build, pack, extract,
    decode, test, review, audit, analysis, porting, lint and editing scripts, configs and dev test modes) goes into
-   this repo under `tools/<game>/`, with a README saying what each one does and how to run it. Don't leave tools
-   only in a scratch folder.
+   `tools/`, with a README saying what each one does and how to run it. Don't leave tools only in a scratch
+   folder.
 
 ## Creature and art rules (from the owner)
 
@@ -41,37 +42,14 @@ changing a game.
 
 ## Where things are
 
-Each game's files live in its own kebab-case folders: `guides/<game>/`, `games/<game>/` (readable source) and
-`tools/<game>/` (build, pack and test scripts). Keep new work inside your game's folders so sessions working on
-different games never edit the same file; in this file and `README.md`, only add or edit your own game's rows.
-
-| Game | Path | What |
-| --- | --- | --- |
-| Greeblis City | `guides/greeblis-city/construction.md` | How creatures and environments are built, budgets and pitfalls |
-| Greeblis City | `guides/greeblis-city/creature-profiles.md` | Per-creature modelling notes for every Greeblis City creature |
-| Greeblis City | `guides/greeblis-city/ordinal-packing.md` | How the game is minified, compressed with Roadroller and packed into a playable ordinal, and the push checklist |
-| Greeblis City | `games/greeblis-city/` | Readable source (`app.js`), page template and the tuned packer options |
-| Greeblis City | `tools/greeblis-city/build/` | Build script (template + source -> unpacked game HTML) |
-| Greeblis City | `tools/greeblis-city/pack/` | Roadroller 8-bit patch, packer, fast decoder, page encoder, browser unpacker, stock-decoder timer |
-| Greeblis City | `tools/greeblis-city/README.md` | What every Greeblis City tool does and how to run it |
-| Greeblis City | `tools/greeblis-city/test/` | Playwright tests: ordinals, playthrough sim and coverage, shaders, vignettes, boot and gate checks, roster stats, pixel compare, benchmarks |
-| Greeblis City | `tools/greeblis-city/review/` | Renders for checking by eye: creature portraits, faces and contact sheets, scenes, vignettes, talk, the z-fighting scan, UI and HTML overflow |
-| Greeblis City | `tools/greeblis-city/lint/` | ESLint config and the dead-method/dead-key finder |
-| Greeblis City | `tools/greeblis-city/dev/` | Third-person desktop/mobile test mode (`testmode.js`) and how to hook it in |
-| Greeblis Park | `guides/greeblis-park/construction.md` | How Greeblis Park's creatures and world are built: roster, behaviour layers, model fixes, merging, checklist |
-| Greeblis Park | `guides/greeblis-park/history.md` | Every PR (#1-#15) and the owner decisions behind them |
-| Greeblis Park | `games/greeblis-park/` | Readable source (`src/`), vignette data and generator, the v17 readable source the models came from |
-| Greeblis Park | `tools/greeblis-park/` | `build.js` (byte-identical rebuild), the v18 port pipeline, size and lint tools, Woods compressor copy and unpacker, emulated-Quest tests, vignette authoring scripts, the old test mode, packing experiments |
-| Greeblis Woods | `guides/greeblis-woods/construction.md` | Construction toolkit, creature pipeline, full creature catalog, behaviour systems, environment, performance lessons |
-| Greeblis Woods | `guides/greeblis-woods/creature-profiles.md` | Per-creature modelling notes for every Greeblis Woods character, with builder line numbers |
-| Greeblis Woods | `guides/greeblis-woods/ordinal-packing.md` | Context-mixing compressor, three.js trimming, 7-bit page encoding, push checklist |
-| Greeblis Woods | `guides/greeblis-woods/history.md` | Every PR (#1-#12) and the owner decisions behind them |
-| Greeblis Woods | `games/greeblis-woods/` | Readable source (`game.js`), page parts, trimmed three.js and its coverage file |
-| Greeblis Woods | `tools/greeblis-woods/` | All Woods tools: build, three.js trimming, CM packer and tuner, tests, performance/size/dead-code analysis, porting, vignette and visual checks, test mode |
-| Greeblis Woods | `guides/greeblis-woods/tools.md` | What every Woods tool does and how to run it |
-| Greeblis Town USA | `guides/greeblis-town-usa/construction.md` | (JurassicGreeblisPark) Creature toolkit, behaviour, town, set pieces, pitfalls |
-| Greeblis Town USA | `guides/greeblis-town-usa/creature-profiles.md` | Per-creature notes for the Greeblis Town USA cast, with each creature's planting move and dance |
-| Greeblis Town USA | `guides/greeblis-town-usa/history.md` | Every PR (#1-#39) and the owner decisions behind them |
-| Greeblis Town USA | `games/greeblis-town-usa/` | Copy of the shipped page (its readable source) and size notes |
-| Greeblis Town USA | `tools/greeblis-town-usa/` | Creature extraction from earlier games, safe decoding of uploads, lint, review renders and contact sheets, audits, size and editing helpers, vignette table |
-| Greeblis Town USA | `tools/greeblis-town-usa/test/` | Playwright runners (desktop, mobile, ordinal sandbox) and scene tests: creatures, quests, Garden Event, church, performance |
+| Path | What |
+| --- | --- |
+| `index.html` | The game |
+| `tools/README.md` | Setup, how to check the game, the game's globals, trimming, packing, lessons |
+| `tools/docs/construction.md` | How creatures and the town are built: toolkit, behaviour, set pieces, pitfalls, no clipping or flicker |
+| `tools/docs/creature-profiles.md` | Per-creature notes for the cast, with each creature's planting move and dance |
+| `tools/docs/history.md` | Every PR and the owner decisions behind it |
+| `tools/docs/learnings.md` | What was learned from Greeblis City, Park and Woods (the only record of them now), with the packing recipes |
+| `tools/test/` | Playwright checks, audits and renders (see the README) |
+| `tools/town/` | Creature extraction, safe decoding of uploads, lint, review renders, audits (see `tools/town/README.md`) |
+| `tools/three/`, `tools/pack/` | three.js trimming, and the minify-and-pack toolchain |

@@ -2,7 +2,7 @@
 // Unpacks a page packed in the Greeblis Woods format (Greeblis Woods, Greeblis Park): reads the
 // 7-bit text in <script type="b">, runs the decoder model embedded in the page itself, and writes
 // the page the loader would document.write(). Also reports whether the page's decoder is the same
-// as tools/greeblis-park/pack/woods-model.js (what woods-pack.js encodes with).
+// as tools/pack/park/woods-model.js (what woods-pack.js encodes with).
 "use strict";
 const fs = require("fs");
 const path = require("path");

@@ -1,8 +1,7 @@
 # Greeblis Town USA: tools
 
-Every tool used to build and check Greeblis Town USA (the JurassicGreeblisPark repo's `index.html`), divided by
-job. The game ships unpacked, so there is no build or pack step yet; see
-[`games/greeblis-town-usa/`](../../games/greeblis-town-usa/README.md) for its size notes.
+The older tools used to build and check Greeblis Town USA (this repo's `index.html`), divided by job. The
+minify-and-pack steps are in the main [tools README](../README.md).
 
 Most scripts read the game's minified globals (`It`, `Re`, `so`, `bt`, `C`, `O`, `B`, `At`, `F`, `JGP`, …). Check
 the names still match before relying on a result. Paths are relative: run Python tools from the folder holding
@@ -20,7 +19,7 @@ the church and performance. See [`test/README.md`](test/README.md).
 ## `extract/`: pulling creatures out of earlier games
 
 How the Greeblis City, Park and Woods creatures were brought in with only the helpers they reach (see "Pulled
-models" in the [construction guide](../../guides/greeblis-town-usa/construction.md)). Needs `acorn` and
+models" in the [construction guide](../docs/construction.md)). Needs `acorn` and
 `eslint-scope` (`npm install acorn eslint-scope`).
 
 The scripts expect a work folder (`JGP_WORK`, default `.`) laid out like this:

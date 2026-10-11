@@ -1,10 +1,9 @@
 # Greeblis Town USA: creature profiles
 
 How each Greeblis Town USA creature is modelled, coloured, given a face and animated, read from the game
-(JurassicGreeblisPark `index.html`). Builders named `born_*` are readable functions in `BORN`. Builders named
-`city_*` and `woods_*` are pulled from earlier games; their Greeblis City originals are in
-[greeblis-city/creature-profiles.md](../greeblis-city/creature-profiles.md). The construction methods are in
-[construction.md](construction.md).
+(`index.html`). Builders named `born_*` are readable functions in `BORN`. Builders named `city_*` and `woods_*`
+are pulled from earlier games; what their originals were like is in [learnings.md](learnings.md) ("Where the Town
+cast came from"). The construction methods are in [construction.md](construction.md).
 
 Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)})`, where `tk` is talking (0 to 1) and
 `wk` is walking (0 to 1). Every creature also nods and bobs while it is talked to, through the shared talk animation.

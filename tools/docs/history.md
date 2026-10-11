@@ -1,50 +1,49 @@
 # Greeblis Town USA: change history
 
-Every change to the game went through a PR in
-[GorboGreeblis/JurassicGreeblisPark](https://github.com/GorboGreeblis/JurassicGreeblisPark), changing only
-`index.html`. The game began as **Jurassic Greeblis Park**, a prehistoric clearing with dinosaurs. With PR #20
+Every change to the game went through a PR in this repo,
+[GorboGreeblis/GreeblisTown](https://github.com/GorboGreeblis/GreeblisTown) (named JurassicGreeblisPark at first). The game began as **Jurassic Greeblis Park**, a prehistoric clearing with dinosaurs. With PR #20
 it became a small Midwest town, and with #31 it was renamed **Greeblis Town USA**. This list is newest first.
 
 | PR | Merged | What changed |
 | --- | --- | --- |
-| [#39](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/39) | Open | The dance floor's extension south of the bar reaches out twice as far, with King Dino and his drum kit centred at its back. |
-| [#38](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/38) | 2026-10-10 | Menus hold only Talk and Blossom (planting and dancing are creature animations; Zollod only opens the shop); Blossoms renamed. Mama Gorbo joins the lineup, with colourful goo streams animated like goo, goo shot at the player for a Blossom and a brighter peach. Hennrick and Montgummery locked. A rectangular dance floor, an open Library of bookcases, runes dark until the stone is used, and the church roof meeting its walls. |
-| [#37](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/37) | 2026-10-10 | Church garden windows: the right-hand window from Greeblis City on the church's right side (the figure's face removed) and a copy with the figure and Mama Gorbo swapped on the left. Every creature talks, plants and dances: its own dance and planting move, "Ask … to dance / plant" menu options, and dancing round the garden while Fortizmo plays. |
-| [#36](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/36) | 2026-10-10 | Library (Sparkakus is the librarian) and the Ancient Artifacts quest with the Greeblis City light bulb. Garden Supplies is the only shop; Seeds decide how the Garden Event plays out. The Summoning Stone starts the Event. Montgummery replaces Gorton. Mama Gorbo is rebuilt from her artwork. Glyph and Somlet fixes; Etcher locked. Purposeful paths, the church moved to the south walk, the obelisk removed, a dance floor by the Juice Bar, a mail mountain behind the Post Office, and the cars removed. |
-| [#35](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/35) | 2026-10-10 | Bug pass, dead-code cleanup, performance and size pass (file 22% smaller). King Dino's drum set from Greeblis Woods, the phone booth, Gorbo and Mama Gorbo. |
-| [#34](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/34) | 2026-10-10 | Zollod replaces Larry, Sparkakus merges with Shopstar, all NPCs in rows, Greeblis Park's tail mist. |
-| [#33](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/33) | 2026-10-10 | Creatures from artwork, Gorton, kiosk shopkeepers, solid buildings, two NPC rows. |
-| [#32](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/32) | 2026-10-10 | The church with the Traveler window; Anomalee gazes up at it; Sparkstar recoloured. |
-| [#31](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/31) | 2026-10-10 | Renamed Greeblis Town USA; Sheriff's fixes, doors, the big M, creature fixes, ground-level gazebo. |
-| [#30](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/30) | 2026-10-10 | Juice Bar with Fortizmo as bartender; line-up behind the pond; event cast cleanup. |
-| [#29](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/29) | 2026-10-09 | Gardening Event: planting animations, crackle-free jazz, clean ending, performance and file size. |
-| [#28](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/28) | 2026-10-09 | Garden event: plant inside the garden and step out for Backpacka; Fortizmo plays from Backpacka's arrival to the end. |
-| [#27](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/27) | 2026-10-09 | Backpacka climax and Fortizmo's new jazz tune, pair vignettes, creature quality pass, the UFO, Voynich plants, depth fixes. |
-| [#26](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/26) | 2026-10-09 | Removed Patchoolee, Slugwerth, Appterix, Seedric, Interstitia and The Professor. |
-| [#25](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/25) | 2026-10-09 | NPC round: 4 deletions, 4 new merges, unified options, one line-up on a longer square. |
-| [#24](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/24) | 2026-10-09 | Somlet's mail cap, Maltoe's mushrooms and badge, Larry's apron, Mistergummery's. |
-| [#23](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/23) | 2026-10-09 | Fixed creatures at the row ends; Larry and Nextessa added to the north row. |
-| [#22](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/22) | 2026-10-09 | Post Office: comically high mail piles (later replaced by the mail mountain behind it). |
-| [#21](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/21) | 2026-10-09 | Corner kiosks, park fence, gazebo collision, the "Greeblis Town USA" sign. |
-| [#20](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/20) | 2026-10-09 | Remodelled the environment as a small Midwest town. |
-| [#19](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/19) | 2026-10-09 | Reimagined merges; John Owl and Toebert removed; peg-legged Anomalee; park creatures removed. |
-| [#18](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/18) | 2026-10-09 | New merged creatures, row cleanup and a scenery fix. |
-| [#17](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/17) | 2026-10-09 | Kept Gorbo's goo strands attached to Gorbo. |
-| [#16](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/16) | 2026-10-09 | Replaced all NPCs with models pulled from Greeblis City, Park and Woods. |
-| [#15](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/15) | 2026-10-09 | Fixed UI text overflow; kept the quest HUD on screen. |
-| [#14](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/14) | 2026-10-09 | Environment model and texture pass. |
-| [#13](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/13) | 2026-10-09 | Creature texture system v2 and rebuilt models for 20 creatures. |
-| [#12](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/12) | 2026-10-09 | Merged the owls, the rabbits, and Gratelet with Somnux; restored Nextessa; fixed Fortizmo picking. |
-| [#11](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/11) | 2026-10-08 | Made the dinosaurs friendly and talkative. |
-| [#10](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/10) | 2026-10-08 | Creature models with more detail and structure. |
-| [#9](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/9) | 2026-10-08 | Greeblis Woods creatures: a new row, and merges with same-named creatures. |
-| [#8](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/8) | 2026-10-08 | Merged creatures, a Greeblis City creature row, smoother mobile camera and rotation. |
-| [#7](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/7) | 2026-10-08 | Temporary mobile testing mode (touch controls, diagnostics, Android fixes). |
-| [#6](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/6) | 2026-10-08 | 19 creatures rebuilt from GREEBLIS v15; Appterix uses the original Appteryx model. |
-| [#5](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/5) | 2026-10-08 | Appterix as a Rex hybrid; quest renamed "Watering Cans" (later removed). |
-| [#4](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/4) | 2026-10-08 | Garden-planting event, Seeds and Watering Can quests, portal and Nextessa, Hennrick, a new volcano. |
-| [#3](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/3) | 2026-10-08 | Tropical clearing, prehistoric shop and pond, Flint, Fire Blossoms, NPC line-up, tail jitter fix. |
-| [#1](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/1), [#2](https://github.com/GorboGreeblis/JurassicGreeblisPark/pull/2) | 2026-10-08 | Jurassic Greeblis Park: prehistoric clearing, dinosaurs, placeholder text, desktop test mode. |
+| [#39](https://github.com/GorboGreeblis/GreeblisTown/pull/39) | Open | The dance floor's extension south of the bar reaches out twice as far, with King Dino and his drum kit centred at its back. |
+| [#38](https://github.com/GorboGreeblis/GreeblisTown/pull/38) | 2026-10-10 | Menus hold only Talk and Blossom (planting and dancing are creature animations; Zollod only opens the shop); Blossoms renamed. Mama Gorbo joins the lineup, with colourful goo streams animated like goo, goo shot at the player for a Blossom and a brighter peach. Hennrick and Montgummery locked. A rectangular dance floor, an open Library of bookcases, runes dark until the stone is used, and the church roof meeting its walls. |
+| [#37](https://github.com/GorboGreeblis/GreeblisTown/pull/37) | 2026-10-10 | Church garden windows: the right-hand window from Greeblis City on the church's right side (the figure's face removed) and a copy with the figure and Mama Gorbo swapped on the left. Every creature talks, plants and dances: its own dance and planting move, "Ask … to dance / plant" menu options, and dancing round the garden while Fortizmo plays. |
+| [#36](https://github.com/GorboGreeblis/GreeblisTown/pull/36) | 2026-10-10 | Library (Sparkakus is the librarian) and the Ancient Artifacts quest with the Greeblis City light bulb. Garden Supplies is the only shop; Seeds decide how the Garden Event plays out. The Summoning Stone starts the Event. Montgummery replaces Gorton. Mama Gorbo is rebuilt from her artwork. Glyph and Somlet fixes; Etcher locked. Purposeful paths, the church moved to the south walk, the obelisk removed, a dance floor by the Juice Bar, a mail mountain behind the Post Office, and the cars removed. |
+| [#35](https://github.com/GorboGreeblis/GreeblisTown/pull/35) | 2026-10-10 | Bug pass, dead-code cleanup, performance and size pass (file 22% smaller). King Dino's drum set from Greeblis Woods, the phone booth, Gorbo and Mama Gorbo. |
+| [#34](https://github.com/GorboGreeblis/GreeblisTown/pull/34) | 2026-10-10 | Zollod replaces Larry, Sparkakus merges with Shopstar, all NPCs in rows, Greeblis Park's tail mist. |
+| [#33](https://github.com/GorboGreeblis/GreeblisTown/pull/33) | 2026-10-10 | Creatures from artwork, Gorton, kiosk shopkeepers, solid buildings, two NPC rows. |
+| [#32](https://github.com/GorboGreeblis/GreeblisTown/pull/32) | 2026-10-10 | The church with the Traveler window; Anomalee gazes up at it; Sparkstar recoloured. |
+| [#31](https://github.com/GorboGreeblis/GreeblisTown/pull/31) | 2026-10-10 | Renamed Greeblis Town USA; Sheriff's fixes, doors, the big M, creature fixes, ground-level gazebo. |
+| [#30](https://github.com/GorboGreeblis/GreeblisTown/pull/30) | 2026-10-10 | Juice Bar with Fortizmo as bartender; line-up behind the pond; event cast cleanup. |
+| [#29](https://github.com/GorboGreeblis/GreeblisTown/pull/29) | 2026-10-09 | Gardening Event: planting animations, crackle-free jazz, clean ending, performance and file size. |
+| [#28](https://github.com/GorboGreeblis/GreeblisTown/pull/28) | 2026-10-09 | Garden event: plant inside the garden and step out for Backpacka; Fortizmo plays from Backpacka's arrival to the end. |
+| [#27](https://github.com/GorboGreeblis/GreeblisTown/pull/27) | 2026-10-09 | Backpacka climax and Fortizmo's new jazz tune, pair vignettes, creature quality pass, the UFO, Voynich plants, depth fixes. |
+| [#26](https://github.com/GorboGreeblis/GreeblisTown/pull/26) | 2026-10-09 | Removed Patchoolee, Slugwerth, Appterix, Seedric, Interstitia and The Professor. |
+| [#25](https://github.com/GorboGreeblis/GreeblisTown/pull/25) | 2026-10-09 | NPC round: 4 deletions, 4 new merges, unified options, one line-up on a longer square. |
+| [#24](https://github.com/GorboGreeblis/GreeblisTown/pull/24) | 2026-10-09 | Somlet's mail cap, Maltoe's mushrooms and badge, Larry's apron, Mistergummery's. |
+| [#23](https://github.com/GorboGreeblis/GreeblisTown/pull/23) | 2026-10-09 | Fixed creatures at the row ends; Larry and Nextessa added to the north row. |
+| [#22](https://github.com/GorboGreeblis/GreeblisTown/pull/22) | 2026-10-09 | Post Office: comically high mail piles (later replaced by the mail mountain behind it). |
+| [#21](https://github.com/GorboGreeblis/GreeblisTown/pull/21) | 2026-10-09 | Corner kiosks, park fence, gazebo collision, the "Greeblis Town USA" sign. |
+| [#20](https://github.com/GorboGreeblis/GreeblisTown/pull/20) | 2026-10-09 | Remodelled the environment as a small Midwest town. |
+| [#19](https://github.com/GorboGreeblis/GreeblisTown/pull/19) | 2026-10-09 | Reimagined merges; John Owl and Toebert removed; peg-legged Anomalee; park creatures removed. |
+| [#18](https://github.com/GorboGreeblis/GreeblisTown/pull/18) | 2026-10-09 | New merged creatures, row cleanup and a scenery fix. |
+| [#17](https://github.com/GorboGreeblis/GreeblisTown/pull/17) | 2026-10-09 | Kept Gorbo's goo strands attached to Gorbo. |
+| [#16](https://github.com/GorboGreeblis/GreeblisTown/pull/16) | 2026-10-09 | Replaced all NPCs with models pulled from Greeblis City, Park and Woods. |
+| [#15](https://github.com/GorboGreeblis/GreeblisTown/pull/15) | 2026-10-09 | Fixed UI text overflow; kept the quest HUD on screen. |
+| [#14](https://github.com/GorboGreeblis/GreeblisTown/pull/14) | 2026-10-09 | Environment model and texture pass. |
+| [#13](https://github.com/GorboGreeblis/GreeblisTown/pull/13) | 2026-10-09 | Creature texture system v2 and rebuilt models for 20 creatures. |
+| [#12](https://github.com/GorboGreeblis/GreeblisTown/pull/12) | 2026-10-09 | Merged the owls, the rabbits, and Gratelet with Somnux; restored Nextessa; fixed Fortizmo picking. |
+| [#11](https://github.com/GorboGreeblis/GreeblisTown/pull/11) | 2026-10-08 | Made the dinosaurs friendly and talkative. |
+| [#10](https://github.com/GorboGreeblis/GreeblisTown/pull/10) | 2026-10-08 | Creature models with more detail and structure. |
+| [#9](https://github.com/GorboGreeblis/GreeblisTown/pull/9) | 2026-10-08 | Greeblis Woods creatures: a new row, and merges with same-named creatures. |
+| [#8](https://github.com/GorboGreeblis/GreeblisTown/pull/8) | 2026-10-08 | Merged creatures, a Greeblis City creature row, smoother mobile camera and rotation. |
+| [#7](https://github.com/GorboGreeblis/GreeblisTown/pull/7) | 2026-10-08 | Temporary mobile testing mode (touch controls, diagnostics, Android fixes). |
+| [#6](https://github.com/GorboGreeblis/GreeblisTown/pull/6) | 2026-10-08 | 19 creatures rebuilt from GREEBLIS v15; Appterix uses the original Appteryx model. |
+| [#5](https://github.com/GorboGreeblis/GreeblisTown/pull/5) | 2026-10-08 | Appterix as a Rex hybrid; quest renamed "Watering Cans" (later removed). |
+| [#4](https://github.com/GorboGreeblis/GreeblisTown/pull/4) | 2026-10-08 | Garden-planting event, Seeds and Watering Can quests, portal and Nextessa, Hennrick, a new volcano. |
+| [#3](https://github.com/GorboGreeblis/GreeblisTown/pull/3) | 2026-10-08 | Tropical clearing, prehistoric shop and pond, Flint, Fire Blossoms, NPC line-up, tail jitter fix. |
+| [#1](https://github.com/GorboGreeblis/GreeblisTown/pull/1), [#2](https://github.com/GorboGreeblis/GreeblisTown/pull/2) | 2026-10-08 | Jurassic Greeblis Park: prehistoric clearing, dinosaurs, placeholder text, desktop test mode. |
 
 ## Owner decisions recorded along the way
 

@@ -1,6 +1,6 @@
 // Renders chosen views of the town for checking by eye. VIEWS (JSON) is a list of [name, target, offset, look
 // height, fov]: target is a building collider name from F.buildings ("shop" = the Library, "post",
-// "sheriff", "garden", "church", "juice"), "parcel" (the To Clipston parcel in the mail pile), or [x, z];
+// "sheriff", "garden", "church", "juice"), "parcel" (the one readable parcel in the mail pile), or [x, z];
 // offset is [right, up, front] in the target's own frame (front = the way it faces) for a building, or
 // world [dx, dy, dz] otherwise. Writes <out>_<name>.png. AWAY=1 first moves the player out of the way.
 module.exports = async (p, out) => {

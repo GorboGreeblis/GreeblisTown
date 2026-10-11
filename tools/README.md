@@ -1,19 +1,18 @@
 # Greeblis Town USA: tools and working knowledge
 
 Everything needed to build, check, trim and pack the game, in one place. The game itself is only
-`index.html` at the repo root; nothing in `tools/` ships inside it. (These came from the GreeblisGuides repo,
-which is gone. Paths like `tools/greeblis-woods/...` or `games/...` inside the older docs refer to that repo's
-layout.)
+`index.html` at the repo root; nothing in `tools/` ships inside it. Greeblis Town USA is the only game worked on
+here; what was learned from the earlier Greeblis games is in [`docs/learnings.md`](docs/learnings.md).
 
 | Folder | What is in it |
 | --- | --- |
-| [`docs/`](docs) | The rules, the construction guide, creature profiles, PR history, the City and Woods packing recipes |
+| [`docs/`](docs) | The rules, the construction guide, creature profiles, PR history, and the learnings from the earlier games (with the packing recipes) |
 | [`test/`](test) | Playwright checks for this game (`battery.sh` runs them all), coverage and pixel-compare tools |
 | [`three/`](three) | Trimming the bundled three.js (unreachable methods, warnings, impossible shader blocks) |
 | [`pack/`](pack) | The Woods compressor (Park's ready-to-use copy in `pack/park/`, the full Woods toolchain in `pack/woods/`) and the terser settings |
 | [`town/`](town) | The older Town USA tools: creature extraction from earlier games, safe decoding of uploads, lint, review renders, audits, editing helpers (see [`town/README.md`](town/README.md)) |
 
-## Rules (from Carmen)
+## Rules (from the owner)
 
 - **Ordinal-playable, always:** one self-contained `index.html`, no network, no storage APIs, no `eval` or
   `new Function`. It must boot under ord's CSP, both opened directly and in a sandboxed `allow-scripts` iframe. Run
@@ -160,9 +159,6 @@ node three/min3.js three_p3.js three_p4.js          # re-minify
 - `game_all.js` is every other script plus the HTML.
 - The coverage must be recorded on that same three.js build.
 
-`three/prune3-woods.js` and `three/build_three-woods.sh` are the Greeblis Woods versions the town's were made from
-(they work on the Woods folders and check the coverage's sha256), kept for reference.
-
 Put a build into a page with `python3 three/swap3.py <page.html> <three.js> <out.html>` (it replaces the page's
 second `<script>`). Before swapping the result in, check it:
 - `test/t_shader.js` on a page with the `three_p2` build (warnings still on) must show no shader errors.
@@ -189,7 +185,8 @@ Measured on 11 Oct 2026: the unminified 1,040,924-byte page packs to **251,328 b
 - `enc.js` and `pack_cm.py` pack.
 - `tuning/` holds the native tuner.
 
-See [`docs/woods-ordinal-packing.md`](docs/woods-ordinal-packing.md) and [`pack/woods-tools.md`](pack/woods-tools.md).
+The codec, the page encoding and the full checklist are written up in [`docs/learnings.md`](docs/learnings.md)
+("The packing recipes in full").
 
 ## Lessons from building it (the kind of thing that costs an afternoon)
 

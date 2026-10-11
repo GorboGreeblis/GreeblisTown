@@ -1,6 +1,6 @@
 # Greeblis Town USA: test scripts
 
-Playwright scripts used to check Greeblis Town USA (the JurassicGreeblisPark repo's `index.html`). They read the
+Playwright scripts used to check Greeblis Town USA (this repo's `index.html`). They read the
 game's minified globals (`It`, `Re`, `bt`, `xe`, `z`, `At`, `O`, `C`, `B`, `JGP`, …), so a rename in the game
 can break them; check the names first.
 

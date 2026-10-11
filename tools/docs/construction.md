@@ -1,16 +1,13 @@
 # Greeblis Town USA: Creature & Environment Construction
 
-How the creatures and the town of **Greeblis Town USA** were built. The game lives in the JurassicGreeblisPark
-repo, and its single readable `index.html` is the source. Use this alongside
-[greeblis-city/construction.md](../greeblis-city/construction.md) (the Greeblis City reference) when building the
-next game. Per-creature detail is in [creature-profiles.md](creature-profiles.md), and every PR is listed in
-[history.md](history.md). A copy of the shipped page and size notes are in
-[games/greeblis-town-usa](../../games/greeblis-town-usa/README.md), and every tool used to make and check the game
-is in [`tools/greeblis-town-usa/`](../../tools/greeblis-town-usa/README.md).
+How the creatures and the town of **Greeblis Town USA** were built. The game is this repo's single readable
+`index.html`, which is its source. What was learned from the earlier Greeblis games (City, Park and Woods) is in
+[learnings.md](learnings.md). Per-creature detail is in [creature-profiles.md](creature-profiles.md), every PR is
+listed in [history.md](history.md), and every tool used to make and check the game is in [`tools/`](../README.md).
 
 ## Rules
 
-These are the owner's rules from this game's development, on top of the standing rules in [CLAUDE.md](../../CLAUDE.md):
+These are the owner's rules from this game's development, on top of the standing rules in [greeblis-rules.md](greeblis-rules.md):
 
 - **Creature models, behaviour and interactions matter most.** Take the time to do them well.
 - **No bones** anywhere: no skeletal rigs and no bone props.
@@ -448,4 +445,4 @@ plane.
    itself at the Garden Event (and moves when its `bt.tg` mode is forced, for a quick check).
 6. Play the Garden Event with and without Seeds, and as a repeat.
 
-The scripts for all of these are in [`tools/greeblis-town-usa/test/`](../../tools/greeblis-town-usa/test/).
+The scripts for all of these are in [`tools/test/`](../test/) and [`tools/town/test/`](../town/test/).
