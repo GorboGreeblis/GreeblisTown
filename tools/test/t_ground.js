@@ -1,4 +1,5 @@
-// Ground-clipping audit: every creature's lowest point (every visible mesh, sampled every few frames) through
+// Ground-clipping audit: every creature's lowest point below the surface under it (JGP.groundAt: lawn,
+// walks, dance floor, garden, decks, rug) (every visible mesh, sampled every few frames) through
 // idling and wandering, Talk, Blossoms, Dance battles and victory dances, and a whole Garden Event (planting,
 // dancing, watching, going home). Also flags a creature inside a building it does not work in.
 // Run with a tiny viewport (VW=200 VH=150); the Event takes a while. LIMIT (default -0.005 m) is how far
@@ -16,8 +17,10 @@ module.exports = async (p) => {
         if (!e.group || !e.group.visible || !e.def) continue;
         const g = e.group; g.updateMatrixWorld(!0);
         let lo = 1e9, who = '';
+        const posted = g.position.y > 0.3;
         g.traverse((o) => { if (!o.isMesh || !o.visible) return; for (let a = o; a && a !== g; a = a.parent) if (!a.visible) return;
-          const P = o.geometry.attributes.position; for (let k = 0; k < P.count; k += 3) { v.fromBufferAttribute(P, k).applyMatrix4(o.matrixWorld); if (v.y < lo) (lo = v.y), (who = colOf(o)); } });
+          // (how far below the surface under it, wherever on the creature it is: JGP.groundAt)
+          const P = o.geometry.attributes.position; for (let k = 0; k < P.count; k += 3) { v.fromBufferAttribute(P, k).applyMatrix4(o.matrixWorld); const dd = v.y - (posted ? 0 : JGP.groundAt(v.x, v.z)); if (dd < lo) (lo = dd), (who = colOf(o)); } });
         const nm = e.def.name, r = (__G[nm] = __G[nm] || { min: 1e9, at: '', bad: {}, inB: {} });
         lo < r.min && ((r.min = lo), (r.at = __phase + (e.busy ? ':' + e.busy : '') + (e.moving ? ':walking' : '') + ' ' + who));
         if (lo < LIMIT) r.bad[__phase] = Math.min(r.bad[__phase] || 0, +lo.toFixed(3));
