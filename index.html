@@ -3496,7 +3496,8 @@ const Ut = (() => {
 	Kt = {
 		acorns: 0,
 		// the three main quests are the Seeds (bought at Garden Supplies), the Summoning Stone (GEMTOE
-		// trades it for the Ancient Gem SPARKAKUS gives you for the Ancient Artifacts) and the Snacks.
+		// trades it for the Ancient Gem SPARKAKUS gives you for the Ancient Artifacts) and the Snacks
+		// (NEXTESSA's pizza delivery).
 		// FOR TESTING ONLY, all three start complete (TEST_QUESTS; set it to !1 for the real game).
 		rewards: { seeds: TEST_QUESTS, artifacts: !1, stone: TEST_QUESTS, snacks: TEST_QUESTS },
 		gem: !1,
@@ -4466,6 +4467,8 @@ const le = (() => {
 								? ((r = "speaking"),
 									(a = i.clone()),
 									Ut.above(n, "!", M.yellow),
+									// her pizza completes the SNACKS quest
+									(Kt.rewards.snacks = !0),
 									qt.open(s.name, s.color, s.arrive, () => {
 										(r = "leaving"), (f = u);
 										const t = 0.75 * -(Math.sign(p.x * (0 - i.z) - p.z * (0 - i.x)) || 1),
