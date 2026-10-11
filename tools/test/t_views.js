@@ -11,8 +11,12 @@ module.exports = async (p, out) => {
     const img = await p.evaluate(([target, off, ly, fov]) => {
       let cx, cz, c = 1, s = 0, at;
       if (target === 'parcel') {
-        let m = null; C.traverse((o) => { if (!m && o.isMesh && o.material && o.material.map && o.geometry.parameters && Math.abs(o.geometry.parameters.width - 0.26) < 1e-3 && Math.abs(o.geometry.parameters.depth - 0.004) < 1e-4) m = o; });
-        const v = new THREE.Vector3(); m.getWorldPosition(v); cx = v.x; cz = v.z; at = v;
+        // (the trimmed three.js keeps no geometry parameters: the label is the 256 x 128 canvas texture nearest
+        // the mail pile's open end, local (2.55, -4.9) behind the Post Office)
+        const Bp = F.buildings.find((q) => q.name === 'post'), [px, pz] = F.world(Bp, 2.55, -4.9), v = new THREE.Vector3();
+        let m = null, best = 1e9;
+        C.traverse((o) => { const im = o.isMesh && o.material && o.material.map && o.material.map.image; if (!im || im.width !== 256 || im.height !== 128) return; o.getWorldPosition(v); const d = Math.hypot(v.x - px, v.z - pz); d < best && ((best = d), (m = o)); });
+        m.getWorldPosition(v); cx = v.x; cz = v.z; at = v.clone();
       } else if (Array.isArray(target)) (cx = target[0]), (cz = target[1]);
       else { const B = F.buildings.find((q) => q.name === target); (cx = B.x), (cz = B.z), (c = B.c), (s = B.s); }
       // the target's frame: local x (right) and z (front) in the world
