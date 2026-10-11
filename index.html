@@ -14480,20 +14480,26 @@ const JGP = (() => {
 				const roam = (id, pick, w0, w1) => {
 					let waitTo = -1,
 						giveUp = 0,
-						fails = 0;
+						fails = 0,
+						// (where it was last seen making headway, and when)
+						px = 0,
+						pz = 0,
+						pt = 0;
 					L.push((t2) => {
 						const h = It.byId[id];
 						if (!h || h.busy || h.vig || h.meeting || h.battleDance || me.active || h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void (waitTo = -1);
 						const p = h.group.position;
 						if (Math.hypot(p.x - h.home.x, p.z - h.home.z) > 0.1) {
-							giveUp && t2 > giveUp && !h.goHome && (h.home.set(p.x, h.home.y, p.z), (giveUp = 0));
+							// (no headway for 2.5 s, another creature in the way, or not there in good time: it settles)
+							Math.hypot(p.x - px, p.z - pz) > 0.3 && ((px = p.x), (pz = p.z), (pt = t2));
+							giveUp && (t2 > giveUp || t2 - pt > 2.5) && !h.goHome && (h.home.set(p.x, h.home.y, p.z), (giveUp = 0));
 							return void (waitTo = -1);
 						}
 						if (((giveUp = 0), waitTo < 0)) return void (waitTo = t2 + w0 + w1 * Math.random());
 						if (t2 < waitTo) return;
 						waitTo = -1;
 						const sp = pick(p, h.bodyR || 1, h.def.at, h);
-						if (sp) (fails = 0), h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), h.pattern && (h.pattern[1].face = sp[2]);
+						if (sp) (fails = 0), h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), (px = p.x), (pz = p.z), (pt = t2), h.pattern && (h.pattern[1].face = sp[2]);
 						// (boxed in somewhere with no clear walk out, it heads back to the spot it started from, and
 						// the walk home finds its way round whatever is in the way)
 						else if (++fails >= 3 && h.def.at) (fails = 0), h.home.set(h.def.at[0], h.home.y, h.def.at[1]);
