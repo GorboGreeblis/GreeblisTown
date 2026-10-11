@@ -1,3 +1,6 @@
+# Contact sheet of part-by-part renders: the images listed one per line in <list.txt> (no trailing blank line), 160 px
+# each, 10 to a row, the first labelled "all" and the rest "part 0", "part 1", …. Needs Pillow.
+#   python3 partsheet.py <list.txt> <out.png>
 import sys
 from PIL import Image, ImageDraw
 lst=open(sys.argv[1]).read().split('\n'); out=sys.argv[2]

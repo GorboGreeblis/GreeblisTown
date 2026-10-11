@@ -46,6 +46,8 @@ of them. Read the guides here before changing the game.
   how it branches; nothing the photos don't show), render it from several angles next to the photos, and refine
   until it matches. The same goes for anything else the owner asks to be built from an image (the inside of the
   church is built only from the photo of the slug).
+- Only one batch of flowers ever grows at the Garden Event: the first Event's. A repeated Event never makes more
+  plants appear (the creatures still plant, at the same spots).
 - No bones anywhere: no skeletal rigs and no bone props.
 - A merge is a new, cohesive creature that blends its parents' silhouettes, palettes and signature features,
   never parts glued together.

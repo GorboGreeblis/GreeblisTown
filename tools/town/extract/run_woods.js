@@ -1,3 +1,7 @@
+// One extractor run over Greeblis Woods (../up_Woods/main.js, registry Ie): stops at the names alpha.js matches to
+// ours, extracts the builders <keys>, prints which stopped names they use and their direct and indirect dependencies,
+// and writes woods_raw.js and woods_map.json.
+//   node run_woods.js <key,…> [extra stop,…]   (from ex/ in the work folder)
 const {load,extract,emit}=require('./ex.js');const {match}=require('./alpha.js');const fs=require('fs');
 const F=['../up_Woods/main.js'];const P=load(F);
 const {map}=match(F[0],'../ours/main.js');

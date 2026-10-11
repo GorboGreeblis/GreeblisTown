@@ -1,3 +1,6 @@
+// After RUN ms of play (default 40000), lists creatures more than 0.5 m off their def.at spot, moving, or facing more
+// than 0.3 rad away from their pattern's face; prints JSON with the frame and error counts.
+// Run (from this folder): RUN=40000 NOSHOT=1 node ../../test/shot2.js <url> x.png ./rowcheck_all.js
 module.exports = async (p) => {
   await p.mouse.click(640, 360);
   await p.waitForTimeout(+process.env.RUN || 40000);

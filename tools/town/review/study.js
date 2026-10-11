@@ -1,4 +1,7 @@
-// Large study renders of builders, built directly (no spawn batching), all layers, two angles.
+// Large study renders of builders, built directly (no spawn batching), all layers, two angles. SPECS is a JSON file
+// of [label, builder key, def, opts]; each is built alone with the rest of the scene hidden, animated 60 steps and
+// rendered at 480×480 to <out>_<label>_0.png and _1.png (tile them with sheet.py or grid.py).
+// Run (from this folder): SPECS=specs.json NOSHOT=1 node ../../test/shot2.js <url> study.png ./study.js
 module.exports = async (p, out) => {
   const specs = JSON.parse(require('fs').readFileSync(process.env.SPECS, 'utf8'));
   const res = await p.evaluate((specs) => {

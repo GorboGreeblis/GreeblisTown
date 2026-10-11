@@ -1,3 +1,7 @@
+// Talks to every creature in turn (te) and prints a line for each: its name, the open screen, the largest movement
+// of its talk animation over 2 s (the tkW node's offset or stretch) and its talk weight (tkK); then the error count
+// and the open screen.
+// Run: NOSHOT=1 node shot2.js <url> x.png ./talk.js
 module.exports = async (p) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(1500);
   const ids = await p.evaluate(() => It.all.map(e => e.id || e.def.__type));

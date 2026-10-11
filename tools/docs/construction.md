@@ -256,9 +256,9 @@ Goo that runs down a body and moves like goo, without clipping:
   kind picked at random, right where it does its planting: in the soil 0.9 m in front of it, 1.5 s into its first
   dig at its spot (`plantTick`). It stays at that spot for the rest of the planting. The spots (`beginPlanting`)
   put that soil on a row and at least 0.75 m clear of the stepping-stone paths.
-- **Rounds** (`garden.round`): Event 1 plants a batch in the rows at 2.6, 6.6 and 10.6 m; Event 2 a second batch in
-  the rows Event 1 left bare (4.6, 8.6, 12.6 m); from Event 3 on everyone replays their Event 1 spots and nothing
-  more comes up. Plants stay for the session.
+- **Rounds** (`garden.round`): only one batch of flowers ever grows, the first Event's (the owner's rule). Every
+  Event uses the same spots (each planter's soil on the rows at 2.6, 6.6 and 10.6 m), and from the second on
+  everyone plants there again but nothing more comes up. Plants stay for the session.
 - **Growing:** a plant waits in the ground until Backpacka's water reaches it, then comes up over about 11 s; by
   halfway through the spray every plant is watered. Anything still growing when the Event ends finishes at once.
 - Backpacka is built, and his shaders compiled, before the music starts: a compile stall mid-song crackles.

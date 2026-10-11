@@ -1,4 +1,7 @@
-// Build pulled.js: one isolated IIFE per game holding its original builders + their helpers.
+// Builds pulled.js: one isolated IIFE per game (JGP_CITY, JGP_PARK, JGP_WOODS) holding its original builders and their
+// helpers; names shared with ours are reused, found by identical structure (City, Park) or by alpha.js (Woods). The
+// builder keys come from CITY, PARK and WOODS (comma-separated, with defaults); the report goes to stderr.
+//   node build.js   (from ex/ in the work folder; e.g. WOODS=gorbo,mont node build.js)
 const {load,extract,emit}=require('./ex.js');const {tops}=require('./cmp.js');const {match}=require('./alpha.js');const fs=require('fs');
 const OURS='../ours/main.js'; const ours=tops(OURS);
 function game(tag,files,regName,keys,opts){

@@ -1,3 +1,8 @@
+// Loads the page in headless Chromium (SwiftShader WebGL) at VW×VH (default 1280×720), waits WAIT ms (default 6000),
+// runs the scene script with (page, <out.png>), screenshots to <out.png> unless NOSHOT=1, then prints the console log
+// and page errors (AudioContext and NPOT lines left out). HARNESS=1 sets window.__gbHarness before the page loads,
+// which makes the game treat the browser as a Quest headset.
+//   NOSHOT=1 node shot2.js <url> <out.png> [scene.js]
 const { chromium } = require('playwright');
 (async () => {
   const url = process.argv[2], out = process.argv[3], script = process.argv[4];

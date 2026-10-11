@@ -1,3 +1,7 @@
+// Dance battles and the Library finale, played through the panel: against w_mont a tie, a loss and three wins (an
+// Artifact for the first win only), a second full win, wins against p_etcher and p_glyph, then bowing out; then
+// LIB.talk() with all three Artifacts and the rewards after its dialogue. Prints each battle's text and the Artifacts.
+// Run: NOSHOT=1 node shot2.js <url> x.png ./t_blog2.js
 module.exports = async (p) => { await p.mouse.click(640, 360); await p.waitForTimeout(1500);
   console.log(await p.evaluate(() => { const out = [], T = battleText, pick = (lbl) => _t.state.items.find((i) => i.label === lbl).onClick();
     const lbl = (id) => T.moves.find((m) => m.id === id).label, win = (mv) => Object.keys(T.beats).find((k) => T.beats[k] === mv);

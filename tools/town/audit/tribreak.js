@@ -1,3 +1,6 @@
+// Triangles per scene part: for each top-level child of the scene (named by creature where it is one) its visible
+// triangles (instances counted), mesh count and centre; prints the 30 largest and the total.
+// Run (from this folder): NOSHOT=1 node ../../test/shot2.js <url> x.png ./tribreak.js
 module.exports = async (p) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(2500);
   console.log(await p.evaluate(() => {

@@ -1,3 +1,7 @@
+// One extractor run over a game's scripts: stops at each top-level declaration structurally the same as one in
+// ../ours/main.js (plus the extra stop names), extracts the builders <keys> registered on <regName>, prints what it
+// found and writes the module to <out.js>. PROPROOTS adds property roots.
+//   node run_same.js <file.js,…> <regName> <key,…> <extra stop,…> <out.js>   (from ex/ in the work folder)
 const {load,extract,emit}=require('./ex.js');const {tops}=require('./cmp.js');const fs=require('fs');
 const [files,reg,keys,extraStop,out]=process.argv.slice(2);
 const F=files.split(',');const P=load(F);

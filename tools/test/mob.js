@@ -1,3 +1,7 @@
+// Loads the page as an iPhone 13 (Playwright's device profile, SwiftShader WebGL), waits WAIT ms (default 6000), runs
+// the scene script with (page, <out.png>), always screenshots to <out.png> (there is no NOSHOT here), then prints up
+// to 25 console lines and page errors. EXTRA adds browser flags, space-separated.
+//   node mob.js <url> <out.png> [scene.js]
 const { chromium, devices } = require('playwright');
 (async () => {
   const url = process.argv[2], out = process.argv[3], script = process.argv[4];

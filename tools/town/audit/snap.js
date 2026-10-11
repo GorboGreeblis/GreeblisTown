@@ -1,4 +1,7 @@
-// dump the live creatures' final defs and per-id tables, to diff before/after a dead-code removal
+// Dumps the live creatures' final definitions and per-id tables (a, Zt, Ct), the shop, the courier and the settings
+// (functions as their source length) to <out> as JSON, to diff before and after a change such as a dead-code removal
+// with snapdiff.py. NOSHOT=1 is needed, or the screenshot overwrites the JSON.
+// Run (from this folder): NOSHOT=1 node ../../test/shot2.js <url> before.json ./snap.js
 module.exports = async (p, out) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(1500);
   const r = await p.evaluate(() => {

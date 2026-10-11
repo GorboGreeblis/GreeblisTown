@@ -1,3 +1,6 @@
+// Meshes whose geometry no longer fits inside its bounding sphere (they vanish at some angles), counted by scene part,
+// parent, name and material, with the sphere's centre and the geometry's real centre. Prints JSON.
+// Run (from this folder): NOSHOT=1 node ../../test/shot2.js <url> x.png ./audit_stale.js
 module.exports = async (p) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(3000);
   console.log(await p.evaluate(() => {

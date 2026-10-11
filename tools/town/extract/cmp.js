@@ -1,3 +1,7 @@
+// Compares two scripts' top-level declarations by structure (acorn ASTs, positions ignored) and prints the first
+// script's names that are the same in the second, that differ (with source length) and that are missing. Exports
+// tops().
+//   node cmp.js <a.js> <b.js>
 const acorn=require('acorn'),fs=require('fs');
 const strip=(n)=>JSON.stringify(n,(k,v)=>(k==='start'||k==='end'||k==='range'||k==='raw'||k==='loc'||k==='__p')?undefined:v);
 function tops(f){const code=fs.readFileSync(f,'utf8');const ast=acorn.parse(code,{ecmaVersion:'latest',sourceType:'script',ranges:true});const m=new Map();

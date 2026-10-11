@@ -1,3 +1,7 @@
+// Building collision: puts the player at 200 random spots in the church and pushes it out with F.resolve, counting any
+// left inside; then walks GLYPH across the church, post, shop and juice buildings and prints how far it got and how
+// deep it ever went inside any building's hull. Slow: each walk waits up to 7 minutes to arrive.
+// Run (from this folder): NOSHOT=1 node ../../test/shot2.js <url> x.png ./solid.js
 module.exports = async (p, out) => {
   await p.mouse.click(100, 100); await p.waitForTimeout(1500);
   const r = await p.evaluate(() => {

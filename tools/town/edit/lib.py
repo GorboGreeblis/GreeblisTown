@@ -1,3 +1,7 @@
+# Helpers for editing index.html (in the current folder) safely: load, save, sub1 (replace text that must appear
+# exactly once), span (a whole function from its header to its closing `  }` line) and builder (substitutions inside
+# one builder, and code injected before its `return life(g`). Run edit scripts from the repo root, with this folder
+# on sys.path, then `from lib import *` (as replace.py does).
 import re
 P = 'index.html'
 def load(): return open(P).read()

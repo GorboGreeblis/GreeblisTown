@@ -1,3 +1,6 @@
+// Meshes, triangles and distinct materials for each creature, the scene's total mesh count, and the 12 top-level
+// scene parts with the most meshes. Prints JSON.
+// Run (from this folder): NOSHOT=1 node ../../test/shot2.js <url> x.png ./meshcount.js
 module.exports = async (p) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(2000);
   console.log(await p.evaluate(() => {

@@ -1,3 +1,6 @@
+# Contact sheet of portrait renders: four creatures to a row, each as its two angles (<prefix>_<id>_0.png and _1.png)
+# side by side at 200 px with the id written on the first; missing images are left black. Needs Pillow.
+#   python3 sheet.py <prefix> <id,id,…> <out.png>
 import sys, os
 from PIL import Image, ImageDraw
 prefix, ids, outp = sys.argv[1], sys.argv[2].split(','), sys.argv[3]

@@ -1,3 +1,7 @@
+// Builds Greeblis Park's leech in Node (three.js from three_env.js, a fake canvas) from leech_orig.js and runs Park's
+// polish pass (polish_orig.js) on it, printing the polish's log, every mesh before and after (geometry, segments,
+// material, colour) and the height, then runs one step of its animation.
+// Run in the folder holding analyze.js, three_env.js, polish_orig.js and leech_orig.js:  node analyze.js
 require('./three_env.js');
 const fs=require('fs');
 const fakeCtx=new Proxy({},{get:(t,k)=>k in t?t[k]:(()=>{}),set:(t,k,v)=>(t[k]=v,true)});

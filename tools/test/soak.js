@@ -1,3 +1,8 @@
+// Walking soak: holds W towards ten spots across the town in turn (14 × 0.4 s each), three rounds, and logs a
+// snapshot at the start and end (game time, errors, renderer memory, draw calls, triangles, scene children, per-frame
+// callbacks). After each leg it prints an ISSUE line if there are errors, a creature at a NaN position or the player
+// inside a building.
+// Run: NOSHOT=1 node shot2.js <url> x.png ./soak.js
 module.exports = async (p) => {
   await p.mouse.click(100, 100); await p.waitForTimeout(2000);
   const snap = () => p.evaluate(() => {

@@ -1,4 +1,6 @@
-// Dependency-aware extractor: pull builder functions + everything they reference out of a game's scripts.
+// Dependency-aware extractor: pulls builder functions and everything they reference out of a game's scripts. A module,
+// not run on its own: load(files), extract(P, {regName, keys, stop, propRoots}) and emit(P, result, {gmap}), used by
+// build.js, run_same.js, run_woods.js and try_city.js. Needs acorn and eslint-scope.
 const acorn=require('acorn'),es=require('eslint-scope'),fs=require('fs');
 function load(files){
   return files.map((f,fi)=>{

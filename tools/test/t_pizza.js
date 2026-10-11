@@ -1,3 +1,6 @@
+// The pizza courier: shortens the call delay, calls a pizza (ue.call) and skips the dialogue, then prints the courier's
+// name, spawn spot and state, and 20 s later where it is (or 'gone') and the error count.
+// Run: NOSHOT=1 node shot2.js <url> x.png ./t_pizza.js
 module.exports = async (p, out) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(1500);
   await p.evaluate(() => { t.pizza.callDelayMs = 300; At.position.set(-7, 0, 21); ue.call(); });

@@ -1,3 +1,7 @@
+// Builds pulled creatures in Node with three.js (three_env.js), a fake canvas and stubbed game globals, from
+// engine_part.js (extract.js) and gorbo_mama.js (JGP_WOODS, JGP_PARK): runs the Woods Gorbo for 1,200 frames with a
+// Talk at frame 300 and prints its height, meshes, scene drips and sound and goo calls, then builds the Park leech.
+// Run in the folder holding those files:  node harness.js
 require('./three_env.js');
 const fs=require('fs');
 const fakeCtx=new Proxy({},{get:(t,k)=>k in t?t[k]:(()=>{}),set:(t,k,v)=>(t[k]=v,true)});
