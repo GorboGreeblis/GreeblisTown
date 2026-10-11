@@ -1101,7 +1101,9 @@ const Fe = new THREE.Frustum(),
 function De(t, e, o, a) {
 	const n = t.gcWant || 0;
 	if (
-		(n > 0.004 && a < 0.3 * n
+		// (it wants to move when it means to cover more than 0.25 m/s: a per-frame threshold would miss
+		// every walk at a high frame rate)
+		(n > 0.25 * o && a < 0.3 * n
 			? (t.gcBlk = (t.gcBlk || 0) + o)
 			: t.gcBlk > 0
 				? (t.gcBlk = Math.max(0, t.gcBlk - 2 * o))
@@ -1138,8 +1140,10 @@ function De(t, e, o, a) {
 			(t.gcStuckN = 0),
 			void (t.pst = null)
 		);
-	// (a creature that works inside a kiosk or behind a bar goes back in by its way in, not straight)
-	const via = i && t.def && t.def.via;
+	// (a creature that works inside a kiosk or behind a bar goes back in by its way in, not straight;
+	// one already in there with its home just goes to it)
+	const P0 = t.group.position,
+		via = i && t.def && t.def.via && !F.buildings.some((B) => F.inHull(B, P0.x, P0.z) && F.inHull(B, t.home.x, t.home.z));
 	via && via.length
 		? (Be(t, via[via.length - 1][0], via[via.length - 1][1], e), t.gcNav.push(...via.slice(0, -1).reverse().map((w) => [w[0], w[1]]), [t.home.x, t.home.z]))
 		: Be(t, r, s, e),
@@ -2479,8 +2483,9 @@ const It = {
 					a.forEach((t) => t.updateMatrix());
 					const r = n(),
 						s = new Set(),
-						i = { above: Ut.above, at: Ut.at, near: G.near, goo: Nt.gooArc };
-					Ut.above = Ut.at = G.near = Nt.gooArc = () => {};
+						i = { above: Ut.above, at: Ut.at, near: G.near, goo: Nt.gooArc, splat: Nt.splat };
+					// (nothing the sampled frames do is seen or heard: no emotes, sounds, goo or goo splats)
+					Ut.above = Ut.at = G.near = Nt.gooArc = Nt.splat = () => {};
 					try {
 						const t = Object.assign({}, e, { moving: !1, busy: null });
 						for (let e = 0; e < 360; e++)
@@ -2494,7 +2499,7 @@ const It = {
 									t !== r[e] && s.add(a[e]);
 								});
 					} finally {
-						(Ut.above = i.above), (Ut.at = i.at), (G.near = i.near), (Nt.gooArc = i.goo);
+						(Ut.above = i.above), (Ut.at = i.at), (G.near = i.near), (Nt.gooArc = i.goo), (Nt.splat = i.splat);
 					}
 					io(a.filter((t) => !s.has(t)));
 				})({ group: c, def: a || {}, bodyR: (a && a.bodyR) || 0.8, height: p.height || 2 }, p);
@@ -3229,7 +3234,9 @@ function te(t, e) {
 		(n = o.lines[e % o.lines.length]), (Kt.talkState[t] = e + 1);
 	}
 	// giving one of the three Dancers a Blossom starts a Dance battle with them, once their thanks is said
-	t.onTalk && t.onTalk(t), qt.open(o.name, o.color, n, e && Dbt.has(t) && !me.active ? () => Dbt.start(t) : void 0);
+	// (not if the player has walked away from the line, which closes it, or the Event has begun meanwhile)
+	t.onTalk && t.onTalk(t),
+		qt.open(o.name, o.color, n, e && Dbt.has(t) && !me.active ? () => !me.active && Math.hypot(At.position.x - t.group.position.x, At.position.z - t.group.position.z) < (t.talkR || 4) + 4 && Dbt.start(t) : void 0);
 }
 const ee = (function () {
 		// "Backpacka's Rain Strut": FORTIZMO's horn tune for the garden's climax. A slow, sultry swing
@@ -3764,7 +3771,8 @@ const ee = (function () {
 			const { ent: e, won } = o;
 			(o = null), (e.battleMove = null), (e.battleMoveAt = 0), It.release(e, "battle");
 			// after a win the Dancer does a victory dance for a few seconds
-			won ? (Nt.sparkle(e.group.position, 12), setTimeout(() => (e.battleDance = !1), 7e3)) : (e.battleDance = !1);
+			// (the timer is kept so a new battle with the same Dancer can cancel it)
+			won ? (Nt.sparkle(e.group.position, 12), (e.bdT = setTimeout(() => (e.battleDance = !1), 7e3))) : (e.battleDance = !1);
 		}
 		return {
 			has: (e) => !(!e || !T[e.id]),
@@ -3772,7 +3780,7 @@ const ee = (function () {
 				try {
 					if (!It.take(e, "battle")) return;
 					const d = T[e.id];
-					(o = { ent: e, def: d, left: d.stamina, over: !1, won: !1, mv: null }), (e.battleDance = !0), (xe.lastTarget = e);
+					clearTimeout(e.bdT), (o = { ent: e, def: d, left: d.stamina, over: !1, won: !1, mv: null }), (e.battleDance = !0), (xe.lastTarget = e);
 					_t.open({ kind: "battle", title: d.title, sub: T.sub, bar: bar(), log: "", items: [], done: null, onClose: close });
 					next();
 				} catch (t) {
@@ -3990,13 +3998,12 @@ const le = (() => {
 			for (const o of [0.2, 1.2, 2.4]) if (d.containsPoint(g.set(t, o, e))) return !0;
 			return !1;
 		}
-		function y() {
+		// the pizza changes hands (with its sparkle and chime), or, when she gives up, she just takes it away
+		function y(quiet) {
 			if (!h || !n) return;
 			const t = new c();
 			h.getWorldPosition(t),
-				Ut.at(t.x, t.y + 0.3, t.z, "✦", M.yellow),
-				Nt.sparkle(t, 14),
-				G.pickup(),
+				quiet || (Ut.at(t.x, t.y + 0.3, t.z, "✦", M.yellow), Nt.sparkle(t, 14), G.pickup()),
 				h.parent.remove(h),
 				P(h),
 				(h = null);
@@ -4148,7 +4155,8 @@ const le = (() => {
 					const t = l.x - i.x,
 						c = l.z - i.z,
 						h = Math.hypot(t, c);
-					if (h > o.stopDist) {
+					// (she stops where she is when a wall keeps her from a player close by, inside a building)
+					if (h > o.stopDist && !n.wallNear) {
 						const t = Math.min(h - o.stopDist, o.speed * e),
 							a = it(i, l, !1);
 						(i.x += a.x * t),
@@ -4156,6 +4164,8 @@ const le = (() => {
 							p.set(a.x, 0, a.z),
 							co(n.group, Math.atan2(a.x, a.z), e, 8),
 							(n.moving = !0),
+							// (she goes round buildings, not through them)
+							(n.wallNear = F.resolve(i, 0.8 * (n.bodyR || 1)) && h < o.stopDist + 5),
 							uo.resolve(i, uo.radius(n), n),
 							(r = "arriving");
 					} else
@@ -4175,8 +4185,8 @@ const le = (() => {
 										p.set(p.x * e - p.z * o, 0, p.x * o + p.z * e).normalize();
 									}),
 									y())
-								: (r = "waiting");
-					u - f > o.giveUpS && "speaking" !== r && (y(), (r = "leaving"), (f = u));
+								: ((r = "waiting"), (n.wallNear = !1));
+					u - f > o.giveUpS && "speaking" !== r && (y(!0), (r = "leaving"), (f = u));
 				} else
 					"speaking" === r
 						? ((n.moving = !1), a && i.set(a.x, i.y, a.z), co(n.group, Math.atan2(l.x - i.x, l.z - i.z), e, 8))
@@ -4187,6 +4197,7 @@ const le = (() => {
 							(i.z += p.z * o.exitSpeed * e),
 							co(n.group, Math.atan2(p.x, p.z), e, 6),
 							(n.moving = !0),
+							F.resolve(i, 0.8 * (n.bodyR || 1)),
 							uo.resolve(i, uo.radius(n), n),
 							((ot.trip && "out2" === ot.trip.phase && rt(i) < -2.2) || u - f > o.giveUpS) && H());
 			},
@@ -4264,7 +4275,8 @@ const le = (() => {
 						? It.all.filter((t) => !("companion" !== t.kind && "npc" !== t.kind && "creature" !== t.kind) && !JGP.eventActor(t))
 						: []),
 					s.forEach((t) => {
-						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = 0), (t.vbk = -1);
+						// (a Dancer still doing a victory dance stops it to come to the garden)
+						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = 0), (t.vbk = -1), clearTimeout(t.bdT), (t.battleDance = !1);
 					});
 				const o = Gt(s.concat([null]), gcSinger.angle);
 				bt.seeds && st.join(o.larry),
@@ -4329,7 +4341,7 @@ const le = (() => {
 					(b = []),
 					(x = []),
 					s.forEach((t) => {
-						It.release(t, e), (t.finaleSlot = null);
+						It.release(t, e), (t.finaleSlot = null), (t.watching = !1);
 					});
 				const t = s;
 				st.leave(), (a = !1), (s = []), fe.start(t, r), (E = 0), (m = null), (y = []);
@@ -4667,7 +4679,7 @@ const xe = (() => {
 						label: "Talk to " + e.def.name,
 						run: () =>
 							(function (t) {
-								t.onTalk && t.onTalk(t), qt.open(t.def.name, t.def.color || M.orange, t.def.campfire || "...");
+								(xe.lastTarget = t), t.onTalk && t.onTalk(t), qt.open(t.def.name, t.def.color || M.orange, t.def.campfire || "...");
 							})(e),
 					}),
 					o
@@ -4724,8 +4736,10 @@ const xe = (() => {
 			},
 			run(t) {
 				if ("playing" !== jt.top) return;
-				const e = o.find((e) => e.verb === t);
-				e && e.run();
+				const a = o.find((e) => e.verb === t);
+				// (the one it is run on is now the one being talked to: so a station's speech, as the phone's,
+				// is never taken by the last creature talked to for its own)
+				a && ((xe.lastTarget = e), a.run());
 			},
 		};
 	})(),
@@ -5432,8 +5446,11 @@ const xe = (() => {
 									);
 								}));
 						}
+		// (one request at a time: the gate asks again on every press and every frame a button is held)
+		let jeBusy = !1;
 		async function je() {
-			if (Oe || !navigator.xr) return;
+			if (Oe || jeBusy || !navigator.xr) return;
+			jeBusy = !0;
 			let a = null;
 			try {
 				(a = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "bounded-floor"] })),
@@ -5507,6 +5524,10 @@ const xe = (() => {
 					a && !Oe && a.end();
 				} catch (e) {}
 				O.xr.enabled = !1;
+				// VR is not allowed here (an inscription's preview frame): say where it works
+				e && /Security|NotSupported/.test(e.name) && (mo("gateText").textContent = "VR can't start in this preview.\nOpen the inscription's own page.");
+			} finally {
+				jeBusy = !1;
 			}
 		}
 		function Xe() {
@@ -5591,11 +5612,21 @@ const xe = (() => {
 				})(n - (o.lastFrame || n), n),
 					(o.lastFrame = n),
 					_e();
-				const r = L("left") || (F.ctrls[0].src ? F.ctrls[0] : null),
-					i = L("right") || (F.ctrls[1].src ? F.ctrls[1] : null),
-					l = H.hand ? r : i;
+				// each controller record follows the input source at its index (three.js re-maps them by index
+				// whenever a controller sleeps, wakes or is swapped, and no connected event says so)
+				F.ctrls.forEach((r, k) => {
+					const src = (Oe && Oe.inputSources && Oe.inputSources[k]) || null;
+					src !== r.src &&
+						((r.src = src), (r.hand = src && src.handedness), (r.prev = []), r.grip.remove(r.handMesh), (r.handMesh = W("left" === r.hand ? -1 : "right" === r.hand ? 1 : 0)), r.grip.add(r.handMesh));
+				});
+				// (a hand's stick only ever counts as that hand's; with one controller its stick moves you and
+				// you turn by turning round)
+				const r = L("left") || (F.ctrls[0].src && "right" !== F.ctrls[0].hand ? F.ctrls[0] : null),
+					i = L("right") || (F.ctrls[1].src && "left" !== F.ctrls[1].hand ? F.ctrls[1] : null),
+					one = !r != !i,
+					l = one ? null : H.hand ? r : i;
 				let c = !1;
-				const h = q(H.hand ? i : r);
+				const h = q(one ? r || i : H.hand ? i : r);
 				o.move.x = o.move.y = 0;
 				const p = "playing" === jt.top || "dialogue" === jt.top || "panel" === jt.top;
 				h && Math.hypot(h.x, h.y) > e.stickDead && ((o.move.x = u(h.x, -1, 1)), (o.move.y = u(-h.y, -1, 1)), (c = p));
@@ -5657,8 +5688,12 @@ const xe = (() => {
 					I.sky.position.set(n.x, 0, n.z);
 				}
 				const y = performance.now(),
-					T = qt.isOpen || jt.has("panel");
-				T && !F.placed && ve(),
+					T = qt.isOpen || jt.has("panel"),
+					pk = jt.has("panel") ? "panel:" + (_t.state && _t.state.kind) : "dialogue";
+				// (the UI is placed again when what it shows changes kind, as when a Dancer's thanks turns into a
+				// battle in the same moment, and placing reads which of the two is showing)
+				(F.dialogue.mesh.visible = qt.isOpen), (F.panel.mesh.visible = jt.has("panel"));
+				T && (!F.placed || F.placedKind !== pk) && ((F.placedKind = pk), ve()),
 					T || (F.placed = !1),
 					ae.open && Math.hypot(F.menu.mesh.position.x - n.x, F.menu.mesh.position.z - n.z) > e.uiCloseDist
 						? re()
@@ -6147,6 +6182,8 @@ const xe = (() => {
 			});
 			cv.addEventListener("pointerup", (e) => {
 				const d = dk.down;
+				// (only the finger that started a drag or tap ends it: a second finger lifting does nothing)
+				if (d && d.id !== e.pointerId) return;
 				if (((dk.down = null), !d || d.drag || 0 !== d.btn)) return;
 				(dk.mx = (e.clientX / innerWidth) * 2 - 1), (dk.my = -(e.clientY / innerHeight) * 2 + 1), dkRay();
 				try {
@@ -6199,7 +6236,8 @@ const xe = (() => {
 			dk.ray.position.copy(p), dk.ray.lookAt(p.x - d.x, p.y - d.y, p.z - d.z), dk.ray.updateMatrixWorld(!0);
 		}
 		function dkUpdate(t) {
-			_e();
+			// (the frame clock the stall watchdog reads: it is otherwise only kept in VR)
+			(o.lastFrame = performance.now()), _e();
 			const K = (c) => dk.keys.has(c),
 				mx = u((K("KeyD") || K("ArrowRight") ? 1 : 0) - (K("KeyA") || K("ArrowLeft") ? 1 : 0) + dk.joy.x, -1, 1),
 				my = u((K("KeyW") || K("ArrowUp") ? 1 : 0) - (K("KeyS") || K("ArrowDown") ? 1 : 0) + dk.joy.y, -1, 1),
@@ -6574,9 +6612,10 @@ const Ho = (() => {
  * Shared engine services (three.js helpers, scene, audio, effects) are ours.
  * ========================================================================= */
 const JGP_CITY=(()=>{const __R={};
-__R["anomalee"]=function(t,e){const o="#b3c48f",a="#18d6ee",n="#6c7a7a",r="#1a2228",s="#e01ce0",i=(t,e,o)=>{const a=b(t,e,o);return a.magFilter=THREE.NearestFilter,a.minFilter=THREE.NearestFilter,a.generateMipmaps=!1,a},l=i(32,32,(t=>{t.fillStyle=o,t.fillRect(0,0,32,32);for(let e=-32;e<40;e+=10){t.fillStyle=a;for(let o=0;o<32;o++)t.fillRect(e+o,o,4,1);t.fillStyle=n;for(let o=0;o<32;o++)t.fillRect(e+o+5,o,2,1)}t.fillStyle="#c9d6a8";for(let e=0;e<8;e++)t.fillRect(9*e%30,13*e%30,2,2);t.fillStyle=r,t.fillRect(0,0,32,1),t.fillRect(0,31,32,1),t.fillRect(0,0,1,32),t.fillRect(31,0,1,32)}));l.wrapS=l.wrapT=THREE.RepeatWrapping;const c=new THREE.MeshPhongMaterial({map:l,shininess:8,flatShading:!0}),h=t=>new THREE.MeshPhongMaterial({color:t,shininess:20,flatShading:!0}),p=(t,e,o,a=128,n=64,r=!1)=>i(a,n,(s=>{s.fillStyle=e,s.fillRect(0,0,a,n),s.fillStyle=o,s.font="bold "+Math.floor(.62*n)+"px 'Courier New', monospace",s.textAlign="center",s.textBaseline="middle",s.fillText(t,a*(r?.6:.5),.52*n),r&&(s.strokeStyle="#ffffff",s.lineWidth=4,[10,18,26].forEach((t=>{s.beginPath(),s.arc(20,.7*n,t,1.25*Math.PI,1.75*Math.PI),s.stroke()})))})),f=new THREE.Group;t.add(f);const u=(t,e,o,a,n,r,s)=>R(new THREE.BoxGeometry(t,e,o),a,n,r,s),m=new THREE.Group;m.position.set(0,1.25,-.05),m.rotation.x=-.12,f.add(m),u(1.05,.9,1.35,c,m),u(.62,.3,.02,x.basic(16777215,{map:p("adb",o,"#2f5fd8")}),m,[0,.18,.68]),u(.5,.2,.02,x.basic(16777215,{map:i(64,32,(t=>{t.fillStyle=a,t.fillRect(0,0,64,32),t.fillStyle="#e8e8d0";for(let e=3;e<30;e+=7)for(let o=3;o<62;o+=8)t.fillRect(o,e,6,5)}))}),m,[0,-.15,.68]);const M=new THREE.Group;M.position.set(0,2.15,.35),M.scale.setScalar(1.3),f.add(M),u(1,.78,.6,h("#29c7d9"),M),u(.84,.62,.3,h("#1fa3b4"),M,[0,0,-.42]);const g=i(64,48,(t=>{t.fillStyle=s,t.fillRect(0,0,64,48),t.fillStyle="#f08af0",t.fillRect(4,4,10,2),t.fillRect(4,4,2,8),t.strokeStyle="#f6b8f6",t.lineWidth=2,[4,7,10].forEach((e=>{t.beginPath(),t.arc(52,16,e,1.25*Math.PI,1.75*Math.PI),t.stroke()})),t.fillStyle="#f6b8f6",t.fillRect(51,15,2,2)})),E=i(64,48,(t=>{for(let e=0;e<48;e+=2)for(let o=0;o<64;o+=2)t.fillStyle=Math.random()<.5?"#f0f0f0":Math.random()<.5?s:"#303040",t.fillRect(o,e,2,2)})),y=x.basic(16777215,{map:g}),T=[0,1,2,3].map((t=>i(64,48,(e=>{e.fillStyle=s,e.fillRect(0,0,64,48);for(let o=0;o<8;o++){const a=2+(7*o+5*t+o%3*t)%9;for(let t=0;t<a;t++)e.fillStyle=t>6?"#ffffff":t>4?"#f6b8f6":"#f08af0",e.fillRect(4+7*o,42-4*t,5,3)}}))));u(.82,.6,.02,y,M,[0,.02,.305]),u(.9,.12,.3,h("#f2f2ea"),M,[0,-.46,.12]);for(let t=0;t<6;t++)u(.08,.05,.02,h(r),M,[.12*t-.3,-.46,.275]);const H=new THREE.Group;H.position.set(.3,2.82,-.3),f.add(H),u(.85,.36,.5,h("#9aa88c"),H),u(.7,.24,.02,x.basic(16777215,{map:p("adb","#3a5a8a","#6fb0ff",128,48,!0)}),H,[0,0,.26]);const w=[[.3,-.18,.1],[.1,-.18,.2],[.38,-.18,-.1]].map((([t,e,o],a)=>{const n=new THREE.Group;return n.position.set(t,e,o),H.add(n),R(ao([[0,0,0],[.12+.05*a,-.3,.1],[.2+.05*a,-.7,.05],[.05,-.95,-.05]],.028,.028,16,6),h(1===a?"#1f7f9a":"#2a3f7a"),n),n})),v=new THREE.Group;v.position.set(0,1.55,.72),f.add(v),u(.55,.3,1.05,c,v,[0,0,.5]),[-1,1].forEach((t=>{u(.02,.2,.06,h(r),v,[.28*t,0,.45]),u(.02,.06,.2,h(r),v,[.28*t,0,.45]),u(.021,.05,.05,h(a),v,[.28*t,0,.45])}));for(let t=0;t<6;t++)u(.07,.07,.06,h("#f4f4ec"),v,[t%2?.12:-.12,-.18,.2+.14*t]);const S=new THREE.Group;S.position.set(0,1.32,.72),f.add(S),u(.52,.14,1,h("#8fa3b0"),S,[0,0,.5]),u(.5,.012,.9,x.basic(16777215,{map:i(64,64,(t=>{t.fillStyle="#b6c3a0",t.fillRect(0,0,64,64),t.fillStyle="#e8ecd8";for(let e=2;e<62;e+=6)for(let o=2;o<62;o+=7)t.fillRect(o,e,5,4)}))}),S,[0,.076,.48]),u(.4,.1,.02,h("#6f9fe8"),S,[0,0,1.01]);const k=new THREE.Group;k.position.set(.55,1.45,.4),f.add(k),u(.16,.5,.16,c,k,[.08,-.15,.1],[.4,0,-.3]);const P=new THREE.Group;P.position.set(.32,.1,.35),P.rotation.set(-.2,-.3,.1),k.add(P),u(.34,.4,.06,h("#f4f4f0"),P),u(.26,.2,.01,x.basic(s),P,[0,.05,.035]),u(.12,.12,.12,h(a),P,[.2,-.05,.02]);const z=[[-1,.42],[1,.42],[-1,-.55],[1,-.55]].map((([t,e],o)=>{const a=new THREE.Group;a.position.set(.45*t,.95,e),f.add(a),u(.26,.55,.3,c,a,[0,-.2,.05],[.3,0,0]);const r=new THREE.Group;return r.position.set(0,-.45,.14),a.add(r),u(.2,.52,.22,c,r,[0,-.24,-.05],[-.25,0,0]),u(.28,.1,.4,h(n),r,[0,-.48,.02]),3===o&&(a.visible=!1),{hip:a,knee:r,phase:0===o||3===o?0:Math.PI}}));u(.35,.3,.6,c,f,[0,1.1,-.95],[-.35,0,0]);const C=10*Math.random();let I=0,A=0,G=-1,B=0,F=4+6*Math.random();return{height:3.3,onTalk(){G=0,B=.4},anim(t,e,o){const a=!(!o||!o.moving),n=Bt(o,e),r=Ft(t);A+=((a?1:0)-A)*d(6,e),a&&(I+=7*e),z.forEach((t=>{const e=Math.sin(I+t.phase);t.hip.rotation.x=.4*A*e,t.knee.rotation.x=.4*A*Math.max(0,-Math.cos(I+t.phase))})),f.position.y=.03*A*Math.abs(Math.sin(I)),M.rotation.set(.03*Math.sin(1.2*t+C),.06*Math.sin(.7*t+C),0),w.forEach(((e,o)=>{e.rotation.z=.08*Math.sin(1.6*t+o)+.28*n*Math.max(0,Math.sin(Math.PI*r+1.3*o)),e.rotation.x=.06*Math.sin(1.3*t+2*o)+.1*A*Math.sin(2*I)})),k.rotation.x=.05*Math.sin(1.4*t+C)+.12*A*Math.sin(I),G<0&&Math.random()<.08*e&&(G=0),G>=0&&(G+=e,S.rotation.x=.35*Math.abs(Math.sin(9*G))*(1-G/.9),G>.9&&(G=-1,S.rotation.x=0));const s=o&&o.group.scale.x<.97;t>F&&(B=.35,F=t+5+8*Math.random()),s&&(B=Math.max(B,.15)),B=Math.max(0,B-e),y.map=B>0&&Math.floor(20*t)%2?E:n>.5?T[Math.floor(4*r)%4]:g,M.position.x=B>0?.06*(Math.random()-.5):0}}};
+__R["anomalee"]=function(t,e){const o="#b3c48f",a="#18d6ee",n="#6c7a7a",r="#1a2228",s="#e01ce0",i=(t,e,o)=>{const a=b(t,e,o);return a.magFilter=THREE.NearestFilter,a.minFilter=THREE.NearestFilter,a.generateMipmaps=!1,a},l=i(32,32,(t=>{t.fillStyle=o,t.fillRect(0,0,32,32);for(let e=-32;e<40;e+=10){t.fillStyle=a;for(let o=0;o<32;o++)t.fillRect(e+o,o,4,1);t.fillStyle=n;for(let o=0;o<32;o++)t.fillRect(e+o+5,o,2,1)}t.fillStyle="#c9d6a8";for(let e=0;e<8;e++)t.fillRect(9*e%30,13*e%30,2,2);t.fillStyle=r,t.fillRect(0,0,32,1),t.fillRect(0,31,32,1),t.fillRect(0,0,1,32),t.fillRect(31,0,1,32)}));l.wrapS=l.wrapT=THREE.RepeatWrapping;const c=new THREE.MeshPhongMaterial({map:l,shininess:8,flatShading:!0}),h=t=>new THREE.MeshPhongMaterial({color:t,shininess:20,flatShading:!0}),p=(t,e,o,a=128,n=64,r=!1)=>i(a,n,(s=>{s.fillStyle=e,s.fillRect(0,0,a,n),s.fillStyle=o,s.font="bold "+Math.floor(.62*n)+"px 'Courier New', monospace",s.textAlign="center",s.textBaseline="middle",s.fillText(t,a*(r?.6:.5),.52*n),r&&(s.strokeStyle="#ffffff",s.lineWidth=4,[10,18,26].forEach((t=>{s.beginPath(),s.arc(20,.7*n,t,1.25*Math.PI,1.75*Math.PI),s.stroke()})))})),f=new THREE.Group;t.add(f);const u=(t,e,o,a,n,r,s)=>R(new THREE.BoxGeometry(t,e,o),a,n,r,s),m=new THREE.Group;m.position.set(0,1.25,-.05),m.rotation.x=-.12,f.add(m),u(1.05,.9,1.35,c,m),u(.62,.3,.02,x.basic(16777215,{map:p("adb",o,"#2f5fd8")}),m,[0,.18,.68]),u(.5,.2,.02,x.basic(16777215,{map:i(64,32,(t=>{t.fillStyle=a,t.fillRect(0,0,64,32),t.fillStyle="#e8e8d0";for(let e=3;e<30;e+=7)for(let o=3;o<62;o+=8)t.fillRect(o,e,6,5)}))}),m,[0,-.15,.68]);const M=new THREE.Group;M.position.set(0,2.15,.35),M.scale.setScalar(1.3),f.add(M),u(1,.78,.6,h("#29c7d9"),M),u(.84,.62,.3,h("#1fa3b4"),M,[0,0,-.42]);const g=i(64,48,(t=>{t.fillStyle=s,t.fillRect(0,0,64,48),t.fillStyle="#f08af0",t.fillRect(4,4,10,2),t.fillRect(4,4,2,8),t.strokeStyle="#f6b8f6",t.lineWidth=2,[4,7,10].forEach((e=>{t.beginPath(),t.arc(52,16,e,1.25*Math.PI,1.75*Math.PI),t.stroke()})),t.fillStyle="#f6b8f6",t.fillRect(51,15,2,2)})),E=i(64,48,(t=>{for(let e=0;e<48;e+=2)for(let o=0;o<64;o+=2)t.fillStyle=Math.random()<.5?"#f0f0f0":Math.random()<.5?s:"#303040",t.fillRect(o,e,2,2)})),y=x.basic(16777215,{map:g}),T=[0,1,2,3].map((t=>i(64,48,(e=>{e.fillStyle=s,e.fillRect(0,0,64,48);for(let o=0;o<8;o++){const a=2+(7*o+5*t+o%3*t)%9;for(let t=0;t<a;t++)e.fillStyle=t>6?"#ffffff":t>4?"#f6b8f6":"#f08af0",e.fillRect(4+7*o,42-4*t,5,3)}}))));u(.82,.6,.02,y,M,[0,.02,.305]),u(.9,.12,.3,h("#f2f2ea"),M,[0,-.46,.12]);for(let t=0;t<6;t++)u(.08,.05,.02,h(r),M,[.12*t-.3,-.46,.275]);const H=new THREE.Group;H.position.set(.3,2.82,-.3),f.add(H),u(.85,.36,.5,h("#9aa88c"),H),u(.7,.24,.02,x.basic(16777215,{map:p("adb","#3a5a8a","#6fb0ff",128,48,!0)}),H,[0,0,.26]);const w=[[.3,-.18,.1],[.1,-.18,.2],[.38,-.18,-.1]].map((([t,e,o],a)=>{const n=new THREE.Group;return n.position.set(t,e,o),H.add(n),R(ao([[0,0,0],[.12+.05*a,-.3,.1],[.2+.05*a,-.7,.05],[.05,-.95,-.05]],.028,.028,16,6),h(1===a?"#1f7f9a":"#2a3f7a"),n),n})),v=new THREE.Group;v.position.set(0,1.55,.72),f.add(v),u(.55,.3,1.05,c,v,[0,0,.5]),[-1,1].forEach((t=>{u(.02,.2,.06,h(r),v,[.28*t,0,.45]),u(.02,.06,.2,h(r),v,[.28*t,0,.45]),u(.021,.05,.05,h(a),v,[.28*t,0,.45])}));for(let t=0;t<6;t++)u(.07,.07,.06,h("#f4f4ec"),v,[t%2?.12:-.12,-.18,.2+.14*t]);const S=new THREE.Group;S.position.set(0,1.32,.72),f.add(S),u(.52,.14,1,h("#8fa3b0"),S,[0,0,.5]),u(.5,.012,.9,x.basic(16777215,{map:i(64,64,(t=>{t.fillStyle="#b6c3a0",t.fillRect(0,0,64,64),t.fillStyle="#e8ecd8";for(let e=2;e<62;e+=6)for(let o=2;o<62;o+=7)t.fillRect(o,e,5,4)}))}),S,[0,.076,.48]),u(.4,.1,.02,h("#6f9fe8"),S,[0,0,1.01]);const k=new THREE.Group;k.position.set(.55,1.45,.4),f.add(k),u(.16,.5,.16,c,k,[.08,-.15,.1],[.4,0,-.3]);const P=new THREE.Group;P.position.set(.32,.1,.35),P.rotation.set(-.2,-.3,.1),k.add(P),u(.34,.4,.06,h("#f4f4f0"),P),u(.26,.2,.01,x.basic(s),P,[0,.05,.035]),u(.12,.12,.12,h(a),P,[.2,-.05,.02]);const z=[[-1,.42],[1,.42],[-1,-.55],[1,-.55]].map((([t,e],o)=>{const a=new THREE.Group;a.position.set(.45*t,.95,e),f.add(a),u(.26,.55,.3,c,a,[0,-.2,.05],[.3,0,0]);const r=new THREE.Group;return r.position.set(0,-.45,.14),a.add(r),u(.2,.52,.22,c,r,[0,-.24,-.05],[-.25,0,0]),u(.28,.1,.4,h(n),r,[0,-.48,.02]),3===o&&(a.visible=!1),{hip:a,knee:r,phase:0===o||3===o?0:Math.PI}}));u(.35,.3,.6,c,f,[0,1.1,-.95],[-.35,0,0]);const C=10*Math.random();let I=0,A=0,G=-1,B=0,F=4+6*Math.random();return{height:3.3,onTalk(){G=0,B=.4},anim(t,e,o){const a=!(!o||!o.moving),n=Bt(o,e),r=Ft(t);A+=((a?1:0)-A)*d(6,e),a&&(I+=7*e),z.forEach((t=>{const e=Math.sin(I+t.phase);t.hip.rotation.x=.4*A*e,t.knee.rotation.x=.4*A*Math.max(0,-Math.cos(I+t.phase))})),f.position.y=.075*A*Math.abs(Math.sin(I)),M.rotation.set(.03*Math.sin(1.2*t+C),.06*Math.sin(.7*t+C),0),w.forEach(((e,o)=>{e.rotation.z=.08*Math.sin(1.6*t+o)+.28*n*Math.max(0,Math.sin(Math.PI*r+1.3*o)),e.rotation.x=.06*Math.sin(1.3*t+2*o)+.1*A*Math.sin(2*I)})),k.rotation.x=.05*Math.sin(1.4*t+C)+.12*A*Math.sin(I),G<0&&Math.random()<.08*e&&(G=0),G>=0&&(G+=e,S.rotation.x=.35*Math.abs(Math.sin(9*G))*(1-G/.9),G>.9&&(G=-1,S.rotation.x=0));const s=o&&o.group.scale.x<.97;t>F&&(B=.35,F=t+5+8*Math.random()),s&&(B=Math.max(B,.15)),B=Math.max(0,B-e),y.map=B>0&&Math.floor(20*t)%2?E:n>.5?T[Math.floor(4*r)%4]:g,M.position.x=B>0?.06*(Math.random()-.5):0}}};
 // (HENNRICK's model, city_hennrick, is final: keep it as it is.)
-__R["hennrick"]=(t,e)=>{const o=new THREE.Group;t.add(o);const a=new THREE.Group;o.add(a);const n=(t,e,o,a,n=3)=>{let r=a;const s=()=>(r=16807*r%2147483647)/2147483647,i=b(256,256,(a=>{a.fillStyle=t,a.fillRect(0,0,256,256),a.lineCap="round";for(let t=0;t<2600;t++){const t=256*s(),n=256*s(),r=2*Math.PI*s(),i=3+5*s();a.strokeStyle=s()<.5?e:o,a.globalAlpha=.35+.4*s(),a.lineWidth=1.2+1.6*s(),a.beginPath(),a.moveTo(t,n),a.lineTo(t+Math.cos(r)*i,n+Math.sin(r)*i),a.stroke()}a.globalAlpha=1}),{smooth:!0});return i.wrapS=i.wrapT=THREE.RepeatWrapping,i.repeat.set(n,n),i},r=t=>new THREE.MeshPhongMaterial({map:t,bumpMap:t,bumpScale:.05,shininess:6,specular:1118481}),s=r(n("#c85ac8","#f08ae8","#8a3a9a",5)),i=r(n("#d8782a","#f2a050","#a8501a",9,2)),c=(t,e)=>{const o=t.attributes.position,a=t.attributes.normal;for(let t=0;t<o.count;t++){const n=o.getX(t),r=o.getY(t),s=o.getZ(t),i=43758.5453*Math.sin(12.9898*Math.round(97*n)+78.233*Math.round(97*r)+37.719*Math.round(97*s)),l=e*(i-Math.floor(i)-.5);o.setXYZ(t,n+a.getX(t)*l,r+a.getY(t)*l,s+a.getZ(t)*l)}return t.computeVertexNormals(),t},h=(t,e,o,a=32,n=.035)=>c(new THREE.SphereGeometry(1,a,Math.round(.7*a)).scale(t,e,o),n),p=new THREE.MeshPhongMaterial({color:"#9ca3ae",shininess:120,specular:16777215}),f=new THREE.MeshPhongMaterial({color:"#d8702a",shininess:110,specular:16772829}),u=new THREE.MeshBasicMaterial({color:"#3ae8f0"}),d=new THREE.MeshBasicMaterial({color:"#6aff4a"}),m=new THREE.Vector3(0,1.75,0),M=[1,1.05,.82];R(h(...M,30),s,a,[m.x,m.y,m.z]);const E=new THREE.Vector3(0,2.72,.12),g=[.86,.74,.84];R(h(...g,30),s,a,[E.x,E.y,E.z]);const y=(t,e,o,a,n=.01)=>{const r=1-(o/e[0])**2-(a/e[1])**2;if(r<=0)return null;const s=e[2]*Math.sqrt(r),i=new THREE.Vector3(o/(e[0]*e[0]),a/(e[1]*e[1]),s/(e[2]*e[2])).normalize();return{p:new THREE.Vector3(t.x+o,t.y+a,t.z+s).addScaledVector(i,n),n:i}},x=(t,e,o,a,n,r,s,i=16,l=2)=>{const c=[],h=[];for(let h=0;h<=l;h++)for(let p=0;p<=i;p++){const f=y(t,e,o+(a-o)*p/i,n+(r-n)*h/l,s)||{p:new THREE.Vector3(t.x,t.y,t.z)};c.push(f.p.x,f.p.y,f.p.z)}for(let t=0;t<l;t++)for(let e=0;e<i;e++){const o=t*(i+1)+e,a=o+i+1;h.push(o,o+1,a,o+1,a+1,a)}const p=new THREE.BufferGeometry;p.setAttribute("position",new THREE.Float32BufferAttribute(c,3)),p.setIndex(h),p.computeVertexNormals();const f=new Float32Array(c.length/3*2);for(let t=0,e=0;t<=l;t++)for(let o=0;o<=i;o++,e++)f[2*e]=o/i,f[2*e+1]=t/l;return p.setAttribute("uv",new THREE.BufferAttribute(f,2)),p};[[.6,.5],[.48,.62],[.34,.7]].forEach((([t,e])=>R(x(E,g,-e,e,t,t+.045,.03,20,1),u,a)));const H=m;for(let t=0;t<6;t++){const e=.2*t-.62,o=.58-.05*Math.abs(t-2.5);R(x(H,M,-o,o,e,e+.17,.03),i,a),R(x(H,M,.05-o,o-.05,e+.172,e+.19,.038,12,1),d,a)}[-1,1].forEach((t=>R(x(H,M,.55*t-.05,.55*t+.05,-.66,.58,.045,1,10),p,a)));const w=b(128,96,(t=>{t.fillStyle="#04120c",t.fillRect(0,0,128,96);for(let e=0;e<12;e++)for(let o=0;o<16;o++)Math.random()<.55&&(t.fillStyle=Math.random()<.3?"#9aff9a":"#3ad86a",t.fillRect(6+7.3*o,6+7.4*e,4+2*Math.random(),4))}));w.wrapT=THREE.RepeatWrapping;const v=new THREE.MeshBasicMaterial({map:w}),S=[0,1].map((t=>b(128,96,(e=>{e.fillStyle="#04120c",e.fillRect(0,0,128,96);for(let t=0;t<96;t+=4)e.fillStyle="#061a10",e.fillRect(0,t,128,2);const o=(t,o,a,n)=>{e.fillStyle="#9aff9a",e.fillRect(4*t,4*o,4*a,4*n)},a=t?-1:1;o(14,4,4,4),o(15,8,2,1),o(13,9,6,7),o(16+5*a,6,2,2),o(15+3*a,7,2,2),o(17+(t?-1:2),9,2,2),o(14-(t?-3:3),12,3,2),o(11-(t?-2:1),13,2,2),o(14,16,2,4),o(17,16,2,3),o(t?12:13,20,3,2),o(18,19,2,2),o(19,20,3,2);for(let o=0;o<6;o++){const a=2+(5*o+3*t)%7;e.fillStyle=o%2?"#3ad86a":"#2a9a5a",e.fillRect(4+21*o,92-3*a,12,3*a)}})))),k=y(E,g,0,-.05,0);R(T.box(.7,.46,.14),p,a,[0,k.p.y,k.p.z-.02]),R(T.plane(.6,.36),v,a,[0,k.p.y,k.p.z+.055]);const P=new THREE.MeshBasicMaterial({color:"#3ae8f0"});[[-.46,.17],[-.66,.06],[-.5,-.06],[-.7,-.2],[-.36,.34],[.46,.17],[.66,.06],[.5,-.06],[.36,.34]].forEach((([t,e])=>{const o=y(E,g,t,e,.01);if(!o)return;const n=(new THREE.Quaternion).setFromUnitVectors(new THREE.Vector3(0,0,1),o.n);R(T.torus(.085,.03,8,20),p,a,[o.p.x,o.p.y,o.p.z]).quaternion.copy(n),R(T.sphere(.065,12,10),P,a,[o.p.x,o.p.y,o.p.z])})),[-1,1].forEach((t=>{const e=y(E,g,.42*t,-.34,-.02).p;R(T.cyl(.11,.13,.16,16),p,a,[e.x,e.y,e.z],[Math.PI/2-.3,0,-.4*t]),R(ao([[0,0,0],[.22*t,-.24,.16],[.52*t,-.24,.2],[.74*t,.1,.14],[.82*t,.6,.04]].map((([t,o,a])=>[e.x+t,e.y+o,e.z+a])),.085,.02,30,10),f,a)}));const z=[-.22,-.075,.075,.22].map(((t,e)=>{const o=y(E,g,t,-.3,-.06),n=[];let r=a;for(let t=0;t<4;t++){const e=new THREE.Group,a=.14-.022*t,i=a-.022;t?e.position.set(0,-.36,0):e.position.copy(o.p),r.add(e),R(c(new THREE.CylinderGeometry(i,a,.38,12,2),.014),s,e,[0,-.18,0]),R(c(new THREE.SphereGeometry(a,12,8),.012),s,e),n.push(e),r=e}return R(c(new THREE.SphereGeometry(.05,10,8),.008),s,r,[0,-.38,0]),{joints:n,i:e}})),C=[-1,1].map((t=>{R(h(.56,.52,.55,24),s,a,[1.02*t,2.18,-.02]);const e=new THREE.Group;e.position.set(1.12*t,2.05,0),a.add(e),R(T.torus(.42,.07,8,24),p,e,[.07*t,-.32,0],[Math.PI/2,0,.22*t]),R(h(.36,.62,.38,24),s,e,[.12*t,-.55,0]),R(h(.32,.55,.34,24),s,e,[.2*t,-1.2,.05]),R(T.cyl(.36,.36,.26,20),p,e,[.2*t,-1.12,.05]);for(let o=0;o<3;o++)R(T.box(.08,.04,.02),u,e,[.2*t,.06*o-1.07,.4]);[[-.48,.38],[-.6,.36],[-.72,.37]].forEach((([o,a])=>R(T.box(.22,.035,.02),u,e,[.12*t,o,a+.01],[0,0,.1*t]))),R(h(.3,.26,.3,20),s,e,[.24*t,-1.68,.1]);for(let o=0;o<3;o++)R(ao([[0,0,0],[0,-.12,.06],[-.04*t,-.22,0]],.05,.012,10,6),f,e,[.12*t+.1*t*(o-1),-1.84,.22-.04*Math.abs(o-1)]);return e})),I=[-1,1].map((t=>{const e=new THREE.Group;e.position.set(.55*t,1.05,0),a.add(e),R(h(.42,.55,.44,24),s,e,[0,-.35,0]),R(new THREE.SphereGeometry(.3,20,12,0,l,0,Math.PI/2),p,e,[0,-.45,.26],[Math.PI/2,0,0]),R(T.cone(.08,.2,10),p,e,[0,-.45,.6],[Math.PI/2,0,0]),R(h(.42,.26,.55,24),s,e,[0,-.85,.12]);for(let t=0;t<4;t++)R(ao([[0,0,0],[0,-.06,.12],[0,-.16,.16]],.05,.012,8,6),f,e,[.16*t-.24,-.84,.6]);return e})),A=10*Math.random(),G=new THREE.Matrix4,B=new THREE.Matrix4,F=new THREE.Matrix4,V=new THREE.Quaternion,W=new THREE.Vector3,D=new THREE.Vector3(1,1,1);let O=0,L=0,q=-1,Y=0,U=-1;return{height:3.4,onTalk(){q=0},singing(){U=0},anim(t,e,n){e=e||.016;const r=!(!n||!n.moving);O+=((r?1:0)-O)*Math.min(1,6*e),r&&(L+=4.5*e),I.forEach(((t,e)=>t.rotation.x=.35*O*Math.sin(L+e*Math.PI))),C.forEach(((e,o)=>{e.rotation.x=-.3*O*Math.sin(L+o*Math.PI)+.04*Math.sin(1.2*t+A+o),e.rotation.z=.05*(o?-1:1)*Math.sin(1.1*t+A)}));const s=1+.012*Math.sin(1.4*t+A);a.scale.set(s,1/s,s);let i=0;q>=0&&(q+=e,q<1.1&&(i=.55*Math.sin(Math.min(1,q/1.1)*Math.PI)),q>=1.1&&(q=-1)),Y+=((et(n)?1:0)-Y)*Math.min(1,4*e),U>=0&&(U+=e,U>1&&(U=-1));const l=Y,c=Math.abs(Math.sin(3.2*t));o.position.y=.075+i+.05*O*Math.abs(Math.sin(L))+.01*Math.sin(1.4*t+A)+.22*l*c,o.rotation.y=U>=0?2*Math.PI*(t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2)(U):0,a.rotation.z=.14*l*Math.sin(1.6*t),l>.001&&C.forEach(((e,o)=>{const a=o?1:-1;e.rotation.z+=l*(a*(1.75+.45*Math.sin(3.2*t+o*Math.PI))-e.rotation.z),e.rotation.x+=l*(-.3*Math.sin(1.6*t+o)-e.rotation.x)})),l>.01&&I.forEach(((e,o)=>e.rotation.x=.14*l*Math.sin(3.2*t+o*Math.PI)));const h=.75+.25*Math.sin(2.2*t+A);u.color.setRGB(.23*h,.91*h,.94*h),P.color.set((t+A)%5<.12?"#0a3a40":"#3ae8f0"),w.offset.y=.25*t%1;{const e=Y>.5?S[Math.floor(Ft(t))%2]:w;v.map!==e&&(v.map=e)}const p=(r?1.7:1)+(q>=0?1.5:0);z.forEach((({joints:e,i:o})=>e.forEach(((e,a)=>{const n=.12*(o-1.5)*a*a*.35;e.rotation.x=(0===a?-.28:.1+.08*a)+.1*p*Math.sin(1.3*t+1.1*o+.7*a+A)+.2*Y*Math.sin(3.2*t+o+.6*a),e.rotation.z=n+.07*p*Math.sin(1.05*t+1.7*o+.5*a+A)+.25*Y*Math.sin(1.6*t+1.4*o)})))),z.forEach((({joints:t})=>{G.identity();for(let e=0;e<t.length;e++){const o=t[e];for(let t=0;t<10;t++){B.copy(G).multiply(F.compose(o.position,V.setFromEuler(o.rotation),D));let t=!1;for(const o of[-.2,-.38]){W.set(0,o,0).applyMatrix4(B);const a=.15-.022*e+.03;if(((W.x-m.x)/(M[0]+a))**2+((W.y-m.y)/(M[1]+a))**2+((W.z-m.z)/(M[2]+a))**2<1){t=!0;break}}if(!t)break;o.rotation.x-=.09}G.copy(B)}}))}}};
+// (his dance rolls him side to side about his feet: he is lifted by the roll so the outer foot never dips into the ground)
+__R["hennrick"]=(t,e)=>{const o=new THREE.Group;t.add(o);const a=new THREE.Group;o.add(a);const n=(t,e,o,a,n=3)=>{let r=a;const s=()=>(r=16807*r%2147483647)/2147483647,i=b(256,256,(a=>{a.fillStyle=t,a.fillRect(0,0,256,256),a.lineCap="round";for(let t=0;t<2600;t++){const t=256*s(),n=256*s(),r=2*Math.PI*s(),i=3+5*s();a.strokeStyle=s()<.5?e:o,a.globalAlpha=.35+.4*s(),a.lineWidth=1.2+1.6*s(),a.beginPath(),a.moveTo(t,n),a.lineTo(t+Math.cos(r)*i,n+Math.sin(r)*i),a.stroke()}a.globalAlpha=1}),{smooth:!0});return i.wrapS=i.wrapT=THREE.RepeatWrapping,i.repeat.set(n,n),i},r=t=>new THREE.MeshPhongMaterial({map:t,bumpMap:t,bumpScale:.05,shininess:6,specular:1118481}),s=r(n("#c85ac8","#f08ae8","#8a3a9a",5)),i=r(n("#d8782a","#f2a050","#a8501a",9,2)),c=(t,e)=>{const o=t.attributes.position,a=t.attributes.normal;for(let t=0;t<o.count;t++){const n=o.getX(t),r=o.getY(t),s=o.getZ(t),i=43758.5453*Math.sin(12.9898*Math.round(97*n)+78.233*Math.round(97*r)+37.719*Math.round(97*s)),l=e*(i-Math.floor(i)-.5);o.setXYZ(t,n+a.getX(t)*l,r+a.getY(t)*l,s+a.getZ(t)*l)}return t.computeVertexNormals(),t},h=(t,e,o,a=32,n=.035)=>c(new THREE.SphereGeometry(1,a,Math.round(.7*a)).scale(t,e,o),n),p=new THREE.MeshPhongMaterial({color:"#9ca3ae",shininess:120,specular:16777215}),f=new THREE.MeshPhongMaterial({color:"#d8702a",shininess:110,specular:16772829}),u=new THREE.MeshBasicMaterial({color:"#3ae8f0"}),d=new THREE.MeshBasicMaterial({color:"#6aff4a"}),m=new THREE.Vector3(0,1.75,0),M=[1,1.05,.82];R(h(...M,30),s,a,[m.x,m.y,m.z]);const E=new THREE.Vector3(0,2.72,.12),g=[.86,.74,.84];R(h(...g,30),s,a,[E.x,E.y,E.z]);const y=(t,e,o,a,n=.01)=>{const r=1-(o/e[0])**2-(a/e[1])**2;if(r<=0)return null;const s=e[2]*Math.sqrt(r),i=new THREE.Vector3(o/(e[0]*e[0]),a/(e[1]*e[1]),s/(e[2]*e[2])).normalize();return{p:new THREE.Vector3(t.x+o,t.y+a,t.z+s).addScaledVector(i,n),n:i}},x=(t,e,o,a,n,r,s,i=16,l=2)=>{const c=[],h=[];for(let h=0;h<=l;h++)for(let p=0;p<=i;p++){const f=y(t,e,o+(a-o)*p/i,n+(r-n)*h/l,s)||{p:new THREE.Vector3(t.x,t.y,t.z)};c.push(f.p.x,f.p.y,f.p.z)}for(let t=0;t<l;t++)for(let e=0;e<i;e++){const o=t*(i+1)+e,a=o+i+1;h.push(o,o+1,a,o+1,a+1,a)}const p=new THREE.BufferGeometry;p.setAttribute("position",new THREE.Float32BufferAttribute(c,3)),p.setIndex(h),p.computeVertexNormals();const f=new Float32Array(c.length/3*2);for(let t=0,e=0;t<=l;t++)for(let o=0;o<=i;o++,e++)f[2*e]=o/i,f[2*e+1]=t/l;return p.setAttribute("uv",new THREE.BufferAttribute(f,2)),p};[[.6,.5],[.48,.62],[.34,.7]].forEach((([t,e])=>R(x(E,g,-e,e,t,t+.045,.03,20,1),u,a)));const H=m;for(let t=0;t<6;t++){const e=.2*t-.62,o=.58-.05*Math.abs(t-2.5);R(x(H,M,-o,o,e,e+.17,.03),i,a),R(x(H,M,.05-o,o-.05,e+.172,e+.19,.038,12,1),d,a)}[-1,1].forEach((t=>R(x(H,M,.55*t-.05,.55*t+.05,-.66,.58,.045,1,10),p,a)));const w=b(128,96,(t=>{t.fillStyle="#04120c",t.fillRect(0,0,128,96);for(let e=0;e<12;e++)for(let o=0;o<16;o++)Math.random()<.55&&(t.fillStyle=Math.random()<.3?"#9aff9a":"#3ad86a",t.fillRect(6+7.3*o,6+7.4*e,4+2*Math.random(),4))}));w.wrapT=THREE.RepeatWrapping;const v=new THREE.MeshBasicMaterial({map:w}),S=[0,1].map((t=>b(128,96,(e=>{e.fillStyle="#04120c",e.fillRect(0,0,128,96);for(let t=0;t<96;t+=4)e.fillStyle="#061a10",e.fillRect(0,t,128,2);const o=(t,o,a,n)=>{e.fillStyle="#9aff9a",e.fillRect(4*t,4*o,4*a,4*n)},a=t?-1:1;o(14,4,4,4),o(15,8,2,1),o(13,9,6,7),o(16+5*a,6,2,2),o(15+3*a,7,2,2),o(17+(t?-1:2),9,2,2),o(14-(t?-3:3),12,3,2),o(11-(t?-2:1),13,2,2),o(14,16,2,4),o(17,16,2,3),o(t?12:13,20,3,2),o(18,19,2,2),o(19,20,3,2);for(let o=0;o<6;o++){const a=2+(5*o+3*t)%7;e.fillStyle=o%2?"#3ad86a":"#2a9a5a",e.fillRect(4+21*o,92-3*a,12,3*a)}})))),k=y(E,g,0,-.05,0);R(T.box(.7,.46,.14),p,a,[0,k.p.y,k.p.z-.02]),R(T.plane(.6,.36),v,a,[0,k.p.y,k.p.z+.055]);const P=new THREE.MeshBasicMaterial({color:"#3ae8f0"});[[-.46,.17],[-.66,.06],[-.5,-.06],[-.7,-.2],[-.36,.34],[.46,.17],[.66,.06],[.5,-.06],[.36,.34]].forEach((([t,e])=>{const o=y(E,g,t,e,.01);if(!o)return;const n=(new THREE.Quaternion).setFromUnitVectors(new THREE.Vector3(0,0,1),o.n);R(T.torus(.085,.03,8,20),p,a,[o.p.x,o.p.y,o.p.z]).quaternion.copy(n),R(T.sphere(.065,12,10),P,a,[o.p.x,o.p.y,o.p.z])})),[-1,1].forEach((t=>{const e=y(E,g,.42*t,-.34,-.02).p;R(T.cyl(.11,.13,.16,16),p,a,[e.x,e.y,e.z],[Math.PI/2-.3,0,-.4*t]),R(ao([[0,0,0],[.22*t,-.24,.16],[.52*t,-.24,.2],[.74*t,.1,.14],[.82*t,.6,.04]].map((([t,o,a])=>[e.x+t,e.y+o,e.z+a])),.085,.02,30,10),f,a)}));const z=[-.22,-.075,.075,.22].map(((t,e)=>{const o=y(E,g,t,-.3,-.06),n=[];let r=a;for(let t=0;t<4;t++){const e=new THREE.Group,a=.14-.022*t,i=a-.022;t?e.position.set(0,-.36,0):e.position.copy(o.p),r.add(e),R(c(new THREE.CylinderGeometry(i,a,.38,12,2),.014),s,e,[0,-.18,0]),R(c(new THREE.SphereGeometry(a,12,8),.012),s,e),n.push(e),r=e}return R(c(new THREE.SphereGeometry(.05,10,8),.008),s,r,[0,-.38,0]),{joints:n,i:e}})),C=[-1,1].map((t=>{R(h(.56,.52,.55,24),s,a,[1.02*t,2.18,-.02]);const e=new THREE.Group;e.position.set(1.12*t,2.05,0),a.add(e),R(T.torus(.42,.07,8,24),p,e,[.07*t,-.32,0],[Math.PI/2,0,.22*t]),R(h(.36,.62,.38,24),s,e,[.12*t,-.55,0]),R(h(.32,.55,.34,24),s,e,[.2*t,-1.2,.05]),R(T.cyl(.36,.36,.26,20),p,e,[.2*t,-1.12,.05]);for(let o=0;o<3;o++)R(T.box(.08,.04,.02),u,e,[.2*t,.06*o-1.07,.4]);[[-.48,.38],[-.6,.36],[-.72,.37]].forEach((([o,a])=>R(T.box(.22,.035,.02),u,e,[.12*t,o,a+.01],[0,0,.1*t]))),R(h(.3,.26,.3,20),s,e,[.24*t,-1.68,.1]);for(let o=0;o<3;o++)R(ao([[0,0,0],[0,-.12,.06],[-.04*t,-.22,0]],.05,.012,10,6),f,e,[.12*t+.1*t*(o-1),-1.84,.22-.04*Math.abs(o-1)]);return e})),I=[-1,1].map((t=>{const e=new THREE.Group;e.position.set(.55*t,1.05,0),a.add(e),R(h(.42,.55,.44,24),s,e,[0,-.35,0]),R(new THREE.SphereGeometry(.3,20,12,0,l,0,Math.PI/2),p,e,[0,-.45,.26],[Math.PI/2,0,0]),R(T.cone(.08,.2,10),p,e,[0,-.45,.6],[Math.PI/2,0,0]),R(h(.42,.26,.55,24),s,e,[0,-.85,.12]);for(let t=0;t<4;t++)R(ao([[0,0,0],[0,-.06,.12],[0,-.16,.16]],.05,.012,8,6),f,e,[.16*t-.24,-.84,.6]);return e})),A=10*Math.random(),G=new THREE.Matrix4,B=new THREE.Matrix4,F=new THREE.Matrix4,V=new THREE.Quaternion,W=new THREE.Vector3,D=new THREE.Vector3(1,1,1);let O=0,L=0,q=-1,Y=0,U=-1;return{height:3.4,onTalk(){q=0},singing(){U=0},anim(t,e,n){e=e||.016;const r=!(!n||!n.moving);O+=((r?1:0)-O)*Math.min(1,6*e),r&&(L+=4.5*e),I.forEach(((t,e)=>t.rotation.x=.35*O*Math.sin(L+e*Math.PI))),C.forEach(((e,o)=>{e.rotation.x=-.3*O*Math.sin(L+o*Math.PI)+.04*Math.sin(1.2*t+A+o),e.rotation.z=.05*(o?-1:1)*Math.sin(1.1*t+A)}));const s=1+.012*Math.sin(1.4*t+A);a.scale.set(s,1/s,s);let i=0;q>=0&&(q+=e,q<1.1&&(i=.55*Math.sin(Math.min(1,q/1.1)*Math.PI)),q>=1.1&&(q=-1)),Y+=((et(n)?1:0)-Y)*Math.min(1,4*e),U>=0&&(U+=e,U>1&&(U=-1));const l=Y,c=Math.abs(Math.sin(3.2*t));o.position.y=.075+i+.09*O*Math.abs(Math.sin(L))+.01*Math.sin(1.4*t+A)+.22*l*c,o.rotation.y=U>=0?2*Math.PI*(t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2)(U):0,a.rotation.z=.14*l*Math.sin(1.6*t),o.position.y+=.6*Math.abs(Math.sin(a.rotation.z)),l>.001&&C.forEach(((e,o)=>{const a=o?1:-1;e.rotation.z+=l*(a*(1.75+.45*Math.sin(3.2*t+o*Math.PI))-e.rotation.z),e.rotation.x+=l*(-.3*Math.sin(1.6*t+o)-e.rotation.x)})),l>.01&&I.forEach(((e,o)=>e.rotation.x=.14*l*Math.sin(3.2*t+o*Math.PI)));const h=.75+.25*Math.sin(2.2*t+A);u.color.setRGB(.23*h,.91*h,.94*h),P.color.set((t+A)%5<.12?"#0a3a40":"#3ae8f0"),w.offset.y=.25*t%1;{const e=Y>.5?S[Math.floor(Ft(t))%2]:w;v.map!==e&&(v.map=e)}const p=(r?1.7:1)+(q>=0?1.5:0);z.forEach((({joints:e,i:o})=>e.forEach(((e,a)=>{const n=.12*(o-1.5)*a*a*.35;e.rotation.x=(0===a?-.28:.1+.08*a)+.1*p*Math.sin(1.3*t+1.1*o+.7*a+A)+.2*Y*Math.sin(3.2*t+o+.6*a),e.rotation.z=n+.07*p*Math.sin(1.05*t+1.7*o+.5*a+A)+.25*Y*Math.sin(1.6*t+1.4*o)})))),z.forEach((({joints:t})=>{G.identity();for(let e=0;e<t.length;e++){const o=t[e];for(let t=0;t<10;t++){B.copy(G).multiply(F.compose(o.position,V.setFromEuler(o.rotation),D));let t=!1;for(const o of[-.2,-.38]){W.set(0,o,0).applyMatrix4(B);const a=.15-.022*e+.03;if(((W.x-m.x)/(M[0]+a))**2+((W.y-m.y)/(M[1]+a))**2+((W.z-m.z)/(M[2]+a))**2<1){t=!0;break}}if(!t)break;o.rotation.x-=.09}G.copy(B)}}))}}};
 __R["nextessa"]=function(t,e){const o="#f47a3a",a="#f09460",n=t=>x.clay(t,{shininess:26,specular:2760728}),r=new THREE.Group;t.add(r),R(v([{geo:T.sphere(1,32,24),matrix:S(0,.74,-.2,0,0,0,.74,.72,.66),color:o},{geo:T.sphere(1,32,24),matrix:S(-.41,.58,.22,0,0,0,.57,.58,.54),color:o},{geo:T.sphere(1,32,24),matrix:S(.42,.6,.2,0,0,0,.6,.6,.55),color:o}]),x.clay("#ffffff",{vertexColors:!0,shininess:26,specular:2760728}),r);const s=[],i=(t,e,o,r)=>{const i=new THREE.Group;return i.position.set(0,e,0),t.add(i),R(T.sphere(1,24,16),n(a),i,[0,0,0],null,[o,r,.95*o]),[-1,1].forEach((t=>{R(T.cone(.065,.14,8),n("#eea06c"),i,[t*o*.8,.15*-r,.5*o],[Math.PI/2-.3,0,-1.1*t])})),s.push(i),i},l=i(r,1.32,.45,.38),c=i(l,.44,.42,.36),h=i(c,.42,.39,.34),p=new THREE.Group;p.position.set(0,.5,0),h.add(p),R(T.sphere(1,28,22),n(a),p,[0,0,0],null,[.46,.45,.45]),R(T.box(.2,.15,.24),n("#e3875a"),p,[0,-.05,.5]),[-1,1].forEach((t=>{R(T.sphere(.045,10,8),x.clay("#f2c21e",{shininess:60}),p,[.25*t,.13,.33]),R(T.sphere(.016,6,5),x.basic("#ffffff"),p,[.265*t,.155,.37])}));const f=new THREE.Group;f.position.set(0,.45,0),p.add(f);const u=10*Math.random();let d=0,m=-1;return{height:3.5,carry:f,onTalk(){m=0},anim(e,o,a){const n=!(!a||!a.moving);d+=o*(n?9:0);const i=n?Math.abs(Math.sin(d)):0,l=n?1-.1*(1-i):1+.015*Math.sin(1.8*e+u);r.scale.set(1+.8*(1-l),l,1+.8*(1-l)),t.position.y=.12*i;const c=n?.1:.05,h=n?4.5:1.5;s.forEach(((t,o)=>{t.rotation.z=c*Math.sin(e*h+u-.7*o),t.rotation.x=.7*c*Math.sin(e*h*.8+u-.7*o)+(n?.05:0)}));let f=.04*Math.sin(2.1*e+u);m>=0&&(m+=o,f+=.25*Math.sin(Math.min(1,m/.8)*Math.PI*2)*(1-m/.8),m>.8&&(m=-1)),p.rotation.set(f,.08*Math.sin(.9*e+u),0)}}};
 __R["fortizmo"]=(t,e)=>{const o=new THREE.Group;t.add(o);const a=(t,e,o,a)=>{let n=a;const r=()=>(n=16807*n%2147483647)/2147483647,s=b(256,256,(a=>{a.fillStyle=t,a.fillRect(0,0,256,256),a.lineCap="round";for(let t=0;t<2800;t++){const t=256*r(),n=256*r(),s=Math.PI/2+1.4*(r()-.5),i=4+7*r();a.strokeStyle=r()<.55?e:o,a.globalAlpha=.35+.4*r(),a.lineWidth=1+1.4*r(),a.beginPath(),a.moveTo(t,n),a.lineTo(t+Math.cos(s)*i,n+Math.sin(s)*i),a.stroke()}a.globalAlpha=1}),{smooth:!0});return s.wrapS=s.wrapT=THREE.RepeatWrapping,s.repeat.set(3,3),s},n=t=>new THREE.MeshPhongMaterial({map:t,bumpMap:t,bumpScale:.04,shininess:6,specular:1118481}),r=n(a("#e8742a","#ffa860","#b85418",7)),s=n(a("#efe6d2","#ffffff","#c8bca0",13)),i=(t,e)=>{const o=t.attributes.position,a=t.attributes.normal;for(let t=0;t<o.count;t++){const n=o.getX(t),r=o.getY(t),s=o.getZ(t),i=43758.5453*Math.sin(12.9898*Math.round(97*n)+78.233*Math.round(97*r)+37.719*Math.round(97*s)),l=e*(i-Math.floor(i)-.5);o.setXYZ(t,n+a.getX(t)*l,r+a.getY(t)*l,s+a.getZ(t)*l)}return t.computeVertexNormals(),t},c=.9,h=t=>1+.12*Math.max(0,-t),p=(()=>{const t=new THREE.SphereGeometry(1,44,32),e=t.attributes.position;for(let t=0;t<e.count;t++){const o=e.getY(t),a=h(o);e.setXYZ(t,.8*e.getX(t)*a,o*c,.72*e.getZ(t)*a)}return t.computeVertexNormals(),i(t,.03)})(),f=new THREE.Mesh(p,r);f.position.set(0,1.45,0),o.add(f);const u=(t,e,o=.02)=>{const a=e/c,n=h(a),r=.8*n,s=.72*n,i=1-(t/r)**2-a*a;if(i<=0)return null;const l=s*Math.sqrt(i),p=new THREE.Vector3(t/(r*r),e/(c*c),l/(s*s)).normalize();return{p:new THREE.Vector3(t,e,l).addScaledVector(p,o),n:p}},d=(()=>{const t=new THREE.RingGeometry(1e-4,1,48,8),e=t.attributes.position;for(let t=0;t<e.count;t++){const o=u(.52*e.getX(t),.66*e.getY(t)-.06,.022)||{p:new THREE.Vector3(.52*e.getX(t),.66*e.getY(t)-.06,0)};e.setXYZ(t,o.p.x,o.p.y,o.p.z)}return t.computeVertexNormals(),t})();f.add(new THREE.Mesh(d,s));const m=[],M=[],E=[[.02,.74],[.1,.6],[-.2,.44],[.2,.28],[-.24,.12],[.24,-.04],[-.26,-.2],[.22,-.36],[-.2,-.52],[-.04,-.66]],g=[];for(let t=0;t<=24;t++){const e=t/24;g.push([1.72*e-.86,.1*Math.sin(e*Math.PI)-.12])}[[E,.045],[g,.05]].forEach((([t,e])=>{const o=((t,e)=>t.map((([t,o])=>(u(t,o,e)||{p:new THREE.Vector3(t,o,.4)}).p)))(t,e);m.push({geo:new THREE.TubeGeometry(new THREE.CatmullRomCurve3(o),6*t.length,.038,7,!1),matrix:new THREE.Matrix4,color:"#cbbf9f"})}));const y=(t,e)=>{const o=u(t,e,.08);o&&M.push({geo:T.cone(.032,.09,5),matrix:(new THREE.Matrix4).compose(o.p,(new THREE.Quaternion).setFromUnitVectors(new THREE.Vector3(0,1,0),o.n),new THREE.Vector3(1,1,1)),color:"#1c1c22"})};E.slice(1,-1).forEach((([t,e])=>y(t,e)));for(let t=1;t<24;t+=2)y(g[t][0],g[t][1]+.02);f.add(new THREE.Mesh(v(m),new THREE.MeshPhongMaterial({vertexColors:!0,shininess:12}))),f.add(new THREE.Mesh(v(M),new THREE.MeshPhongMaterial({vertexColors:!0,shininess:90,specular:8947848})));const H=new THREE.Group;H.position.set(0,2.78,.02),o.add(H),R(i(new THREE.SphereGeometry(.5,36,26).scale(1,.92,.95),.025),r,H);const S=new THREE.Group;S.rotation.order="YXZ",S.position.set(.06,-.17,.34),S.rotation.set(Math.PI/2-.14,.32,0),H.add(S);const w=t=>t.map((([t,e])=>new THREE.Vector2(t,e))),k=new THREE.LatheGeometry(w([[.26,0],[.2,.2],[.17,.42],[.18,.55],[.23,.66],[.255,.71],[.24,.735],[.2,.73],[.165,.66]]),28),P=new THREE.LatheGeometry(w([[.26,0],[.2,.2],[.15,.6],[.135,1.3],[.24,1.75],[.42,1.98],[.45,2.03],[.39,2.01],[.31,1.92]]),28),z=new THREE.LatheGeometry(w([[.166,.66],[.145,.55],[.13,.45]]),24),C=new THREE.LatheGeometry(w([[.31,1.92],[.21,1.76],[.115,1.56]]),24),I=r.clone();I.side=THREE.DoubleSide,R(k,I,S),R(z,new THREE.MeshLambertMaterial({color:"#1a0e0a",side:THREE.DoubleSide}),S);const A=R(T.cyl(.132,.132,.01,24),x.basic("#0e0806"),S,[0,.46,0]),B=[[k,k.attributes.position.array.slice(),P.attributes.position.array],[z,z.attributes.position.array.slice(),C.attributes.position.array]];let F=-1;const V=new THREE.MeshPhongMaterial({color:"#f0c040",shininess:140,specular:16777215}),W=new THREE.Group;S.add(W);const D=R(new THREE.TorusGeometry(.16,.05,10,26),r,W,[.24,1.42,0],[0,Math.PI/2,0]),O=[.86,.99,1.12].map((t=>{const e=new THREE.Group;return e.position.set(0,t,-.13),W.add(e),R(T.cyl(.035,.035,.16,10),V,e,[0,0,-.06],[Math.PI/2,0,0]),R(T.cyl(.055,.055,.03,14),V,e,[0,0,-.15],[Math.PI/2,0,0]),e})),L=new THREE.Object3D;S.add(L);const q=new THREE.Object3D;S.add(q);const N=new THREE.Quaternion,Y=new THREE.Quaternion,U=new THREE.Quaternion,j=new THREE.Vector3,X=new THREE.Vector3,_=new THREE.Vector3;let Q=0;const K=[-1,1].map((t=>{const e=new THREE.Group;return e.position.set(.2*t,.36,-.06),e.rotation.set(-.12,0,-.22*t),H.add(e),R(i(new THREE.SphereGeometry(1,20,14).scale(.16,.42,.07),.012),r,e,[0,.38,0]),R(new THREE.SphereGeometry(1,16,12).scale(.1,.33,.04),new THREE.MeshPhongMaterial({color:"#f29a5c",shininess:8}),e,[0,.38,.05]),e})),Z=(t,e,o,a)=>{const n=.95*Math.sqrt(Math.max(.01,.25-t*t/1-(e/.92)**2*1));R(T.sphere(o,10,8),a?new THREE.MeshPhongMaterial({color:"#0a0a0c",shininess:140,specular:16777215}):x.basic("#0a0a0c"),H,[t,e,n+.005])};Z(-.15,.2,.044,!0),Z(.15,.2,.044,!0),Z(-.05,.36,.02),Z(.1,.34,.02),Z(.34,.06,.022),Z(-.32,.1,.02);const $=[-1,1].map((t=>{const e=new THREE.Group;e.position.set(.66*t,1.78,.02),e.rotation.z=-.42*t,o.add(e);const a=R(i(new THREE.SphereGeometry(1,20,14).scale(.36,.17,.19),.02),r,e,[.3*t,0,0]),n=new THREE.Group;n.position.set(.66*t,0,0),e.add(n);const s=R(i(new THREE.SphereGeometry(1,18,12).scale(.5,.15,.165),.015).translate(.5,0,0),r,n,[0,0,0],[0,t<0?Math.PI:0,0]),l=R(i(new THREE.SphereGeometry(.17,16,12),.012),r,n);s.visible=l.visible=!1;const c=new THREE.Group;return n.add(c),R(i(new THREE.SphereGeometry(1,16,12).scale(.13,.12,.13),.015),r,c,[0,-.02,.02]),[-.05,.02,.09].forEach(((e,o)=>R(T.sphere(.055,10,8),r,c,[.12*t,e-.03,.04-.03*o]))),R(T.sphere(.05,10,8),r,c,[-.02*t,.1,.08]),e.userData.am=a,e.userData.hd=c,e.userData.sd=t,e.userData.fo=n,e.userData.fm=s,e.userData.eb=l,e})),J=new THREE.MeshPhongMaterial({color:"#4a4d56",shininess:60,specular:6710886}),ae=new THREE.MeshPhongMaterial({color:"#b8bec8",shininess:120,specular:16777215}),re=new THREE.MeshPhongMaterial({color:"#1c1c20",shininess:20}),ie=[-1,1].map((t=>{const e=.3*t,a=new THREE.Group;a.position.set(e,0,0),o.add(a),R(T.box(.15,.26,.13),J,a,[0,.5,0]),R(T.box(.1,.03,.14),ae,a,[0,.43,0]),R(T.box(.11,.03,.14),ae,a,[0,.57,0]),R(T.cyl(.032,.032,.2,10),ae,a,[0,.33,0]);const n=[];for(let t=0;t<=40;t++){const e=t/40*6*l;n.push(new THREE.Vector3(.05*Math.cos(e),.26+.14*t/40,.05*Math.sin(e)))}R(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(n),80,.009,5,!1),ae,a),[-1,1].forEach((t=>R(T.box(.02,.12,.06),J,a,[.075*t,.25,0])));const r=new THREE.Group;r.position.set(0,.225,0),a.add(r),R(new THREE.TorusGeometry(.17,.056,10,28),re,r,[0,0,0],[0,Math.PI/2,0]),R(T.cyl(.125,.125,.05,24),ae,r,[0,0,0],[0,0,Math.PI/2]);for(let t=0;t<10;t++)R(T.box(.012,.24,.012),J,r,[0,0,0],[t/10*Math.PI,0,0]);return R(T.cyl(.035,.035,.08,12),ae,r,[0,0,0],[0,0,Math.PI/2]),r})),he=10*Math.random(),Me=new THREE.Vector3;let ge=0,st=!1;return{height:3.75,onTalk(){ge=1.1,G.toot&&G.toot()},anim(t,e,a){e=e||.016;const n=!(!a||!a.moving);if(a){const t=a.group.position;if(st){const e=Math.hypot(t.x-Me.x,t.z-Me.z);e<1&&ie.forEach((t=>t.rotation.x+=e/.225))}Me.copy(t),st=!0}ge=Math.max(0,ge-e);const r=1+.015*Math.sin(1.7*t+he);f.scale.set(r,1/r,r),o.rotation.x=n?.06:0,o.position.y=n?.012*Math.sin(14*t):0,H.rotation.set(.04*Math.sin(.9*t+he),.12*Math.sin(.6*t+he),0),Q=Math.max(0,Math.min(1,Q+(a&&a.hornWant?1:-1)*e/1.4)),a&&(a.hornK=Q);const s=Wt(Q);S.rotation.x=Math.PI/2-.14-(ge>0?.55*Math.sin(Math.min(1,ge/1.1)*Math.PI):.05*Math.sin(1.3*t+he))-.2*s,K.forEach(((e,o)=>e.rotation.z=(o?-1:1)*(.22+.06*Math.sin(2.1*t+he+o)+(a&&a.hornPlaying?.28*Math.pow(Math.abs(Math.sin(Math.PI*Ft(t))),2):0)))),$.forEach(((e,o)=>e.rotation.set(0,0,(o?-1:1)*(n?.6+.1*Math.sin(6*t+o*Math.PI):.42+.05*Math.sin(1.4*t+he))))),S.scale.set(1,1,1),(t=>{if(!(Math.abs(t-F)<.001)){F=t;for(const[e,o,a]of B){const n=e.attributes.position.array;for(let e=0;e<n.length;e++)n[e]=o[e]+(a[e]-o[e])*t;e.attributes.position.needsUpdate=!0,e.computeVertexNormals(),e.computeBoundingSphere()}A.position.y=.46+1.1*t,A.scale.setScalar(1-.15*t)}})(s);const i=s>.002;if(W.visible=s>.25,i){const e=a&&a.hornPlaying?1:0,n=e*Math.max(0,Math.sin(2*Math.PI*1.4667*t)),r=Math.max(.01,Math.min(1,(s-.25)/.6));D.scale.setScalar(r),O.forEach(((o,a)=>{o.scale.setScalar(r),o.position.z=-.13-.025*e*Math.max(0,Math.sin(2*Math.PI*1.4667*t+2.1*a))})),S.scale.set(1+.04*n,1,1+.04*n),L.position.set(-.06,.55+.25*s,.29),q.position.set(.02,.5+.5*s,-.42),o.updateMatrixWorld(!0);const i=(new THREE.Matrix4).copy(o.matrixWorld).invert();$.forEach((o=>{const a=o.userData,n=a.sd;(n<0?L:q).getWorldPosition(j),j.applyMatrix4(i),_.set(...n<0?[-.98,1.98,.72]:[1.16,2.42,.62]),X.copy(_).sub(o.position);const r=X.length();N.copy(o.quaternion),Y.setFromUnitVectors(new THREE.Vector3(n,0,0),X.normalize()),o.quaternion.copy(N).slerp(Y,s);const l=.66+(r-.66)*s;a.am.scale.x=l/.66,a.am.position.x=.3*n*l/.66,a.fo.position.set(l*n,0,0),_.set(l*n,0,0).applyQuaternion(o.quaternion).add(o.position),X.copy(j).sub(_);const c=X.length()*s;X.applyQuaternion(U.copy(o.quaternion).invert()).normalize(),Y.setFromUnitVectors(new THREE.Vector3(n,0,0),X),a.fo.quaternion.identity().slerp(Y,s),a.fm.scale.x=Math.max(.01,c-.1),a.fm.visible=a.eb.visible=s>.03,a.hd.position.set(c*n,0,0),a.hd.rotation.x=.25*e*Math.sin(2*Math.PI*1.4667*t+n)}))}else $.forEach((t=>{const e=t.userData;e.am.scale.x=1,e.am.position.x=.3*e.sd,e.fo.position.set(.66*e.sd,0,0),e.fo.quaternion.identity(),e.fm.visible=e.eb.visible=!1,e.hd.position.set(0,0,0)}))}}};
 
@@ -6605,7 +6644,7 @@ e.restore()}else if("robot"===md){[290,398].forEach((t=>{e.fillRect(o(t)-6,138,3
 // body turn, screen turn, screen tilt, step]
 const RB=[[-1.35,0,0,0,0,0,0,1],[-1.35,0,-1.35,0,0,0,0,-1],[0,1.35,-1.35,0,0,0,.18,1],[0,1.35,0,1.35,0,0,-.18,-1],[0,.6,0,1.35,.5,.3,0,1],[-1.35,0,-1.35,0,.5,.3,.18,-1],[-1.35,0,-1.35,0,0,0,-.18,1],[0,0,0,0,-.5,-.3,0,-1],[-1.35,0,0,0,-.5,-.3,.18,1],[0,0,-1.35,0,-.5,-.3,-.18,-1],[-1.35,0,0,0,0,0,.18,1],[0,0,-1.35,0,0,0,-.18,-1],[0,1.35,0,1.35,0,0,0,1],[0,1.35,0,0,.25,.2,.18,-1],[0,0,0,1.35,-.25,-.2,-.18,1],[0,0,0,0,0,0,0,0]];
 return{height:3.3,onTalk(){I=0},anim(e,t,o){s.offset.y+=.05*t,i.offset.y+=.04*t;{const md=o&&o.planting?"shovel":o&&o.gcDw>.05&&mW>.5&&mV?mV:o&&o.gcDw>.05?"robot":o&&o.giftAt&&performance.now()-o.giftAt<5e3?"smile":"idle",op="robot"===md?Math.floor(dB)%2:"idle"===md&&o&&o.tkK>.05?o.tkS>.55?2:o.tkS>.2?1:0:0,k=md+op;// (each face is drawn once into its own texture and then just swapped in: no redraw or re-upload each time it changes)
-k!==zK&&((zK=k),(zS.material.map=zT[k]||(zT[k]=$b(512,512,(e=>zF(e,md,op))))))}const a=o&&o.moving;P+=t*(a?7:0);const n=a?Math.sin(P):0;g[0].rotation.x=.45*n,g[1].rotation.x=-.45*n,d.position.y=a?.03*Math.abs(Math.sin(P)):0,m.scale.y=.8*(1+.01*Math.sin(1.7*e+G)),y.rotation.y=.18*Math.sin(1.1*e+G)+.1*n,y.rotation.z=.05*Math.sin(.8*e+G),x.rotation.x=.04*Math.sin(1.2*e+G)-.1*n,E.rotation.x=.1*n;let r=.03*Math.sin(.9*e+G),l=.04*Math.sin(.7*e+G);I>=0&&(I+=t,r+=.18*Math.sin(Math.min(1,I/.9)*Math.PI*2)*(1-I/.9),I>=.9&&(I=-1));
+k!==zK&&((zK=k),(zS.material.map=zT[k]||(zT[k]=$b(512,512,(e=>zF(e,md,op))))))}const a=o&&o.moving;P+=t*(a?7:0);const n=a?Math.sin(P):0;g[0].rotation.x=.45*n,g[1].rotation.x=-.45*n,d.position.y=a?.07*Math.abs(Math.sin(P)):0,m.scale.y=.8*(1+.01*Math.sin(1.7*e+G)),y.rotation.y=.18*Math.sin(1.1*e+G)+.1*n,y.rotation.z=.05*Math.sin(.8*e+G),x.rotation.x=.04*Math.sin(1.2*e+G)-.1*n,E.rotation.x=.1*n;let r=.03*Math.sin(.9*e+G),l=.04*Math.sin(.7*e+G);I>=0&&(I+=t,r+=.18*Math.sin(Math.min(1,I/.9)*Math.PI*2)*(1-I/.9),I>=.9&&(I=-1));
 // (in a Dance battle he shows each move with its own animation, blended over the robot by mW)
 const dw=o?Bt(o,t):0,want=o&&o.battleMove||null;want!==mL&&((mL=want),(mT=0)),want&&(mV=want),(mW+=((want?1:0)-mW)*Math.min(1,5*t)),(mT+=t);
 let hy=0;
@@ -7067,9 +7106,9 @@ const JGP = (() => {
 			}
 			return (sh.userData.keep = el.userData.keep = !0), { sh, el, hand };
 		}
-		// walk cycle helpers for jointed limbs
+		// walk cycle helpers for jointed limbs (the foot stays level, so long toes and claws never dig in)
 		const stride = (lg, ph, amp, bend) => {
-				(lg.hip.rotation.x = Math.sin(ph) * amp), (lg.knee.rotation.x = Math.max(0, Math.sin(ph + 1.4)) * bend);
+				(lg.hip.rotation.x = Math.sin(ph) * amp), (lg.knee.rotation.x = Math.max(0, Math.sin(ph + 1.4)) * bend), (lg.foot.rotation.x = -(lg.hip.rotation.x + lg.knee.rotation.x));
 			},
 			// smile/frown arc
 			mouth = (p, pos, w, o = {}) => R(T.torus(w, w * 0.09, 6, 16, o.arc || Math.PI * 0.8), x.basic(o.color || "#2a1010"), p, pos, [0, 0, Math.PI + (Math.PI - (o.arc || Math.PI * 0.8)) / 2]);
@@ -8705,7 +8744,8 @@ const JGP = (() => {
 			height: 3.1,
 			lids,
 			step(t, dt, tk, wk) {
-				(body.rotation.z = 0.03 * Math.sin(1.4 * t) + 0.06 * wk * Math.sin(8 * t)), (body.position.y = 0.04 * wk * Math.abs(Math.sin(8 * t)));
+				// (walking, each step lifts him a little more than his feet swing down, so they never dip into the ground)
+				(body.rotation.z = 0.03 * Math.sin(1.4 * t) + 0.06 * wk * Math.sin(8 * t)), (body.position.y = 0.075 * wk * Math.abs(Math.sin(8 * t)));
 				(plume.rotation.x = 0.025 * Math.sin(1.7 * t)), (plume.rotation.z = 0.03 * Math.sin(1.3 * t + 1));
 				const play = DRUMS.on && !wk;
 				playK += ((play ? 1 : 0) - playK) * Math.min(1, 5 * (dt || 0.016));
@@ -9499,6 +9539,8 @@ const JGP = (() => {
 				P.up && (P.up.scale.y = S), (a.el.position.y = -0.28 * S), P.fore && (P.fore.scale.y = S), P.claw && (P.claw.position.y = -0.28 * (S - 1));
 			};
 		let dB = 0,
+			gTurns = 0, // his dance's quarter turns, and the beat (k) last frame
+			gK = -1,
 			mW = 0,
 			mT = 0,
 			mV = null,
@@ -9542,10 +9584,12 @@ const JGP = (() => {
 						// ROCK OUT!: one long arm out along the guitar neck, the other strumming at his belly, stomping and bouncing
 						(mv[1] = ROCK_NECK), (mv[0] = ROCK_STRUM), (ROCK_STRUM[0] = -0.95 + 0.25 * Math.sin(2 * mph)), (hopM = 0.05 * Math.abs(Math.sin(mph)));
 						// (a stomp lifts the thigh and folds the shin back, so the foot only ever rises off the ground)
-						legs.forEach((lg, j) => {
-							const up = Math.max(0, Math.sin(mph + j * Math.PI)) * aW;
-							(lg.hip.rotation.x = -0.3 * up), (lg.knee.rotation.x = 0.6 * up);
-						});
+						// (only while the move shows: a faded-out stomp would freeze his walking legs)
+						aW > 0.001 &&
+							legs.forEach((lg, j) => {
+								const up = Math.max(0, Math.sin(mph + j * Math.PI)) * aW;
+								(lg.hip.rotation.x = -0.3 * up), (lg.knee.rotation.x = 0.6 * up), (lg.foot.rotation.x = -0.3 * up);
+							});
 					} else if ("scissors" === mV) {
 						// THE SPLITS LIKE SCISSORS: a jump every two beats, kicking his legs apart into a split in mid air,
 						// his long arms snipping open and shut over his head
@@ -9576,10 +9620,14 @@ const JGP = (() => {
 					// the hips sway on beats 13 to 15; the hop and the quarter turn on beat 16
 					const sway = k >= 12 && k <= 14 ? Math.sin(Math.PI * (k - 12 + f)) : 0;
 					(body.position.x = sW * 0.11 * sway), (body.rotation.y += sW * 0.14 * sway);
-					const turns = Math.floor(dB / 16),
-						hop = 15 === k ? sm : 0;
+					// (a quarter turn only counts, and the hop only shows, while his dance shows fully: half blended
+					// with a battle move or fading out, the turn would flip between +180° and -180°)
+					const full = sW > 0.99;
+					full && 15 === gK && 15 !== k && gTurns++, (gK = k);
+					const turns = gTurns,
+						hop = full && 15 === k ? sm : 0;
 					(root.position.y = sW * 0.2 * Math.sin(Math.PI * (15 === k ? f : 0)) + aW * hopM), (root.rotation.y = sW * wrap((Math.PI / 2) * (turns + hop)));
-				} else dB && ((dB = 0), (body.position.x = 0), (root.rotation.y = 0), arms.forEach((a) => stretch(a, 1)), legs.forEach((lg) => (lg.hip.rotation.z = 0)));
+				} else dB && ((dB = 0), (gTurns = 0), (gK = -1), (body.position.x = 0), (root.rotation.y = 0), arms.forEach((a) => stretch(a, 1)), legs.forEach((lg) => (lg.hip.rotation.z = 0)));
 				// his tubes stay on the ground: when his sway would tip a coil under it, he rises by just that much
 				let lo = 9;
 				for (const q of coil) lo = Math.min(lo, cv.copy(q).applyEuler(body.rotation).y);
@@ -11345,8 +11393,20 @@ const JGP = (() => {
 			R(T.torus(r, 0.26, 6, Math.max(48, Math.round(6 * r))), ridge, o, [0, 0.04, 0], [Math.PI / 2, 0, 0], [1, 1, 0.35]);
 			const nn = Math.floor((l * r) / 1.4);
 			for (let k = 0; k < nn; k++) {
-				const a = ((k + 0.5 * ri) / nn) * l;
-				garden.slots.push({ x: r * Math.cos(a), z: r * Math.sin(a), plant: null });
+				const a = ((k + 0.5 * ri) / nn) * l,
+					x0 = r * Math.cos(a),
+					z0 = r * Math.sin(a);
+				// (no slot on a stepping stone: a plant would grow up through it)
+				let onStone = !1;
+				for (let q = 0; q < 4 && !onStone; q++)
+					for (let rs = 2; rs < GARDEN_R; rs += 1.1) {
+						const as = (q / 4) * l + l / 8;
+						if (Math.hypot(x0 - rs * Math.cos(as), z0 - rs * Math.sin(as)) < 0.62) {
+							onStone = !0;
+							break;
+						}
+					}
+				onStone || garden.slots.push({ x: x0, z: z0, plant: null });
 			}
 		}
 		// four stepping-stone paths from the edge to the centre
@@ -11551,8 +11611,9 @@ const JGP = (() => {
 			(ent.finaleSlot = spots[k]), (ent.plantNext = now + rr(2, 5)), (ent.watching = !1);
 		});
 	}
-	// FORTIZMO and the librarian SPARKAKUS (who leaves the Library for it) come into the garden but
-	// don't plant.
+	// FORTIZMO doesn't plant: she walks to the garden's edge to play. The librarian SPARKAKUS (who leaves
+	// the Library for it) does the planting move with everyone, but he isn't one of the planters, so
+	// nothing comes up where he digs.
 	// (BACKPACKA only appears for the event, flying in himself; NEXTESSA is never at it: she only comes
 	// through the portal for the pizza delivery)
 	const NO_PLANT = ["frog"],
@@ -12011,7 +12072,11 @@ const JGP = (() => {
 					m = V(0, 16, 0);
 				pos = bez(a0, m, away, q);
 				const ahead = bez(a0, m, away, Math.min(1, q + 0.02));
-				(face = Math.atan2(ahead.x - pos.x, ahead.z - pos.z)), (pitch = -0.25 * Math.sin(Math.PI * q)), (fat = 0.15), (amp = 0.4), (freq = 24);
+				// (he turns from where the spin left him to his heading over the first part of the way, the short way round)
+				const f0 = (flags.gface || 0) + 3 * l * 0.5,
+					f1 = Math.atan2(ahead.x - pos.x, ahead.z - pos.z),
+					df = Math.atan2(Math.sin(f1 - f0), Math.cos(f1 - f0));
+				(face = f0 + df * ease(q / 0.25)), (pitch = -0.25 * Math.sin(Math.PI * q)), (fat = 0.15), (amp = 0.4), (freq = 24);
 			}
 			P.root.position.copy(pos), (P.root.rotation.y = face), (P.tilt.rotation.x = pitch), (P.tilt.rotation.z = 0.05 * Math.sin(1.1 * e));
 			shape(P, Math.max(0, fat), neck, ease(spr), t), flapWings(P, amp, freq, t);
@@ -12137,8 +12202,9 @@ const JGP = (() => {
 				e > D.splay && e < D.spray && Math.random() < 1.2 * dt && fin.length && Ut.above(f(fin), f(["♥", "✿", "♪"]), f([M.pink, M.yellow, M.lime, M.teal]));
 			}
 		}
+		// (the creatures' watching flags are cleared when the Event wraps up: clearing them while it still
+		// runs would set everyone planting again during FORTIZMO's closing tag)
 		function hideAll() {
-			It.all.forEach((en) => (en.watching = !1));
 			if (!made) return;
 			const P = made;
 			(P.root.visible = !1), P.ripples.forEach((m) => (m.visible = !1)), P.jets.forEach((J) => (J.m.visible = !1)), (P.rainbow.visible = !1), P.dlife.fill(0), P.dpos.fill(-200), (P.dgeo.attributes.position.needsUpdate = !0);
@@ -12153,7 +12219,7 @@ const JGP = (() => {
 			} catch (err) {}
 		}
 		function start(now) {
-			made || ((made = make()), warm()), (active = !0), (t0 = now), (lastE = -1), (flags = {});
+			made || ((made = make()), warm()), (active = !0), (t0 = now), (lastE = -1), (flags = {}), (ending = 0);
 		}
 		// THE EVENT, IN ORDER: everyone walks into the garden and plants for 20 s once they are all there,
 		// while FORTIZMO walks slowly from her bar to the garden's edge; then she starts playing and
@@ -12164,6 +12230,8 @@ const JGP = (() => {
 			ringAt = 0;
 		const there = (en) => !en.moving && !!en.finaleSlot && Math.hypot(en.group.position.x - en.finaleSlot.x, en.group.position.z - en.finaleSlot.z) < 0.7;
 		L.push((tt, dt) => {
+			// (an Event wrapped some other way, as by its time limit, leaves nothing pending for the next one)
+			me.active || (ending = 0);
 			if (ending && me.active && (!ee.playing || tt - ending > 15)) (ending = 0), me.wrap();
 			const live = me.active && bt.live;
 			// the event ended early (or was left): put everything away
@@ -12178,6 +12246,9 @@ const JGP = (() => {
 				// (and FORTIZMO has to be at her spot to play: she is given 15 s more at most)
 				if (inAt && tt - inAt > 20 && (!fz || there(fz) || tt - inAt > 35)) {
 					(phase = 2), (ringAt = tt), toRing(fin);
+					// (BACKPACKA is built and his shaders compiled now, before the music starts: a compile stall
+					// mid-song would make it crackle)
+					made || ((made = make()), warm());
 					try {
 						bt.seeds && fz && "off" === gcHorn.phase && gcHorn.play();
 					} catch (err) {}
@@ -12190,7 +12261,8 @@ const JGP = (() => {
 			const e = tt - t0;
 			// he has gone: FORTIZMO plays the tag, and when it ends the event ends and everyone goes home
 			if (e > D.gone + 2.5) return (active = !1), hideAll(), (ending = tt), void (ee.playing && ee.outro());
-			e > D.gone && (made.root.visible = !1);
+			// (once he has flown off he is put away while the tag plays)
+			if (e > D.gone) return void (made.root.visible && hideAll());
 			pose(e, lastE < 0 ? 0 : Math.min(0.1, e - lastE)), (lastE = e);
 		});
 		return {
@@ -12496,7 +12568,7 @@ const JGP = (() => {
 				rs = srand(1 + PAIRS.indexOf(pk) * 7919),
 				sc = script(pk, A, B, pk[2], rs),
 				text = !!opt.text;
-			(plays[id] = (plays[id] || 0) + 1), wrap(A), wrap(B);
+			(plays[id] = (plays[id] || 0) + 1), wrap(A), wrap(B), (A.vig = B.vig = !0);
 			cur = { pk, A, B, t: 0, sc, text, done: {}, bubbles: [], end: text ? Math.max(sc.end, 8.2) : sc.end };
 			Ut.above(A, SIG[pk[0]].emote, f(po())), (cur.flights = sc.flights.map((fx0) => Object.assign({}, fx0, { g: null, landed: !1 })));
 		}
@@ -12507,7 +12579,7 @@ const JGP = (() => {
 				const w = en.group.userData.vgW;
 				w && (w.position.set(0, 0, 0), w.rotation.set(0, 0, 0), w.scale.set(1, 1, 1));
 			});
-			fx.forEach((p) => C.remove(p.m)), (fx.length = 0), (cur = null);
+			(cur.A.vig = cur.B.vig = !1), fx.forEach((p) => C.remove(p.m)), (fx.length = 0), (cur = null);
 		}
 		function burst(pos, col, n = 14) {
 			for (let k = 0; k < n; k++) {
@@ -12529,11 +12601,14 @@ const JGP = (() => {
 					want = Math.atan2(o2.x - en.group.position.x, o2.z - en.group.position.z);
 				let dy = want - en.group.rotation.y;
 				dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-				const go = { y: 0, rx: 0, ry: Math.max(-1.45, Math.min(1.45, dy)) * face, rz: 0, s: [1, 1, 1] };
+				// (KING DINO stands inside his drum kit with his sticks over the drums: he never turns or spins,
+				// or he would sweep through them)
+				const fixed = "m_kingdino" === en.id,
+					go = { y: 0, rx: 0, ry: fixed ? 0 : Math.max(-1.45, Math.min(1.45, dy)) * face, rz: 0, s: [1, 1, 1] };
 				for (const gs of c0.sc.gest) {
 					if (gs.who !== k) continue;
 					const g1 = gesture(gs.name, (t - gs.t0) / gs.dur, gs.k);
-					(go.y += g1.y), (go.rx += g1.rx), (go.ry += g1.ry), (go.rz += g1.rz), (go.s = go.s.map((v, i) => v * g1.s[i]));
+					(go.y += g1.y), (go.rx += g1.rx), fixed || (go.ry += g1.ry), (go.rz += g1.rz), (go.s = go.s.map((v, i) => v * g1.s[i]));
 				}
 				w.position.set(0, go.y, 0), w.rotation.set(go.rx, go.ry, go.rz), w.scale.set(...go.s);
 			});
@@ -12606,10 +12681,13 @@ const JGP = (() => {
 			for (const en of It.all) for (const k in NAMES) en.def && en.def.name === NAMES[k] && en.def.stationary && (m[k] = en);
 			return m;
 		};
-		const VIG_CHANCE = 0.15;
+		const VIG_CHANCE = 0.15,
+			// a creature can take part only standing at its own spot (not busy, nor on its way home)
+			atSpot = (en) => !en.busy && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4,
+			talkedTo = (en) => "dialogue" === jt.top && xe.lastTarget === en;
 		function pick(now) {
 			const m = lineUp(),
-				ok = PAIRS.filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && !m[pk[0]].busy && !m[pk[1]].busy);
+				ok = PAIRS.filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]));
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
@@ -12625,7 +12703,8 @@ const JGP = (() => {
 		L.push((tt, dt) => {
 			dt = Math.min(0.1, dt || 0.016);
 			if (cur) {
-				if (me.active || cur.A.busy || cur.B.busy) return finish();
+				// (it stops if the Event starts, either creature is wanted for something else or talked to)
+				if (me.active || cur.A.busy || cur.B.busy || talkedTo(cur.A) || talkedTo(cur.B)) return finish();
 				return tick(dt);
 			}
 			if (me.active || "playing" !== jt.top) return void (nextAt = Math.max(nextAt, tt + 4));
@@ -12872,14 +12951,13 @@ const JGP = (() => {
 
 	const JGP_K = { post: (g) => buildPostOffice(g), garden: (g) => buildGardenSupplies(g), sheriff: (g) => buildSheriff(g), juice: (g) => buildJuiceBar(g) };
 	function swapWorld() {
-		// keep the working stations (garden, library, pond, phone, sign, portal) and
+		// keep the working stations (garden, library, pond, phone, portal) and
 		// everything that is not scenery; drop the engine's own scenery, then build the town.
 		const keepAt = [
 				[0, 0],
 				[-24.8, -24.8],
 				[24.6, 0],
 				[-7.2, 23.9],
-				[5.4, 21.2],
 				[ot.x, ot.z], // pizza portal
 			],
 			bx = new THREE.Box3(),
@@ -14573,12 +14651,13 @@ const JGP = (() => {
 			// FORTIZMO roams up and down behind the counter: whenever she has stood at a spot for a few
 			// seconds she picks another at least 3 m along the aisle and walks there (her home moves; her
 			// walk home takes her to it), then turns to face the dance floor. Not while she is busy
-			// (talking, or at the Garden Event).
+			// (talking or with the player close by, at the Garden Event, or in a vignette with another creature).
 			{
 				let waitTo = -1;
 				L.push((t2) => {
 					const f = It.byId.frog;
-					if (!f || f.busy || me.active) return;
+					// (she stays put to serve a player at the bar, and while being talked to)
+					if (!f || f.busy || f.vig || me.active || f.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === f)) return void (waitTo = -1);
 					const p = f.group.position,
 						[ax] = JGP.barSpot(0);
 					// (still on the way to the last spot, or away from the aisle: wait till she is back)
@@ -14933,11 +15012,12 @@ if (
 					(G.toot = () => {
 						G.note(196, 0.2, "sawtooth", 0.045), G.note(294, 0.24, "sawtooth", 0.04, 0.14), G.note(392, 0.3, "sawtooth", 0.035, 0.3);
 					}),
-					// a creature posted up on a raised floor (pattern post with y) steps down when it leaves
+					// a creature posted up on a raised floor (pattern post with y) steps down when it leaves (at the
+					// Event it steps down by itself; one left at its post, as at an Event without Seeds, stays up)
 					L.push(() => {
 						for (const t of It.all) {
 							if (!t.def || !t.def.pattern || "post" !== t.def.pattern[0]) continue;
-							t.def.pattern[1].y && (t.busy || t.goHome || me.active) && (t.group.position.y = 0);
+							t.def.pattern[1].y && ((t.busy && "finale" !== t.busy) || t.goHome) && (t.group.position.y = 0);
 						}
 					}),
 					E.add(-15.9, -26.8, 4.2, "drums"),
@@ -15238,6 +15318,8 @@ if (
 							// while FORTIZMO plays at the Event, everyone round the garden dances
 							music = me.active && ee.playing;
 						for (const t of It.all) {
+							// (the pizza courier never dances or plants, and is not kept after she leaves)
+							if ("courier" === t.kind) continue;
 							const at = "finale" === t.busy && !t.moving && !t.hornWant && !JGP.eventActor(t);
 							n.push({
 								key: Xt(t),
@@ -15248,7 +15330,8 @@ if (
 								want: music && at ? "dance" : o && at && !t.watching && !JGP.noPlant(t) ? "plant" : null,
 							});
 						}
-						st.group && n.push({ key: "keeper", grp: st.group, ent: null, want: st.away() ? (music ? "dance" : o ? "plant" : null) : null });
+						// (SPARKAKUS dances and plants only when he is at the Event, not when he steps out of the Library to speak)
+						st.group && n.push({ key: "keeper", grp: st.group, ent: null, want: st.away() && me.active && bt.seeds ? (music ? "dance" : o ? "plant" : null) : null });
 						for (const o of n) {
 							let n = bt.tg.get(o.grp);
 							n || ((n = { k: 0, lx: o.grp.position.x, lz: o.grp.position.z, mv: 0 }), bt.tg.set(o.grp, n));
