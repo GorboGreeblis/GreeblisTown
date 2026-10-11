@@ -4113,6 +4113,8 @@ function go(e, o) {
 			// nor inside a building (the kiosks, the church, the Juice Bar), nor on anything else the town
 			// keeps clear (lamps, benches, trees, the gazebo, the creatures' spots)
 			F.buildings.some((B) => F.inHull(B, i.x, i.z, 0.8)) ||
+			// nor on the dance floor, nor right at its edge
+			(JGP.onDance && JGP.onDance(i.x, i.z, 0.6)) ||
 			E.list.some((q) => "gathering" !== q.tag && "campfire" !== q.tag && Math.hypot(q.x - i.x, q.z - i.z) < q.r + 0.3)
 		)
 			continue;
@@ -7923,6 +7925,7 @@ const JGP = (() => {
 	// eyes and a glossy black nose; yellow daffodils on his shoulder and a dark feather fin between his
 	// shoulders; SHOPSTAR's collar with the orange APR coin and red sleeve garters; and a long tail with
 	// a gold star at its tip, trailing Sparkakus's glowing mist from Greeblis Park.
+	// (SPARKAKUS's model (the librarian and his row stand-in) is final: keep it as it is.)
 	BORN.sparkakus = (g) => {
 		const root = new THREE.Group(),
 			body = new THREE.Group();
@@ -8292,6 +8295,7 @@ const JGP = (() => {
 	// drifting up beside the cap. GRATELET's swirl, a mail carrier's cap resting on
 	// top (the cotton puffs grow around the sides and back, clear of the cap and face), GRATELET's
 	// cream-puff hands and dangling root tentacles, tinted plum between GRATELET's red and SOMNUX's blue.
+	// (SOMLET's model, mail cap and sleeping face included, is final: keep it as it is.)
 	BORN.somlet = (g) => {
 		const cream = KIT.surf("felt", "#f2e4b4", { rep: 2, bump: 0.025, shine: 12 }),
 			cream2 = KIT.surf("felt", "#ead6a0", { rep: 2, bump: 0.025, shine: 12 }),
@@ -8608,6 +8612,7 @@ const JGP = (() => {
 	// over the crown and orange down the front; three square turquoise buttons with green lights down each
 	// side, short arms out of turquoise ball joints with holes, turquoise donut rings on the hips, a holed
 	// turquoise plate on the back and stubby feet.
+	// (KING DINO's model is final: keep it as it is.)
 	BORN.kingdino = (g) => {
 		const root = new THREE.Group(),
 			body = new THREE.Group();
@@ -9268,6 +9273,7 @@ const JGP = (() => {
 	// open, with feather tufts at the cheeks; a deep fur ruff over
 	// the chest; two pairs of great feathered wings; four long scaly tails that run out along the
 	// ground and rise at their ends to hold up her amethyst crystals, coiled round them.
+	// (GEMTOE's model is final: keep it as it is.)
 	BORN.gemtoe = (g) => {
 		const root = new THREE.Group(),
 			body = new THREE.Group();
@@ -9484,6 +9490,7 @@ const JGP = (() => {
 	// Glyph: a bright cyan glaze, GIGGLYPH's two purple tiles with glowing trident coins set into his
 	// back among the plates, two ribbed tubes (orange and grey) coming out of his back and coiling on
 	// the ground, and an excited little shake every few seconds. Nothing of him floats.
+	// (GLYPH's model is final: keep it as it is.)
 	BORN.glyph = (g) => {
 		const root = new THREE.Group(),
 			body = new THREE.Group();
@@ -9882,6 +9889,7 @@ const JGP = (() => {
 	// skin into little puddles, blobs sliding down each stream; yellow sparks crackle off her upper left, and her
 	// red pin tags (AP, IP and wifi) and a purple wifi sign orbit well clear of her. She breathes and
 	// jiggles like a jelly. From GORBO she keeps the ports and the goo drips.
+	// (MAMA GORBO's model, goo streams included, is final: keep it as it is.)
 	BORN.mamagorbo = (g) => {
 		const root = new THREE.Group(),
 			body = new THREE.Group();
@@ -14953,12 +14961,9 @@ const JGP = (() => {
 				tex.anisotropy = Math.min(8, O.capabilities.getMaxAnisotropy ? O.capabilities.getMaxAnisotropy() : 1);
 				const floor = R(new THREE.PlaneGeometry(NX * TS, NZ * TS), new THREE.MeshPhongMaterial({ map: tex, alphaTest: 0.5, shininess: 18, specular: 1315860 }), C, [X0 + (NX * TS) / 2, 0.035, Z0 + (NZ * TS) / 2], [-Math.PI / 2, 0, 0]);
 				floor.userData.keepInFinale = !0;
-				// no lawn tufts through it, and no pickups on it
-				onDance = (X, Z) => {
-					const i = Math.floor((X - X0) / TS),
-						j = Math.floor((Z - Z0) / TS);
-					return i >= 0 && i < NX && j >= 0 && j < NZ;
-				};
+				// no lawn tufts through it, and no flint or Blossoms on it (m: how far round its edge also counts)
+				onDance = (X, Z, m = 0) => X > X0 - m && X < X0 + NX * TS + m && Z > Z0 - m && Z < Z0 + NZ * TS + m;
+				JGP.onDance = onDance;
 				for (let i = 1; i < NX; i += 2) for (let j = 1; j < NZ; j += 2) E.add(X0 + (i + 0.5) * TS, Z0 + (j + 0.5) * TS, 1.3, "dance");
 			}
 			// KING DINO's drum set from Greeblis Woods, on the grass behind the dance floor's south half
