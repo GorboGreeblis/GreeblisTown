@@ -10901,7 +10901,8 @@ const JGP = (() => {
 	// this block provides the garden, the plants and the planting behaviour.
 	const GARDEN_R = 15,
 		GATHER_S = 0.5, // seconds before planting starts (everyone walks straight into the garden)
-		garden = { slots: [], plants: [], startAt: 0 };
+		// (round: how many Events with planters there have been; see beginPlanting)
+		garden = { slots: [], plants: [], startAt: 0, round: 0 };
 	// The church stands at the end of the south walk: its back to the south fence, its steps (and the Traveler window over the door) facing
 	// the garden. s runs along the walk from the garden's ring toward the fence, p across it.
 	const CHURCH_AT = (() => {
@@ -11488,8 +11489,9 @@ const JGP = (() => {
 	}
 	// THE PLANTS (placeholder): for now one kind of generic plant grows, a green stem with two pairs of
 	// leaves and a closed bud on top. Nothing grows unless the Seeds quest is done (without the Seeds
-	// nobody comes to plant); with them, the one batch that grows is what the creatures plant, each
-	// plant coming up during the Event right where its creature was seen planting it. (All of them
+	// nobody comes to plant); with them, what grows is what the creatures plant, each plant coming up
+	// during the Event right where its creature was seen planting it. The first two Events each grow a
+	// batch (the second in fresh rows); from the third on they only go through the motions. (All of them
 	// share one mesh.)
 	const plantGeo = () => {
 		if (garden.geo) return garden.geo;
@@ -11587,22 +11589,34 @@ const JGP = (() => {
 		}
 	}
 	// called by the event when planting begins: everyone walks to a spot inside the garden, except
-	// FORTIZMO, who walks slowly from her bar to the garden's edge on the bar's side to play from there
+	// FORTIZMO, who walks slowly from her bar to the garden's edge on the bar's side to play from there.
+	// Event 1 plants a batch; Event 2 plants a second batch in the rows Event 1 left bare (spots a
+	// metre further out, so the soil in front of each planter is on a fresh row, and turned half a
+	// space); from Event 3 on everyone goes back to their Event 1 spots and plants, but nothing more
+	// comes up and the garden stays as it is.
 	function beginPlanting(list, now) {
 		const fz = list.find(noPlant);
 		fz && ((fz.finaleSlot = { x: -(GARDEN_R + 2.3), z: 0 }), (fz.walkSpeed = 1), (fz.watching = !1));
 		list = list.filter((ent) => !noPlant(ent));
-		const rings = [
-				[0.3 * GARDEN_R, 4],
-				[0.55 * GARDEN_R, 6],
-				[0.8 * GARDEN_R, 99],
-			],
+		list.length && garden.round++;
+		const second = 2 === garden.round,
+			rings = second
+				? [
+						[5.5, 3],
+						[9.5, 4],
+						[13.5, 99],
+					]
+				: [
+						[0.3 * GARDEN_R, 4],
+						[0.55 * GARDEN_R, 6],
+						[0.8 * GARDEN_R, 99],
+					],
 			spots = [];
 		let left = list.length;
 		rings.forEach(([r, cap], ri) => {
 			const k = Math.min(cap, left);
 			for (let j = 0; j < k; j++) {
-				const a = ((j + 0.5 * ri) / k) * l + 0.3;
+				const a = ((j + 0.5 * ri + (second ? 0.5 : 0)) / k) * l + 0.3;
 				spots.push({ x: r * Math.cos(a), z: r * Math.sin(a) });
 			}
 			left -= k;
@@ -11649,7 +11663,9 @@ const JGP = (() => {
 			ent.finaleSlot = { x: r * Math.cos(a), z: r * Math.sin(a) };
 		}
 		// the plant goes in right where the creature is seen planting: the free slot nearest the spot just in
-		// front of it (within 1.3 m; with none that close it digs, but nothing comes up)
+		// front of it (within 1.3 m; with none that close it digs, but nothing comes up). From the third
+		// Event on it only digs: the garden stays as the first two left it.
+		if (garden.round > 2) return;
 		const ry = ent.group.rotation.y,
 			fx = p.x + 0.9 * Math.sin(ry),
 			fz = p.z + 0.9 * Math.cos(ry);
