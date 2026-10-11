@@ -41,6 +41,9 @@ of them. Read the guides here before changing the game.
 ## Creatures and art (from the owner)
 
 - Creature models, behaviour and interactions matter most. Take the time to do them well.
+- The plant and flower models are just as important. Take a lot of time and care with them: build each from the
+  owner's photos (its real shape, colours, leaves, buds and how it branches), render it from several angles next
+  to the photos, and refine until it matches.
 - No bones anywhere: no skeletal rigs and no bone props.
 - A merge is a new, cohesive creature that blends its parents' silhouettes, palettes and signature features,
   never parts glued together.
