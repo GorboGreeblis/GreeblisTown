@@ -162,10 +162,11 @@ const t = {
 		cutebex: {},
 	},
 	r = [
-		{ id: "floppyhat", slot: "hat", name: "Floppy Disk Hat", cost: 3 },
-		{ id: "synthshoes", slot: "shoes", name: "Synthetic Shoes", cost: 3 },
-		{ id: "chargedress", slot: "dress", name: "Charge Dress", cost: 3 },
-		{ id: "seeds", slot: null, name: "Seeds", cost: 5, reward: "seeds" },
+		{ id: "flowerhat", slot: "hat", name: "Flower Hat", cost: 3 },
+		{ id: "sundress", slot: "dress", name: "Sun Dress", cost: 3 },
+		{ id: "frogshoes", slot: "shoes", name: "Frog Shoes", cost: 3 },
+		// (sold as "Flower Seeds"; everywhere else they are just the Seeds)
+		{ id: "seeds", slot: null, name: "Flower Seeds", cost: 5, reward: "seeds" },
 	],
 	// the pizza courier: NEXTESSA, as she is in Greeblis City (her model is final)
 	s = {
@@ -189,22 +190,141 @@ const t = {
 		finale:
 			"Placeholder: all three Ancient Artifacts!|Placeholder line 2|Placeholder line 3|Placeholder line 4|Placeholder line 5",
 		reward: "ANCIENT ARTIFACTS quest complete!",
+		// then he hands over the Ancient Gem (GEMTOE trades it for the Summoning Stone)
+		gem: "These Artifacts were guarding something. Here: the Ancient Gem. It hums like GEMTOE's crystals... perhaps she knows what it is for.",
+		gemGot: "You received the ANCIENT GEM!",
 		done: "Placeholder: thank you again for the Ancient Artifacts.",
 		event: "Placeholder: off to the garden!",
+	},
+	// GEMTOE's trade: the Summoning Stone for the Ancient Gem SPARKAKUS gives you
+	gemTrade = {
+		say: "That glow... the Ancient Gem! It sings the same note as my crystals. Let me keep it safe, and you take this: the Summoning Stone. Place your hand on the great stone at the heart of the garden and the whole town will come to plant.",
+		got: "You traded the Ancient Gem for the SUMMONING STONE!",
 	},
 	// the one shop in town: Garden Supplies, paid for in flint
 	shopText = {
 		title: "GARDEN SUPPLIES",
 		label: "Shop at Garden Supplies",
 		welcome:
-			"Welcome to Garden Supplies! Everything here is paid for in flint. Try the clothes on in the mirror, and pick up some Seeds for the garden.",
+			"Welcome to Garden Supplies! Everything here is paid for in flint. Try the clothes on in the mirror, and pick up some Flower Seeds for the garden.",
 		need: (n, name) => "You need " + n + " more flint for the " + name + ".",
 		on: (name) => "You put on the " + name + ".",
 		off: (name) => "You take off the " + name + ".",
 		bought: (name) => "You bought the " + name + " and put it on. Take a look in the mirror!",
-		seedsHave: "You already have the Seeds. They'll go in at the next Garden Event.",
+		seedsHave: "You already have the Flower Seeds. They'll go in at the next Garden Event.",
 		seedsBought:
-			"You bought the Seeds! A special batch of flowers will grow at the next Garden Event. SEEDS quest complete!",
+			"You bought the Flower Seeds! At the next Garden Event, flowers will come up wherever everyone plants them. SEEDS quest complete!",
+	},
+	// DANCE BATTLES with the three Dancers (ETCHER, GLYPH and MONTGUMMERY): Greeblis City's dance-offs,
+	// now played as rock, paper, scissors. Every round the Dancer goes first and shows their move,
+	// then you answer with one of yours; a move always beats one other (Rock out! beats the splits,
+	// the splits beat going horizontal, going horizontal beats Rock out!). Each round you win teaches
+	// you one of their steps; learn them all and you win the battle.
+	battleText = {
+		moves: [
+			{
+				id: "rock",
+				label: "Rock out!",
+				you: [
+					"You crank up an air guitar and shred a solo that would make KING DINO drop his sticks.",
+					"You headbang, windmill one arm and land the power chord.",
+					"You stomp, spin and slide to your knees, fingers flying up the frets.",
+				],
+			},
+			{
+				id: "scissors",
+				label: "Do the splits like scissors!",
+				you: [
+					"You slide down into the splits and snip your arms open and shut. Snip, snip!",
+					"You leap, scissor-kick in mid air and land in the splits.",
+					"You split low, sharp as a brand new pair of scissors.",
+				],
+			},
+			{
+				id: "paper",
+				label: "Go horizontal like paper!",
+				you: [
+					"You stretch out flat as a sheet of paper and glide across the floor.",
+					"You go horizontal and float down like a paper airplane.",
+					"You lie out flat, arms wide, and ripple like a page in the wind.",
+				],
+			},
+		],
+		beats: { rock: "scissors", scissors: "paper", paper: "rock" },
+		// how each move beats the one it beats
+		clash: {
+			rock: "Rock smashes straight through scissors!",
+			scissors: "Scissors snip paper right down the middle!",
+			paper: "Paper wraps right round rock!",
+		},
+		tie: ["The same move! You mirror each other step for step.", "A perfect match. The crowd can't pick a winner!", "Snap! You both pull the same move."],
+		sub: "KING DINO keeps the beat on his drums.",
+		prompt: "Your move!",
+		bow: "BOW OUT",
+		done: "TAKE A BOW",
+		won: "YOU WIN THE ROUND!",
+		lost: "THEY WIN THE ROUND!",
+		// you can battle each Dancer as often as you like, but their reward is given only the first time
+		// you win (placeholder: the item itself comes later)
+		reward: (name) => "* Placeholder: you received " + name + "'s reward! *",
+		again: (name) => "You've already won " + name + "'s reward, but you can dance with " + name + " any time!",
+		w_mont: {
+			title: "DANCE BATTLE: MONTGUMMERY",
+			stamina: 3,
+			bar: "Robot steps still to learn",
+			barColor: "#55b8c6",
+			hitSound: "drumSnare",
+			open: "MONTGUMMERY's screen blinks to a robot face. BEEP. BOOP. DANCE BATTLE PROTOCOL: ENGAGED.",
+			moves: {
+				rock: "A pixel fist flashes up on his screen and he cranks an air guitar, nodding his whole monitor. He's going to Rock out!",
+				scissors: "Pixel scissors snip across his screen as he plants his pots wide and chops his arms like blades. Do the splits like scissors!",
+				paper: "A blank page fills his screen. He tips forward on one pot, flat as a printout. Go horizontal like paper!",
+			},
+			wins: ["His screen scrolls: CALCULATING... YOU HAVE BEEN OUT-DANCED.", "BZZT. His fan whirs. He bows stiffly, one bolt at a time."],
+			loses: ["His screen shows a smiley pixel trophy. He gives one smug beep.", "VICTORY.EXE, he beeps, and polishes his screen with one sleeve."],
+			winBanner: "SYSTEM OVERLOADED!",
+			win: "MONTGUMMERY's screen fills with dancing pixels. He has taught you the Robot!",
+			runText: "You take a bow. MONTGUMMERY waves goodbye one arm segment at a time.",
+			runFail: "ERROR: DANCER CANNOT LEAVE. Your feet keep moving to the beep!",
+		},
+		p_etcher: {
+			title: "DANCE BATTLE: ETCHER",
+			stamina: 3,
+			bar: "Tentacle twists still to learn",
+			barColor: "#7a4ab8",
+			hitSound: "drumTom",
+			open: "ETCHER's six purple tentacles start tapping out a rhythm on the ground. His golden eyes narrow. Let's dance!",
+			moves: {
+				rock: "He thrashes his long neck and drums all six tentacles on the ground like a heavy metal drummer. He's going to Rock out!",
+				scissors: "He raises his two front tentacles and snips them open and shut, the other four spread wide. Do the splits like scissors!",
+				paper: "He lifts all six tentacles flat and level, rippling like a sheet in the wind. Go horizontal like paper!",
+			},
+			wins: ["His tentacles droop in a sulky curl. Then he gives you a slow, respectful nod.", "He wraps a tentacle round his own neck in embarrassment."],
+			loses: ["He coils all six tentacles into a smug little knot.", "His gem glows a little brighter. He's enjoying this."],
+			winBanner: "TENTACLES TIED!",
+			win: "ETCHER waves every tentacle at once in applause. You've learned the Tentacle Twist!",
+			runText: "You take a bow. ETCHER sweeps a tentacle low in reply.",
+			runFail: "A tentacle taps the floor in time and your feet just keep on dancing!",
+		},
+		p_glyph: {
+			title: "DANCE BATTLE: GLYPH",
+			stamina: 3,
+			bar: "Macarena moves still to learn",
+			barColor: "#e88a8a",
+			hitSound: "drumKick",
+			open: "GLYPH stretches his little arms out long, longer, LONGER, cracks his claws and grins with his eyes. Hey, Macarena!",
+			moves: {
+				rock: "He stretches one arm out as a guitar neck and strums a wild solo with the other, stomping his big feet. He's going to Rock out!",
+				scissors: "He leaps up, kicks his legs apart in a mid-air split and snips his long arms over his head. Do the splits like scissors!",
+				paper: "He stretches both arms out flat and wide and glides from side to side like a paper airplane. Go horizontal like paper!",
+			},
+			wins: ["His arms sag down to the floor. Then he slowly gives you a big two-clawed thumbs up.", "He shakes his tubes out and laughs a little dino laugh."],
+			loses: ["He crosses his long arms, then crosses them again round himself. Smug.", "His orange eyes twinkle. One more Macarena for the win!"],
+			winBanner: "HEY, MACARENA!",
+			win: "GLYPH stretches his arms to the sky and throws a full Macarena in your honour. You've learned the Macarena!",
+			runText: "You take a bow. GLYPH waves one arm, stretched all the way across the dance floor.",
+			runFail: "GLYPH's arm stretches out and spins you back onto the floor!",
+		},
 	},
 	l = 2 * Math.PI,
 	c = THREE.Vector3,
@@ -1564,7 +1684,12 @@ function Ke(t) {
 	return t.gcHeadTop;
 }
 function et(t) {
-	return !(!t || !t.concertDance);
+	return !(!t || !(t.concertDance || t.battleDance));
+}
+// the beat the built-in dances keep, in beats per second: FORTIZMO's 88 bpm at the Garden Event,
+// otherwise KING DINO's 104 bpm drums (Dance battles)
+function gcBeatHz() {
+	return (me.active ? 88 : 104) / 60;
 }
 const ot = { state: "idle", open: 0, job: null };
 function at() {
@@ -3369,11 +3494,14 @@ const Ut = (() => {
 	Kt = {
 		acorns: 0,
 		// quests: Seeds (bought at Garden Supplies), the Ancient Artifacts (3 found, then told to
-		// SPARKAKUS) and the Summoning Stone (owned from the start, for testing)
-		rewards: { seeds: !1, artifacts: !1, stone: !0 },
+		// SPARKAKUS, who gives you the Ancient Gem) and the Summoning Stone (GEMTOE trades it for the Gem)
+		rewards: { seeds: !1, artifacts: !1, stone: !1 },
+		gem: !1,
 		artifacts: 0,
 		blossoms: 0,
 		equip: { hat: null, shoes: null, dress: null },
+		// the Dancers whose Dance battle reward you already have
+		danceWins: new Set(),
 		owned: new Set(),
 		talkState: {},
 		met: new Set(),
@@ -3383,6 +3511,16 @@ function te(t, e) {
 		a = t.id;
 	let n;
 	if ((Kt.met.add(a), (xe.lastTarget = t), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t);
+	else if ("p_gemtoe" === a && Kt.gem)
+		// GEMTOE trades the Summoning Stone for the Ancient Gem
+		return (
+			(Kt.gem = !1),
+			(Kt.rewards.stone = !0),
+			t.onTalk && t.onTalk(t),
+			void qt.open(o.name, o.color, gemTrade.say, () => {
+				G.jingle(), qt.open(o.name, o.color, "* " + gemTrade.got + " *");
+			})
+		);
 	else {
 		const t = a || o.__type || o.name,
 			e = Kt.talkState[t] || 0;
@@ -3808,18 +3946,16 @@ const ee = (function () {
 		apply() {
 			const t = At.userData,
 				e = Kt.equip,
-				o = !(!e.hat || "floppyhat" !== e.hat.id),
-				a = !(!e.shoes || "synthshoes" !== e.shoes.id),
-				n = !(!e.dress || "chargedress" !== e.dress.id);
-			t.floppyHat && ((t.floppyHat.visible = o), (t.bow.visible = !o)),
-				t.boots && (t.boots.forEach((t) => (t.visible = a)), (t.shoeL.visible = t.shoeR.visible = !a)),
+				o = !(!e.hat || "flowerhat" !== e.hat.id),
+				a = !(!e.shoes || "frogshoes" !== e.shoes.id),
+				n = !(!e.dress || "sundress" !== e.dress.id);
+			t.flowerHat && ((t.flowerHat.visible = o), (t.bow.visible = !o)),
+				t.frogs && (t.frogs.forEach((t) => (t.visible = a)), (t.shoeL.visible = t.shoeR.visible = !a)),
 				t.dressMat &&
-					((t.dressMat.map = n ? t.floral : null),
+					((t.dressMat.map = n ? t.sunTex : null),
 					t.dressMat.color.copy(n ? new THREE.Color(16777215) : t.dressColor),
-					(t.dressMat.emissiveMap = n ? t.floralGlow : null),
-					t.dressMat.emissive.set(n ? "#ffffff" : "#000000"),
 					(t.dressMat.needsUpdate = !0),
-					(t.petalHem.visible = n));
+					(t.sunHem.visible = n));
 		},
 	},
 	ne = {
@@ -3880,7 +4016,76 @@ const ee = (function () {
 				Eo.apply(),
 				_t.update({ log: e, items: this.items(), sub: this.sub() });
 		},
-	};
+	},
+	// the Dance battle engine (Greeblis City's battle panel and its bar, with rock, paper, scissors
+	// rounds). The Dancer shows each move with its own animation (ent.battleMove) and does its own
+	// dance as a victory dance after you win.
+	Dbt = (() => {
+		const T = battleText;
+		let o = null;
+		const bar = () => ({ label: o.def.bar + ": " + Math.max(0, o.left), pct: (Math.max(0, o.left) / o.def.stamina) * 100, color: o.def.barColor }),
+			items = () => T.moves.map((m) => ({ label: m.label, onClick: () => play(m.id) })).concat([{ label: T.bow, onClick: () => play("run") }]),
+			// the Dancer goes first: it picks a move and starts showing it (easing out of the last move
+			// through its own dance first)
+			next = (lead) => {
+				const e = o.ent,
+					me2 = o;
+				(o.mv = f(["rock", "scissors", "paper"])), (e.battleMove = null);
+				setTimeout(() => o === me2 && !o.over && (e.battleMove = o.mv), e.battleMoveAt ? 600 : 0), (e.battleMoveAt = 1);
+				_t.update({ log: (lead ? lead + "\n\n" : "") + o.def.moves[o.mv] + "\n" + T.prompt, items: items(), bar: bar() });
+			},
+			end = (won) => {
+				(o.over = !0), (o.won = won), (o.ent.battleMove = null);
+				_t.update({ items: [], done: { label: T.done }, bar: bar() });
+			};
+		function play(id) {
+			if (!o || o.over) return;
+			const d = o.def,
+				e = o.ent;
+			if ("run" === id) return Math.random() < 0.7 ? (_t.update({ log: d.runText }), end(!1)) : _t.update({ log: d.runFail + "\n\n" + d.moves[o.mv] + "\n" + T.prompt });
+			const you = f(T.moves.find((m) => m.id === id).you);
+			if ((G.near(e.group.position.x, e.group.position.z, 999, d.hitSound), T.beats[id] === o.mv)) {
+				o.left--, Ut.above(e, "♪", f(po()));
+				const line = you + "\n" + T.clash[id] + " " + T.won + "\n" + f(d.wins);
+				if (o.left <= 0) {
+					const first = !Kt.danceWins.has(e.id),
+						nm = e.def.name;
+					return first && Kt.danceWins.add(e.id), G.jingle(), _t.update({ log: line + "\n\n" + d.winBanner + " " + d.win + "\n\n" + (first ? T.reward(nm) : T.again(nm)), bar: bar() }), end(!0);
+				}
+				return next(line);
+			}
+			if (id === o.mv) return next(you + "\n" + f(T.tie));
+			next(you + "\n" + T.clash[o.mv] + " " + T.lost + "\n" + f(d.loses));
+		}
+		function close() {
+			if (!o) return;
+			const { ent: e, won } = o;
+			(o = null), (e.battleMove = null), (e.battleMoveAt = 0), It.release(e, "battle");
+			// after a win the Dancer does a victory dance for a few seconds
+			won ? (Nt.sparkle(e.group.position, 12), setTimeout(() => (e.battleDance = !1), 7e3)) : (e.battleDance = !1);
+		}
+		return {
+			has: (e) => !(!e || !T[e.id]),
+			start(e) {
+				try {
+					if (!It.take(e, "battle")) return;
+					const d = T[e.id];
+					(o = { ent: e, def: d, left: d.stamina, over: !1, won: !1, mv: null }), (e.battleDance = !0), (xe.lastTarget = e);
+					_t.open({ kind: "battle", title: d.title, sub: T.sub, bar: bar(), log: d.open, items: [], done: null, onClose: close });
+					next(d.open);
+				} catch (t) {
+					vo(t, "battle"), o && (o.over = !0);
+					try {
+						_t.close();
+					} catch (t) {}
+					(o = null), (e.battleMove = null), (e.battleDance = !1), It.release(e, "battle");
+				}
+			},
+			get state() {
+				return o;
+			},
+		};
+	})();
 function Mo(e) {
 	const o = Object.assign({ __type: e }, n[e]);
 	let a = o.at ? { x: o.at[0], z: o.at[1] } : null;
@@ -4615,11 +4820,15 @@ const le = (() => {
 			},
 		};
 	})(),
-	// THE ANCIENT ARTIFACTS: three relics hidden around town (a carved stone tablet, a bronze sky
-	// disc and a crystal idol), each floating over a faint ring of light. Walk into one to pick it up;
-	// bring all three to SPARKAKUS at the Library. (Placeholder: in the final game each of the three
-	// Dancers gives one unique artifact for winning a Dance battle, and the player must hold all three
-	// to complete this part of the quest and move on.)
+	// THE ANCIENT ARTIFACTS: the three pieces of one teal diamond, hidden around town, each floating
+	// over a faint ring of light. Walk into one to pick it up; bring all three to SPARKAKUS at the
+	// Library. The diamond is a brilliant cut (a flat table, a crown sloping out to the girdle and a
+	// pavilion down to a point) split from top to bottom into three equal wedges: each piece has its
+	// faceted outside and two flat, softly glowing break faces where it meets the other two.
+	// (Placeholder: in the final game each of the three Dancers gives one piece for winning a Dance
+	// battle, and the player must hold all three to move on. The pieces are kept as they are for a
+	// future animation that puts the diamond back together: each piece's group is centred on the
+	// piece, and userData.gemOffset is where its centre sits in the whole diamond.)
 	ARTS = (() => {
 		const SPOTS = [
 				[-33, 33],
@@ -4627,36 +4836,60 @@ const le = (() => {
 				[12, -31.5],
 			],
 			list = [],
-			shown = [];
-		function model(k) {
-			const g = new THREE.Group();
-			if (0 === k) {
-				// the tablet: a round-topped slab carved with rows of strokes (no letters)
-				const st0 = x.clay("#8a8274", { shininess: 10 }),
-					cut = x.clay("#4a443a", { shininess: 10 });
-				R(T.box(0.36, 0.4, 0.07), st0, g, [0, 0, 0]), R(new THREE.CylinderGeometry(0.18, 0.18, 0.07, 16, 1, !1, -Math.PI / 2, Math.PI), st0, g, [0, 0.2, 0], [Math.PI / 2, 0, 0]);
-				for (let j = 0; j < 5; j++)
-					for (let q = 0; q < 4; q++) R(T.box(0.05, 0.014, 0.012), cut, g, [-0.11 + 0.075 * q, 0.14 - 0.07 * j, 0.037], [0, 0, ((j * 7 + q * 3) % 5) * 0.4 - 0.8]);
-			} else if (1 === k) {
-				// the sky disc: bronze with a green patina, a sun and a crescent in gold, a toothed rim
-				const br = x.clay("#a8783a", { shininess: 70, specular: 6710886 }),
-					gold = x.clay("#f2c84a", { shininess: 90, specular: 16777215 });
-				R(T.cyl(0.26, 0.26, 0.04, 28), x.clay("#3f8a6a", { shininess: 30 }), g, [0, 0, 0], [Math.PI / 2, 0, 0]);
-				R(T.torus(0.26, 0.03, 6, 28), br, g);
-				for (let q = 0; q < 16; q++) {
-					const a = (q / 16) * Math.PI * 2;
-					R(T.box(0.05, 0.06, 0.05), br, g, [0.29 * Math.cos(a), 0.29 * Math.sin(a), 0], [0, 0, a]);
+			shown = [],
+			// the diamond's profile [radius, height] from the middle of the table down to the point
+			GEM = [
+				[0, 0.29],
+				[0.24, 0.29],
+				[0.42, 0.11],
+				[0.42, 0.03],
+				[0, -0.5],
+			],
+			FACETS = 4,
+			gemGeo = [],
+			gemMat = () =>
+				V.gemM ||
+				(V.gemM = new THREE.MeshPhongMaterial({ vertexColors: !0, flatShading: !0, shininess: 140, specular: 16777215, emissive: 405034, transparent: !0, opacity: 0.93 }));
+		// one wedge of the diamond (k = 0, 1, 2), centred on its own middle
+		function piece(k) {
+			if (gemGeo[k]) return gemGeo[k];
+			const a0 = (k * Math.PI * 2) / 3,
+				pos = [],
+				col = [],
+				out = new THREE.Color("#0e8a7f"),
+				brk = new THREE.Color("#62d6c8"),
+				P = (r, y, a) => [r * Math.cos(a), y, r * Math.sin(a)],
+				tri = (A, B, Cc, c) => (pos.push(...A, ...B, ...Cc), col.push(c.r, c.g, c.b, c.r, c.g, c.b, c.r, c.g, c.b));
+			// the faceted outside
+			for (let j = 0; j < FACETS; j++) {
+				const u = a0 + (j / FACETS) * ((Math.PI * 2) / 3),
+					w = a0 + ((j + 1) / FACETS) * ((Math.PI * 2) / 3);
+				for (let i = 0; i < GEM.length - 1; i++) {
+					const [r1, y1] = GEM[i],
+						[r2, y2] = GEM[i + 1];
+					r1 > 0 && tri(P(r1, y1, u), P(r1, y1, w), P(r2, y2, w), out);
+					r2 > 0 && tri(P(r1, y1, u), P(r2, y2, w), P(r2, y2, u), out);
 				}
-				R(T.cyl(0.07, 0.07, 0.05, 18), gold, g, [-0.06, 0.05, 0], [Math.PI / 2, 0, 0]);
-				R(T.torus(0.07, 0.02, 5, 14, Math.PI), gold, g, [0.1, -0.06, 0.01], [0, 0, 2.2]);
-				for (let q = 0; q < 6; q++) R(T.sphere(0.014, 6, 4), gold, g, [0.12 * Math.cos(2.1 * q + 1), 0.12 * Math.sin(1.7 * q + 2), 0.025]);
-			} else {
-				// the idol: a violet crystal on a little carved stone base
-				R(T.cyl(0.13, 0.16, 0.12, 8), x.clay("#6f6a78", { shininess: 10 }), g, [0, -0.2, 0]);
-				R(new THREE.OctahedronGeometry(0.15, 0), x.clay("#9a6ae8", { shininess: 120, specular: 16777215, transparent: !0, opacity: 0.88 }), g, [0, 0.06, 0], null, [0.8, 1.9, 0.8]);
-				R(T.sphere(0.05, 10, 8), x.basic("#e8d8ff"), g, [0, 0.06, 0]);
 			}
-			return g;
+			// the two break faces (a fan over the profile in each cut plane)
+			[a0, a0 + (Math.PI * 2) / 3].forEach((a, side) => {
+				for (let i = 1; i < GEM.length - 1; i++) {
+					const A = P(GEM[0][0], GEM[0][1], a),
+						B = P(GEM[i][0], GEM[i][1], a),
+						Cc = P(GEM[i + 1][0], GEM[i + 1][1], a);
+					side ? tri(A, B, Cc, brk) : tri(A, Cc, B, brk);
+				}
+			});
+			const g = new THREE.BufferGeometry();
+			g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)), g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+			g.computeBoundingBox();
+			const c0 = g.boundingBox.getCenter(new THREE.Vector3());
+			return g.translate(-c0.x, -c0.y, -c0.z), g.computeVertexNormals(), (g.userData.gemOffset = c0), (gemGeo[k] = g);
+		}
+		function model(k) {
+			const g = new THREE.Group(),
+				geo = piece(k);
+			return R(geo, gemMat(), g), (g.userData.gemPiece = k), (g.userData.gemOffset = geo.userData.gemOffset.clone()), g;
 		}
 		const take = (it) => {
 			(it.taken = !0), (it.g.visible = it.ring.visible = !1), Kt.artifacts++, G.pickup();
@@ -4666,7 +4899,7 @@ const le = (() => {
 				} catch (e) {}
 			}, 250),
 				Ut.at(it.x, 1.6, it.z, "!", M.yellow),
-				qt.open("ANCIENT ARTIFACT", "#c8a040", "You found an Ancient Artifact! (" + Kt.artifacts + "/3)|Placeholder: take it to SPARKAKUS at the Library.");
+				qt.open("ANCIENT ARTIFACT", "#1aa898", "You found an Ancient Artifact: a piece of a teal diamond! (" + Kt.artifacts + "/3)|Placeholder: take it to SPARKAKUS at the Library.");
 		};
 		return {
 			SPOTS,
@@ -4688,13 +4921,14 @@ const le = (() => {
 				}),
 					L.push((t2, dt) => Bulb.update(dt || 0.016));
 			},
-			// once SPARKAKUS has them they sit on display on his left-hand crate
+			// once SPARKAKUS has them they float on display over his reading table
 			display(home) {
 				if (!home || shown.length) return;
 				[-0.85, -0.25, 0.3].forEach((pz, k) => {
 					const g = model(k);
 					// (on the Library's reading table, top y = 0.82)
-					g.position.set(JGP.libTable[0], 0.82 + (2 === k ? 0.31 : 0.26), JGP.libTable[1] + 0.85 * (pz + 0.27)), g.scale.setScalar(0.7), home.add(g), shown.push(g);
+					// (each piece floats a little over the table, turning slowly)
+					g.position.set(JGP.libTable[0], 1.18, JGP.libTable[1] + 0.85 * (pz + 0.27)), g.scale.setScalar(0.7), home.add(g), shown.push(g);
 				});
 			},
 		};
@@ -4729,7 +4963,10 @@ const le = (() => {
 					} catch (e) {}
 				}, 300),
 					say("* " + i.reward + " *", () => {
-						Bulb.stop(), st.leave();
+						Bulb.stop(),
+							say(i.gem, () => {
+								(Kt.gem = !0), G.pickup(), say("* " + i.gemGot + " *", () => st.leave());
+							});
 					});
 			});
 		},
@@ -4760,6 +4997,8 @@ const xe = (() => {
 				o.push({ verb: "interact", label: "Talk to " + a, run: () => te(e) }),
 					Kt.blossoms > 0 &&
 						o.push({ verb: "give", label: "Give a blossom", run: () => te(e, !0) });
+				// the three Dancers (and only they) take on Dance battles
+				Dbt.has(e) && !me.active && o.push({ verb: "battle", label: "Dance battle", run: () => Dbt.start(e) });
 			} else e && o.push({ verb: "interact", label: e.label(), run: e.run });
 			return o;
 		}
@@ -5225,6 +5464,7 @@ const xe = (() => {
 						return { s: { x: x0, z: z0, top: 3.4, r: 1.2 }, side: !0 };
 					}
 					if (t && "campfire" === t.kind) return { s: { x: 0, z: 0, top: 6.3, r: 3.3 }, eye: !0 };
+					if (t && "battle" === t.kind && Dbt.state && Dbt.state.ent) return { s: Dbt.state.ent, side: !0 };
 					if (qt.isOpen) {
 						const t = xe.lastTarget,
 							e = (mo("dlgName").textContent || "").trim().toUpperCase();
@@ -6662,8 +6902,37 @@ const JGP_WOODS=(()=>{const $R=R,$S=S,$T=T,$ao=ao,$b=b,$c=c,$l=l,$u=u,$v=v,$x=x;
 return{mont:function(e,t){const o="#1d2a23",a="#3db2d6",n="#e2521f",r=(e,t,o,a,n,r,s,i,l)=>{let c=l;const h=()=>(c=16807*c%2147483647)/2147483647;e.font="bold "+r+"px 'Courier New', monospace",e.textBaseline="top";for(let l=o;l<o+n;l+=1.05*r){let o="";const n=Math.floor(a/(.6*r));for(let e=0;e<n;e++)o+=h()<.12?" ":"{}[]()<>;:'\"=,._/\\|abcdeforstuvgxinpl0123456789"[Math.floor(47*h())];e.globalAlpha=i*(.6+.4*h()),e.fillStyle=s[Math.floor(h()*s.length)],e.fillText(o,t,l)}e.globalAlpha=1},s=$b(512,512,(e=>{r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.9,7)}));s.wrapS=s.wrapT=THREE.RepeatWrapping,s.repeat.set(2.5,1.6);const i=$b(512,512,(e=>{e.fillStyle=o,e.fillRect(0,0,512,512),r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.85,11)}));i.wrapS=i.wrapT=THREE.RepeatWrapping,i.repeat.set(1.5,1.5);const l=new THREE.MeshPhongMaterial({color:o,specular:3355443,shininess:40}),c=new THREE.MeshPhongMaterial({map:i,specular:2763306,shininess:36}),h=new THREE.MeshPhongMaterial({map:s,transparent:!0,depthWrite:!1,specular:0,shininess:1}),p=new THREE.SphereGeometry(1,40,30);{const e=p.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=t.y,n=Math.hypot(t.x,t.z),r=a>0?6:2.4,s=Math.pow(Math.max(0,1-Math.pow(Math.abs(a),r)),1/r),i=n>1e-6?s/n:0;e.setXYZ(o,t.x*i,a,t.z*i)}p.computeVertexNormals()}const u=(()=>{const e=p.attributes.position,t=p.attributes.uv;let o=-1,a=-9;for(let t=0;t<e.count;t++){const n=e.getY(t),r=e.getZ(t);Math.abs(n+.25)<.08&&r>a&&(a=r,o=t)}return{u:t.getX(o),v:t.getY(o)}})(),f=$b(512,256,(e=>{e.fillStyle=o,e.fillRect(0,0,512,256);const t=512*u.u,a=256*(1-u.v);e.fillStyle="#4cb6e0",e.beginPath(),e.ellipse(t,a,52,50,0,0,$l),e.fill()})),d=new THREE.Group;e.add(d);const m=$R(p,new THREE.MeshPhongMaterial({map:f,specular:3355443,shininess:40}),d,[0,1.5,0],null,[.7,.8,.54]);$R(p.clone().scale(1.012,1.012,1.012),h,m).renderOrder=1;const g=[-1,1].map((e=>{const t=new THREE.Group;t.position.set(.29*e,.86,.02),t.scale.setScalar(1.15),d.add(t),$R($T.cyl(.1,.1,.28,12),c,t,[0,-.1,0]);const o=[],r=(e,t,a)=>o.push({geo:e,matrix:t,color:a});r(new THREE.CylinderGeometry(.162,.15,.42,16),$S(0,-.42,0),a),r(new THREE.TorusGeometry(.158,.018,6,18),$S(0,-.21,0,Math.PI/2,0,0),"#46bede"),r($T.sphere(1,16,12),$S(0,-.62,.07,0,0,0,.16,.11,.25),a),r($T.sphere(1,14,10),$S(0,-.63,.24,0,0,0,.15,.1,.12),n),r($T.sphere(1,14,10),$S(0,-.72,.07,0,0,0,.175,.035,.3),"#c9441a"),r($T.sphere(1,12,8),$S(0,-.7,-.12,0,0,0,.15,.055,.11),n),[-1,1].forEach((e=>r($T.box(.016,.36,.012),$S(.04*e,-.42,.163),"#f0c23a")));for(let e=0;e<7;e++)r($T.box(.08,.014,.012),$S(0,-.27-.05*e,.165),"#f0c23a");return[-1,1].forEach((e=>r($T.box(.014,.012,.16),$S(.04*e,-.585,.2,-.75,0,0),"#f0c23a"))),$R($v(o),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),t),t})),y=new THREE.Group;y.position.set(-.22,1,-.36),d.add(y),$R($ao([[0,0,0],[-.25,-.25,-.12],[-.6,-.6,-.05],[-.92,-.84,.12],[-1.15,-.92,.3]],.085,.006,40,10),c,y);const b=$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),M=(e,t,o,a,n,r)=>{const s=(new $c).subVectors(o,t),i=s.length(),l=(new $c).addVectors(t,o).multiplyScalar(.5),c=(new THREE.Quaternion).setFromUnitVectors(new $c(0,1,0),s.clone().normalize());e.push({geo:new THREE.CylinderGeometry(n,a,i,10),matrix:(new THREE.Matrix4).compose(l,c,new $c(1,1,1)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(t,c,new $c(a,a,a)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(o,c,new $c(n,n,n)),color:r})},w=(e,t)=>{const o=new THREE.Group;o.position.copy(t),d.add(o);const a=new $c(.12*e,-.34,.03),n=new $c(.14*e,-.66,.09);return $R($ao([[0,0,0],[.08*e,-.18,0],[a.x,a.y,a.z],[.14*e,-.5,.06],[n.x,n.y,n.z]],.13,.085,20,10),c,o),$R((e=>{const t=[],o="#7cc6ea",a="#6db8dc";t.push({geo:$T.box(.034,.1,.1),matrix:$S(0,-.08,0),color:o}),t.push({geo:$T.sphere(1,14,10),matrix:$S(0,-.08,0,0,0,0,.022,.055,.055),color:o}),[[-1,-1],[-1,1],[1,-1],[1,1]].forEach((([e,a])=>t.push({geo:$T.sphere(1,8,6),matrix:$S(0,.045*e-.08,.045*a,0,0,0,.017,.012,.012),color:o}))),t.push({geo:$T.sphere(1,12,10),matrix:$S(0,-.015,0,0,0,0,.022,.03,.04),color:o}),[[.036,.078,.0125],[.012,.088,.013],[-.012,.083,.0125],[-.035,.066,.0112]].forEach((([n,r,s],i)=>{const l=new $c(0,-.13-(3===i?-.006:0),n),c=l.clone().add(new $c(.012*e,.5*-r,.006+.001*i)),h=c.clone().add(new $c(.03*e,.45*-r,.004));M(t,l,c,s,.92*s,o),M(t,c,h,.92*s,.8*s,a)}));const n=new $c(.006*e,-.06,.05),r=n.clone().add(new $c(.012*e,-.04,.028)),s=r.clone().add(new $c(.016*e,-.036,.01));return M(t,n,r,.017,.015,o),M(t,r,s,.015,.012,a),$v(t)})(-e),b,o,[n.x,n.y+.03,n.z],[.1,.25*e,-.08*e],[2.1,2.1,2.1]),o},E=w(-1,new $c(-.64,1.9,.02)),x=w(1,new $c(.66,1.9,.02)),T=new THREE.Group;T.position.set(0,2.62,.3),T.scale.setScalar(1.32),d.add(T);const R=(e,t,o,a,n=0)=>(a.moveTo(-e/2+o,n-t/2),a.lineTo(e/2-o,n-t/2),a.quadraticCurveTo(e/2,n-t/2,e/2,n-t/2+o),a.lineTo(e/2,n+t/2-o),a.quadraticCurveTo(e/2,n+t/2,e/2-o,n+t/2),a.lineTo(-e/2+o,n+t/2),a.quadraticCurveTo(-e/2,n+t/2,-e/2,n+t/2-o),a.lineTo(-e/2,n-t/2+o),a.quadraticCurveTo(-e/2,n-t/2,-e/2+o,n-t/2),a),A=new THREE.ExtrudeGeometry(R(1,.78,.12,new THREE.Shape),{depth:.52,bevelEnabled:!0,bevelThickness:.08,bevelSize:.06,bevelSegments:5,curveSegments:10,steps:6});A.translate(0,0,-.6);{const e=A.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=$u(-t.z/.68,0,1),n=1-.42*Math.pow(a,1.3),r=Math.max(0,1-(t.x*t.x/.3+t.y*t.y/.2));e.setXYZ(o,t.x*n,t.y*n+.04*a,t.z-.26*a*a*r)}A.computeVertexNormals()}$R(A,l,T,[0,0,.2]),$R(new THREE.TorusGeometry(.035,.012,6,12),l,T,[0,.42,-.25]);const H=R(1.12,.9,.12,new THREE.Shape);H.holes.push(R(.9,.58,.06,new THREE.Path,.07)),$R(new THREE.ExtrudeGeometry(H,{depth:.05,bevelEnabled:!0,bevelThickness:.025,bevelSize:.012,bevelSegments:3,curveSegments:8}),new THREE.MeshPhongMaterial({color:"#55b8c6",specular:3355443,shininess:40}),T,[0,0,.2]);const zB=document.createElement("canvas");zB.width=zB.height=512;{const e=zB.getContext("2d"),t=e.createRadialGradient(256,240,40,256,256,360);t.addColorStop(0,"#7f52c8"),t.addColorStop(1,"#5a33a0"),e.fillStyle=t,e.fillRect(0,0,512,512),e.save(),e.scale(.66,1),e.font="500 86px 'Segoe UI', Calibri, Arial, sans-serif",e.fillStyle="#f29043",e.textBaseline="top",e.fillText("gfxinfo gfxinfo",60,22),e.restore(),e.save(),e.scale(.66,1),r(e,50,130,330,290,17,["#c6d2ff","#e6ecff","#9fb4f0"],.85,3),r(e,50,425,690,70,17,["#c6d2ff","#e6ecff"],.85,5),e.restore()}
 // (MONTGUMMERY's screen face, redrawn only when it changes: his pixel eyes with a flat mouth; the mouth
 // opening and closing while he talks; a pixel smile for a while after he is given a Blossom; and a
-// pixel shovel in place of his face while he plants)
-const zF=(e,md,op)=>{e.drawImage(zB,0,0),e.fillStyle="#ffffff";const o=e=>256+.72*(e-346),px=(t,a)=>e.fillRect(o(t),a,17.28,24);if("shovel"===md){e.save(),e.translate(256,262),e.scale(.66,1),e.rotate(-.35);const q=22,B=(i,j,w,h)=>e.fillRect(i*q-q/2,j*q,w*q,h*q);B(-1,-7,3,1),B(0,-6,1,6),B(-2,0,5,3),B(-1,3,3,1),B(0,4,1,1),e.restore()}else{e.fillRect(o(290),150,24,1.9*24),e.fillRect(o(398),150,24,1.9*24);const X=[298,322,346,370,394];if("smile"===md)[[298,298],[322,322],[346,322],[370,322],[394,298]].forEach((([t,a])=>px(t,a)));else if(op>0){const h=18*op;X.forEach((t=>(px(t,322-h),px(t,322+h))));for(let a=322-h+24;a<322+h;a+=24)px(298,a),px(394,a)}else X.forEach((t=>px(t,322)))}const a=e.createLinearGradient(0,0,512,512);a.addColorStop(0,"rgba(255,255,255,0.14)"),a.addColorStop(.45,"rgba(255,255,255,0)"),a.addColorStop(1,"rgba(0,0,0,0.12)"),e.fillStyle=a,e.fillRect(0,0,512,512)},z=$b(512,512,(e=>zF(e,"idle",0)));let zK="idle0";$R($T.plane(.91,.6),$x.basic(16777215,{map:z}),T,[0,.07,.225]);const B=[];B.push({geo:$T.box(.3,.06,.02),matrix:$S(.03,-.335,.28),color:"#14201b"});for(let e=0;e<10;e++)B.push({geo:$T.box(.012,.04,.01),matrix:$S(.028*e-.1,-.335,.292),color:"#2c4a44"});B.push({geo:new THREE.CylinderGeometry(.035,.035,.03,16).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.285),color:"#2a3a36"}),B.push({geo:new THREE.CylinderGeometry(.02,.02,.02,12).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.3),color:"#08100e"}),B.push({geo:$T.box(.09,.016,.01),matrix:$S(-.02,-.265,.282),color:"#1c3a36"}),B.push({geo:$T.box(.03,.03,.01),matrix:$S(.24,-.265,.282),color:"#1c3a36"}),B.push({geo:new THREE.CylinderGeometry(.01,.01,.01,8).rotateX(Math.PI/2),matrix:$S(.33,-.265,.282),color:"#1c3a36"}),$R($v(B),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),T);let I=-1,P=0;const G=10*Math.random();return{height:3.3,onTalk(){I=0},anim(e,t,o){s.offset.y+=.05*t,i.offset.y+=.04*t;{const md=o&&o.planting?"shovel":o&&o.giftAt&&performance.now()-o.giftAt<5e3?"smile":"idle",op="idle"===md&&o&&o.tkK>.05?o.tkS>.55?2:o.tkS>.2?1:0:0,k=md+op;k!==zK&&(zK=k,zF(z.image.getContext("2d"),md,op),z.needsUpdate=!0)}const a=o&&o.moving;P+=t*(a?7:0);const n=a?Math.sin(P):0;g[0].rotation.x=.45*n,g[1].rotation.x=-.45*n,d.position.y=a?.03*Math.abs(Math.sin(P)):0,m.scale.y=.8*(1+.01*Math.sin(1.7*e+G)),y.rotation.y=.18*Math.sin(1.1*e+G)+.1*n,y.rotation.z=.05*Math.sin(.8*e+G),x.rotation.x=.04*Math.sin(1.2*e+G)-.1*n,E.rotation.x=.1*n;let r=.03*Math.sin(.9*e+G),l=.04*Math.sin(.7*e+G);I>=0&&(I+=t,r+=.18*Math.sin(Math.min(1,I/.9)*Math.PI*2)*(1-I/.9),I>=.9&&(I=-1)),T.rotation.set(r,0,l)}}}};})();
+// pixel shovel in place of his face while he plants; while he dances the robot, a robot face: square
+// eyes whose pupils flick from side to side on the beat, over a grille mouth; and in a Dance battle
+// the move he's showing: a pixel fist, pixel scissors or a blank page)
+const zF=(e,md,op)=>{e.drawImage(zB,0,0),e.fillStyle="#ffffff";const o=e=>256+.72*(e-346),px=(t,a)=>e.fillRect(o(t),a,17.28,24);if("shovel"===md){e.save(),e.translate(256,262),e.scale(.66,1),e.rotate(-.35);const q=22,B=(i,j,w,h)=>e.fillRect(i*q-q/2,j*q,w*q,h*q);B(-1,-7,3,1),B(0,-6,1,6),B(-2,0,5,3),B(-1,3,3,1),B(0,4,1,1),e.restore()}else if("rock"===md||"scissors"===md||"paper"===md){e.save(),e.translate(256,250),e.scale(.66,1);const q=22,B=(i,j,w,h)=>e.fillRect(i*q,j*q,w*q,h*q);
+if("rock"===md)B(-2,-3,5,1),B(-3,-2,7,4),B(-4,-1,1,2),B(-2,2,5,2),(e.fillStyle="rgba(40,20,90,0.85)"),B(-1.1,-3,.2,2.4),B(.9,-3,.2,2.4),B(2.9,-3,.2,2.4);
+else if("scissors"===md){[-1,1].forEach((t=>{e.save(),e.translate(0,22),e.rotate(.42*t),e.fillRect(-11,-150,22,150),e.restore(),e.strokeStyle="#ffffff",(e.lineWidth=14),e.strokeRect(54*t-30,42,60,52)}))}
+else B(-3,-4,6,8),(e.fillStyle="rgba(40,20,90,0.85)"),[-2.6,-1.4,-.2,1,2.2].forEach((t=>B(-2,t,t<0?3.4:4,.35))),e.beginPath(),e.moveTo(3*q,-4*q),e.lineTo(1.6*q,-4*q),e.lineTo(3*q,-2.6*q),e.closePath(),e.fill();
+e.restore()}else if("robot"===md){[290,398].forEach((t=>{e.fillRect(o(t)-6,138,36,8),e.fillRect(o(t)-6,190,36,8),e.fillRect(o(t)-6,138,8,60),e.fillRect(o(t)+22,138,8,60),e.fillRect(o(t)+(op?12:2),156,10,24)})),e.fillRect(o(286),306,128,8),e.fillRect(o(286),346,128,8);for(let t=286;t<=430;t+=24)e.fillRect(o(t),306,8,48)}else{e.fillRect(o(290),150,24,1.9*24),e.fillRect(o(398),150,24,1.9*24);const X=[298,322,346,370,394];if("smile"===md)[[298,298],[322,322],[346,322],[370,322],[394,298]].forEach((([t,a])=>px(t,a)));else if(op>0){const h=18*op;X.forEach((t=>(px(t,322-h),px(t,322+h))));for(let a=322-h+24;a<322+h;a+=24)px(298,a),px(394,a)}else X.forEach((t=>px(t,322)))}const a=e.createLinearGradient(0,0,512,512);a.addColorStop(0,"rgba(255,255,255,0.14)"),a.addColorStop(.45,"rgba(255,255,255,0)"),a.addColorStop(1,"rgba(0,0,0,0.12)"),e.fillStyle=a,e.fillRect(0,0,512,512)},z=$b(512,512,(e=>zF(e,"idle",0)));let zK="idle0";$R($T.plane(.91,.6),$x.basic(16777215,{map:z}),T,[0,.07,.225]);const B=[];B.push({geo:$T.box(.3,.06,.02),matrix:$S(.03,-.335,.28),color:"#14201b"});for(let e=0;e<10;e++)B.push({geo:$T.box(.012,.04,.01),matrix:$S(.028*e-.1,-.335,.292),color:"#2c4a44"});B.push({geo:new THREE.CylinderGeometry(.035,.035,.03,16).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.285),color:"#2a3a36"}),B.push({geo:new THREE.CylinderGeometry(.02,.02,.02,12).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.3),color:"#08100e"}),B.push({geo:$T.box(.09,.016,.01),matrix:$S(-.02,-.265,.282),color:"#1c3a36"}),B.push({geo:$T.box(.03,.03,.01),matrix:$S(.24,-.265,.282),color:"#1c3a36"}),B.push({geo:new THREE.CylinderGeometry(.01,.01,.01,8).rotateX(Math.PI/2),matrix:$S(.33,-.265,.282),color:"#1c3a36"}),$R($v(B),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),T);let I=-1,P=0;const G=10*Math.random();let dB=0,mW=0,mT=0,mV=null,mL=null;
+// THE ROBOT (MONTGUMMERY's dance): a new pose on every beat, snapped into in the first fifth of the
+// beat and held with a little mechanical settle. His arms go forward, out to the side or down (never
+// across him or up into his screen), his body and his screen turn in hard stops and his pots mark
+// time; the phrase is 16 beats. [right arm forward, right arm out, left arm forward, left arm out,
+// body turn, screen turn, screen tilt, step]
+const RB=[[-1.35,0,0,0,0,0,0,1],[-1.35,0,-1.35,0,0,0,0,-1],[0,1.35,-1.35,0,0,0,.18,1],[0,1.35,0,1.35,0,0,-.18,-1],[0,.6,0,1.35,.5,.3,0,1],[-1.35,0,-1.35,0,.5,.3,.18,-1],[-1.35,0,-1.35,0,0,0,-.18,1],[0,0,0,0,-.5,-.3,0,-1],[-1.35,0,0,0,-.5,-.3,.18,1],[0,0,-1.35,0,-.5,-.3,-.18,-1],[-1.35,0,0,0,0,0,.18,1],[0,0,-1.35,0,0,0,-.18,-1],[0,1.35,0,1.35,0,0,0,1],[0,1.35,0,0,.25,.2,.18,-1],[0,0,0,1.35,-.25,-.2,-.18,1],[0,0,0,0,0,0,0,0]];
+return{height:3.3,onTalk(){I=0},anim(e,t,o){s.offset.y+=.05*t,i.offset.y+=.04*t;{const md=o&&o.planting?"shovel":o&&o.gcDw>.05&&mW>.5&&mV?mV:o&&o.gcDw>.05?"robot":o&&o.giftAt&&performance.now()-o.giftAt<5e3?"smile":"idle",op="robot"===md?Math.floor(dB)%2:"idle"===md&&o&&o.tkK>.05?o.tkS>.55?2:o.tkS>.2?1:0:0,k=md+op;k!==zK&&(zK=k,zF(z.image.getContext("2d"),md,op),z.needsUpdate=!0)}const a=o&&o.moving;P+=t*(a?7:0);const n=a?Math.sin(P):0;g[0].rotation.x=.45*n,g[1].rotation.x=-.45*n,d.position.y=a?.03*Math.abs(Math.sin(P)):0,m.scale.y=.8*(1+.01*Math.sin(1.7*e+G)),y.rotation.y=.18*Math.sin(1.1*e+G)+.1*n,y.rotation.z=.05*Math.sin(.8*e+G),x.rotation.x=.04*Math.sin(1.2*e+G)-.1*n,E.rotation.x=.1*n;let r=.03*Math.sin(.9*e+G),l=.04*Math.sin(.7*e+G);I>=0&&(I+=t,r+=.18*Math.sin(Math.min(1,I/.9)*Math.PI*2)*(1-I/.9),I>=.9&&(I=-1));
+// (in a Dance battle he shows each move with its own animation, blended over the robot by mW)
+const dw=o?Bt(o,t):0,want=o&&o.battleMove||null;want!==mL&&((mL=want),(mT=0)),want&&(mV=want),(mW+=((want?1:0)-mW)*Math.min(1,5*t)),(mT+=t);
+let hy=0;
+if(dw>.001){dB+=t*gcBeatHz();const sW=dw*(1-mW),aW=dw*mW,D={eX:0,eZ:0,xX:0,xZ:0,ry:0,rx:0,py:0,hy:0,hz:0,hx:0,g0:0,g1:0,g0z:0,g1z:0};
+if(sW>.001){const k=Math.floor(dB)%16,f=dB-Math.floor(dB),A=RB[(k+15)%16],Bq=RB[k],q=Math.min(1,f/.2),sm=q*q*(3-2*q),P2=A.map((v,j)=>v+(Bq[j]-v)*sm),jit=.03*Math.sin(Math.min(f,.4)*55)*Math.max(0,1-3*f)*(f>.2?1:0),st=.18*P2[7];
+(D.eX+=sW*(P2[0]+jit)),(D.eZ-=sW*P2[1]),(D.xX+=sW*(P2[2]-jit)),(D.xZ+=sW*P2[3]),(D.ry+=sW*P2[4]),(D.hy+=sW*P2[5]),(D.hz+=sW*P2[6]),(D.g0+=sW*st),(D.g1-=sW*st),(D.py+=sW*(.035*Math.abs(P2[7])+.02*Math.max(0,1-4*f)))}
+if(aW>.001){const b=mT*gcBeatHz(),ph=2*Math.PI*b;
+// ROCK OUT!: an air guitar, one arm out along the neck and the other strumming, his screen banging to the beat and a pot tapping
+if("rock"===mV){const tap=Math.max(0,Math.sin(ph));(D.xX-=aW),(D.xZ+=.55*aW),(D.eX+=aW*(.25*Math.sin(2*ph)-.55)),(D.eZ-=.1*aW),(D.hx+=.2*aW*tap),(D.py+=aW*(.03*Math.abs(Math.sin(ph/2))+.02*tap)),(D.g1+=.15*aW*tap)}
+// THE SPLITS LIKE SCISSORS: his pots planted wide apart and his arms chopping open and shut like blades
+else if("scissors"===mV){const c=.5+.5*Math.cos(ph);(D.g0z-=.42*aW),(D.g1z+=.42*aW),(D.eX-=1.2*aW),(D.xX-=1.2*aW),(D.eZ+=aW*(.75*c-.5)),(D.xZ+=aW*(.5-.75*c)),(D.py+=.015*aW*Math.abs(Math.sin(ph)))}
+// GO HORIZONTAL LIKE PAPER: tipped forward over one pot (kept flat on the ground) with the other kicked out behind, arms out flat in front, drifting
+else{const sw=Math.sin(Math.PI*b/2);(D.rx+=.5*aW),(D.py+=.145*aW+.05*Math.sin(Math.PI*Math.min(1,aW))),(D.g0-=.5*aW),(D.g1+=1.05*aW),(D.eX-=1.15*aW),(D.xX-=1.15*aW),(D.eZ-=.12*aW),(D.xZ+=.12*aW),(D.ry+=.15*aW*sw),(D.hz+=.1*aW*sw)}}
+(E.rotation.x+=D.eX),(E.rotation.z=D.eZ),(x.rotation.x+=D.xX),(x.rotation.z=D.xZ),(d.rotation.y=D.ry),(d.rotation.x=D.rx),(d.position.y+=D.py),(g[0].rotation.x+=D.g0),(g[1].rotation.x+=D.g1),(g[0].rotation.z=D.g0z),(g[1].rotation.z=D.g1z),(hy=D.hy),(l+=D.hz),(r+=D.hx)}
+else(dB=0),(E.rotation.z=x.rotation.z=d.rotation.y=d.rotation.x=g[0].rotation.z=g[1].rotation.z=0);
+T.rotation.set(r,hy,l)}}}};})();
 /* PULLED-MODELS-END */
 /* =========================================================================
  * GREEBLIS TOWN USA LAYER
@@ -6707,15 +6976,21 @@ const JGP = (() => {
 			face: -Math.PI / 2,
 			list: [
 				["gorbo", "GOWARD", "born_goward", {"color": "#30b4e4", "bodyR": 1.2}, [27, 4]],
-				["t_nextessa", "NEXTESSA", "city_nextessa", {"color": "#f2903a", "bodyR": 0.9}, [27, 8.25]],
+				["t_nextessa", "NEXTESSA", "city_nextessa", {"color": "#f2903a", "bodyR": 0.9}, [27, 9.1]],
 				// the garden event's BACKPACKA
-				["t_backpacka", "BACKPACKA", "born_backpacka", {"color": "#d48e64", "bodyR": 1.4}, [27, 12.5]],
-				["drifter", "MUSHROOM", "born_mushroom", {"color": "#e8862a", "bodyR": 0.8, "talkR": 4.2}, [27, 16.75]],
-				["frog", "FORTIZMO", "fortizmoPick", {"color": "#e8742a", "bodyR": 0.95, "modelScale": 0.78, "talkR": 4.2}, [27, 21]],
-				["blinker", "ANOMALEE", "anomaleePeg", {"color": "#2fd4e6", "bodyR": 0.95, "modelScale": 0.95, "talkR": 4.2}, [27, 25.25]],
+				["t_backpacka", "BACKPACKA", "born_backpacka", {"color": "#d48e64", "bodyR": 1.4}, [27, 14.2]],
+				["frog", "FORTIZMO", "fortizmoPick", {"color": "#e8742a", "bodyR": 0.95, "modelScale": 0.78, "talkR": 4.2}, [27, 19.3]],
+				["blinker", "ANOMALEE", "anomaleePeg", {"color": "#2fd4e6", "bodyR": 0.95, "modelScale": 0.95, "talkR": 4.2}, [27, 24.4]],
 				// ZOLLOD, at the end nearest his Garden Supplies
 				["cutebex", "ZOLLOD", "born_zollod", {"color": "#3cbe94", "bodyR": 0.9, "talkR": 4.2}, [27, 29.5]],
 			],
+		},
+		// MUSHROOM, the town's sheriff, stands up on the raised desk at the Sheriff's (its top is 1.5 m up;
+		// his feet sit 4.5 cm under his origin), facing the customer, and steps down off its front for the
+		// Garden Event
+		sheriff: {
+			face: () => KIOSK_AT.K.sheriff.ry,
+			list: [["drifter", "MUSHROOM", "born_mushroom", {"color": "#e8862a", "bodyR": 0.8, "talkR": 4.2, "standY": 1.545, "via": "kiosk-front:sheriff"}, "kiosk-desk:sheriff"]],
 		},
 		// KING DINO plays his drum set on the strip of grass behind the dance floor's south half (between
 		// it and the fence), centred along it; he stands behind the kit, facing out across the floor
@@ -7329,7 +7604,7 @@ const JGP = (() => {
 			head: o.head,
 			carry: o.carry,
 			anim(t, dt, e) {
-				bl.update(t, dt), o.step(t, dt || 0.016, (e && e.tkS) || 0, e && e.moving ? 1 : 0);
+				bl.update(t, dt), o.step(t, dt || 0.016, (e && e.tkS) || 0, e && e.moving ? 1 : 0, e);
 			},
 		};
 	}
@@ -8850,7 +9125,8 @@ const JGP = (() => {
 		});
 		// long segmented purple tentacle tails spreading out over the ground
 		const purple = KIT.surf("scale", "#7a4ab8", { rep: 1, bump: 0.03, shine: 80, spec: 8947848 }),
-			tails = [];
+			tails = [],
+			tms = [];
 		[
 			[Math.PI * 0.62, 2.4, 1],
 			[-Math.PI * 0.62, 2.6, -1],
@@ -8866,14 +9142,123 @@ const JGP = (() => {
 				const u = j / 8;
 				pts.push([w * 0.35 * Math.sin(u * 3.2 + k), 0.11 + (k === 2 && u > 0.8 ? 0.4 * (u - 0.8) * 5 : 0), 0.8 + len * u]);
 			}
-			R(ridgedTube(pts, 0.14, 0.05, 80, len * 7, 0.16, 10), purple, tg);
+			const tm = R(ridgedTube(pts, 0.14, 0.05, 80, len * 7, 0.16, 10), purple, tg),
+				ga = tm.geometry.attributes;
+			(tm.userData.keep = !0), (tm.userData.len = len), (tm.userData.p0 = ga.position.array.slice()), (tm.userData.n0 = ga.normal.array.slice()), tms.push(tm);
 		});
+		// ETCHER's dance moves his tentacles (a 16-beat phrase, four beats to each move): a ripple runs
+		// down all of them; they curl up high one after another round the circle and back down; he
+		// twirls and they swing round after him like a skirt; then all six curl up together, wiggle at
+		// the tips and flop back down. Each tentacle bends in its own upright plane from where it leaves
+		// his body (bend), so it only ever lifts off the ground, never into it, and its tip never curls
+		// back as far as his body; the ripple sways it from side to side.
+		const bend = (tm, phi, amp, wph, lift = 0) => {
+				const P = tm.geometry.attributes.position,
+					N = tm.geometry.attributes.normal,
+					p0 = tm.userData.p0,
+					n0 = tm.userData.n0,
+					L = tm.userData.len,
+					kap = phi / L,
+					Rr = kap > 1e-4 ? 1 / kap : 0;
+				for (let i = 0, j = 0; i < P.count; i++, j += 3) {
+					let x0 = p0[j],
+						y0 = p0[j + 1],
+						z0 = p0[j + 2],
+						ny = n0[j + 1],
+						nz = n0[j + 2];
+					const sl = z0 - 0.8;
+					if (sl > 0) {
+						const u = sl / L;
+						x0 += amp * u * Math.sin(wph - 6 * u);
+						// (lift raises the tentacle level off the ground from a quarter of the way along, with a flutter)
+						if (lift) {
+							const q = Math.min(1, u / 0.25);
+							y0 += lift * (q * q * (3 - 2 * q) + 0.15 * u * Math.sin(wph - 5 * u));
+						}
+						if (Rr) {
+							const a = kap * sl,
+								c = Math.cos(a),
+								sn = Math.sin(a),
+								h = Rr - y0;
+							(y0 = Rr - h * c), (z0 = 0.8 + h * sn);
+							const ny2 = ny * c + nz * sn;
+							(nz = -ny * sn + nz * c), (ny = ny2);
+						}
+					}
+					P.setXYZ(i, x0, y0, z0), N.setXYZ(i, n0[j], ny, nz);
+				}
+				(P.needsUpdate = N.needsUpdate = !0), (tm.frustumCulled = !1);
+			},
+			// the order the tentacles curl up in, round the circle from his left front to his right front
+			ORDER = [1, 4, 2, 3, 0, 5],
+			sin2 = (q) => Math.sin(Math.PI * q) ** 2;
+		let dB = 0,
+			danced = !1,
+			mW = 0,
+			mT = 0,
+			mV = null,
+			mL = null;
 		return born(g, {
 			height: 2.6,
 			lids,
-			step(t, dt, tk, wk) {
+			step(t, dt, tk, wk, e) {
 				(body.rotation.z = 0.025 * Math.sin(1.1 * t)), (body.rotation.x = 0.02 * Math.sin(0.9 * t)), (body.position.y = 0.03 * wk * Math.abs(Math.sin(6 * t)));
-				tails.forEach((tg, k) => (tg.rotation.y = tg.userData.ph0 + 0.04 * Math.sin(0.8 * t + k)));
+				const dw = e ? Bt(e, dt) : 0,
+					want = (e && e.battleMove) || null;
+				want !== mL && ((mL = want), (mT = 0)), want && (mV = want), (mW += ((want ? 1 : 0) - mW) * Math.min(1, 5 * dt)), (mT += dt);
+				const rot = [0, 0, 0, 0, 0, 0];
+				if (dw > 0.001) {
+					dB += dt * gcBeatHz();
+					// his own dance (sW) and, in a Dance battle, the move he is showing (aW)
+					const sW = dw * (1 - mW),
+						aW = dw * mW,
+						bar = Math.floor(dB / 4) % 4,
+						b4 = dB % 4,
+						f = dB % 1,
+						mb = mT * gcBeatHz(),
+						mph = 2 * Math.PI * mb;
+					let pitch = 0;
+					(body.position.y += sW * 0.04 * sin2(f)), (body.rotation.y = sW * 0.2 * Math.sin(Math.PI * dB)), (root.rotation.y = 0);
+					2 === bar && (rot.fill(sW * 0.38 * Math.sin((Math.PI * b4) / 2)), (root.rotation.y = sW * 0.35 * Math.sin((Math.PI * b4) / 2)));
+					// ROCK OUT!: he bangs his head and drums all six tentacles on the ground, round the circle
+					"rock" === mV && (pitch = aW * 0.13 * Math.max(0, Math.sin(mph)));
+					// GO HORIZONTAL LIKE PAPER: all six lift level off the ground and ripple like a page as he sways
+					"paper" === mV && (body.rotation.y += aW * 0.25 * Math.sin(Math.PI * mb));
+					// THE SPLITS LIKE SCISSORS: the two front tentacles rise and snip open and shut, the other four spread wide
+					if ("scissors" === mV) {
+						const c = 0.5 + 0.5 * Math.cos(mph);
+						(rot[4] -= aW * (0.45 + 0.35 * c)), (rot[5] += aW * (0.45 + 0.35 * c)), (rot[0] += 0.25 * aW), (rot[1] -= 0.25 * aW), (rot[2] += 0.1 * aW), (rot[3] -= 0.1 * aW);
+					}
+					// (a nod tips his base forward, so he rises by as much as its front edge would dip)
+					(body.rotation.x += pitch), (body.position.y += 0.9 * Math.sin(pitch));
+					tms.forEach((tm, k) => {
+						let phi = 0.2,
+							amp = 0.18;
+						if (0 === bar) phi += 0.25 * sin2(f);
+						else if (1 === bar) {
+							const q = (b4 - 0.5 * ORDER[k]) / 1.4;
+							q > 0 && q < 1 && (phi += 1.9 * Math.sin(Math.PI * q));
+						} else if (2 === bar) phi += 0.15 * sin2(f);
+						else {
+							const up = b4 < 3 ? Math.min(1, b4 / 0.5) : Math.max(0, 1 - (b4 - 3) / 0.6);
+							(phi += 1.8 * up * up * (3 - 2 * up)), (amp += 0.17 * up);
+						}
+						let mphi = 0.2,
+							mamp = 0.05,
+							lift = 0;
+						"rock" === mV
+							? (mphi += 1.1 * Math.max(0, Math.sin(Math.PI * (2 * mb + k / 3))) ** 2)
+							: "scissors" === mV
+								? ((mphi = k > 3 ? 1.5 : 0.12), (mamp = 0.02))
+								: ((mphi = 0), (mamp = 0), (lift = 0.6));
+						bend(tm, sW * phi + aW * mphi, sW * amp + aW * mamp, Math.PI * dB + k, aW * lift);
+					});
+					danced = !0;
+				} else if (danced) {
+					(danced = !1), (dB = 0), (root.rotation.y = 0), (body.rotation.y = 0);
+					tms.forEach((tm) => (tm.geometry.attributes.position.array.set(tm.userData.p0), tm.geometry.attributes.normal.array.set(tm.userData.n0), (tm.geometry.attributes.position.needsUpdate = tm.geometry.attributes.normal.needsUpdate = !0), (tm.frustumCulled = !0)));
+				}
+				tails.forEach((tg, k) => (tg.rotation.y = tg.userData.ph0 + 0.04 * Math.sin(0.8 * t + k) + rot[k]));
 			},
 		});
 	};
@@ -9231,7 +9616,8 @@ const JGP = (() => {
 		// short arms held up in front, with three ivory claws
 		const arms = [-1, 1].map((sx) => {
 			const a = KIT.arm(body, [0.36 * sx, 1.38, 0.44], { len: 0.56, r: 0.105, mat: blueM, hand: "claw3", nailMat: ivory, rot: [-0.55, 0, -0.08 * sx] });
-			return (a.el.rotation.x = -0.85), a;
+			// (the shoulder lifts forward first and then swings round, for the macarena)
+			return (a.sh.rotation.order = "YXZ"), (a.el.rotation.x = -0.85), a;
 		});
 		// thick legs with big clawed feet
 		const legs = [-1, 1].map((sx) => KIT.leg(body, [0.38 * sx, 0.58, 0.02], { len: 0.52, r: 0.17, mat: blueM, thigh: 1.2, foot: "claw", footMat: blueM, nailMat: ivory }));
@@ -9366,18 +9752,121 @@ const JGP = (() => {
 			R(T.sphere(0.07, 10, 8), x.clay(col, { shininess: 50 }), body, e);
 		};
 		tube(-1, "#e8782a", 16, 0.45), tube(1, "#6a7280", 20, 0.55);
+		// GLYPH's dance is the macarena, one move to a beat over 16 beats: right arm out in front, then
+		// the left, palms down; each palm turns up; each hand to the other shoulder; both hands up by
+		// his head (his arms are too short to reach behind it); each hand across to the other hip; each
+		// hand back to its own hip; three sways of the hips; and a hop (arms up) that turns him a quarter
+		// turn to the left, ready to go again. Each arm pose: [lift forward, swing in, out to the side, elbow,
+		// turn of the hand, stretch]. His arms stretch out long as he dances (each pose has its own
+		// reach), so every move reads from across the dance floor: the upper arm and the forearm grow
+		// longer and his claws stay their own size. While he dances his idle roll and nod rest, so his
+		// tubes stay on the ground.
+		const MAC = {
+				rest: [-0.55, 0, -0.08, -0.85, 0, 1],
+				out: [-1.45, 0.1, 0, -0.15, 0, 1.75],
+				up: [-1.45, 0.1, 0, -0.15, Math.PI, 1.75],
+				shoulder: [-1.25, 0.75, 0, -1.75, 0, 1.15],
+				head: [-2.65, 0, 0.45, -1.25, 0, 1.6],
+				hipX: [-0.75, 0.55, 0, -0.55, 0, 1.4],
+				hip: [-0.3, 0, 1.35, -0.5, 0, 1.5],
+				hop: [-1.8, 0, 0.6, -0.4, 0, 1.3],
+			},
+			// the pose of each arm (right, left) on each beat of the phrase
+			SEQ = [
+				["out", "rest"], ["out", "out"], ["up", "out"], ["up", "up"],
+				["shoulder", "up"], ["shoulder", "shoulder"], ["head", "shoulder"], ["head", "head"],
+				["hipX", "head"], ["hipX", "hipX"], ["hip", "hipX"], ["hip", "hip"],
+				["hip", "hip"], ["hip", "hip"], ["hip", "hip"], ["hop", "hop"],
+			],
+			wrap = (q) => Math.atan2(Math.sin(q), Math.cos(q)),
+			// stretch an arm: the upper arm and the forearm (with the elbow) lengthen, the claws move out
+			stretch = (a, S) => {
+				a.parts ||
+					(a.parts = {
+						up: a.sh.children.find((c) => c.isMesh),
+						fore: a.el.children.find((c) => c.isMesh && c.material === blueM),
+						claw: a.el.children.find((c) => c.isMesh && c.material !== blueM),
+					});
+				const P = a.parts;
+				P.up && (P.up.scale.y = S), (a.el.position.y = -0.28 * S), P.fore && (P.fore.scale.y = S), P.claw && (P.claw.position.y = -0.28 * (S - 1));
+			};
+		let dB = 0,
+			mW = 0,
+			mT = 0,
+			mV = null,
+			mL = null;
 		return born(g, {
 			height: 2.5,
 			lids,
-			step(t, dt, tk, wk) {
+			step(t, dt, tk, wk, e) {
+				const dw = e ? Bt(e, dt) : 0,
+					still = 1 - dw;
 				// every few seconds he gives an excited little shake (and lifts his head to look about)
 				const ph = t % 5.3,
 					shake = ph < 0.8 ? 0.07 * Math.sin(ph * 42) * (1 - ph / 0.8) : 0;
-				(body.position.y = 0.02 * Math.sin(1.5 * t) + 0.04 * wk * Math.abs(Math.sin(7 * t))), (body.rotation.z = 0.025 * Math.sin(1.1 * t) + shake);
-				(body.rotation.y = 0.12 * Math.sin(0.45 * t) * Math.max(0, Math.sin(0.23 * t))), (body.rotation.x = -0.03 * Math.max(0, Math.sin(0.6 * t + 1)));
-				tail.rotation.y = 0.12 * Math.sin(1.0 * t) + 3 * shake;
-				arms.forEach((a, k) => (a.sh.rotation.x = -0.55 + 0.08 * Math.sin(1.6 * t + 2 * k) + 0.3 * wk * Math.sin(7 * t + k * Math.PI)));
+				(body.position.y = still * (0.02 * Math.sin(1.5 * t) + 0.04 * wk * Math.abs(Math.sin(7 * t)))), (body.rotation.z = still * (0.025 * Math.sin(1.1 * t) + shake));
+				(body.rotation.y = still * 0.12 * Math.sin(0.45 * t) * Math.max(0, Math.sin(0.23 * t))), (body.rotation.x = -0.03 * still * Math.max(0, Math.sin(0.6 * t + 1)));
+				tail.rotation.y = 0.12 * Math.sin(1.0 * t) + 3 * shake * still;
+				arms.forEach((a, k) => ((a.sh.rotation.x = -0.55 + 0.08 * Math.sin(1.6 * t + 2 * k) + 0.3 * wk * Math.sin(7 * t + k * Math.PI)), (a.sh.rotation.y = 0), (a.sh.rotation.z = -0.08 * (2 * k - 1)), (a.el.rotation.x = -0.85), (a.el.rotation.y = 0)));
 				legs.forEach((lg, k) => KIT.stride(lg, 7 * t + k * Math.PI, 0.45 * wk, 0.7 * wk));
+				root.position.y = 0;
+				const want = (e && e.battleMove) || null;
+				want !== mL && ((mL = want), (mT = 0)), want && (mV = want), (mW += ((want ? 1 : 0) - mW) * Math.min(1, 5 * dt)), (mT += dt);
+				if (dw > 0.001) {
+					dB += dt * gcBeatHz();
+					// the macarena (sW) and, in a Dance battle, the move he is showing (aW)
+					const sW = dw * (1 - mW),
+						aW = dw * mW,
+						n = Math.floor(dB),
+						k = n % 16,
+						f = dB - n,
+						q = Math.min(1, f / 0.45),
+						sm = q * q * (3 - 2 * q),
+						mb = mT * gcBeatHz(),
+						mph = 2 * Math.PI * mb,
+						// the move's pose for each arm, and its hop and leg spread
+						mv = [null, null];
+					let hopM = 0,
+						spread = 0;
+					if ("rock" === mV) {
+						// ROCK OUT!: one long arm out along the guitar neck, the other strumming at his belly, stomping and bouncing
+						(mv[1] = [-1.2, 0, 0.7, -0.2, 0, 1.85]), (mv[0] = [-0.95 + 0.25 * Math.sin(2 * mph), 0.35, 0, -0.95, 0, 1.25]), (hopM = 0.05 * Math.abs(Math.sin(mph)));
+						// (a stomp lifts the thigh and folds the shin back, so the foot only ever rises off the ground)
+						legs.forEach((lg, j) => {
+							const up = Math.max(0, Math.sin(mph + j * Math.PI)) * aW;
+							(lg.hip.rotation.x = -0.3 * up), (lg.knee.rotation.x = 0.6 * up);
+						});
+					} else if ("scissors" === mV) {
+						// THE SPLITS LIKE SCISSORS: a jump every two beats, kicking his legs apart into a split in mid air,
+						// his long arms snipping open and shut over his head
+						const j2 = (mb / 2) % 1,
+							snip = 0.15 + 0.5 * (0.5 + 0.5 * Math.cos(mph));
+						(hopM = 0.35 * Math.sin(Math.PI * j2)), (spread = Math.sin(Math.PI * j2));
+						mv[0] = mv[1] = [-2.7, 0, snip, -0.1, 0, 1.6];
+					} else if ("paper" === mV) {
+						// GO HORIZONTAL LIKE PAPER: both arms stretched out flat as wings, see-sawing as he glides from side to side
+						const tip = 0.25 * Math.sin(Math.PI * mb);
+						(mv[0] = [0, 0, 1.5 - tip, 0, 0, 2]), (mv[1] = [0, 0, 1.5 + tip, 0, 0, 2]), (body.rotation.y += aW * 0.3 * Math.sin((Math.PI * mb) / 2));
+					}
+					arms.forEach((a, side) => {
+						const sx = 2 * side - 1,
+							A = MAC[SEQ[(k + 15) % 16][side]],
+							Z = MAC[SEQ[k][side]],
+							S = A.map((v, j) => v + (Z[j] - v) * sm),
+							M = mv[side] || S,
+							P = S.map((v, j) => (sW * v + aW * M[j]) / Math.max(1e-6, dw)),
+							I = [a.sh.rotation.x, 0, 0.08, -0.85, 0];
+						(a.sh.rotation.x = I[0] + (P[0] - I[0]) * dw), (a.sh.rotation.y = -sx * P[1] * dw), (a.sh.rotation.z = sx * (-0.08 + (P[2] + 0.08) * dw));
+						(a.el.rotation.x = -0.85 + (P[3] + 0.85) * dw), (a.el.rotation.y = -sx * P[4] * dw), stretch(a, 1 + (P[5] - 1) * dw);
+					});
+					legs.forEach((lg, j) => (lg.hip.rotation.z = (2 * j - 1) * 0.55 * spread * aW));
+					// the hips sway on beats 13 to 15; the hop and the quarter turn on beat 16
+					const sway = k >= 12 && k <= 14 ? Math.sin(Math.PI * (k - 12 + f)) : 0;
+					(body.position.x = sW * 0.11 * sway), (body.rotation.y += sW * 0.14 * sway);
+					const turns = Math.floor(dB / 16),
+						hop = 15 === k ? sm : 0;
+					(root.position.y = sW * 0.2 * Math.sin(Math.PI * (15 === k ? f : 0)) + aW * hopM), (root.rotation.y = sW * wrap((Math.PI / 2) * (turns + hop)));
+				} else dB && ((dB = 0), (body.position.x = 0), (root.rotation.y = 0), arms.forEach((a) => stretch(a, 1)), legs.forEach((lg) => (lg.hip.rotation.z = 0)));
 			},
 		});
 	};
@@ -9854,8 +10343,12 @@ const JGP = (() => {
 			},
 			{ smooth: !0 },
 		);
+	// (th.dh lifts the roof, and everything over the walls, by that much; th.desk is the height of the
+	// top of the desk at the front, 1.12 m unless set)
 	function kioskFrame(o, th) {
-		const deck = KIT.surf("wood", "#a8865c", { rep: 2, bump: 0.03, shine: 12 }),
+		const dh = th.dh || 0,
+			D = th.desk || 1.12,
+			deck = KIT.surf("wood", "#a8865c", { rep: 2, bump: 0.03, shine: 12 }),
 			wall = KIT.surf("wood", th.wall, { rep: 1, bump: 0.03, shine: 10 }),
 			wall2 = KIT.surf("wood", th.wall2, { rep: 1, bump: 0.03, shine: 10 }),
 			white = x.clay("#f6f2e8", { shininess: 30 }),
@@ -9872,38 +10365,39 @@ const JGP = (() => {
 		// deck, back wall with battens, half side walls, posts and beam
 		R(T.box(6.4, 0.2, 5.0), deck, o, [0, 0.1, -0.1]), R(T.box(6.5, 0.08, 0.12), white, o, [0, 0.2, 2.42]);
 		// the back wall stops inside the corner posts (flush end faces would flicker against them)
-		R(T.box(5.96, 3.3, 0.16), wall, o, [0, 1.85, -2.45]);
-		for (let k = 0; k < 11; k++) R(T.box(0.08, 3.3, 0.06), wall2, o, [-2.6 + 0.52 * k, 1.85, -2.35]);
+		R(T.box(5.96, 3.3 + dh, 0.16), wall, o, [0, 1.85 + dh / 2, -2.45]);
+		for (let k = 0; k < 11; k++) R(T.box(0.08, 3.3 + dh, 0.06), wall2, o, [-2.6 + 0.52 * k, 1.85 + dh / 2, -2.35]);
 		[-1, 1].forEach((sx) => {
 			R(T.box(0.16, 1.0, 4.6), wall, o, [3.0 * sx, 0.7, -0.15]), R(T.box(0.2, 0.08, 4.7), white, o, [3.0 * sx, 1.24, -0.15]);
-			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4, 0.24), white, o, [3.0 * sx, 1.9, pz]));
+			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4 + dh, 0.24), white, o, [3.0 * sx, 1.9 + dh / 2, pz]));
 			// gable ends under the roof
-			const tri = new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(2.6, 3.5), new THREE.Vector2(-2.45, 3.5), new THREE.Vector2(0.12, 4.62)])).rotateY(Math.PI / 2);
+			const tri = new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(2.6, 3.5 + dh), new THREE.Vector2(-2.45, 3.5 + dh), new THREE.Vector2(0.12, 4.62 + dh)])).rotateY(Math.PI / 2);
 			R(tri, Object.assign(wall.clone(), { side: THREE.DoubleSide }), o, [3.08 * sx, 0, 0]);
 		});
-		R(T.box(6.4, 0.28, 0.2), white, o, [0, 3.44, 2.15]);
+		R(T.box(6.4, 0.28, 0.2), white, o, [0, 3.44 + dh, 2.15]);
 		// tin roof (optionally spotted like a toadstool) and the sign on the ridge
 		[
 			[1.24, 0.378],
 			[-1.49, -0.378],
 		].forEach(([pz, rx], k) => {
 			const slope = new THREE.Group();
-			slope.position.set(0, 4.16, pz), (slope.rotation.x = rx), o.add(slope), R(T.box(6.9, 0.1, 2.95), tin, slope);
+			slope.position.set(0, 4.16 + dh, pz), (slope.rotation.x = rx), o.add(slope), R(T.box(6.9, 0.1, 2.95), tin, slope);
 			if (th.spots) {
 				const sr = srand(31 + k),
 					spot = x.clay("#fbf8f0", { shininess: 40 });
 				for (let j = 0; j < 9; j++) R(T.sphere(1, 12, 6), spot, slope, [-3 + 6 * sr(), 0.05, -1.1 + 2.2 * sr()], null, [0.22 + 0.16 * sr(), 0.05, 0.2 + 0.14 * sr()]);
 			}
 		});
-		R(T.box(6.95, 0.12, 0.32), white, o, [0, 4.72, -0.12]);
+		R(T.box(6.95, 0.12, 0.32), white, o, [0, 4.72 + dh, -0.12]);
 		const signTex = kioskSignTex(th);
-		[-1.6, 1.6].forEach((px) => R(T.box(0.12, 0.7, 0.12), white, o, [px, 4.95, -0.12]));
-		R(T.box(4.3, 1.05, 0.1), white, o, [0, 5.55, -0.12]), R(T.plane(4.1, 1.02), x.world(16777215, { map: signTex }), o, [0, 5.55, -0.04]);
-		// the counter, crates on either side
-		R(T.box(3.8, 0.9, 0.1), wall, o, [0, 0.65, 1.07]), R(T.box(3.84, 0.08, 0.12), white, o, [0, 0.24, 1.08]);
+		[-1.6, 1.6].forEach((px) => R(T.box(0.12, 0.7, 0.12), white, o, [px, 4.95 + dh, -0.12]));
+		R(T.box(4.3, 1.05, 0.1), white, o, [0, 5.55 + dh, -0.12]), R(T.plane(4.1, 1.02), x.world(16777215, { map: signTex }), o, [0, 5.55 + dh, -0.04]);
+		// the counter (the desk), crates on either side
+		const ph = D - 0.22;
+		R(T.box(3.8, ph, 0.1), wall, o, [0, 0.2 + ph / 2, 1.07]), R(T.box(3.84, 0.08, 0.12), white, o, [0, 0.24, 1.08]);
 		// the top overhangs the front panel and the end supports sit inside it, so no faces are flush
-		R(T.box(3.95, 0.1, 1.08), crate, o, [0, 1.07, 0.64]);
-		[-1.82, 1.82].forEach((px) => R(T.box(0.1, 0.9, 0.9), wall2, o, [px, 0.65, 0.56]));
+		R(T.box(3.95, 0.1, 1.08), crate, o, [0, D - 0.05, 0.64]);
+		[-1.82, 1.82].forEach((px) => R(T.box(0.1, ph, 0.9), wall2, o, [px, 0.2 + ph / 2, 0.56]));
 		[-1, 1].forEach((sx) => {
 			R(T.box(0.7, 0.8, 1.6), crate, o, [1.42 * sx, 0.6, -0.38]);
 			[0.35, 0.6, 0.85].forEach((yy) => R(T.box(0.72, 0.03, 1.62), wall2, o, [1.42 * sx, yy, -0.38]));
@@ -9919,23 +10413,24 @@ const JGP = (() => {
 	// his speech. (LIB_LAYOUT gives the footprints, for the colliders.)
 	const LIB_LAYOUT = (() => {
 		// bookcases: [centre x, centre z, along z?]; each is 2.2 m long and 0.56 m deep
+		// (about a metre of open floor between the bookcases of a set, and two between the sets)
 		const cases = [
-				[-1.25, -2.6, 0],
-				[1.25, -2.6, 0],
-				[-1.25, -4.3, 0],
-				[1.25, -4.3, 0],
-				[-3.9, -1.0, 1],
-				[-3.9, -3.3, 1],
-				[3.9, -1.0, 1],
-				[3.9, -3.3, 1],
+				[-1.6, -3.0, 0],
+				[1.6, -3.0, 0],
+				[-1.6, -5.0, 0],
+				[1.6, -5.0, 0],
+				[-5.0, -0.4, 1],
+				[-5.0, -3.6, 1],
+				[5.0, -0.4, 1],
+				[5.0, -3.6, 1],
 			],
 			rect = ([cx, cz, al]) => (al ? [cx - 0.3, cz - 1.12, cx + 0.3, cz + 1.12] : [cx - 1.12, cz - 0.3, cx + 1.12, cz + 0.3]);
 		return {
 			cases,
 			table: [-1.75, 0.1],
-			posts: [-1.7, 1.7].map((px) => [px, -5.0]),
-			parts: [...cases.map(rect), [-2.18, -0.62, -1.32, 0.82], [-1.8, -5.1, -1.6, -4.9], [1.6, -5.1, 1.8, -4.9]],
-			hull: [-4.25, -5.15, 4.25, 0.85],
+			posts: [-1.7, 1.7].map((px) => [px, -6.0]),
+			parts: [...cases.map(rect), [-2.18, -0.62, -1.32, 0.82], [-1.8, -6.1, -1.6, -5.9], [1.6, -6.1, 1.8, -5.9]],
+			hull: [-5.35, -6.15, 5.35, 0.85],
 		};
 	})();
 	function buildLibrary(o) {
@@ -9986,7 +10481,7 @@ const JGP = (() => {
 		const th = { sign: "LIBRARY", ink: "#2a3e6a" },
 			white = x.clay("#f6f2e8", { shininess: 30 });
 		LIB_LAYOUT.posts.forEach(([px, pz]) => R(T.box(0.14, 4.3, 0.14), white, o, [px, 2.15, pz]));
-		R(T.box(3.7, 0.95, 0.08), white, o, [0, 3.75, -5.0]), R(T.plane(3.5, 0.88), x.world(16777215, { map: kioskSignTex(th) }), o, [0, 3.75, -4.95]);
+		R(T.box(3.7, 0.95, 0.08), white, o, [0, 3.75, -6.0]), R(T.plane(3.5, 0.88), x.world(16777215, { map: kioskSignTex(th) }), o, [0, 3.75, -5.95]);
 		// the reading table that the Ancient Artifacts are shown on (top y = 0.82)
 		const [tx, tz] = LIB_LAYOUT.table;
 		G.box(wood, tx, 0.8, tz, 0.8, 0.05, 1.38);
@@ -10158,11 +10653,15 @@ const JGP = (() => {
 		G.done(o);
 	}
 
+	const SHERIFF_DH = 1,
+		SHERIFF_DESK = 1.5;
 	// The Sheriff's, in a mushroom theme (the mushrooms are on the sheriff's side): toadstool-red tin
 	// roof with white spots, mushroom-brown walls, a gold star, wanted posters of space aliens and
 	// their UFO, toadstool stools, mushrooms sprouting round the posts, and a cowboy hat on the counter.
 	function buildSheriff(o) {
-		kioskFrame(o, { sign: "SHERIFF'S", ink: "#6a3a1a", wall: "#8a5a3a", wall2: "#6e4628", tin: [184, 40, 34], spots: !0 });
+		// (its roof stands a metre higher than the other kiosks' and its desk is raised, so MUSHROOM, up on
+		// the desk, looks down at whoever comes to talk to him)
+		kioskFrame(o, { sign: "SHERIFF'S", ink: "#6a3a1a", wall: "#8a5a3a", wall2: "#6e4628", tin: [184, 40, 34], spots: !0, dh: SHERIFF_DH, desk: SHERIFF_DESK });
 		const G = goods(),
 			rs = srand(909),
 			CAPS = ["#c82a24", "#d8442a", "#b8862a", "#8a5a3a", "#e8b048"];
@@ -10232,7 +10731,7 @@ const JGP = (() => {
 			G.add(T.sphere(1, 8, 6), "#fbf8f0", G.m(3.75 + 0.95 * Math.sin(ph) * Math.cos(a), 1.6 + 0.55 * Math.cos(ph), 1.6 + 0.95 * Math.sin(ph) * Math.sin(a), 0, 0, 0, 0.13, 0.05, 0.13));
 		}
 		// small caps topping the sign posts on the ridge
-		[-1.6, 1.6].forEach((px) => G.add(capGeo, "#c82a24", G.m(px, 6.08, -0.12, 0, 0, 0, 0.2, 0.12, 0.2)));
+		[-1.6, 1.6].forEach((px) => G.add(capGeo, "#c82a24", G.m(px, 6.08 + SHERIFF_DH, -0.12, 0, 0, 0, 0.2, 0.12, 0.2)));
 		G.done(o);
 		// wanted posters on parchment: a little green alien, or the UFO it flies
 		const poster = (kind, skin) =>
@@ -10717,7 +11216,9 @@ const JGP = (() => {
 			],
 		};
 	})();
-	// THE TRAVELER SAVES THE ORIGINATOR: the stained glass window of the cathedral in Greeblis City,
+	// THE CHURCH WINDOWS ARE FINAL: the Traveler window over the door and the Garden window down each
+	// side (and its mirrored copy) are the owner's final designs. Keep them exactly as they are.
+	// THE TRAVELER SAVES THE ORIGINATOR (final): the stained glass window of the cathedral in Greeblis City,
 	// redrawn at twice the resolution with more detail (no words, and no face on the Traveler). The winged Traveler comes down a beam of light
 	// over a dead, burning world and carries the old computer (the Originator, its AI still stirring
 	// on the screen) up out of the ruins, its cable pulled free of the ground. Painted on a 384 x 1024
@@ -10838,7 +11339,7 @@ const JGP = (() => {
 		};
 		return { W0, H0, LEAD, mix, shade, rnd, reseed, glass, oval, panes, border };
 	};
-	// THE GARDEN WINDOW (the right-hand window of the cathedral in Greeblis City), redrawn at twice
+	// THE GARDEN WINDOW (final) (the right-hand window of the cathedral in Greeblis City), redrawn at twice
 	// the resolution with more detail: a bright summer sky with a rayed sun and clouds over a meadow of
 	// flowers; a figure in a white robe (no face: a smooth oval of pale light under the hair) stands
 	// with MAMA GORBO beside them: her round cyan body with its highlights, her octagon port eyes, her
@@ -11224,64 +11725,34 @@ const JGP = (() => {
 		});
 		garden.stone = g;
 	}
-	// the special batch of flowers that the Seeds from Garden Supplies grow (placeholder: tall stems
-	// with pale star blooms in a ring just inside the border stones). They come up during the first
-	// Event after the Seeds are bought and stay for the rest of the session.
-	function growSpecial() {
-		if (garden.special || !bt.seeds) return;
-		garden.special = !0;
-		for (let k = 0; k < 16; k++) {
-			const a = ((k + 0.5) / 16) * l,
-				r = GARDEN_R - 1.1,
-				parts = [],
-				add = (geo, color, m) => parts.push({ geo, color, matrix: m }),
-				h2 = 1.1 + 0.25 * (k % 3),
-				pc = k % 2 ? "#bff2ff" : "#fff1a8";
-			add(T.cyl(0.025, 0.035, h2, 5), "#3f8a2a", S(0, h2 / 2, 0));
-			for (let j = 0; j < 2; j++) add(T.cone(0.07, 0.4, 4), "#4f9a2a", S(0.05 * (j ? 1 : -1), 0.35 + 0.2 * j, 0, 0, j * 2.2, (j ? -1 : 1) * 0.9, 1, 1, 0.3));
-			for (let j = 0; j < 8; j++) add(T.cone(0.06, 0.3, 4), pc, S(0, h2, 0, 0, (j / 8) * l, 0).multiply(S(0, 0, 0.12, Math.PI / 2 - 0.25, 0, 0)));
-			add(T.sphere(0.08, 8, 6), "#ffffff", S(0, h2 + 0.02, 0));
-			const g = new THREE.Group();
-			g.position.set(r * Math.cos(a), 0.05, r * Math.sin(a)), (g.rotation.y = a), g.scale.setScalar(0.01);
-			R(v(parts), garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 })), g);
-			(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
-			// they come up one after another
-			garden.plants.push({ g, grow: -0.12 * k, water: 0, special: !0 });
-		}
+	// THE PLANTS (placeholder): for now one kind of generic plant grows, a green stem with two pairs of
+	// leaves and a closed bud on top. Nothing grows unless the Seeds quest is done (without the Seeds
+	// nobody comes to plant); with them, the one batch that grows is what the creatures plant, each
+	// plant coming up during the Event right where its creature was seen planting it. (All of them
+	// share one mesh.)
+	const plantGeo = () => {
+		if (garden.geo) return garden.geo;
+		const parts = [],
+			add = (geo, color, m) => parts.push({ geo, color, matrix: m });
+		add(T.cyl(0.022, 0.03, 0.62, 6), "#3f8a2a", S(0, 0.31, 0));
+		[0.2, 0.4].forEach((y, j) =>
+			[-1, 1].forEach((sd) => add(T.sphere(1, 8, 6), j ? "#5aa83a" : "#4f9a2a", S(0.1 * sd, y + 0.03, 0, 0, j * 1.2, -0.45 * sd, 0.13, 0.025, 0.06))),
+		);
+		add(T.sphere(1, 10, 8), "#7cc04a", S(0, 0.66, 0, 0, 0, 0, 0.07, 0.1, 0.07));
+		return (garden.geo = v(parts));
+	};
+	function putPlant(x0, z0, ry, grow) {
+		const g = new THREE.Group();
+		g.position.set(x0, 0.05, z0), (g.rotation.y = ry), g.scale.setScalar(0.01);
+		R(plantGeo(), garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 })), g);
+		(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
+		const p = { g, grow, water: 0 };
+		return garden.plants.push(p), p;
 	}
 	const PLANT_COLS = ["#e8301e", "#ffd23a", "#ff5fb0", "#9a6bff", "#ff8a1a"];
 	function makePlant(slot) {
-		const parts = [],
-			add = (geo, color, m) => parts.push({ geo, color, matrix: m }),
-			kind = Math.floor(5 * rnd()),
-			col = PLANT_COLS[Math.floor(rnd() * PLANT_COLS.length)];
-		if (0 === kind)
-			for (let k = 0; k < 5; k++) add(T.ico(0.16, 0), k % 2 ? "#4f9a2a" : "#6ab83a", S(0.12 * Math.cos(k * 1.3), 0.14, 0.12 * Math.sin(k * 1.3), k, k, 0, 1, 0.7, 1));
-		else if (1 === kind) {
-			add(T.cyl(0.015, 0.02, 0.5, 5), "#3f8a2a", S(0, 0.25, 0));
-			for (let k = 0; k < 6; k++) add(T.cone(0.05, 0.12, 5), col, S(0.06 * Math.cos(k), 0.52, 0.06 * Math.sin(k), 0, -k, 0).multiply(S(0, 0, 0, 0, 0, -1.1)));
-			add(T.sphere(0.04, 6, 4), "#ffe23a", S(0, 0.53, 0));
-			add(T.sphere(1, 6, 4), "#4f9a2a", S(0.08, 0.15, 0, 0, 0, -0.5, 0.12, 0.02, 0.05));
-		} else if (2 === kind) {
-			add(T.sphere(0.2, 10, 8), "#ff8a1a", S(0, 0.16, 0, 0, 0, 0, 1, 0.8, 1));
-			for (let k = 0; k < 3; k++) add(T.sphere(1, 6, 4), "#4f9a2a", S(0.2 * Math.cos(2 * k), 0.06, 0.2 * Math.sin(2 * k), 0, -2 * k, 0, 0.18, 0.03, 0.12));
-		} else if (3 === kind)
-			for (let k = 0; k < 6; k++) {
-				const a = (k / 6) * l;
-				add(T.cone(0.07, 0.5, 4), "#5aa83a", S(0, 0.02, 0, 0, -a, 0).multiply(S(0, 0, 0, 0, 0, -0.6)).multiply(S(0, 0.25, 0, 0, 0, 0, 1, 1, 0.3)));
-			}
-		else
-			for (let k = 0; k < 3; k++) {
-				const h2 = 0.7 + 0.25 * k;
-				add(T.cyl(0.025, 0.03, h2, 5), "#6ab83a", S(0.08 * Math.cos(2 * k), h2 / 2, 0.08 * Math.sin(2 * k)));
-				add(T.cone(0.05, 0.3, 4), "#4f9a2a", S(0.08 * Math.cos(2 * k) + 0.1, h2 * 0.6, 0.08 * Math.sin(2 * k), 0, 0, -0.9, 1, 1, 0.3));
-			}
-		const g = new THREE.Group();
-		g.position.set(slot.x + 0.15 * (rnd() - 0.5), 0.05, slot.z + 0.15 * (rnd() - 0.5)), (g.rotation.y = rnd() * l), g.scale.setScalar(0.01);
-		R(v(parts), garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 })), g);
-		(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
-		const p = { g, grow: 0, water: 0 };
-		return (slot.plant = p), garden.plants.push(p), p;
+		const p = putPlant(slot.x + 0.15 * (rnd() - 0.5), slot.z + 0.15 * (rnd() - 0.5), rnd() * l, 0);
+		return (slot.plant = p), p;
 	}
 	// unique planting animation per creature (same transform format as the old concert dances)
 	const MOVES = {
@@ -11389,7 +11860,6 @@ const JGP = (() => {
 		list.forEach((ent, k) => {
 			(ent.finaleSlot = spots[k]), (ent.plantNext = now + rr(2, 5)), (ent.watching = !1);
 		});
-		growSpecial();
 	}
 	// FORTIZMO and the shopkeeper SPARKAKUS come into the garden but don't plant. Three row models are
 	// away for the whole event: BACKPACKA (the event's own BACKPACKA flies in), NEXTESSA (she is not at
@@ -11412,11 +11882,16 @@ const JGP = (() => {
 				a = Math.atan2(sl.z, sl.x) + 3.2 / r;
 			ent.finaleSlot = { x: r * Math.cos(a), z: r * Math.sin(a) };
 		}
+		// the plant goes in right where the creature is seen planting: the free slot nearest the spot just in
+		// front of it (within 1.3 m; with none that close it digs, but nothing comes up)
+		const ry = ent.group.rotation.y,
+			fx = p.x + 0.9 * Math.sin(ry),
+			fz = p.z + 0.9 * Math.cos(ry);
 		let best = null,
-			bd = 4.5;
+			bd = 1.3;
 		for (const sl of garden.slots) {
 			if (sl.plant) continue;
-			const d = Math.hypot(sl.x - p.x, sl.z - p.z);
+			const d = Math.hypot(sl.x - fx, sl.z - fz);
 			d < bd && ((bd = d), (best = sl));
 		}
 		if (best) makePlant(best), Ut.at(best.x, 0.7, best.z, "✿", f(PLANT_COLS));
@@ -11424,9 +11899,10 @@ const JGP = (() => {
 	L.push((tt, dt) => {
 		dt = dt || 0.016;
 		// plants grow
+		// (everything grows during the Event: once it is over, any plant still coming up finishes quickly)
 		for (const pl of garden.plants) {
 			if (pl.grow >= 1) continue;
-			pl.grow = Math.min(1, pl.grow + dt / 24);
+			pl.grow = Math.min(1, pl.grow + dt / (me.active ? 24 : 3));
 			const u = pl.grow,
 				sc = u < 1 ? 1 + 2.7 * Math.pow(u - 1, 3) + 1.7 * Math.pow(u - 1, 2) : 1;
 			pl.g.scale.setScalar(Math.max(0.01, sc));
@@ -14612,8 +15088,8 @@ const JGP = (() => {
 			for (const c in parts) R(mergeBin(parts[c], BIN[key]), BIN[key].m, grp).name = "town_" + key + "_" + c;
 		}
 
-		// ---- a UFO that very rarely crosses the sky: the first pass comes 5-15 minutes into the visit
-		// and the next ones 10-25 minutes apart, so a player may never see it. It drifts in out of the
+		// ---- a UFO that crosses the sky once every 10 minutes (never during the Garden Event: a pass
+		// that falls due then waits until a minute after it ends). It drifts in out of the
 		// haze, stops to wobble over the town for a moment, then zips off over the far horizon.
 		{
 			const ufo = new THREE.Group(),
@@ -14656,10 +15132,11 @@ const JGP = (() => {
 				R(T.sphere(0.4, 12, 8), dark, body, [2.0 * Math.cos(a), -0.45, 2.0 * Math.sin(a)], null, [1, 0.5, 1]);
 			}
 			const under = R(T.circle(1.25, 28), glow, body, [0, -0.56, 0], [Math.PI / 2, 0, 0]);
-			let next = 300 + 600 * rnd(),
+			let next = 600,
 				fly = null,
 				t0 = null;
 			const launch = (now) => {
+				next = now + 600;
 				const a = rnd() * l,
 					off = (rnd() - 0.5) * 80,
 					ux = Math.cos(a),
@@ -14701,7 +15178,7 @@ const JGP = (() => {
 				} else if (e < T1 + T2 + T3) {
 					const f = (e - T1 - T2) / T3;
 					p.lerpVectors(fly.M, fly.B, f * f * f), (body.rotation.x = -0.25 * Math.cos(fly.dir) * Math.min(1, 3 * f)), (body.rotation.z = 0.25 * Math.sin(fly.dir) * Math.min(1, 3 * f));
-				} else return (fly = null), (ufo.visible = !1), void (next = now + 600 + 900 * rnd());
+				} else return (fly = null), void (ufo.visible = !1);
 				body.rotation.y += 2.2 * (dt || 0.016);
 				const ph = Math.floor(now * 6) % 3;
 				bulbs.forEach((m, k) => m.emissive.copy(m.color).multiplyScalar(k === ph ? 1 : 0.15));
@@ -15176,7 +15653,8 @@ if (
 							const s = o.want && n.mv < 0.5 ? o.want : null;
 							s && n.mode !== s && n.k < 0.02 && (n.mode = s);
 							(n.k += ((s && s === n.mode ? 1 : 0) - n.k) * Math.min(1, 4 * e)), o.ent && ((o.ent.concertDance = "dance" === n.mode && n.k > 0.02), (o.ent.planting = "plant" === n.mode && n.k > 0.3));
-							const i = o.ent && "gratelet" === o.ent.id && "dance" === n.mode;
+							// (HENNRICK and the three Dancers, ETCHER, GLYPH and MONTGUMMERY, dance their own built-in dances)
+							const i = o.ent && /^(gratelet|p_etcher|p_glyph|w_mont)$/.test(o.ent.id) && "dance" === n.mode;
 							let c = o.grp.userData.gcW;
 							// (a creature without a move wrapper yet gets one, and the footprint that keeps its feet
 							// on the ground, the first time it dances or plants)
@@ -15246,7 +15724,7 @@ if (
 					}),
 						(c.skirt = R(new THREE.CylinderGeometry(0.2, 0.46, 0.56, 16), r, e, [0, 0.92, 0])),
 						R(T.cyl(0.18, 0.2, 0.44, 12), r, e, [0, 1.38, 0]),
-						R(T.cyl(0.205, 0.205, 0.07, 14), s, e, [0, 1.2, 0]),
+						R(T.cyl(0.213, 0.213, 0.07, 16), s, e, [0, 1.2, 0]),
 						[1.44, 1.32].forEach((t) => R(T.sphere(0.022, 6, 5), x.clay("#ffffff"), e, [0, t, 0.19])),
 						R(T.cyl(0.055, 0.06, 0.12, 8), a, e, [0, 1.64, 0]);
 					const h = new THREE.Group();
@@ -15283,232 +15761,95 @@ if (
 						R(T.sphere(0.04, 8, 6), s, f),
 						(c.dressMat = r),
 						(c.dressColor = r.color.clone()),
+						// the clothes sold at Garden Supplies, each hidden until it is worn
 						(function (t, e) {
-							const o = t.userData,
-								a = new THREE.Group();
-							a.position.set(0, 0.33, -0.02), (a.rotation.x = -0.12), a.scale.setScalar(1.15), e.add(a);
-							const n = new THREE.Group();
-							n.rotation.set(0.03, 0.5, 0.12), n.scale.setScalar(0.62), (n.position.y = 0.024), a.add(n);
-							const r = 0.1255,
-								s = 0.1305,
-								i = (t, e, o, a, n, r, s = 0.006) => ({ geo: T.box(t, s, e), matrix: S(o, n, a), color: r });
-							R(
-								v([
-									{ geo: T.box(0.86, 0.045, 0.9), matrix: S(0, 0.1, 0), color: "#27335c" },
-									{
-										geo: new THREE.CylinderGeometry(0.075, 0.075, 0.006, 3),
-										matrix: S(0.39, r, -0.41, 0, 0.52),
-										color: "#1a1d28",
-									},
-									i(0.44, 0.27, -0.02, -0.29, r, "#c9ccd4"),
-									i(0.44, 0.27, -0.02, -0.29, 0.0745, "#c9ccd4"),
-									i(0.1, 0.18, 0.07, -0.29, s, "#1a1d28", 0.004),
-									i(0.1, 0.18, 0.07, -0.29, 0.0695, "#1a1d28", 0.004),
-									i(0.64, 0.38, 0, 0.2, r, "#f4f0e6"),
-									i(0.64, 0.06, 0, 0.05, s, "#ff5fb0", 0.004),
-									...[0.17, 0.25, 0.33].map((t, e) =>
-										i(0.44 - 0.1 * e, 0.014, 0.05 * e - 0.08, t, s, "#5a5f6e", 0.004),
-									),
-									i(0.07, 0.07, 0.37, 0.4, r, "#1a1d28"),
-									i(0.07, 0.07, -0.37, 0.4, r, "#1a1d28"),
-									{ geo: T.cyl(0.12, 0.12, 0.006, 20), matrix: S(0, 0.0745, 0.05), color: "#9aa3b2" },
-								]),
-								new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 70, specular: 5592405 }),
-								n,
-							),
-								(a.visible = !1),
-								(o.floppyHat = a),
-								(o.boots = (() => {
-									const t = (t, e, o, a) => {
-											const n = a || new THREE.Shape();
-											return (
-												n.moveTo(-t / 2 + o, -e / 2),
-												n.lineTo(t / 2 - o, -e / 2),
-												n.quadraticCurveTo(t / 2, -e / 2, t / 2, -e / 2 + o),
-												n.lineTo(t / 2, e / 2 - o),
-												n.quadraticCurveTo(t / 2, e / 2, t / 2 - o, e / 2),
-												n.lineTo(-t / 2 + o, e / 2),
-												n.quadraticCurveTo(-t / 2, e / 2, -t / 2, e / 2 - o),
-												n.lineTo(-t / 2, -e / 2 + o),
-												n.quadraticCurveTo(-t / 2, -e / 2, -t / 2 + o, -e / 2),
-												n
-											);
-										},
-										e = 0.19,
-										a = new THREE.ExtrudeGeometry(t(0.25, e, 0.05), {
-											depth: 0.3,
-											bevelEnabled: !0,
-											bevelThickness: 0.012,
-											bevelSize: 0.01,
-											bevelSegments: 3,
-											curveSegments: 8,
-											steps: 5,
-										});
-									a.translate(0, 0, -0.3);
-									{
-										const t = a.attributes.position;
-										for (let o = 0; o < t.count; o++) {
-											const a = t.getZ(o),
-												n = Math.min(1, Math.max(0, -a / 0.3)),
-												r = 1 - 0.32 * Math.pow(n, 1.2);
-											t.setXYZ(o, t.getX(o) * r, -e / 2 + (t.getY(o) + e / 2) * r, a);
-										}
-										a.computeVertexNormals();
-									}
-									const n = t(0.29, 0.23, 0.05);
-									n.holes.push(t(0.23, 0.16, 0.03, new THREE.Path()));
-									const r = new THREE.ExtrudeGeometry(n, {
-											depth: 0.03,
-											bevelEnabled: !0,
-											bevelThickness: 0.008,
-											bevelSize: 0.006,
-											bevelSegments: 2,
-											curveSegments: 8,
-										}),
-										s = b(
-											128,
-											96,
-											(t) => {
-												const e = t.createRadialGradient(64, 44, 6, 64, 48, 80);
-												e.addColorStop(0, "#9a6ae0"),
-													e.addColorStop(1, "#4a2a8a"),
-													(t.fillStyle = e),
-													t.fillRect(0, 0, 128, 96),
-													(t.font = "bold 9px 'Courier New', monospace"),
-													(t.fillStyle = "rgba(220,200,255,.35)"),
-													[
-														"0x4D 6F 6E 74",
-														"{gfx} ;: <>",
-														"ram 0110 1a2b",
-														"() => sync",
-														"0xA1 2B 9F",
-														"boot ok :)",
-														"0101 1101",
-														"<> {} [] ;",
-													].forEach((e, o) => t.fillText(e, 6, 12 + 11 * o)),
-													(t.fillStyle = "#ffffff"),
-													t.fillRect(44, 28, 7, 16),
-													t.fillRect(77, 28, 7, 16),
-													(t.strokeStyle = "#ffffff"),
-													(t.lineWidth = 6),
-													(t.lineCap = "round"),
-													t.beginPath(),
-													t.arc(64, 50, 22, 0.25 * Math.PI, 0.75 * Math.PI),
-													t.stroke();
-											},
-											{ smooth: !0 },
-										),
-										i = new THREE.MeshPhongMaterial({ color: "#1d2a23", shininess: 45, specular: 3355443 }),
-										l = new THREE.MeshPhongMaterial({ color: "#55b8c6", shininess: 50, specular: 3355443 }),
-										c = new THREE.MeshBasicMaterial({ map: s }),
-										h = new THREE.MeshPhongMaterial({ color: "#14181a", shininess: 30 });
-									return ["L", "R"].map((t) => {
-										const e = o["leg" + t],
-											n = new THREE.Group();
-										e.add(n);
-										const s = new THREE.Group();
-										return (
-											s.position.set(0, -0.6, 0.24),
-											s.scale.set(0.8, 0.92, 1),
-											n.add(s),
-											R(a, i, s),
-											R(r, l, s, [0, 0, -0.012]),
-											R(T.plane(0.232, 0.162), c, s, [0, 0, 0.019]),
-											R(T.box(0.3, 0.02, 0.33), h, s, [0, -0.098, -0.14]),
-											[-0.04, -0.02, 0, 0.02, 0.04].forEach((t) =>
-												R(T.box(0.008, 0.022, 0.006), h, s, [t + 0.06, 0.012 - 0.098, 0.024]),
-											),
-											R(T.cyl(0.012, 0.012, 0.01, 10), h, s, [-0.08, -0.087, 0.022], [Math.PI / 2, 0, 0]),
-											R(T.torus(0.1, 0.016, 8, 20), l, n, [0, -0.5, 0.03], [Math.PI / 2, 0, 0]),
-											R(T.torus(0.03, 0.009, 6, 12), i, s, [0, 0.085, -0.27]),
-											(n.visible = !1),
-											n
-										);
-									});
-								})());
-							const c = (t, e) => {
-									(t.fillStyle = e), t.fillRect(0, 0, 128, 128);
-									let o = 5;
-									const a = () => (o = (16807 * o) % 2147483647) / 2147483647;
-									for (let e = 0; e < 14; e++) {
-										const e = 128 * a(),
-											o = 128 * a(),
-											n = 0.75 + 0.5 * a(),
-											r = a() * l;
-										for (const [a, s] of [
-											[0, 0],
-											[128, 0],
-											[-128, 0],
-											[0, 128],
-											[0, -128],
-										]) {
-											const i = e + a,
-												c = o + s;
-											if (!(i < -14 || i > 142 || c < -14 || c > 142)) {
-												t.save(), t.translate(i, c), t.rotate(r), t.scale(n, n), (t.fillStyle = "#ffe23a");
-												for (let e = 0; e < 6; e++)
-													t.save(),
-														t.rotate((e / 6) * l),
-														t.beginPath(),
-														t.moveTo(2, 0),
-														t.lineTo(6, -3),
-														t.lineTo(11, 0),
-														t.lineTo(6, 3),
-														t.closePath(),
-														t.fill(),
-														t.restore();
-												(t.strokeStyle = "#ffe23a"),
-													(t.lineWidth = 1.2),
-													t.beginPath(),
-													t.arc(0, 0, 3.4, 0, l),
-													t.stroke(),
-													(t.fillStyle = "#bff6ff"),
-													t.beginPath(),
-													t.arc(0, 0, 2.4, 0, l),
-													t.fill(),
-													t.restore();
-											}
-										}
-									}
-								},
-								h = b(128, 128, (t) => c(t, "#26306e")),
-								p = b(128, 128, (t) => c(t, "#000000"));
-							[h, p].forEach((t) => {
-								(t.wrapS = t.wrapT = THREE.RepeatWrapping), t.repeat.set(2, 1.5);
-							}),
-								(o.floral = h),
-								(o.floralGlow = p);
-							const f = new THREE.Group();
-							f.position.set(0, 0.66, 0), t.add(f);
+							const o = t.userData;
+							// FLOWER HAT: a big Blossom (the flame-petalled flower that grows round town) sitting in
+							// a cup of green leaves on top of the head: seven red flame petals, five orange, three
+							// yellow, round a dark red heart (it takes the bow's place)
 							{
-								const t = [];
-								for (let e = 0; e < 12; e++) {
-									const o = (e / 12) * l,
-										a = 0.47 * Math.cos(o),
-										n = 0.47 * Math.sin(o),
-										r = new THREE.Quaternion().setFromUnitVectors(
-											new THREE.Vector3(0, 1, 0),
-											new THREE.Vector3(Math.cos(o), 0.25, Math.sin(o)).normalize(),
-										),
-										s = (t, e, o, s, i) =>
-											new THREE.Matrix4().compose(
-												new THREE.Vector3(t, e, o).applyQuaternion(r).add(new THREE.Vector3(a, 0, n)),
-												r.clone().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(...s))),
-												new THREE.Vector3(...i),
-											);
-									for (let o = 0; o < 6; o++) {
-										const a = (o / 6) * l + e;
-										t.push({
-											geo: T.ico(0.13, 0),
-											matrix: s(0.045 * Math.cos(a), 0, 0.045 * Math.sin(a), [0, -a, 0], [0.38, 0.07, 0.15]),
-											color: "#ffe23a",
+								const a = new THREE.Group();
+								a.position.set(0, 0.33, -0.02), (a.rotation.x = -0.12), e.add(a);
+								const n = [],
+									g = "#3f8a2a",
+									petal = (k, ring, len, w, tilt, col, y0) =>
+										n.push({
+											geo: T.cone(w, len, 5),
+											matrix: S(ring * Math.cos(k), y0, ring * Math.sin(k), 0, -k, 0).multiply(S(0, 0, 0, 0, 0, -tilt)).multiply(S(0, len / 2, 0)),
+											color: col,
 										});
-									}
-									t.push({ geo: T.sphere(0.02, 8, 6), matrix: s(0, 0.01, 0, [0, 0, 0], [1, 1, 1]), color: "#bff6ff" });
+								n.push({ geo: T.sphere(1, 16, 10), matrix: S(0, 0.035, 0, 0, 0, 0, 0.24, 0.09, 0.24), color: g });
+								// leaves curling out over the hair like a brim
+								for (let k = 0; k < 6; k++) {
+									const q = (k / 6) * l + 0.3;
+									n.push({ geo: T.sphere(1, 10, 6), matrix: S(0.2 * Math.cos(q), 0.02, 0.2 * Math.sin(q), 0, -q, -0.28, 0.14, 0.022, 0.07), color: k % 2 ? "#4f9a2a" : g });
 								}
-								R(v(t), new THREE.MeshBasicMaterial({ vertexColors: !0 }), f);
+								for (let k = 0; k < 7; k++) petal((k / 7) * l, 0.1, 0.34, 0.1, 0.78, "#e8301e", 0.09);
+								for (let k = 0; k < 5; k++) petal((k / 5) * l + 0.4, 0.06, 0.29, 0.08, 0.4, "#ff6a1a", 0.1);
+								for (let k = 0; k < 3; k++) petal((k / 3) * l + 0.9, 0.025, 0.2, 0.05, 0.16, "#ffc23a", 0.11);
+								n.push({ geo: T.sphere(0.075, 10, 8), matrix: S(0, 0.13, 0), color: "#a8200e" });
+								R(v(n), new THREE.MeshPhongMaterial({ vertexColors: !0, emissive: 3803136, shininess: 40 }), a), (a.visible = !1), (o.flowerHat = a);
 							}
-							(f.visible = !1), (o.petalHem = f);
+							// FROG SHOES: each shoe is a little green frog sitting over the foot, facing forward:
+							// a round body with a pale belly for the sole, darker spots, folded back legs, two
+							// webbed front feet, bulging golden eyes on top and a long closed mouth round the front
+							o.frogs = ["L", "R"].map((t) => {
+								const e = new THREE.Group();
+								o["leg" + t].add(e);
+								const a = "#4caf3a",
+									n = "#2e7d32",
+									r = [
+										{ geo: T.sphere(1, 18, 12), matrix: S(0, -0.615, 0.06, 0, 0, 0, 0.125, 0.07, 0.19), color: a },
+										{ geo: T.sphere(1, 16, 8), matrix: S(0, -0.66, 0.06, 0, 0, 0, 0.115, 0.03, 0.175), color: "#cfe58a" },
+									];
+								[-1, 1].forEach((s) => {
+									// haunches and front feet
+									r.push({ geo: T.sphere(1, 12, 8), matrix: S(0.105 * s, -0.635, -0.05, 0, 0, 0, 0.045, 0.045, 0.085), color: a });
+									r.push({ geo: T.sphere(1, 10, 6), matrix: S(0.078 * s, -0.683, 0.185, 0, 0.45 * s, 0, 0.05, 0.009, 0.042), color: "#3f9a32" });
+									for (let k = -1; k <= 1; k++) r.push({ geo: T.sphere(0.013, 6, 4), matrix: S(0.078 * s + 0.045 * Math.sin(0.45 * s + 0.6 * k), -0.68, 0.185 + 0.045 * Math.cos(0.45 * s + 0.6 * k), 0, 0, 0, 1, 0.7, 1), color: "#3f9a32" });
+									// eyes: a green bulge, a golden eye and a dark pupil
+									r.push({ geo: T.sphere(0.042, 12, 10), matrix: S(0.058 * s, -0.56, 0.15), color: a });
+									r.push({ geo: T.sphere(0.03, 12, 10), matrix: S(0.064 * s, -0.552, 0.172), color: "#e8c43a" });
+									r.push({ geo: T.sphere(0.014, 8, 6), matrix: S(0.068 * s, -0.548, 0.198), color: "#1a1a1a" });
+									// nostrils
+									r.push({ geo: T.sphere(0.006, 6, 4), matrix: S(0.022 * s, -0.585, 0.229), color: "#1a3a1a" });
+								});
+								// (each spot sits on the curve of the back)
+								[[0.05, -0.02], [-0.06, 0.04], [0.02, -0.09], [-0.035, -0.05]].forEach(([s, i]) =>
+									r.push({
+										geo: T.sphere(1, 8, 6),
+										matrix: S(s, -0.613 + 0.07 * Math.sqrt(Math.max(0, 1 - (s / 0.125) ** 2 - ((i - 0.06) / 0.19) ** 2)), i, 0, 0, 0, 0.022, 0.008, 0.026),
+										color: n,
+									}),
+								);
+								// the mouth: a thin dark line running straight round the front, closed
+								r.push({ geo: T.torus(0.127, 0.005, 4, 24, Math.PI), matrix: S(0, -0.622, 0.06, Math.PI / 2, 0, 0, 1, 1.5, 1), color: "#1f4a1c" });
+								return R(v(r), x.clay("#ffffff", { vertexColors: !0, shininess: 50 }), e), (e.visible = !1), e;
+							});
+							// SUN DRESS: golden suns, each with a ring of pointed rays, repeated over a sky blue
+							// cotton (the pattern tiles seamlessly round the skirt), with a gold band at the hem
+							{
+								let i = 9;
+								const a = () => (i = (16807 * i) % 2147483647) / 2147483647,
+									n = b(128, 128, (t) => {
+										(t.fillStyle = "#8fd0f2"), t.fillRect(0, 0, 128, 128);
+										const e = [];
+										for (let t = 0; t < 2; t++) for (let o = 0; o < 2; o++) e.push([64 * t + 32 + (o % 2 ? 32 : 0) + 6 * (a() - 0.5), 64 * o + 32 + 6 * (a() - 0.5), a() * l]);
+										for (const [o, n, r] of e)
+											for (const [s, i] of [[0, 0], [128, 0], [-128, 0], [0, 128], [0, -128]]) {
+												const e = o + s,
+													c = n + i;
+												if (e < -24 || e > 152 || c < -24 || c > 152) continue;
+												t.save(), t.translate(e, c), t.rotate(r), (t.fillStyle = "#ffc93a");
+												for (let e = 0; e < 10; e++) t.rotate(l / 10), t.beginPath(), t.moveTo(-4, 11.5), t.lineTo(0, 21), t.lineTo(4, 11.5), t.closePath(), t.fill();
+												(t.fillStyle = "#ff9f1c"), t.beginPath(), t.arc(0, 0, 11.5, 0, l), t.fill();
+												(t.fillStyle = "#ffd65a"), t.beginPath(), t.arc(-1.5, -1.5, 7.5, 0, l), t.fill(), t.restore();
+											}
+									}, { smooth: !0 });
+								(n.wrapS = n.wrapT = THREE.RepeatWrapping), n.repeat.set(4, 1.5), (o.sunTex = n);
+								const r = R(T.torus(0.46, 0.016, 6, 40), x.clay("#ffb52e"), t, [0, 0.645, 0], [Math.PI / 2, 0, 0]);
+								(r.visible = !1), (o.sunHem = r);
+							}
 						})(e, h),
 						e.position.set(t.player.spawn[0], 0, t.player.spawn[1]),
 						(e.rotation.y = Math.PI),
