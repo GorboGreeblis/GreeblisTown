@@ -470,7 +470,8 @@ const G = (() => {
 				t
 			);
 		}
-		let a = 1;
+		let a = 1,
+			cx = null;
 		function n(t, n = 0.05, r = "square", s = 0.05, i = 0) {
 			s *= a;
 			try {
@@ -514,9 +515,10 @@ const G = (() => {
 			{
 				// (wakes the sound after a pause: the headset taken off and put back on, or left idle)
 				wake: s,
+				// (one object handed out per context: it is asked for every frame)
 				ctx() {
 					try {
-						return o(), { c: t, out: e };
+						return o(), (cx && cx.c === t) || (cx = { c: t, out: e }), cx;
 					} catch (e) {
 						return null;
 					}
@@ -3476,6 +3478,7 @@ const ee = (function () {
 				s = u.createBiquadFilter(),
 				i = u.createGain();
 			(r.buffer = g),
+				(r.loop = !0),
 				(r.playbackRate.value = 0.8 + 0.4 * Math.random()),
 				(s.type = o ? "bandpass" : "highpass"),
 				(s.frequency.value = e),
@@ -14692,7 +14695,9 @@ const JGP = (() => {
 						room = null,
 						noise = null,
 						master = null,
-						lastV = -1;
+						lastV = -1,
+						bus = null,
+						busR = null;
 					const graph = () => {
 							const A = G.ctx && G.ctx();
 							if (!A) return !1;
@@ -14713,7 +14718,8 @@ const JGP = (() => {
 						},
 						hiss = () => {
 							const s = u.createBufferSource();
-							return (s.buffer = noise), (s.playbackRate.value = 0.9 + 0.2 * Math.random()), s;
+							// (looped: a long crash would otherwise run off the end of the 1 s buffer and stop dead)
+							return (s.buffer = noise), (s.loop = !0), (s.playbackRate.value = 0.9 + 0.2 * Math.random()), s;
 						},
 						filt = (type, fr, q) => {
 							const b = u.createBiquadFilter();
@@ -14724,11 +14730,13 @@ const JGP = (() => {
 							return (o.type = type), (o.frequency.value = f0), f1 && (o.frequency.setValueAtTime(f0, t), o.frequency.exponentialRampToValueAtTime(f1, t + dur)), o;
 						},
 						// one hit: src (through fl) at loudness g, dying away over dec seconds (after a swell of att)
+						// (every note goes through the bus of the stretch it was scheduled in: when the jazz stops
+						// sounding, that bus is cut, so notes already scheduled ahead never play over the next stretch)
 						hit = (t, src, fl, g, dec, rv, att) => {
 							const a = u.createGain(),
 								end = t + (att || 0) + dec;
 							a.gain.setValueAtTime(att ? 1e-4 : g, t), att && a.gain.linearRampToValueAtTime(g, t + att), a.gain.exponentialRampToValueAtTime(1e-4, end);
-							(fl ? src.connect(fl) : src).connect(a), a.connect(mix), rv && a.connect(room);
+							(fl ? src.connect(fl) : src).connect(a), a.connect(bus), rv && a.connect(busR);
 							src.buffer ? src.start(t, 0.5 * Math.random()) : src.start(t), src.stop(end + 0.03);
 							src.onended = () => {
 								try {
@@ -14769,10 +14777,18 @@ const JGP = (() => {
 							}
 							on && heard && !cut && (quietAt = tt + 1.5);
 							const mode = on ? (ok && tt < quietAt ? "a" : "g") : "";
-							if (mode !== clk) (clk = mode), (due.length = 0), (at = -1);
+							if (mode !== clk) {
+								if ("a" === clk && bus)
+									try {
+										bus.disconnect(), busR.disconnect();
+									} catch (e) {}
+								"a" === mode && ((bus = u.createGain()), bus.connect(mix), (busR = u.createGain()), busR.connect(room));
+								(clk = mode), (due.length = 0), (at = -1);
+							}
 							if (!mode) return null;
 							const now = "a" === mode ? u.currentTime : tt;
-							if (at < now - BAR) at = now + 0.06;
+							// (behind, after a stall: start afresh rather than build a bar in the past)
+							if (at < now - ("a" === mode ? 0 : BAR)) at = now + 0.06;
 							let added = !1;
 							for (; at < now + ("a" === mode ? 0.5 : 0.05); p++, at += BAR, added = !0)
 								for (const [b, v, g] of bar(p)) {
@@ -14845,13 +14861,17 @@ const JGP = (() => {
 					// which part of the kit each of the track's voices moves, how hard, and with which hand
 					// (the right keeps the ride and takes the crash and the floor tom; the left has the snare
 					// and the rack toms; the feet play the kick and the hi-hat)
+					anyVictory = () => {
+						for (let k = 0; k < It.all.length; k++) if (It.all[k].battleDance) return !0;
+						return !1;
+					},
 					PART = { kick: [kick, 1], chick: [hat, 1], ride: [crash, 0.35, 1], bell: [crash, 0.6, 1], crash: [crash, 1.4, 1], t3: [floor, 1, 1], snare: [snare, 1, 2], brush: [snare, 0.5, 2], t1: [toms[0], 1, 2], t2: [toms[1], 1, 2] };
 				L.push((tt, dt) => {
 					const P = we.presenting && we.headPos ? we.headPos : At.position,
 						kd = It.byId.m_kingdino,
 						d = Math.hypot(P.x - kit.position.x, P.z - kit.position.z),
 						// a Dance battle (and the Dancer's victory dance after it) is danced to his jazz, wherever it is
-						battle = !!(Dbt.state || It.all.some((e) => e.battleDance)),
+						battle = !!Dbt.state || anyVictory(),
 						// FORTIZMO's horn tune and his jazz never sound together: while she plays (until her last
 						// notes have died away) he rests his sticks and listens
 						horn = ee.playing || ee.pendingNotes() > 0,
