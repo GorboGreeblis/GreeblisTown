@@ -35,5 +35,40 @@ module.exports = async (p) => {
     if (r.t > 90) { met = 'no meeting in 90 s: ' + JSON.stringify(r); break; }
   }
   log('MAMA GORBO and GOOWARD:', met);
+  // trying to trap them: every few seconds the player steps right in front of a walking roamer, and some
+  // are dropped in tight spots (against the church, the Juice Bar's back corner, the Portal's frame, off
+  // the dance floor by the drum kit). Every roamer must keep going: never still for long away from its
+  // spot, and each must end up somewhere it may stand.
+  const trapS = +(process.env.TRAP_S || 90);
+  await p.evaluate(() => {
+    const ids = ['gratelet', 'p_gemtoe', 'p_mamagorbo', 'gorbo', 'p_etcher', 'p_glyph', 'w_mont'];
+    window.__S = {}; ids.forEach((id) => (__S[id] = { still: 0, max: 0, last: null, homes: new Set(), blocked: 0 }));
+    const drop = (id, x, z) => { const e = It.byId[id]; e.group.position.set(x, e.group.position.y, z); };
+    const ch = F.buildings.find((B) => B.name === 'church'), f = JGP.floor;
+    { let rr = 1; const a = 0.7; while (F.inHull(ch, ch.x + rr * Math.cos(a), ch.z + rr * Math.sin(a), 0.4)) rr += 0.2; drop('p_gemtoe', ch.x + rr * Math.cos(a), ch.z + rr * Math.sin(a)); } drop('gratelet', ot.x + 2.05 * ot.nz, ot.z - 2.05 * ot.nx + 0.3); drop('p_glyph', f[0] - 1.2, 19.2); drop('p_mamagorbo', -t.parkHalf + 1.6, -6);
+    let next = Re.t + 3;
+    window.__trapFn = () => {
+      if (Re.t > next) {
+        next = Re.t + 4;
+        const walkers = ids.map((id) => It.byId[id]).filter((e) => e.moving);
+        const e = walkers[Math.floor(Math.random() * walkers.length)];
+        if (e) { const q = e.group.position, d = Math.hypot(e.home.x - q.x, e.home.z - q.z) || 1; At.position.set(q.x + ((e.home.x - q.x) / d) * 1.6, 0, q.z + ((e.home.z - q.z) / d) * 1.6); __S[e.id].blocked++; }
+      }
+      for (const id of ids) {
+        const e = It.byId[id], q = e.group.position, r = __S[id];
+        r.homes.add(e.home.x.toFixed(1) + ',' + e.home.z.toFixed(1));
+        const away = Math.hypot(q.x - e.home.x, q.z - e.home.z);
+        if (r.last && away > 0.3 && Math.hypot(q.x - r.last[0], q.z - r.last[1]) < 0.01 && !e.busy && !e.meeting) r.still += Re.t - r.last[2]; else r.still = 0;
+        r.max = Math.max(r.max, r.still), (r.last = [q.x, q.z, Re.t]);
+      }
+    };
+    L.push(() => __trapFn());
+    window.__t0 = Re.t;
+  });
+  for (let k = 0; k < 4000; k++) { await W(400); if ((await p.evaluate(() => Re.t - __t0)) > trapS) break; }
+  await p.evaluate(() => { window.__trapFn = () => {}; At.position.set(-2, 0, 30); window.__t0 = Re.t; });
+  for (let k = 0; k < 4000; k++) { await W(400); if ((await p.evaluate(() => Re.t - __t0)) > 20) break; }
+  log(await p.evaluate(() => Object.entries(__S).map(([id, r]) => { const e = It.byId[id], q = e.group.position, floor = /^(p_etcher|p_glyph|w_mont)$/.test(id), ok = floor ? JGP.onDance(q.x, q.z, 0.05) : JGP.roamFree(q.x, q.z, 0.25);
+    return `trap: ${e.def.name}: blocked ${r.blocked} times, ${r.homes.size} spots, longest still on the way ${r.max.toFixed(1)} s, now ${ok ? 'somewhere fine' : 'SOMEWHERE BAD ' + q.x.toFixed(1) + ',' + q.z.toFixed(1)}`; }).join('\n')));
   log('err', await p.evaluate(() => Re.errors));
 };

@@ -14790,7 +14790,8 @@ const JGP = (() => {
 				E.add(ot.x, ot.z, 7.4, "still");
 				const roam = (id, pick, w0, w1) => {
 					let waitTo = -1,
-						giveUp = 0;
+						giveUp = 0,
+						fails = 0;
 					L.push((t2) => {
 						const h = It.byId[id];
 						if (!h || h.busy || h.vig || h.meeting || h.battleDance || me.active || h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void (waitTo = -1);
@@ -14803,7 +14804,10 @@ const JGP = (() => {
 						if (t2 < waitTo) return;
 						waitTo = -1;
 						const sp = pick(p, h.bodyR || 1, h.def.at, h);
-						sp && (h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), h.pattern && (h.pattern[1].face = sp[2]));
+						if (sp) (fails = 0), h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), h.pattern && (h.pattern[1].face = sp[2]);
+						// (boxed in somewhere with no clear walk out, it heads back to the spot it started from, and
+						// the walk home finds its way round whatever is in the way)
+						else if (++fails >= 3 && h.def.at) (fails = 0), h.home.set(h.def.at[0], h.home.y, h.def.at[1]);
 					});
 				};
 				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.parkRoam, 3, 5);
