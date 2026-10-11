@@ -69,6 +69,8 @@ and drives the game through its globals.
 | `t_blog2.js` | Dance battle text, Artifacts from first wins only, a bow on repeat wins, Library finale |
 | `t_gem.js`, `t_pizza.js`, `vigrun.js` | Gem trade, pizza courier, many creature vignettes |
 | `t_event3.js` | The whole Garden Event, logged every 5 s of game time. Run with `VW=200 VH=150`, or it takes ages |
+| `t_stress.js` | Collides systems on purpose (Event during a battle, a pizza at the start, talk, gifts, shop, Library, stone, Event without Seeds, battle spam) and checks everyone ends up home. `VW=200 VH=150` |
+| `t_fixes.js` | The October bug-pass fixes: no battle from a thanks closed far away, talk target after the phone, Mushroom on his desk, Fortizmo holding still, no vignette off the spot. `VW=320 VH=240` |
 | `t_misc.js` | Drums on the floor (also while talking to King Dino, giving him a Blossom, battling), pickup respawn, the Blossom menu option |
 | `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
 | `t_fz.js` | Fortizmo's walk behind the bar (it pushes her timer, since headless game time is slow) |
@@ -187,6 +189,12 @@ See [`docs/woods-ordinal-packing.md`](docs/woods-ordinal-packing.md) and [`pack/
 Plants wait in the ground until his water reaches them, then grow over 11 s.
 
 **Drums:** they never depend on King Dino being free; they play whenever the player is within 45 m, and are only heard on the floor.
+
+**Bug-pass lessons (Oct 2026):**
+- `xe.lastTarget` must be set by whatever opened the dialogue, or the next speech goes to the wrong creature.
+- Timers (`setTimeout`) that touch a creature must be stored on it and cleared when something else takes it.
+- Anything a creature is pulled away by (vignette, Event, battle) must check the others: `busy`, `vig`, `me.active`.
+- WebXR input sources can change mid-session (a controller added, removed or swapped); re-read them every frame.
 
 **Engine habits:**
 - Headless WebGL is slow and game time crawls.
