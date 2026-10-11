@@ -459,7 +459,18 @@ Checked against `greeblistown/index.html` (1,080,383 bytes on 11 Oct 2026) and `
 
 ## The final builds (uploaded 11 Oct 2026)
 
-FINALS_PLACEHOLDER
+The uploaded finals are not the builds the readable sources and guides describe (the guides record the sizes
+of their last documented PRs):
+
+| Game | Uploaded final | Guides' last documented build |
+| --- | --- | --- |
+| Greeblis City | 202,215 B | 196,685 B (PR #22) |
+| Greeblis Park | 227,030 B | 158,491 B (PR #15) |
+| Greeblis Woods | 160,734 B | 155,649 B (PR #12) |
+
+So the learnings above come from the documented sources; what changed in the finals still has to be read from
+the uploads themselves. Decode them only in the sandboxed browser (`town/decode/decode2.js`), never in Node or
+a normal page, and compare them with the readable sources before relying on any line number above.
 
 ## Documentation gaps noticed
 

@@ -101,6 +101,7 @@ and drives the game through its globals.
 | `t_avatar.js` | The player's walk and idle animation in the test modes: side renders mid-stride and standing, feet above the ground, hands clear of the skirt |
 | `t_headguard.js` | The VR head guard: distance to the nearest solid at known spots and how dark the view goes (through its test probe, as VR can't run headless). `VW=320 VH=240` |
 | `t_ez.js` | Lists the keep-clear zones near the duck pond and every stationary creature's spot (a quick look when placing things) |
+| `t_perf.js` | Performance profile: draw calls, triangles and the biggest draws from a player's eyes at 8 spots; totals of programs, textures, geometries, meshes, materials; a DevTools CPU profile (self time by function and line of `index.html`) and a sampled allocation profile over `PROF_S` s of play (`EVENT=1` during a Garden Event) |
 | `t_eval.js` | Boots the game and prints any expression (`EXPR`), e.g. `EXPR='JGP.unfightParts.ms'` |
 | `tile.py` | Contact sheets of renders (`sheet`), and amplified before/after differences (`diff`). Needs Pillow |
 

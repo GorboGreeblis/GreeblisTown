@@ -3,7 +3,8 @@
 // idling and wandering, Talk, Blossoms, Dance battles and victory dances, and a whole Garden Event (planting,
 // dancing, watching, going home). Also flags a creature inside a building it does not work in.
 // Run with a tiny viewport (VW=200 VH=150); the Event takes a while. LIMIT (default -0.005 m) is how far
-// below the ground counts as clipping.
+// below the ground counts as clipping; ONLY=event runs just the Event. Each creature's worst moment is printed
+// with where it was, the ground height expected there and the creature's own height and lift.
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   const LIMIT = +(process.env.LIMIT || -0.005);
@@ -16,13 +17,13 @@ module.exports = async (p) => {
       for (const e of It.all) {
         if (!e.group || !e.group.visible || !e.def) continue;
         const g = e.group; g.updateMatrixWorld(!0);
-        let lo = 1e9, who = '';
+        let lo = 1e9, who = '', wx = 0, wz = 0, wg = 0;
         const posted = g.position.y > 0.3;
         g.traverse((o) => { if (!o.isMesh || !o.visible) return; for (let a = o; a && a !== g; a = a.parent) if (!a.visible) return;
           // (how far below the surface under it, wherever on the creature it is: JGP.groundAt)
-          const P = o.geometry.attributes.position; for (let k = 0; k < P.count; k += 3) { v.fromBufferAttribute(P, k).applyMatrix4(o.matrixWorld); const dd = v.y - (posted ? 0 : JGP.groundAt(v.x, v.z)); if (dd < lo) (lo = dd), (who = colOf(o)); } });
+          const P = o.geometry.attributes.position; for (let k = 0; k < P.count; k += 3) { v.fromBufferAttribute(P, k).applyMatrix4(o.matrixWorld); const gy = posted ? 0 : JGP.groundAt(v.x, v.z), dd = v.y - gy; if (dd < lo) (lo = dd), (who = colOf(o)), (wx = v.x), (wz = v.z), (wg = gy); } });
         const nm = e.def.name, r = (__G[nm] = __G[nm] || { min: 1e9, at: '', bad: {}, inB: {} });
-        lo < r.min && ((r.min = lo), (r.at = __phase + (e.busy ? ':' + e.busy : '') + (e.moving ? ':walking' : '') + ' ' + who));
+        lo < r.min && ((r.min = lo), (r.at = __phase + (e.busy ? ':' + e.busy : '') + (e.moving ? ':walking' : '') + ' ' + who + ` at (${wx.toFixed(2)}, ${wz.toFixed(2)}) ground ${wg.toFixed(3)} body y ${g.position.y.toFixed(3)} lift ${(g.userData.gW ? g.userData.gW.position.y : 0).toFixed(3)}`));
         if (lo < LIMIT) r.bad[__phase] = Math.min(r.bad[__phase] || 0, +lo.toFixed(3));
         const q = g.position;
         for (const B of F.buildings) if (F.inHull(B, q.x, q.z, -0.3) && !F.inHull(B, e.home.x, e.home.z)) r.inB[__phase + ' ' + (B.name || '?')] = 1;
@@ -32,7 +33,10 @@ module.exports = async (p) => {
   const clear = () => p.evaluate(() => { for (let i = 0; i < 40 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });
   const phase = (n) => p.evaluate((n) => (window.__phase = n), n);
   const waitGame = async (s) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 4000 && (await p.evaluate(() => Re.t)) - t0 < s; k++) await W(250); };
+  // (ONLY=event: just the Garden Event)
+  const only = process.env.ONLY;
   // 1. idle with the player away: the roamers roam, Somlet lies down, Gemtoe floats
+  if (!only) {
   await p.evaluate(() => At.position.set(-2, 0, 30)); await waitGame(40);
   // 2. Talk and Blossom lines with everyone
   await phase('talk');
@@ -50,6 +54,7 @@ module.exports = async (p) => {
     await p.evaluate((id) => { const e = It.byId[id], q = e.group.position; At.position.set(q.x + 2.6, 0, q.z); Dbt.start(e); }, id);
     for (let k = 0; k < 8; k++) { await waitGame(1.2); await p.evaluate(() => { const s = _t.state; s && s.items && s.items.length && s.items[Math.floor(Math.random() * 3)].onClick(); }); }
     await p.evaluate(() => { try { _t.close(); } catch (e) {} }); await phase('victory'); await waitGame(3); await phase('battle');
+  }
   }
   // 4. the whole Garden Event
   await phase('event');
