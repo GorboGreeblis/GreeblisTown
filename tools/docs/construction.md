@@ -341,8 +341,9 @@ Goo that runs down a body and moves like goo, without clipping:
     Mr Bun's jacket green with his shirt's specks; her cream bow in the middle; a cream fringe at each end. The
     prints are the Woods 128-pixel tiles (same seeds and colours) drawn seamlessly at 0.6 scale. It is a 4 cm slab
     with its top 3 cm up (1 cm over a walk, 5 cm over the lawn), part of `JGP.groundAt`.
-- **Church:** at the end of the south walk, its back to the fence. Nothing is placed inside it, and there are no
-  flowerbeds by it (removed at the owner's request).
+- **Church:** at the end of the south walk, its back to the fence. Nothing is placed inside it. The park has no
+  flowerbeds at all (the two by its steps and the round one between it and the Garden Supplies kiosk were removed at
+  the owner's request).
   - **Roof:** a `GABLE` prism's slopes rise from its outer edge, so with eaves the base sits lower than the wall
     tops by `height · overhang / half-width` (0.5 m here) for the slopes to meet the walls; the gable ends fill up
     to the same slope, `height − that drop` tall.
