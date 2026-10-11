@@ -3,3 +3,4 @@ node_modules/
 *.log
 block6.js
 test/x*
+pack/woods/*.min.js
