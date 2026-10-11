@@ -2575,14 +2575,15 @@ const It = {
 				return {
 					x: n.x + (s / l) * t,
 					z: n.z + (i / l) * t,
-					y: c * Math.max(0, 1 - l / 1.2),
+					// (rising no faster than 2.5 m/s, so arriving from a walk home never jumps him onto his desk)
+					y: Math.min(c * Math.max(0, 1 - l / 1.2), (n.y || 0) + 2.5 * o),
 					face: Math.atan2(s, i),
 				};
 			}
 			return {
 				x: r.x,
 				z: r.z,
-				y: c,
+				y: Math.min(c, (n.y || 0) + 2.5 * o),
 				face: null == a.face ? Math.atan2(-r.x, -r.z) : a.face,
 			};
 		},
@@ -2726,7 +2727,7 @@ function fo(t, e) {
 }
 const uo = {
 	fixed: [],
-	radius: (e) => (e === At ? t.player.bodyR : e.bodyR * t.bodies.solidK),
+	radius: (e) => (e === At ? t.player.bodyR : Math.max(e.bodyR * t.bodies.solidK, e.lieR || 0)),
 	solid: (t) => t.group.visible && (void 0 === t.presence || t.presence >= 0.5),
 	resolve(e, o, a) {
 		let n = !1;
@@ -2785,7 +2786,8 @@ function Lt(e, o, a, n) {
 		p = e.nearPlayer && (e.nearSince ? o - e.nearSince < t.proximityFreezeS : ((e.nearSince = o), !0));
 	// (ANOMALEE, gazing up at the church window, keeps looking at it while the player is near and through
 	// her Talk lines; she turns to the player only for her Blossom line, and for any line during the Event)
-	const gazer = e.def && e.def.gazeUp && !(h && (e.gifting || me.active));
+	// (SOMLET asleep on her side doesn't turn to the player either)
+	const gazer = (e.def && e.def.gazeUp && !(h && (e.gifting || me.active))) || (e.lieK || 0) > 0.5;
 	if (n || h || (p && !e.goHome))
 		(e.gcWant = 0),
 			(e.moving = !1),
@@ -4416,7 +4418,8 @@ const le = (() => {
 						h = i - l.z,
 						p = Math.hypot(c, h);
 					// (one being talked to stands still for it, turned to the player)
-					if ("dialogue" === jt.top && xe.lastTarget === o) o.moving = !1;
+					// (and SOMLET, asleep on her side, first gets up)
+					if (("dialogue" === jt.top && xe.lastTarget === o) || (o.lieK || 0) > 0.25) o.moving = !1;
 					else if (p > (n ? 0.12 : 0.5)) {
 						const t = Math.min(p, (o.walkSpeed || 2.4) * e);
 						(l.x += (c / p) * t), (l.z += (h / p) * t), co(o.group, Math.atan2(c, h), e, 8), (o.moving = !0);
@@ -8261,7 +8264,8 @@ const JGP = (() => {
 				// lying (0 standing to 1 on her side): only resting at her own spot
 				const rest =
 					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && !me.active && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
-				lie += ((rest ? 1 : 0) - lie) * Math.min(1, 1.3 * (dt || 0.016));
+				// (settling slowly, getting up quickly when she is wanted: the Event waits till she is up, see ent.lieK)
+				lie += ((rest ? 1 : 0) - lie) * Math.min(1, (rest ? 1.3 : 4) * (dt || 0.016));
 				// (she rolls over while still floating, then settles down onto her side, so her tentacles are
 				// already off to the side as she comes down; getting up goes the other way)
 				const sm = (u) => ((u = Math.min(1, Math.max(0, u))), u * u * (3 - 2 * u)),
@@ -8271,6 +8275,8 @@ const JGP = (() => {
 					cs = Math.cos(th),
 					fy = (1 - s) * (1.35 + 0.1 * Math.sin(1.2 * t));
 				(fl.position.y = fy), (root.rotation.z = th);
+				// (lying, she reaches 1.5 m from her middle: what bumps into her keeps out of her cap and tentacles)
+				ent && ((ent.lieK = lie), (ent.lieR = 1.55 * s));
 				// (lifted just enough that her lowest point clears the ground, and kept over her spot)
 				root.position.set(fy * sn, Math.max(0, 0.03 - fy * cs - lowFor(lowAt, th), Math.min(1, 3 * sn) * (0.03 - fy * cs - lowFor(tentAt, th))), 0);
 				puff.scale.set(1 + 0.02 * br, 1 - 0.02 * br, 1);
@@ -8295,17 +8301,22 @@ const JGP = (() => {
 				tents.forEach((tg, k) => {
 					const ud = tg.userData,
 						p0 = tg.position,
-						clear = () => ud.pts.every((q) => (tv.copy(q).applyQuaternion(tg.quaternion), root.position.y + (p0.x + tv.x) * sn + (fy + p0.y + tv.y) * cs >= 0.02));
+						clear = () => {
+							for (let j = 0; j < ud.pts.length; j++) if ((tv.copy(ud.pts[j]).applyQuaternion(tg.quaternion), root.position.y + (p0.x + tv.x) * sn + (fy + p0.y + tv.y) * cs < 0.02)) return !1;
+							return !0;
+						};
 					tq.setFromEuler(te.set(0.18 * Math.sin(1.4 * t + k), 0, 0.12 * Math.sin(1.1 * t + 2 * k)));
 					// (searching on from just under last frame's angle, it takes only a step or two; drooping
 					// less if splaying alone cannot clear the ground)
 					let th2 = Math.max(0, (ud.th || 0) - 0.06),
 						ok = !1;
-					for (let d = 0; d < 4 && !ok; d++, th2 = 0)
+					for (let d = 0; d < 4 && !ok; d++) {
+						d && (th2 = 0);
 						for (; th2 < 1.5; th2 += 0.02) {
 							tg.quaternion.setFromAxisAngle(ud.ax, th2).premultiply(dqs[d]).multiply(tq);
 							if ((ok = clear())) break;
 						}
+					}
 					ud.th = th2;
 				});
 				hands.forEach((h, k) => (h.position.y = -0.18 + 0.05 * Math.sin(1.8 * t + k * 2) + 0.1 * tk));
@@ -11728,9 +11739,8 @@ const JGP = (() => {
 	}
 	// called by the event when planting begins: everyone walks to a spot inside the garden, except
 	// FORTIZMO, who walks slowly from her bar to the garden's edge on the bar's side to play from there.
-	// Event 1 plants a batch; Event 2 plants a second batch in the rows Event 1 left bare (spots a
-	// metre further out, so the soil in front of each planter is on a fresh row, and turned half a
-	// space); from Event 3 on everyone goes back to their Event 1 spots and plants, but nothing more
+	// Event 1 plants a batch in the rows at 2.6, 6.6 and 10.6 m; Event 2 plants a second batch in the
+	// rows Event 1 left bare, 4.6, 8.6 and 12.6 m (spots 2 m further out, turned half a space); from Event 3 on everyone goes back to their Event 1 spots and plants, but nothing more
 	// comes up and the garden stays as it is.
 	function beginPlanting(list, now) {
 		const fz = list.find(noPlant);
@@ -11745,9 +11755,10 @@ const JGP = (() => {
 						[13.5, 99],
 					]
 				: [
-						[0.3 * GARDEN_R, 4],
-						[0.55 * GARDEN_R, 6],
-						[0.8 * GARDEN_R, 99],
+						// (the soil 0.9 m in front of each planter falls on rows 2.6, 6.6 and 10.6)
+						[3.5, 4],
+						[7.5, 6],
+						[11.5, 99],
 					],
 			spots = [];
 		let left = list.length;
@@ -11790,7 +11801,7 @@ const JGP = (() => {
 		},
 		eventActor = (ent) => !!ent && AT_POST.includes(ent.id);
 	function plantTick(ent, now) {
-		if (ent.moving || now < (ent.plantNext || 0) || ent.hornWant || ent.watching || noPlant(ent)) return;
+		if (ent.moving || now < (ent.plantNext || 0) || ent.hornWant || ent.watching || noPlant(ent) || ("dialogue" === jt.top && xe.lastTarget === ent)) return;
 		ent.plantNext = now + rr(5, 9);
 		ent.plantCount = (ent.plantCount || 0) + 1;
 		const p = ent.group.position;
@@ -12386,7 +12397,7 @@ const JGP = (() => {
 		L.push((tt, dt) => {
 			// (an Event wrapped some other way, as by its time limit, leaves nothing pending for the next one)
 			me.active || (ending = 0);
-			if (ending && me.active && (!ee.playing || tt - ending > 15)) (ending = 0), me.wrap();
+			if (ending && me.active && ((!ee.playing && "dialogue" !== jt.top) || tt - ending > 15)) (ending = 0), me.wrap();
 			const live = me.active && bt.live;
 			// the event ended early (or was left): put everything away
 			active && !me.active && ((active = !1), hideAll());
@@ -15202,6 +15213,7 @@ const JGP = (() => {
 			return best;
 		},
 		libTable: LIB_LAYOUT.table,
+		libParts: LIB_LAYOUT.parts,
 		buildPond,
 		blossomPickup,
 		backpacka: BP,
@@ -15329,10 +15341,43 @@ if (
 									w = 0;
 								// (the Library is open: he walks straight out to the front, past his reading table)
 								const v = () => [t.localToWorld(new c(0, 0, 1.4))];
+								// SPARKAKUS browses his Library: when nobody needs him he strolls the open floor between his
+								// reading table and the bookcases, a few steps at a time, and stops to look along the nearest
+								// bookcase. Spots and walks (in the Library's own frame) keep 0.8 m clear of every bookcase,
+								// the table and the banner's posts, inside the band in front of the shelves.
+								const BAND = [-4.3, -2.2, 4.3, 0.55],
+									lclear = (x, z) => x > BAND[0] && x < BAND[2] && z > BAND[1] && z < BAND[3] && JGP.libParts.every(([a, b2, c2, d2]) => x < a - 0.8 || x > c2 + 0.8 || z < b2 - 0.8 || z > d2 + 0.8),
+									lpick = (q) => {
+										for (let k = 0; k < 30; k++) {
+											const x = BAND[0] + (BAND[2] - BAND[0]) * Math.random(),
+												z = BAND[1] + (BAND[3] - BAND[1]) * Math.random(),
+												dd = Math.hypot(x - q.x, z - q.z);
+											if (dd < 1.5 || !lclear(x, z)) continue;
+											let ok = !0;
+											for (let j = 1; j <= 10 && ok; j++) ok = lclear(q.x + ((x - q.x) * j) / 10, q.z + ((z - q.z) * j) / 10) || (j * dd) / 10 < 0.5;
+											if (ok) return new c(x, 0, z);
+										}
+										return null;
+									},
+									// the way to look on arriving: along the nearest bookcase's face, or out over the table
+									lface = (q) => {
+										let best = 0,
+											bd = 3.2;
+										for (const [cx, cz] of JGP.libParts.slice(0, 8).map(([a, b2, c2, d2]) => [(a + c2) / 2, (b2 + d2) / 2])) {
+											const dd = Math.hypot(cx - q.x, cz - q.z);
+											dd < bd && ((bd = dd), (best = Math.atan2(cx - q.x, cz - q.z)));
+										}
+										return best;
+									};
+								let wT = null,
+									wAt = 3 + 4 * Math.random(),
+									wFace = 0;
 								// (`face`: once there he turns to the player, as for his Ancient Artifacts speech)
 								(st.join = (o, face) => {
-									const a = t.worldToLocal(new c(o.x, 0, o.z)).x < 0 ? -1 : 1;
-									C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: v(a, !1), face });
+									const a = t.worldToLocal(new c(o.x, 0, o.z)).x < 0 ? -1 : 1,
+										// (browsing the shelves, he first goes back to his place behind the table)
+										back = e.parent === t && e.position.distanceTo(f) > 0.3 ? [t.localToWorld(f.clone())] : [];
+									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: back.concat(v(a, !1)), face });
 								}),
 									(st.leave = () => {
 										if (!H) return;
@@ -15383,11 +15428,28 @@ if (
 										}
 										(w = 0), e.getWorldPosition(h), (p.x = h.x), (p.z = h.z);
 									}
-									e.getWorldPosition(h);
+									if (e.parent === t && !me.active && !(st.talking && qt.isOpen)) {
+										const q = e.position;
+										if (wT) {
+											const dx = wT.x - q.x,
+												dz = wT.z - q.z,
+												dd = Math.hypot(dx, dz);
+											if (dd > 0.06) {
+												const k = Math.min(dd, 0.8 * c);
+												(q.x += (dx / dd) * k), (q.z += (dz / dd) * k), (r.moving = !0);
+												e.rotation.y += m(e.rotation.y, Math.atan2(dx, dz)) * Math.min(1, 6 * c);
+											} else (wT = null), (wFace = lface(q)), (wAt = s + 4 + 6 * Math.random());
+										} else {
+											e.rotation.y += m(e.rotation.y, wFace) * Math.min(1, 3 * c);
+											s > wAt && ((wT = lpick(q)), wT || (wAt = s + 3));
+										}
+									}
+									e.getWorldPosition(h), (p.x = h.x), (p.z = h.z);
 									const T = At.position.x - h.x,
 										R = At.position.z - h.z,
 										v = Math.hypot(T, R),
-										z = v < 1.6 * i.greetR ? u(m(l, Math.atan2(T, R)), -0.9, 0.9) : 0;
+										// (his head turns to greet the player from whichever way he is facing)
+										z = v < 1.6 * i.greetR && !r.moving ? u(m(l + (e.parent === t ? e.rotation.y : 0), Math.atan2(T, R)), -0.9, 0.9) : 0;
 									if (
 										((b += (z - b) * d(4, c)),
 										(o.rotation.y = b),
@@ -15556,11 +15618,13 @@ if (
 							a = t;
 						const n = [],
 							// while FORTIZMO plays at the Event, everyone round the garden dances
-							music = me.active && ee.playing;
+							// (the tune of this Event: an earlier Event's tag still sounding at a restart is not it)
+							music = me.active && ee.playing && bt.live && "playing" === gcHorn.phase;
 						for (const t of It.all) {
 							// (the pizza courier never dances or plants, and is not kept after she leaves)
 							if ("courier" === t.kind) continue;
-							const at = "finale" === t.busy && !t.moving && !t.hornWant && !JGP.eventActor(t);
+							// (one being talked to stops dancing or planting for it)
+							const at = "finale" === t.busy && !t.moving && !t.hornWant && !JGP.eventActor(t) && !("dialogue" === jt.top && xe.lastTarget === t);
 							n.push({
 								key: Xt(t),
 								grp: t.group,
