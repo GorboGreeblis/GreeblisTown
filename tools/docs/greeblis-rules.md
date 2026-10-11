@@ -33,6 +33,7 @@ game is `index.html`, and everything used to make it (tools, guides, notes) is i
 
 - This repo is public. Never put the owner's full name, workplace, job or location in anything pushed: code,
   game text, docs, tools, comments, commit messages or PR descriptions. Refer to them only as "the owner".
+  The one exception, chosen by the owner, is the readable parcel's label in the mail pile.
 
 ## Creature and art rules (from the owner)
 
