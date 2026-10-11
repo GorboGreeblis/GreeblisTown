@@ -1,6 +1,6 @@
 # MONT (-> MONTGUMMERY) patch for JGP_WOODS
 
-Source: `__R["mont"]` from ec232.html line 11553 (8585 B). Converted mechanically:
+Source: `__R["mont"]` in the decoded Greeblis Woods page (8585 B). Converted mechanically:
 `WOODS_N(` -> `$b(` and `__o_X` -> `$X`. Nothing else changed; the rest of the builder body is byte-identical.
 
 ## 1. Preamble (index.html line 6564): NO CHANGE
@@ -28,11 +28,11 @@ That is, the resulting return is `return{gorbo:function(t,o){...P.update(n,a,i)}
 
 Apply (python, h = index.html text):
 ```
-old='P.update(n,a,i)}}}};})();'; ins=open('agent_notes/mont_insert.js').read()
+old='P.update(n,a,i)}}}};})();'; ins=open('mont_insert.js').read()
 assert h.count(old)==1; h=h.replace(old,'P.update(n,a,i)}}}'+ins+'};})();')
 ```
 
-Roster row (from ec232, renamed; the key stays `woods_mont`):
+Roster row (from Woods, renamed; the key stays `woods_mont`):
 ```
 ["w_mont", "MONTGUMMERY", "woods_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9}, [x, z]],
 ```

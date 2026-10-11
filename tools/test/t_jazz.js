@@ -1,5 +1,7 @@
 // KING DINO's jazz: heard on the dance floor and in every Dance battle, silent elsewhere, and never at the
-// same time as FORTIZMO's horn tune. Measures the level of the jazz and of the horn tune at the speakers.
+// same time as FORTIZMO's horn tune. Measures the level of the jazz and of the horn tune at the speakers,
+// and marks FAIL any spot where it should be sounding and is not (every corner of the floor is tried: in
+// the desktop test mode the camera stands behind the avatar, and the jazz once followed the camera).
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(Math.min(640, (+process.env.VW || 1280) / 2), 60); await W(1500);
@@ -14,7 +16,10 @@ module.exports = async (p) => {
     await p.evaluate(setup, arg);
     await p.evaluate(() => { window.__fired = {}; window.__peak = 0; window.__t0 = Re.t; });
     for (let k = 0; k < 400 && (await p.evaluate((s) => Re.t - __t0 < s, secs)); k++) await W(150);
-    log(label, await p.evaluate(() => JSON.stringify({ ctx: G.ctx().c.state, ...JGP.jazz.state, gain: +JGP.jazz.state.gain.toFixed(3), hits: Object.values(__fired).reduce((a, b) => a + b, 0), kinds: Object.keys(__fired).join(','), peak: +__peak.toFixed(3), horn: ee.playing, top: jt.top })));
+    const st = await p.evaluate(() => ({ ctx: G.ctx().c.state, ...JGP.jazz.state, gain: +JGP.jazz.state.gain.toFixed(3), hits: Object.values(__fired).reduce((a, b) => a + b, 0), kinds: Object.keys(__fired).join(','), peak: +__peak.toFixed(3), horn: ee.playing, top: jt.top }));
+    // (on the floor, by the kit or in a battle the jazz must be sounding, unless the horn plays or the sound is off)
+    const want = /floor|kit|battle|victory|woken/.test(label) && !/off the floor|horn tune playing|suspended/.test(label);
+    log((want && (st.clock !== 'a' || st.gain < 1) ? 'FAIL ' : '') + label, JSON.stringify(st));
   };
   await run('on the floor:', () => At.position.set(-27, 0, 12), 4);
   // every corner of the floor (it runs x -33.1 to -21.1, z -9.6 to 28.8; the kit is at x -34.8, z 19.2)
