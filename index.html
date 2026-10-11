@@ -36,6 +36,8 @@
 </script>
 <script>
 "use strict";
+// FOR TESTING ONLY: the three main quests (Seeds, Summoning Stone, Snacks) start complete. Set to !1 for release.
+const TEST_QUESTS = !0;
 // JGP mobile test mode flag (temporary): phones (not Quest) or ?mobile=1; ?mobile=0 forces it off
 window.__jgpMobile = (() => {
 	const q = location.search;
@@ -2499,7 +2501,7 @@ function Gt(e, o) {
 }
 function Vt(t) {
 	// nothing to choose for FORTIZMO while she plays during the Gardening Event
-	return !!t && ((me.active && ("frog" === t.id || "t_backpacka" === t.id)) || (me.active && !(t.def && t.def.campfire)));
+	return !!t && ((me.active && "frog" === t.id) || (me.active && !(t.def && t.def.campfire)));
 }
 function Bt(t, e) {
 	if (!t || "object" != typeof t) return 0;
@@ -3493,16 +3495,17 @@ const Ut = (() => {
 	})(),
 	Kt = {
 		acorns: 0,
-		// quests: Seeds (bought at Garden Supplies), the Ancient Artifacts (3 found, then told to
-		// SPARKAKUS, who gives you the Ancient Gem) and the Summoning Stone (GEMTOE trades it for the Gem)
-		rewards: { seeds: !1, artifacts: !1, stone: !1 },
+		// the three main quests are the Seeds (bought at Garden Supplies), the Summoning Stone (GEMTOE
+		// trades it for the Ancient Gem SPARKAKUS gives you for the Ancient Artifacts) and the Snacks.
+		// FOR TESTING ONLY, all three start complete (TEST_QUESTS; set it to !1 for the real game).
+		rewards: { seeds: TEST_QUESTS, artifacts: !1, stone: TEST_QUESTS, snacks: TEST_QUESTS },
 		gem: !1,
 		artifacts: 0,
 		blossoms: 0,
 		equip: { hat: null, shoes: null, dress: null },
 		// the Dancers whose Dance battle reward you already have
 		danceWins: new Set(),
-		owned: new Set(),
+		owned: new Set(TEST_QUESTS ? ["seeds"] : []),
 		talkState: {},
 		met: new Set(),
 	};
@@ -6228,7 +6231,7 @@ const xe = (() => {
 							null !== Ce.met && a > Ce.met && U(0.5, 70),
 							(Ce = { blossoms: Kt.blossoms, met: a });
 						const n = Kt.rewards,
-							r = [Kt.acorns, n.seeds, n.artifacts, Kt.artifacts, n.stone, a].join("|");
+							r = [n.seeds, n.stone, n.snacks].join("|");
 						r !== o.sig &&
 							((o.sig = r),
 							o.draw((t) => {
@@ -6239,9 +6242,10 @@ const xe = (() => {
 											A(t, a, 234, e + 1, 26, "#ffffff", "right");
 									},
 									o = (t) => (t ? "☑" : "☐");
+								// the three main quests, and nothing else
 								e(36, "SEEDS", o(n.seeds), M.lime),
-									e(88, "ANCIENT ARTIFACTS", n.artifacts ? "☑" : Kt.artifacts + "/3", "#f2c42e"),
-									e(140, "SUMMONING STONE", o(n.stone), "#5ab4ff");
+									e(88, "SUMMONING STONE", o(n.stone), "#5ab4ff"),
+									e(140, "SNACKS", o(n.snacks), "#ff9a3a");
 							}));
 					})(0, v);
 				const P = new Map();
@@ -6965,7 +6969,7 @@ const JGP = (() => {
 				// (SPARKAKUS, here and as the librarian, is scaled 1.16 to stand as tall as HENNRICK: 3.13 m)
 				["orbiter", "SPARKAKUS", "born_sparkakus", {"color": "#2c4cc0", "bodyR": 1.15, "talkR": 4.2, "modelScale": 1.16}, [34, -6.23]],
 				["m_somlet", "SOMLET", "born_somlet", {"color": "#ecd8b6", "bodyR": 1}, [34, -0.46]],
-				["p_etcher", "ETCHER", "born_etcher", {"color": "#9ee09a", "bodyR": 1.15, "talkR": 3.6, "modelScale": 1.16}, [34, 5.31]],
+				["p_etcher", "ETCHER", "born_etcher", {"color": "#9ee09a", "bodyR": 1.15, "talkR": 3.6, "modelScale": 1.16}, [33.25, 5.31]],
 				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 11.09]],
 				["p_glyph", "GLYPH", "born_glyph", {"color": "#e88a8a", "bodyR": 1.1, "talkR": 3.6, "modelScale": 1.11}, [34, 16.86]],
 				["w_mont", "MONTGUMMERY", "woods_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9, "talkR": 3.8}, [34, 22.63]],
@@ -6977,12 +6981,11 @@ const JGP = (() => {
 		final: {
 			face: -Math.PI / 2,
 			list: [
+				// (NEXTESSA and BACKPACKA are not in the park: each appears only for its own event, NEXTESSA
+				// through the portal with the pizza, BACKPACKA at the Garden Event)
 				["gorbo", "GOWARD", "born_goward", {"color": "#30b4e4", "bodyR": 1.2}, [27, 4]],
-				["t_nextessa", "NEXTESSA", "city_nextessa", {"color": "#f2903a", "bodyR": 0.9}, [27, 9.1]],
-				// the garden event's BACKPACKA
-				["t_backpacka", "BACKPACKA", "born_backpacka", {"color": "#d48e64", "bodyR": 1.4}, [27, 14.2]],
-				["frog", "FORTIZMO", "fortizmoPick", {"color": "#e8742a", "bodyR": 0.95, "modelScale": 0.78, "talkR": 4.2}, [27, 19.3]],
-				["blinker", "ANOMALEE", "anomaleePeg", {"color": "#2fd4e6", "bodyR": 0.95, "modelScale": 0.95, "talkR": 4.2}, [27, 24.4]],
+				["frog", "FORTIZMO", "fortizmoPick", {"color": "#e8742a", "bodyR": 0.95, "modelScale": 0.78, "talkR": 4.2}, [27, 12.5]],
+				["blinker", "ANOMALEE", "anomaleePeg", {"color": "#2fd4e6", "bodyR": 0.95, "modelScale": 0.95, "talkR": 4.2}, [27, 21]],
 				// ZOLLOD, at the end nearest his Garden Supplies
 				["cutebex", "ZOLLOD", "born_zollod", {"color": "#3cbe94", "bodyR": 0.9, "talkR": 4.2}, [27, 29.5]],
 			],
@@ -7749,17 +7752,22 @@ const JGP = (() => {
 		X.lengthSq() < 1e-6 && X.set(1, 0, 0), X.normalize();
 		return ob.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, new c0().crossVectors(n, X), n)), ob;
 	};
-	// a tube along pts tapering r0 -> r1, ridged with rid rings (horns, coils, segmented tails)
-	const ridgedTube = (pts, r0, r1, n, rid, depth = 0.18, rad = 10) => {
+	// a tube along pts tapering r0 -> r1, ridged with rid rings (horns, coils, segmented tails); with
+	// cap, its far end rounds off closed (the last stretch, about as long as the tip is wide, curves in
+	// to a point like the end of a sphere)
+	const ridgedTube = (pts, r0, r1, n, rid, depth = 0.18, rad = 10, cap = !1) => {
 		const cv = new THREE.CatmullRomCurve3(pts.map((q) => new c0(...q))),
 			tg = new THREE.TubeGeometry(cv, n, 1, rad, !1),
 			Pq = tg.attributes.position,
 			ctr = new c0(),
-			q = new c0();
+			q = new c0(),
+			cw = cap ? (1.6 * r1) / cv.getLength() : 0;
 		for (let i = 0; i <= n; i++) {
 			cv.getPointAt(i / n, ctr);
 			const u = i / n,
-				r = (r0 + (r1 - r0) * u) * (1 + depth * Math.max(0, Math.sin(u * rid * l)) ** 0.5);
+				cx2 = cw && u > 1 - cw ? (u - 1 + cw) / cw : 0;
+			let r = (r0 + (r1 - r0) * u) * (1 + depth * Math.max(0, Math.sin(u * rid * l)) ** 0.5);
+			cx2 && (r *= Math.sqrt(Math.max(0, 1 - cx2 * cx2)));
 			for (let j = 0; j <= rad; j++) {
 				const k = i * (rad + 1) + j;
 				q.fromBufferAttribute(Pq, k).sub(ctr).multiplyScalar(r).add(ctr), Pq.setXYZ(k, q.x, q.y, q.z);
@@ -9147,7 +9155,8 @@ const JGP = (() => {
 				const u = j / 8;
 				pts.push([w * 0.35 * Math.sin(u * 3.2 + k), 0.11 + (k === 2 && u > 0.8 ? 0.4 * (u - 0.8) * 5 : 0), 0.8 + len * u]);
 			}
-			const tm = R(ridgedTube(pts, 0.14, 0.05, 80, len * 7, 0.16, 10), purple, tg),
+			// (the tip is closed, rounded off)
+			const tm = R(ridgedTube(pts, 0.14, 0.05, 80, len * 7, 0.16, 10, !0), purple, tg),
 				ga = tm.geometry.attributes;
 			(tm.userData.keep = !0), (tm.userData.len = len), (tm.userData.p0 = ga.position.array.slice()), (tm.userData.n0 = ga.normal.array.slice()), tms.push(tm);
 		});
@@ -9743,18 +9752,23 @@ const JGP = (() => {
 			tg.position.copy(p).addScaledVector(n, 0.2), body.add(tg), R(tileGeo, tileM, tg, [0, 0, 0], [0, 0, 0.15 * sx], [0.82, 0.82, 0.9]);
 		});
 		// two ribbed tubes, one orange and one grey, coming out of his back and coiling on the ground
-		const tube = (sx, col, ring, reach) => {
+		// (coil: the points of the parts lying on the ground, which his sway must never push under it)
+		const coil = [],
+			CY = 0.118,
+			tube = (sx, col, ring, reach) => {
 			const { p, n } = hit(C, [sx * 0.45, -0.15, -1]),
 				q = p.clone().addScaledVector(n, -0.06),
 				pts = [[q.x, q.y, q.z]],
 				o = p.clone().addScaledVector(n, 0.32);
-			pts.push([o.x, o.y + 0.05, o.z], [o.x + 0.35 * sx, 0.35, o.z - 0.15], [o.x + 0.6 * sx, 0.09, o.z + 0.1]);
+			// (the coil lies at CY: its ridges just clear the grass)
+			pts.push([o.x, o.y + 0.05, o.z], [o.x + 0.35 * sx, 0.35, o.z - 0.15], [o.x + 0.6 * sx, CY, o.z + 0.1]);
 			for (let k = 1; k <= 6; k++) {
 				const a = (k / 6) * 1.6 * l,
 					r = reach * (1 - 0.1 * k);
-				pts.push([o.x + 0.6 * sx + sx * r * Math.sin(a), 0.09, o.z + 0.1 + r * (1 - Math.cos(a))]);
+				pts.push([o.x + 0.6 * sx + sx * r * Math.sin(a), CY, o.z + 0.1 + r * (1 - Math.cos(a))]);
 			}
 			R(ridgedTube(pts, 0.085, 0.07, 90, ring, 0.14, 10), x.clay(col, { shininess: 50 }), body);
+			pts.slice(3).forEach((q) => coil.push(new THREE.Vector3(...q)));
 			const e = pts[pts.length - 1];
 			R(T.sphere(0.07, 10, 8), x.clay(col, { shininess: 50 }), body, e);
 		};
@@ -9786,6 +9800,7 @@ const JGP = (() => {
 				["hip", "hip"], ["hip", "hip"], ["hip", "hip"], ["hop", "hop"],
 			],
 			wrap = (q) => Math.atan2(Math.sin(q), Math.cos(q)),
+			cv = new THREE.Vector3(),
 			// stretch an arm: the upper arm and the forearm (with the elbow) lengthen, the claws move out
 			stretch = (a, S) => {
 				a.parts ||
@@ -9808,11 +9823,12 @@ const JGP = (() => {
 			step(t, dt, tk, wk, e) {
 				const dw = e ? Bt(e, dt) : 0,
 					still = 1 - dw;
-				// every few seconds he gives an excited little shake (and lifts his head to look about)
+				// every few seconds he gives an excited little shake: a quick twist from side to side (a roll
+				// would tip his tubes into the grass)
 				const ph = t % 5.3,
 					shake = ph < 0.8 ? 0.07 * Math.sin(ph * 42) * (1 - ph / 0.8) : 0;
-				(body.position.y = still * (0.02 * Math.sin(1.5 * t) + 0.04 * wk * Math.abs(Math.sin(7 * t)))), (body.rotation.z = still * (0.025 * Math.sin(1.1 * t) + shake));
-				(body.rotation.y = still * 0.12 * Math.sin(0.45 * t) * Math.max(0, Math.sin(0.23 * t))), (body.rotation.x = -0.03 * still * Math.max(0, Math.sin(0.6 * t + 1)));
+				(body.position.y = still * (0.02 * Math.sin(1.5 * t) + 0.04 * wk * Math.abs(Math.sin(7 * t)))), (body.rotation.z = still * 0.02 * Math.sin(1.1 * t));
+				(body.rotation.y = still * (0.12 * Math.sin(0.45 * t) * Math.max(0, Math.sin(0.23 * t)) + 1.6 * shake)), (body.rotation.x = -0.025 * still * Math.max(0, Math.sin(0.6 * t + 1)));
 				tail.rotation.y = 0.12 * Math.sin(1.0 * t) + 3 * shake * still;
 				arms.forEach((a, k) => ((a.sh.rotation.x = -0.55 + 0.08 * Math.sin(1.6 * t + 2 * k) + 0.3 * wk * Math.sin(7 * t + k * Math.PI)), (a.sh.rotation.y = 0), (a.sh.rotation.z = -0.08 * (2 * k - 1)), (a.el.rotation.x = -0.85), (a.el.rotation.y = 0)));
 				legs.forEach((lg, k) => KIT.stride(lg, 7 * t + k * Math.PI, 0.45 * wk, 0.7 * wk));
@@ -9874,6 +9890,10 @@ const JGP = (() => {
 						hop = 15 === k ? sm : 0;
 					(root.position.y = sW * 0.2 * Math.sin(Math.PI * (15 === k ? f : 0)) + aW * hopM), (root.rotation.y = sW * wrap((Math.PI / 2) * (turns + hop)));
 				} else dB && ((dB = 0), (body.position.x = 0), (root.rotation.y = 0), arms.forEach((a) => stretch(a, 1)), legs.forEach((lg) => (lg.hip.rotation.z = 0)));
+				// his tubes stay on the ground: when his sway would tip a coil under it, he rises by just that much
+				let lo = 9;
+				for (const q of coil) lo = Math.min(lo, cv.copy(q).applyEuler(body.rotation).y);
+				body.position.y = Math.max(body.position.y, CY - lo);
 			},
 		});
 	};
@@ -11782,8 +11802,6 @@ const JGP = (() => {
 		keeper: ["pat", 1.6, 1],
 		// (every creature has its own move, including those who are away from the Event)
 		p_mamagorbo: ["pat", 1.3, 1.2],
-		t_nextessa: ["scatter", 2.2, 0.9],
-		t_backpacka: ["dig", 1.4, 0.8],
 	};
 	// every creature's own dance (step, beat in rad/s, size): a creature animation, played round the
 	// garden while FORTIZMO plays at the Event (never a menu option). The beats sit near the drum set's 104 bpm. HENNRICK
@@ -11802,8 +11820,6 @@ const JGP = (() => {
 		blinker: ["stomp", 5.45, 1],
 		cutebex: ["groove", 5.45, 0.9],
 		p_mamagorbo: ["jelly", 5.45, 1],
-		t_nextessa: ["twist", 5.45, 0.9],
-		t_backpacka: ["bounce", 2.7, 0.8],
 		keeper: ["twist", 5.45, 1],
 	};
 	function danceMove(key, t) {
@@ -11869,12 +11885,12 @@ const JGP = (() => {
 			(ent.finaleSlot = spots[k]), (ent.plantNext = now + rr(2, 5)), (ent.watching = !1);
 		});
 	}
-	// FORTIZMO and the shopkeeper SPARKAKUS come into the garden but don't plant. Three row models are
-	// away for the whole event: BACKPACKA (the event's own BACKPACKA flies in), NEXTESSA (she is not at
-	// the event; she only comes through the portal for the separate pizza delivery) and SPARKAKUS's
-	// stand-in (the librarian SPARKAKUS leaves the Library for the event instead)
-	const NO_PLANT = ["frog", "t_backpacka"],
-		NOT_AT_EVENT = ["t_backpacka", "t_nextessa", "orbiter"],
+	// FORTIZMO and the shopkeeper SPARKAKUS come into the garden but don't plant. SPARKAKUS's row
+	// stand-in is away for the whole event (the librarian SPARKAKUS leaves the Library for it instead).
+	// (BACKPACKA only appears for the event, flying in himself; NEXTESSA is never at it: she only comes
+	// through the portal for the pizza delivery)
+	const NO_PLANT = ["frog"],
+		NOT_AT_EVENT = ["orbiter"],
 		// KING DINO stays at his drum set at the Juice Bar and keeps playing all through the event
 		AT_POST = ["m_kingdino"],
 		noPlant = (ent) => !!ent && NO_PLANT.includes(ent.id),
@@ -12454,11 +12470,7 @@ const JGP = (() => {
 				e > D.splay && e < D.spray && Math.random() < 1.2 * dt && fin.length && Ut.above(f(fin), f(["♥", "✿", "♪"]), f([M.pink, M.yellow, M.lime, M.teal]));
 			}
 		}
-		const lineupBP = (vis) => {
-			const en = It.all.find((q) => "t_backpacka" === q.id);
-			en && (en.group.visible = vis);
-		};
-		// the rows' BACKPACKA, NEXTESSA and SPARKAKUS stand-in are away for the whole event
+		// the rows' SPARKAKUS stand-in is away for the whole event
 		let awayNow = !1;
 		L.push(() => {
 			if (me.active === awayNow) return;
@@ -12466,7 +12478,7 @@ const JGP = (() => {
 			NOT_AT_EVENT.forEach((id) => It.byId[id] && (It.byId[id].group.visible = !awayNow));
 		});
 		function hideAll() {
-			lineupBP(!me.active), It.all.forEach((en) => (en.watching = !1));
+			It.all.forEach((en) => (en.watching = !1));
 			if (!made) return;
 			const P = made;
 			(P.root.visible = !1), P.ripples.forEach((m) => (m.visible = !1)), P.jets.forEach((J) => (J.m.visible = !1)), (P.rainbow.visible = !1), P.dlife.fill(0), P.dpos.fill(-200), (P.dgeo.attributes.position.needsUpdate = !0);
@@ -12481,7 +12493,7 @@ const JGP = (() => {
 			} catch (err) {}
 		}
 		function start(now) {
-			made || ((made = make()), warm()), (active = !0), (t0 = now), (lastE = -1), (flags = {}), lineupBP(!1);
+			made || ((made = make()), warm()), (active = !0), (t0 = now), (lastE = -1), (flags = {});
 		}
 		L.push((tt, dt) => {
 			if (ending && me.active && (!ee.playing || tt - ending > 15)) (ending = 0), me.wrap();
@@ -13520,7 +13532,7 @@ const JGP = (() => {
 			["s_hardware", "HARDWARE", "#2f5a3a", "#f4ecd0", { edge: "#d8c890" }],
 			["s_diner", "DINER", "#f6eed6", "#c22a2a", { edge: "#c22a2a", face: SANS }],
 			["s_barber", "BARBER", "#f8f6f0", "#1e3c8a", { edge: "#c22a2a" }],
-			["s_theater", "NOW SHOWING", "#f8f4e4", "#1a1a1e", { edge: "#e8b830", face: SANS }],
+			["s_theater", "THEATER", "#f8f4e4", "#1a1a1e", { edge: "#e8b830", face: SANS }],
 			["s_bakery", "BAKERY", "#f4cad4", "#6a3a28", { edge: "#ffffff" }],
 			["s_pharmacy", "PHARMACY", "#e6f0f2", "#1a6a7a", { edge: "#1a6a7a", face: SANS }],
 			["s_books", "BOOKS", "#22325a", "#e8c860", { edge: "#e8c860" }],
