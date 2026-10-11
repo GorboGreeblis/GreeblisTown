@@ -12,8 +12,11 @@ echo "== Ancient Gem trade"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_gem
 echo "== pizza"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_pizza.js 2>&1 | grep -v "^$" | tail -3
 echo "== vignettes"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./vigrun.js 2>&1 | grep -v "^$" | tail -2
 echo "== pickups reachable"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_reach2.js 2>&1 | grep -v "^$" | tail -2 | cut -c1-300
-echo "== drums, respawn, Blossom option"; VW=320 VH=240 NOSHOT=1 timeout 400 node shot2.js $U x.png ./t_misc.js 2>&1 | grep -v "^$" | tail -9
+echo "== jazz on the floor, respawn, Blossom option"; VW=320 VH=240 NOSHOT=1 timeout 400 node shot2.js $U x.png ./t_misc.js 2>&1 | grep -v "^$" | tail -9
 echo "== Fortizmo's patrol"; NOSHOT=1 timeout 400 node shot2.js $U x.png ./t_fz.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-700
 echo "== shaders"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_shader.js 2>&1 | grep -v "^$" | tail -3
 echo "== walking soak"; NOSHOT=1 timeout 600 node shot2.js $U x.png ./soak.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-400
+echo "== King Dino's jazz"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_jazz.js 2>&1 | grep -v "^$" | tail -14 | cut -c1-300
+echo "== Somlet asleep on her side"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_somlet.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
+echo "== roamers (short; ROAM_S/TRAP_S longer for a full check)"; VW=320 VH=240 ROAM_S=40 TRAP_S=40 NOSHOT=1 timeout 1800 node shot2.js $U x.png ./t_roam.js 2>&1 | grep -v "^$" | tail -17 | cut -c1-300
 echo "== DONE"

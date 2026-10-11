@@ -1,13 +1,14 @@
-// drums keep going on the floor while King Dino is talked to and during a battle; pickups respawn
+// King Dino's jazz keeps going on the floor while King Dino is talked to and during a battle; pickups respawn
 // elsewhere; the Blossom option needs a Blossom
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
   await p.mouse.click(Math.min(640, (+process.env.VW || 1280) / 2), 60); await W(1500);
   const hits = async (setup, label) => {
     await p.evaluate(setup);
-    await p.evaluate(() => { window.__h = 0; if (!window.__gw) { window.__gw = 1; const g = G.near.bind(G); G.near = function (x, z, r, s) { /^drum/.test(s) && __h++; return g(x, z, r, s); }; } window.__t0 = Re.t; });
+    // (counts the jazz's hits while it is heard: the kit's hits come from KING DINO's jazz track)
+    await p.evaluate(() => { window.__h = 0; if (!window.__gw) { window.__gw = 1; const j = JGP.jazz, u = j.update.bind(j); j.update = function (...a) { const r = u(...a); r && 'a' === j.state.clock && j.state.gain > 0.05 && (__h += r.length); return r; }; } window.__t0 = Re.t; });
     for (let k = 0; k < 200 && (await p.evaluate(() => Re.t - __t0 < 4)); k++) await W(150);
-    console.log(label, 'drum hits in 4 s:', await p.evaluate(() => __h), 'top', await p.evaluate(() => jt.top));
+    console.log(label, 'jazz hits heard in 4 s:', await p.evaluate(() => __h), 'top', await p.evaluate(() => jt.top));
   };
   await hits(() => { At.position.set(-27, 0, 12); }, 'on the floor:');
   await hits(() => { At.position.set(-33, 0, 19); te(It.byId.m_kingdino); }, 'talking to KING DINO:');
