@@ -1,12 +1,24 @@
 # Greeblis Town USA: change history
 
 Every change to the game went through a PR in this repo,
-[GorboGreeblis/GreeblisTown](https://github.com/GorboGreeblis/GreeblisTown) (named JurassicGreeblisPark at first). The game began as **Jurassic Greeblis Park**, a prehistoric clearing with dinosaurs. With PR #20
-it became a small Midwest town, and with #31 it was renamed **Greeblis Town USA**. This list is newest first.
+[GorboGreeblis/GreeblisTown](https://github.com/GorboGreeblis/GreeblisTown) (named JurassicGreeblisPark at first).
+The game began as **Jurassic Greeblis Park**, a prehistoric clearing with dinosaurs; with #20 it became a small
+Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 
 | PR | Merged | What changed |
 | --- | --- | --- |
-| [#39](https://github.com/GorboGreeblis/GreeblisTown/pull/39) | Open | The dance floor's extension south of the bar reaches out twice as far, with King Dino and his drum kit centred at its back. |
+| [#50](https://github.com/GorboGreeblis/GreeblisTown/pull/50) | Open (2026-10-11) | One repo: the other games' copies removed, so [learnings.md](learnings.md) is the only record of City, Park and Woods; the privacy rule; a final pass over the docs. Every building door is wood, with a transom over storefront doors. Mistergummery's in Montgummery's teal, with no burger on the roof and the pylon just the M. King Dino's drum rug layers no longer fight (`unfightParts` sinks a part at most half the thinner part's depth). His jazz is scheduled 3 s ahead, judged from the avatar's head in the test modes, and rests from when Fortizmo raises her horn. The Summoning Stone's floating pebbles, the church's two flowerbeds and the park's benches and trash cans removed. The player starts just south of the Summoning Stone, facing the church. Tools: `t_zfight.js` names clashes by the triangles' own colours (it had lumped unnamed merges together and missed real clashes), `t_jazz.js` prints FAIL where the jazz is missing, `t_perf.js` attributes draws from the render list. |
+| [#49](https://github.com/GorboGreeblis/GreeblisTown/pull/49) | 2026-10-11 | Tools only: `t_perf.js` (performance profile), `t_ground.js` prints where each worst dip happens, learnings on the uploaded final builds. |
+| [#48](https://github.com/GorboGreeblis/GreeblisTown/pull/48) | 2026-10-11 | Plant test row with five placeholder kinds, which the Event now grows. Library rug from the Buns' Woods prints. VR head guard. No z-fighting in merged scenery (load-time fix); Somlet's cap depth-biased. Creatures stand on the real surface under them. The avatar walks and idles in the test modes. Sky dome inside the far plane. The readable parcel in the mail pile; Mistergummery's replaces the hardware store. Bug-pass fixes (Event, Somlet, roamers, Mushroom's desk, goo splat order); Sparkakus browses his Library. |
+| [#47](https://github.com/GorboGreeblis/GreeblisTown/pull/47) | 2026-10-11 | King Dino's jazz. Roaming creatures (Hennrick at the Portal, Gemtoe and the Gorbos in the park, the Dancers on the floor) and the Gorbos' meetings. Somlet asleep on her side. Anomalee keeps gazing at the window through Talk. Garden Event rounds. Goward renamed Gooward. Far scenery removed. The VR sound wakes when the headset is put back on. |
+| [#46](https://github.com/GorboGreeblis/GreeblisTown/pull/46) | 2026-10-11 | Bug pass: Event wrap-up, talk targets, battles, VR controllers, the courier, vignettes, walk animation. `tools/` holds every tool, with a README. |
+| [#45](https://github.com/GorboGreeblis/GreeblisTown/pull/45) | 2026-10-11 | Size pass (1,084,904 to 1,040,924 bytes: dead code removed, three.js trimmed). New spots: Sparkakus only at the Library, Zollod behind his counter, Somlet at the Post Office, Anomalee at the church, Fortizmo behind the Juice Bar. The Garden Event in order. The drums never stop on the floor. Shop and pickup fixes. |
+| [#44](https://github.com/GorboGreeblis/GreeblisTown/pull/44) | 2026-10-11 | Nextessa's pizza completes the Snacks quest. A Blossom to a Dancer starts a Dance battle, and first wins award the Ancient Artifacts (the hidden pickups are gone). Performance pass. |
+| [#43](https://github.com/GorboGreeblis/GreeblisTown/pull/43) | 2026-10-11 | Pickups kept off the dance floor. Every creature model marked final. Glyph's tubes stay on the ground, Etcher's tentacle tips closed. The THEATER sign. A three-quest HUD (`TEST_QUESTS`). No park copies of Nextessa or Backpacka. |
+| [#42](https://github.com/GorboGreeblis/GreeblisTown/pull/42) | 2026-10-11 | Dance battles (rock, paper, scissors) and the Dancers' own dances. New clothes (Flower Hat, Sun Dress, Frog Shoes). The Ancient Gem, traded by Gemtoe for the Summoning Stone; the Artifacts become three pieces of a teal diamond. Mushroom on the Sheriff's raised desk. Church windows final. The UFO. Plants come up only where creatures plant (the special ring of flowers is gone). |
+| [#41](https://github.com/GorboGreeblis/GreeblisTown/pull/41) | 2026-10-11 | Montgummery's hands face inward. Glyph, Gemtoe and Etcher scaled to Montgummery's height. The dance floor one 10 × 32 rectangle. |
+| [#40](https://github.com/GorboGreeblis/GreeblisTown/pull/40) | 2026-10-11 | A purple tiled dance floor; King Dino and his kit on the grass behind it; drums heard only on the floor. Sparkakus as tall as Hennrick. The Library banner behind the bookcases. Montgummery's screen faces (talking, a Blossom smile, a planting shovel). |
+| [#39](https://github.com/GorboGreeblis/GreeblisTown/pull/39) | 2026-10-11 | The dance floor's extension south of the bar reaches out twice as far, with King Dino and his drum kit centred at its back. |
 | [#38](https://github.com/GorboGreeblis/GreeblisTown/pull/38) | 2026-10-10 | Menus hold only Talk and Blossom (planting and dancing are creature animations; Zollod only opens the shop); Blossoms renamed. Mama Gorbo joins the lineup, with colourful goo streams animated like goo, goo shot at the player for a Blossom and a brighter peach. Hennrick and Montgummery locked. A rectangular dance floor, an open Library of bookcases, runes dark until the stone is used, and the church roof meeting its walls. |
 | [#37](https://github.com/GorboGreeblis/GreeblisTown/pull/37) | 2026-10-10 | Church garden windows: the right-hand window from Greeblis City on the church's right side (the figure's face removed) and a copy with the figure and Mama Gorbo swapped on the left. Every creature talks, plants and dances: its own dance and planting move, "Ask … to dance / plant" menu options, and dancing round the garden while Fortizmo plays. |
 | [#36](https://github.com/GorboGreeblis/GreeblisTown/pull/36) | 2026-10-10 | Library (Sparkakus is the librarian) and the Ancient Artifacts quest with the Greeblis City light bulb. Garden Supplies is the only shop; Seeds decide how the Garden Event plays out. The Summoning Stone starts the Event. Montgummery replaces Gorton. Mama Gorbo is rebuilt from her artwork. Glyph and Somlet fixes; Etcher locked. Purposeful paths, the church moved to the south walk, the obelisk removed, a dance floor by the Juice Bar, a mail mountain behind the Post Office, and the cars removed. |
@@ -47,44 +59,37 @@ it became a small Midwest town, and with #31 it was renamed **Greeblis Town USA*
 
 ## Owner decisions recorded along the way
 
-- **The game:**
-  - It's called "Greeblis Town USA".
-  - It must stay fully playable as a Bitcoin ordinal.
-  - Only `index.html` goes to the game repo.
+The standing rules that came out of these are in [greeblis-rules.md](greeblis-rules.md); these are the other
+decisions, with the PR that carried them.
+
+- **The game:** it is called "Greeblis Town USA" (#31). One repo from #50 on; the readable parcel's label in the
+  mail pile is the one exception to the privacy rule.
 - **Creatures:**
-  - Creature models, behaviour and interactions matter most.
-  - No bones. A merge is a new, cohesive creature. Creatures rebuilt from artwork follow the artwork; keep current
-    colour and size when asked.
-  - No cartoony smiles. Nothing clips, from any angle, including from inside buildings in VR.
-  - Locked models stay as they are: Nextessa, Gooward, Mushroom, Backpacka, Fortizmo, Anomalee, Zollod, Etcher,
-    Hennrick and Montgummery.
-  - NPCs stand still in rows. Dialogue is placeholder text; shop and quest menus are written in full.
-  - Every creature has at least three animations: talking, planting and dancing. Planting and dancing are
-    creature animations, not menu options: every creature's menu holds only Talk and Blossom, and the Garden
-    Supplies keeper (Zollod) only opens the shop.
-  - Mama Gorbo stands in the lineup with the other unlocked creatures, in a bright, vibrant peach, with
-    colourful goo dripping out of her (animated like goo, never clipping, no see-through ends), and shoots goo at
-    the player when given a Blossom.
-  - The pickups are called Blossoms (not Fire Blossoms).
+  - Every model is final (#43); Montgummery's screen mouth is a flat line, with a pixel smile only for a while
+    after a Blossom (#40).
+  - Creatures first stood still in rows; from #47 some roam (Hennrick round the Portal, Gemtoe and the Gorbos in
+    the park, the Dancers on the dance floor), and the rest keep a post.
+  - Mama Gorbo is a bright, vibrant peach, with colourful goo dripping out of her (animated like goo, never
+    clipping, no see-through ends), and shoots goo at the player when given a Blossom (#38).
   - Vignettes play with a 15% chance.
-- **The church:** a garden window on each side wall. The right one follows Greeblis City; the left is a copy
-  with the figure and the creature swapped (details to come). Human figures in the windows have no faces.
+- **Quests:** the Ancient Artifacts come from Dance battles, one from each Dancer's first win (#42, #44). The
+  Summoning Stone is owned from the start, and all three quests start complete, only for testing (`TEST_QUESTS`,
+  #43; see the [release steps](../README.md#the-final-pass-release-minify-pack)).
+- **The Garden Event:** it starts only from the Summoning Stone, whose runes stay dark until the player uses it
+  holding the Stone (#36, #38). Without Seeds it is bare; with them the plants are the ones the creatures plant
+  (#42), the first two Events each grow a batch and later ones grow nothing (#47), and plants persist for the
+  session.
+- **The church:** a garden window on each side wall, the right one as in Greeblis City and the left a copy with the
+  figure and Mama Gorbo swapped (#37); figures in the windows have no faces; the windows are final (#42). Nothing
+  is placed inside the church, and no flowerbeds by it (#50).
 - **The town:**
-  - No words on windows.
-  - Every path leads to a kiosk or a building and ends there.
-  - Nothing is placed inside the church.
-  - The Library is open: only rows of books on shelves spaced out, with the LIBRARY banner a little behind
-    Sparkakus; no walls or raised platforms.
-  - The dance floor runs south from the bar's north end for twice the bar's length. Along the bar it reaches one
-    square past where King Dino stood; the extension south of the bar reaches out twice as far, with King Dino and
-    his drum kit centred at its back.
-- **The Ancient Artifacts:** in the final game they come from Dance battles, one unique artifact from each of the
-  three Dancers, and the player must hold all three to complete that part of the quest and move on. (The current
-  pickups are placeholders.)
-- **The Garden Event:**
-  - It starts only from the Summoning Stone, which is owned by default for testing. The stone's runes stay dark
-    until the player uses it while holding the Summoning Stone item.
-  - Without Seeds it is bare. With Seeds it runs in full and a special batch of flowers grows. Plants persist for
-    the session.
-- **Documentation:** write down how every game's creatures and environments were built, in this repo, divided by
-  game.
+  - Every path leads to a kiosk or a building and ends there (#36).
+  - The Library is open: only rows of bookcases spaced out, the LIBRARY banner behind them, no walls or raised
+    platforms (#38, #40).
+  - The dance floor is one 10 × 32-tile rectangle from the bar's north end, twice the bar's length (#39, #41); King
+    Dino and his kit stand on the grass behind its south half (#40).
+  - No cars (#36), no far scenery (#47), no benches or trash cans, and no floating pebbles round the Summoning
+    Stone (#50).
+  - Every door is wood, with a transom over storefront doors; Mistergummery's uses Montgummery's teal instead of
+    yellow, has no roof burger, and its pylon is just the M (#50).
+  - The player starts just south of the Summoning Stone, facing the church (#50).

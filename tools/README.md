@@ -38,7 +38,7 @@ the avatar's walk; the VR head guard; Sparkakus browsing; and the z-fighting sca
 | Runner | What it does |
 | --- | --- |
 | `test/battery.sh` | The battery above (`URL` overrides the page) |
-| `test/shot2.js <url> <out.png> <scene.js>` | Loads the page on desktop (1280×720; `VW`, `VH` change it), runs the scene script, then screenshots unless `NOSHOT=1` |
+| `test/shot2.js <url> <out.png> <scene.js>` | Loads the page on desktop (1280×720; `VW`, `VH` change it), waits `WAIT` ms (default 6000), runs the scene script, then screenshots unless `NOSHOT=1` |
 | `test/mob.js <url> <out.png> <scene.js>` | The same as an iPhone 13 (`EXTRA` adds browser flags) |
 | `test/ordtest.js <index.html> <out.png>` | The game as an ordinal: served from memory inside `<iframe sandbox="allow-scripts">` with ord's CSP, every other request blocked and listed (`MOBILE=1` for an Android phone). A pass shows every creature, 0 errors and `blocked: []` |
 
