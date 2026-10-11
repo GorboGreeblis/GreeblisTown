@@ -22,8 +22,8 @@ python3 -m http.server 8765      # from the repo root, in another terminal: the 
   runs the lint (below).
 - `.gitignore` keeps `node_modules`, renders, logs, the lint's cut-out script and the battery's `test/x*` images
   out of git.
-- Where Playwright is installed globally instead (with Chromium), point Node at it with
-  `NODE_PATH=$(npm root -g)` rather than installing it again, and never run `playwright install`.
+- Where Playwright and its Chromium are already installed globally (as in a cloud session), point Node at them
+  with `NODE_PATH=$(npm root -g)` instead, and don't run `playwright install`.
 - The browser tests render with SwiftShader WebGL (`--use-angle=swiftshader`).
 
 ## Checking the game
@@ -171,7 +171,7 @@ swapping the result in:
    `node pack/park/woods-unpack.js index.html check.html`: it must report `decoder matches woods-model.js: true`,
    and `check.html` must be identical to `page.html`.
 6. Run `test/ordtest.js` on the packed `index.html`, desktop and `MOBILE=1`, and keep it under ~400 KB. The full
-   push checklist is in [`docs/learnings.md`](docs/learnings.md#a5-checks-before-every-push).
+   push checklist is in [`docs/learnings.md`](docs/learnings.md#checks-before-every-push).
 
 Measured on 11 Oct 2026, the unminified 1,040,924-byte page packed to 251,328 bytes and round-tripped exactly in
 about 13 s, so minifying first only makes it smaller.
