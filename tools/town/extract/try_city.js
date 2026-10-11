@@ -1,0 +1,13 @@
+const {load,extract,emit}=require('./ex.js');
+const P=load([process.argv[2]]);
+const keys=process.argv[3].split(',');
+const stop=new Set((process.argv[4]||'').split(',').filter(Boolean));
+const r=extract(P,{regName:'so',keys,stop});
+console.log('units',r.units.size,'renamed',r.rename.size);
+console.log('roots',Object.keys(r.roots));
+console.log('undeclared',[...r.undeclared].join(' '));
+console.log('warn',[...r.warn].slice(0,40).join('\n'));
+const tl=[...r.units.values()].filter(u=>r.tops.has(u.node.id&&u.node.id.name)).map(u=>u.node.id.name+':'+(u.node.range[1]-u.node.range[0]));
+console.log('top units',tl.join(' '));
+const out=emit(P,r,{});console.log('emitted bytes',out.join('\n').length);
+require('fs').writeFileSync(process.argv[5]||'/dev/null',out.join('\n'));
