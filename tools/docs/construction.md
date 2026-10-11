@@ -23,7 +23,7 @@ These are the owner's rules from this game's development, on top of the standing
 - **No cartoony smiles.** Faces are expressive but understated (Montgummery's screen mouth is a flat line).
 - **Nothing clips:** not into the body, the ground or another part, from any angle, including views from inside
   buildings in VR.
-- **Locked models are never changed:** Nextessa, Goward, Mushroom, Backpacka, Fortizmo, Anomalee, Zollod,
+- **Locked models are never changed:** Nextessa, Gooward, Mushroom, Backpacka, Fortizmo, Anomalee, Zollod,
   Etcher, Hennrick and Montgummery. Each carries a "This model is final" comment (for the pulled Hennrick and
   Montgummery, on the line above their builder in the pulled module and in `ROWS`).
 - **Creature menus hold only Talk and Blossom.** Planting and dancing are creature animations, never menu
@@ -64,7 +64,7 @@ Builders come from three places:
 | Hennrick | `city_hennrick` | Lineup | Pulled from Greeblis City | Locked |
 | Etcher | `born_etcher` | Lineup | Serpent-dragon rising from a bell of scales, purple tentacle tails | Locked |
 | King Dino | `born_kingdino` | Drum set at the back of the dance floor's extension | Lemon-yellow gummy dino, turquoise crown, side plume; drums all through the Event | |
-| Goward | `born_goward` | Final row | Howard + Gorbo + Mama Gorbo goo family | Locked |
+| Gooward | `born_gooward` | Final row | Howard + Gorbo + Mama Gorbo goo family | Locked |
 | Nextessa | `city_nextessa` | Final row | Pizza courier through the portal | Locked |
 | Backpacka | `born_backpacka` | Final row (stand-in) | Event climax: drinks the pond and sprays the garden | Locked |
 | Mushroom | `born_mushroom` | Final row | Glowing cap, sheriff's star and hat | Locked |
@@ -235,7 +235,7 @@ Goo that runs down a body and moves like goo, without clipping:
   evenly spaced from z = −12 to 28.4 at x = 34 (5.77 m apart, at least 1.2 m between neighbours' outlines);
   measure each creature's outline with a `Box3` before re-spacing.
 - **Menus:** Talk, plus "Give a blossom" while the player has one. A creature whose def has a `goo` palette and
-  whose id is listed in `te()` (Goward, Mama Gorbo) shoots goo arcs at the player's head when given a Blossom
+  whose id is listed in `te()` (Gooward, Mama Gorbo) shoots goo arcs at the player's head when given a Blossom
   (`Ie()`: eight `Nt.gooArc` shots that splat on the view). Zollod's menu is a single "Shop at Garden
   Supplies", so interacting opens the shop at once.
 - **Talking:**

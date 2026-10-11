@@ -512,6 +512,8 @@ const G = (() => {
 			}),
 			["pageshow", "focus"].forEach((t) => addEventListener(t, s)),
 			{
+				// (wakes the sound after a pause: the headset taken off and put back on, or left idle)
+				wake: s,
 				ctx() {
 					try {
 						return o(), { c: t, out: e };
@@ -551,11 +553,7 @@ const G = (() => {
 						? (n(95, 0.14, "sine", 0.09), n(55, 0.2, "sine", 0.07, 0.02))
 						: "snare" === t
 							? (n(190, 0.07, "triangle", 0.05), n(2400, 0.05, "square", 0.012), n(3700, 0.04, "square", 0.008, 0.01))
-							: "hat" === t
-								? n(6200, 0.025, "square", 0.006)
-								: "tom" === t
-									? (n(150, 0.16, "sine", 0.07), n(110, 0.2, "sine", 0.04, 0.03))
-									: (this.drum("kick"), this.drum("snare"));
+							: (n(150, 0.16, "sine", 0.07), n(110, 0.2, "sine", 0.04, 0.03));
 				},
 				drumKick() {
 					this.drum("kick");
@@ -565,9 +563,6 @@ const G = (() => {
 				},
 				drumTom() {
 					this.drum("tom");
-				},
-				drumHat() {
-					this.drum("hat");
 				},
 			}
 		);
@@ -1603,7 +1598,7 @@ function et(t) {
 	return !(!t || !(t.concertDance || t.battleDance));
 }
 // the beat the built-in dances keep, in beats per second: FORTIZMO's 88 bpm at the Garden Event,
-// otherwise KING DINO's 104 bpm drums (Dance battles)
+// otherwise KING DINO's 104 bpm jazz (Dance battles)
 function gcBeatHz() {
 	return (me.active ? 88 : 104) / 60;
 }
@@ -5506,6 +5501,10 @@ const xe = (() => {
 						a(),
 							Oe.addEventListener("frameratechange", a),
 							Oe.addEventListener("end", Xe),
+							// the headset taken off, left idle (it sleeps) or the system menu up: the scene is kept
+							// safe while hidden; put back on, everything is restored, the clock picks up where it
+							// left off (no jump), and the sound is woken (the headset may have suspended it, and
+							// no page event says so in VR)
 							Oe.addEventListener("visibilitychange", () => {
 								(o.blurred = Oe && "visible" !== Oe.visibilityState),
 									o.blurred
@@ -5513,8 +5512,12 @@ const xe = (() => {
 										: (Ho.restore(),
 											requestAnimationFrame(Ho.restore),
 											(o.lastFrame = performance.now()),
-											Re.resetClock());
+											Re.resetClock(),
+											G.wake(),
+											setTimeout(G.wake, 300));
 							}),
+							// (a controller press in VR is not a page pointer event: it wakes the sound too)
+							["selectstart", "squeezestart"].forEach((ev) => Oe.addEventListener(ev, () => G.wake())),
 							Ue(2500, () => Ho.capture()),
 							Ue(2600, () => De(!0));
 					})();
@@ -5554,7 +5557,8 @@ const xe = (() => {
 				o.onPresenting && o.onPresenting(!1),
 				(O.xr.enabled = !1),
 				Ho.restore(),
-				Re.resetClock());
+				Re.resetClock(),
+				G.wake());
 		}
 		function _e() {
 			B.updateMatrixWorld(!0);
@@ -6685,14 +6689,10 @@ const JGP = (() => {
 		lineup: {
 			face: -Math.PI / 2,
 			list: [
-				// (HENNRICK, MONTGUMMERY and ETCHER are final; the others here are still being worked on)
-				["gratelet", "HENNRICK", "city_hennrick", {"color": "#c85ac8", "bodyR": 1.25, "modelScale": 0.88}, [34, -0.46]],
-				["p_etcher", "ETCHER", "born_etcher", {"color": "#9ee09a", "bodyR": 1.15, "talkR": 3.6, "modelScale": 1.16}, [33.25, 5.31]],
+				// (these are still being worked on; GEMTOE starts here and wanders the whole park: see the roamers)
 				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 11.09]],
-				["p_glyph", "GLYPH", "born_glyph", {"color": "#e88a8a", "bodyR": 1.1, "talkR": 3.6, "modelScale": 1.11}, [34, 16.86]],
-				["w_mont", "MONTGUMMERY", "woods_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9, "talkR": 3.8}, [34, 22.63]],
 				// MAMA GORBO (rebuilt from her artwork, with GORBO's ports and drips); given a Blossom she
-				// shoots her colourful goo at the player, as GOWARD does
+				// shoots her colourful goo at the player, as GOOWARD does
 				["p_mamagorbo", "MAMA GORBO", "born_mamagorbo", {"color": "#ff9f5c", "bodyR": 1.1, "talkR": 3.8, "goo": ["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]}, [34, 28.40]],
 			],
 		},
@@ -6701,8 +6701,24 @@ const JGP = (() => {
 			list: [
 				// (NEXTESSA and BACKPACKA are not in the park: each appears only for its own event, NEXTESSA
 				// through the portal with the pizza, BACKPACKA at the Garden Event)
-				["gorbo", "GOWARD", "born_goward", {"color": "#30b4e4", "bodyR": 1.2}, [27, 4]],
+				["gorbo", "GOOWARD", "born_gooward", {"color": "#30b4e4", "bodyR": 1.2}, [27, 4]],
 			],
+		},
+		// the three Dancers wander the whole dance floor by the Juice Bar (see the roamers), starting spread
+		// along it, facing the square (ETCHER and MONTGUMMERY are final)
+		floor: {
+			face: "center",
+			list: [
+				["p_etcher", "ETCHER", "born_etcher", {"color": "#9ee09a", "bodyR": 1.15, "talkR": 3.6, "modelScale": 1.16}, () => JGP.floorSpot(0)],
+				["p_glyph", "GLYPH", "born_glyph", {"color": "#e88a8a", "bodyR": 1.1, "talkR": 3.6, "modelScale": 1.11}, () => JGP.floorSpot(1)],
+				["w_mont", "MONTGUMMERY", "woods_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9, "talkR": 3.8}, () => JGP.floorSpot(2)],
+			],
+		},
+		// HENNRICK (final) roams round the Portal: he starts beside its doorway, looking at it, and strolls
+		// from spot to spot around it (see his roam, by FORTIZMO's patrol)
+		portal: {
+			face: (at) => Math.atan2(ot.x - at[0], ot.z - at[1]),
+			list: [["gratelet", "HENNRICK", "city_hennrick", {"color": "#c85ac8", "bodyR": 1.25, "modelScale": 0.88}, () => JGP.portalSpot()]],
 		},
 		// FORTIZMO tends the Juice Bar: she starts behind the counter by its gap and walks up and down
 		// behind it (see the Juice Bar), facing the dance floor whenever she stops; for the Garden Event
@@ -7492,13 +7508,13 @@ const JGP = (() => {
 		return tg.computeVertexNormals(), tg;
 	};
 
-	// GOWARD = HOWARD + GORBO + MAMA GORBO (the goo family).
-	// (This model is final: keep GOWARD as he is.)
+	// GOOWARD = HOWARD + GORBO + MAMA GORBO (the goo family).
+	// (This model is final: keep GOOWARD as he is.)
 	// GORBO / MAMA's egg built from HOWARD's fused bubbles; cyan above, MAMA's peach below. HOWARD's
 	// "+" eyes, cheek spots, wavy brow lines, gold leaf crests and ribbon tongue; the purple octagon
 	// ports and float ring that GORBO and MAMA share (with a little AP tag); MAMA's crystal wings;
 	// HOWARD's pastel root tendrils spilling out underneath.
-	BORN.goward = (g) => {
+	BORN.gooward = (g) => {
 		const root = new THREE.Group(),
 			body = new THREE.Group();
 		g.add(root), (body.position.y = 0.55), root.add(body);
@@ -8163,34 +8179,97 @@ const JGP = (() => {
 				return (sp.userData.keep = !0), fl.add(sp), sp;
 			});
 		const tq = new THREE.Quaternion(),
+			// (the droop at full, two thirds, a third and none)
+			dqs = [0, 1, 2, 3].map(() => new THREE.Quaternion()),
+			ZA = new c0(0, 0, 1),
 			te = new THREE.Euler(),
 			tv = new c0();
+		// LYING DOWN: resting at her own spot she sleeps on her side (rolled onto her right, her head to her
+		// right), and floats back up to go anywhere (the Garden Event, a vignette). How low she can sit at
+		// each angle of the roll is worked out once from the model itself (every part but the tentacles and
+		// the Zs), so as she rolls over and settles nothing ever goes into the ground; the tentacles droop
+		// toward the ground as she lies and splay off it, as they do when she floats low.
+		const ROLLS = 16,
+			lowAt = new Float32Array(ROLLS + 1).fill(1e9);
+		{
+			fl.position.y = 0;
+			root.updateMatrixWorld(!0);
+			const inv = new THREE.Matrix4().copy(fl.matrixWorld).invert(),
+				rel = new THREE.Matrix4(),
+				q = new c0(),
+				skip = new Set([...tents, ...zs]);
+			fl.traverse((o) => {
+				for (let a = o; a && a !== fl; a = a.parent) if (skip.has(a)) return;
+				if (!o.isMesh) return;
+				rel.multiplyMatrices(inv, o.matrixWorld);
+				const P = o.geometry.attributes.position;
+				for (let k = 0; k < P.count; k += 2) {
+					q.fromBufferAttribute(P, k).applyMatrix4(rel);
+					for (let j = 0; j <= ROLLS; j++) {
+						const th = ((j / ROLLS) * Math.PI) / 2;
+						lowAt[j] = Math.min(lowAt[j], q.x * Math.sin(th) + q.y * Math.cos(th));
+					}
+				}
+			});
+			fl.position.y = 1.35;
+		}
+		const lowFor = (th) => {
+			const f = Math.min(ROLLS, Math.max(0, (th / (Math.PI / 2)) * ROLLS)),
+				j = Math.min(ROLLS - 1, Math.floor(f));
+			// (the lower of the two angles either side, with a little room for her breathing and rocking)
+			return Math.min(lowAt[j], lowAt[j + 1]) - 0.05;
+		};
+		let lie = 0;
 		return born(g, {
 			height: 3.0,
-			step(t, dt, tk) {
+			step(t, dt, tk, wk, ent) {
 				const br = Math.sin(1.6 * t);
-				(fl.position.y = 1.35 + 0.1 * Math.sin(1.2 * t)), puff.scale.set(1 + 0.02 * br, 1 - 0.02 * br, 1);
+				// lying (0 standing to 1 on her side): only resting at her own spot
+				const rest =
+					!!ent && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && !me.active && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
+				lie += ((rest ? 1 : 0) - lie) * Math.min(1, 1.3 * (dt || 0.016));
+				const s = lie * lie * (3 - 2 * lie),
+					th = (s * Math.PI) / 2,
+					sn = Math.sin(th),
+					cs = Math.cos(th),
+					fy = (1 - s) * (1.35 + 0.1 * Math.sin(1.2 * t));
+				(fl.position.y = fy), (root.rotation.z = th);
+				// (lifted just enough that her lowest point clears the ground, and kept over her spot)
+				root.position.set(fy * sn, Math.max(0, 0.03 - fy * cs - lowFor(th)), 0);
+				puff.scale.set(1 + 0.02 * br, 1 - 0.02 * br, 1);
 				(puff.rotation.x = 0.05 + 0.03 * Math.sin(0.8 * t)), (mouth.scale.y = 1 + 0.5 * br + 1.2 * tk);
 				(cap.rotation.z = 0.04 * Math.sin(1.1 * t));
+				// the Zs rise straight up from beside her face whichever way she lies
 				zs.forEach((sp, k) => {
 					const u = (0.33 * t + k / 3) % 1,
-						sz = 0.22 + 0.3 * u;
-					sp.position.set(0.62 + 0.5 * u + 0.06 * Math.sin(5 * u + k), 0.75 + 1.0 * u, 0.45 - 0.1 * u);
+						sz = 0.22 + 0.3 * u,
+						ax = 0.62,
+						ay = 0.75 + fy,
+						gx = ax * cs - ay * sn + root.position.x + (0.5 - s) * u + 0.06 * Math.sin(5 * u + k),
+						gy = ax * sn + ay * cs + root.position.y + 1.0 * u,
+						lx = gx - root.position.x,
+						ly = gy - root.position.y;
+					sp.position.set(lx * cs + ly * sn, -lx * sn + ly * cs - fy, 0.45 - 0.1 * u);
 					sp.scale.set(sz, sz, 1), (sp.material.rotation = 0.25 - 0.3 * u), (sp.material.opacity = Math.min(1, u / 0.15) * Math.min(1, (1 - u) / 0.4) * 0.9);
 				});
-				// the tentacles sway, and as she sinks toward the ground they splay outward just enough to
-				// keep clear of it (rather than pushing into it)
-				const room = fl.position.y - 0.68 - 0.02;
+				// the tentacles sway (and droop toward the ground as she lies), and splay outward just enough
+				// to keep clear of the ground (rather than pushing into it)
+				dqs.forEach((q, d) => q.setFromAxisAngle(ZA, -0.75 * s * (1 - d / 3)));
 				tents.forEach((tg, k) => {
-					const ud = tg.userData;
+					const ud = tg.userData,
+						p0 = tg.position,
+						clear = () => ud.pts.every((q) => (tv.copy(q).applyQuaternion(tg.quaternion), root.position.y + (p0.x + tv.x) * sn + (fy + p0.y + tv.y) * cs >= 0.02));
 					tq.setFromEuler(te.set(0.18 * Math.sin(1.4 * t + k), 0, 0.12 * Math.sin(1.1 * t + 2 * k)));
-					// (searching on from just under last frame's angle, it takes only a step or two)
-					let th = Math.max(0, (ud.th || 0) - 0.06);
-					for (; th < 1.5; th += 0.02) {
-						tg.quaternion.setFromAxisAngle(ud.ax, th).multiply(tq);
-						if (ud.pts.every((q) => tv.copy(q).applyQuaternion(tg.quaternion).y >= -room)) break;
-					}
-					ud.th = th;
+					// (searching on from just under last frame's angle, it takes only a step or two; drooping
+					// less if splaying alone cannot clear the ground)
+					let th2 = Math.max(0, (ud.th || 0) - 0.06),
+						ok = !1;
+					for (let d = 0; d < 4 && !ok; d++, th2 = 0)
+						for (; th2 < 1.5; th2 += 0.02) {
+							tg.quaternion.setFromAxisAngle(ud.ax, th2).premultiply(dqs[d]).multiply(tq);
+							if ((ok = clear())) break;
+						}
+					ud.th = th2;
 				});
 				hands.forEach((h, k) => (h.position.y = -0.18 + 0.05 * Math.sin(1.8 * t + k * 2) + 0.1 * tk));
 			},
@@ -8328,8 +8407,8 @@ const JGP = (() => {
 	};
 
 	// KING DINO's drum set at the Juice Bar (built with the town) tells him when to play: on while the
-	// kit is playing, beat = the eighth note it is on, k = its place in the bar
-	const DRUMS = { on: !1, beat: -1, k: 0, fill: !1 };
+	// kit is playing; r and l count the strokes of his right and left hands
+	const DRUMS = { on: !1, r: 0, l: 0 };
 	// KING DINO, after the King Dino artwork: an upright lemon-yellow gummy dino with a citrus-peel skin, a
 	// rounded muzzle with glossy navy bead eyes and a quiet smile line; a glossy turquoise crown (the front
 	// prong tallest, with a knob) under a great feathered plume that runs purple down the back of the head,
@@ -8503,7 +8582,8 @@ const JGP = (() => {
 		// drumming: the right hand keeps the hi-hat going on every eighth, the left takes the snare and
 		// both come in on the tom fills; each stroke snaps the arm down onto the drum and lets it ride back up
 		const hitK = [0, 0];
-		let beatWas = -1,
+		let rWas = 0,
+			lWas = 0,
 			playK = 0;
 		// the big turquoise donut rings on the hips
 		[-1, 1].forEach((sx) => {
@@ -8749,10 +8829,9 @@ const JGP = (() => {
 				(plume.rotation.x = 0.025 * Math.sin(1.7 * t)), (plume.rotation.z = 0.03 * Math.sin(1.3 * t + 1));
 				const play = DRUMS.on && !wk;
 				playK += ((play ? 1 : 0) - playK) * Math.min(1, 5 * (dt || 0.016));
-				if (play && DRUMS.beat !== beatWas) {
-					beatWas = DRUMS.beat;
-					hitK[1] = 1, (2 === DRUMS.k || 6 === DRUMS.k || DRUMS.fill) && (hitK[0] = 1);
-				}
+				// (each stroke of the right hand, on the ride, the crash or the floor tom, and of the left, on the
+				// snare or the rack toms, as his jazz plays it)
+				play && DRUMS.r !== rWas && ((rWas = DRUMS.r), (hitK[1] = 1)), play && DRUMS.l !== lWas && ((lWas = DRUMS.l), (hitK[0] = 1));
 				for (let k = 0; k < 2; k++) hitK[k] = Math.max(0, hitK[k] - 7 * (dt || 0.016));
 				(body.rotation.x = playK * 0.05 * hitK[1]), (body.rotation.y = playK * 0.06 * Math.sin(1.9 * t));
 				arms.forEach(
@@ -10902,7 +10981,11 @@ const JGP = (() => {
 	const GARDEN_R = 15,
 		GATHER_S = 0.5, // seconds before planting starts (everyone walks straight into the garden)
 		// (round: how many Events with planters there have been; see beginPlanting)
-		garden = { slots: [], plants: [], startAt: 0, round: 0 };
+		garden = { slots: [], plants: [], startAt: 0, round: 0 },
+		// the three Dancers, who wander the dance floor
+		FLOOR_ROAMERS = ["p_etcher", "p_glyph", "w_mont"],
+		// (a park wanderer's walk never crosses the dance floor)
+		offFloor = (r) => (x, z) => !(JGP.onDance && JGP.onDance(x, z, r + 0.3));
 	// The church stands at the end of the south walk: its back to the south fence, its steps (and the Traveler window over the door) facing
 	// the garden. s runs along the walk from the garden's ring toward the fence, p across it.
 	const CHURCH_AT = (() => {
@@ -12306,7 +12389,7 @@ const JGP = (() => {
 	// styles: 0 swap, 1 volley, 2 boomerang, 3 parade, 4 juggle, 5 orbit dance, 6 bounce, 7 bubble,
 	// 8 zip, 9 confetti, 10 serenade, 11 tag
 	(() => {
-		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY" },
+		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY" },
 			PAIRS = [
 			["HN", "MU", 7, "Your spore count is... adorable.", "P-please don't put me in a spreadsheet."],
 			["HN", "AN", 1, "Your signal is buffering again.", "I'm not buffering! I'm thinking. Loudly."],
@@ -14685,6 +14768,96 @@ const JGP = (() => {
 					f.home.set(ax, f.home.y, z), (waitTo = -1);
 				});
 			}
+			// The roamers: HENNRICK strolls round the Portal, GEMTOE wanders the whole park and the three
+			// Dancers wander the dance floor. Whenever one
+			// has stood at a spot for a few seconds it picks another (JGP.portalRoam, JGP.parkRoam: always
+			// open ground with a clear straight walk there), walks there (its home moves; its walk home
+			// takes it to it) and stops, HENNRICK to look at the Portal, GEMTOE looking on the way he came.
+			// Not while it is busy (talking, at the Garden Event, or in a vignette with another creature) or
+			// with the player close by. One that has not got there in good time (the player or another
+			// creature in its way) settles where it is and picks again from there, so it never stays stuck.
+			{
+				// (no Flint or Blossoms where HENNRICK strolls)
+				E.add(ot.x, ot.z, 7.4, "still");
+				const roam = (id, pick, w0, w1) => {
+					let waitTo = -1,
+						giveUp = 0;
+					L.push((t2) => {
+						const h = It.byId[id];
+						if (!h || h.busy || h.vig || h.meeting || h.battleDance || me.active || h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void (waitTo = -1);
+						const p = h.group.position;
+						if (Math.hypot(p.x - h.home.x, p.z - h.home.z) > 0.1) {
+							giveUp && t2 > giveUp && !h.goHome && (h.home.set(p.x, h.home.y, p.z), (giveUp = 0));
+							return void (waitTo = -1);
+						}
+						if (((giveUp = 0), waitTo < 0)) return void (waitTo = t2 + w0 + w1 * Math.random());
+						if (t2 < waitTo) return;
+						waitTo = -1;
+						const sp = pick(p, h.bodyR || 1, h.def.at, h);
+						sp && (h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), h.pattern && (h.pattern[1].face = sp[2]));
+					});
+				};
+				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.parkRoam, 3, 5);
+				FLOOR_ROAMERS.forEach((id) => roam(id, JGP.floorRoam, 3, 4));
+				// MAMA GORBO and GOOWARD wander the park, and every minute or two they find each other: each
+				// walks to a meeting spot between them (clear ground both can walk straight to), they turn
+				// face to face and show hearts, and after a few seconds go back to wandering. Anything that
+				// takes either of them away (talking, a vignette, the Garden Event) calls it off till later.
+				{
+					let next = 60 + 60 * Math.random(),
+						st = 0, // 0: apart, 1: on the way, 2: together
+						until = 0;
+					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
+						free = (h) => h && !h.busy && !h.vig && !h.battleDance && !h.nearPlayer && !("dialogue" === jt.top && xe.lastTarget === h),
+						off = (t2, wait) => {
+							for (const h of pair()) h && h.meeting && ((h.meeting = !1), h.home.set(h.group.position.x, h.home.y, h.group.position.z));
+							(st = 0), (next = t2 + wait);
+						};
+					// (for the tests: meet at game time t)
+					JGP.meetAt = (t) => (next = t);
+					L.push((t2) => {
+						const [A, B] = pair();
+						if (!A || !B) return;
+						if (me.active || A.busy || B.busy || A.vig || B.vig) return void (st && off(t2, 40));
+						if (0 === st) {
+							if (t2 < next || !free(A) || !free(B)) return;
+							const a = A.group.position,
+								b = B.group.position,
+								d = Math.hypot(b.x - a.x, b.z - a.z) || 1,
+								gap = (A.bodyR || 1) + (B.bodyR || 1) + 0.5;
+							// (the middle between them, or near it)
+							for (let k = 0; k < 30; k++) {
+								const j = k ? 1.5 + 0.2 * k : 0,
+									ang = Math.random() * l,
+									mx = (a.x + b.x) / 2 + j * Math.cos(ang),
+									mz = (a.z + b.z) / 2 + j * Math.sin(ang),
+									ux = (b.x - a.x) / d,
+									uz = (b.z - a.z) / d,
+									pa = [mx - (ux * gap) / 2, mz - (uz * gap) / 2],
+									pb = [mx + (ux * gap) / 2, mz + (uz * gap) / 2],
+									ok = (h, q) => JGP.roamFree(q[0], q[1], h.bodyR || 1, !0, h.def.at) && JGP.roamWalk(h.group.position, q[0], q[1], h.bodyR || 1, !0, h.def.at, offFloor(h.bodyR || 1));
+								if (ok(A, pa) && ok(B, pb)) {
+									(A.meeting = B.meeting = !0), A.home.set(pa[0], A.home.y, pa[1]), B.home.set(pb[0], B.home.y, pb[1]);
+									A.pattern && (A.pattern[1].face = Math.atan2(ux, uz)), B.pattern && (B.pattern[1].face = Math.atan2(-ux, -uz));
+									return void ((st = 1), (until = t2 + d + 30));
+								}
+							}
+							return void (next = t2 + 15);
+						}
+						if (1 === st) {
+							const at = (h) => Math.hypot(h.group.position.x - h.home.x, h.group.position.z - h.home.z) < 0.15;
+							if (t2 > until) return void off(t2, 40);
+							if (at(A) && at(B)) (st = 2), (until = t2 + 1), (A.hearts = B.hearts = 0);
+							return;
+						}
+						// together: a heart each, then another, then back to wandering
+						if (t2 > until) {
+							if (A.hearts < 2) return void ([A, B].forEach((h) => (h.hearts++, Ut.above(h, "♥", "#ff5fb0"))), (until = t2 + 1.8));
+							off(t2, 60 + 60 * Math.random());
+						}
+					});
+				}
+			}
 			// no lawn tufts through its floors, and no pickups under it
 			for (let zz = -10.5; zz <= 10.6; zz += 2.1) keepAt.push([JX - 2, zz], [JX + 1.5, zz], [JX + 5, zz]), E.add(JX + 1, zz, 3, "scenery");
 			// THE DANCE FLOOR: 1.2 m tiles, all the same dark purple, set in thin darker grout with a soft
@@ -14725,11 +14898,182 @@ const JGP = (() => {
 			}
 			// KING DINO's drum set from Greeblis Woods, on the grass behind the dance floor's south half
 			// (its rug and cymbals stop just short of the floor), facing out across it: red shells with white heads and chrome rims, his name on the bass drum, two rack toms, a snare, a floor tom,
-			// a hi-hat and a crash. KING DINO stands behind it with his sticks and stays there through the
-			// Garden event. While he is at his kit and the player is anywhere near, he plays his 104 bpm
-			// groove (kick, snare, hi-hat, a tom fill every other bar and a crash every four), each drum
-			// jumping as it is hit; the drums are heard from around the bar. Each drum is one merged mesh.
+			// a hi-hat and a crash (which he rides). KING DINO stands behind it with his sticks and stays there
+			// through the Garden event. While he is at his kit and the player is anywhere near (or a Dance
+			// battle is on), he plays his jazz (below), each drum jumping as it is hit; it is heard on the
+			// dance floor and through every Dance battle, and never while FORTIZMO plays her horn. Each drum
+			// is one merged mesh.
 			{
+				// KING DINO's jazz, "Stomp at the Juice Bar": a drum-kit jazz piece at 104 bpm (the beat every
+				// built-in dance keeps), all synthesized. Eight bars of brushes open it (once); then a 24-bar
+				// chorus goes round for as long as anyone listens: 8 bars of swinging time on the ride, 8
+				// trading fours (4 bars of time, then 4 bars of solo round the tuned toms) and an 8-bar shout of
+				// kicks and crashes under the ride that ends on a 2-bar solo break. Notes are scheduled a
+				// little ahead on the audio clock, and the kit and his sticks move on the hits as they sound;
+				// when nobody can hear it, it keeps time silently on the game clock, for the eye.
+				const JAZZ = (() => {
+					const BEAT = 60 / 104,
+						BAR = 4 * BEAT,
+						SW = 2 / 3, // the swung eighth: two thirds of the way through the beat
+						T3 = 1 / 3,
+						// bar n of the piece: the brushes once, then the chorus round and round
+						part = (n) => {
+							if (n < 8) return ["brush", n];
+							const m = (n - 8) % 24;
+							return m < 8 ? ["time", m] : m < 16 ? ["trade", m - 8] : ["shout", m - 16];
+						},
+						// the solo bars, as [beat, voice, loudness] (t1, t2, t3: the high, middle and floor toms)
+						SOLO = [
+							[[0, "t1", 0.8], [SW, "t2", 0.6], [1, "t1", 0.7], [1 + SW, "t3", 0.6], [2, "t2", 0.8], [2 + T3, "t1", 0.5], [2 + SW, "t2", 0.6], [3, "t3", 0.9], [3 + SW, "kick", 0.7]],
+							[[0, "snare", 0.9], [SW, "kick", 0.6], [1, "snare", 0.5], [1 + SW, "snare", 0.7], [2, "t2", 0.8], [2 + SW, "t3", 0.7], [3, "kick", 0.8], [3 + SW, "snare", 0.6]],
+							[[0, "snare", 0.8], [T3, "snare", 0.4], [SW, "t1", 0.6], [1, "t1", 0.7], [1 + T3, "t2", 0.5], [1 + SW, "t2", 0.6], [2, "t3", 0.8], [2 + SW, "kick", 0.6], [3, "snare", 0.9], [3 + SW, "t3", 0.7]],
+							// a buzz roll that swells into two big tom hits
+							Array.from({ length: 18 }, (_, k) => [k / 6, "snare", 0.25 + 0.035 * k]).concat([[3, "t1", 0.9], [3 + SW, "t3", 1]]),
+						],
+						bar = (n) => {
+							const [sec, m] = part(n),
+								rnd = ((s) => () => (s = (16807 * s) % 2147483647) / 2147483647)(977 * n + 13),
+								ev = [],
+								add = (b, v, g) => ev.push([b, v, g]),
+								// the ride: "ding, ding-a ding, ding-a", leaning on 2 and 4 (the bell on one in the shout)
+								ride = (bell, upTo) => [0, 1, 1 + SW, 2, 3, 3 + SW].forEach((b, k) => b < upTo && add(b, bell && !k ? "bell" : "ride", [0.6, 0.75, 0.42, 0.6, 0.75, 0.42][k])),
+								feather = (g) => [0, 1, 2, 3].forEach((b) => add(b, "kick", g)),
+								chick = () => (add(1, "chick", 0.7), add(3, "chick", 0.7)),
+								// comping: a few snare hits on the swung eighths, and now and then a kick "bomb"
+								comp = (k) => {
+									for (let j = 0; j < k; j++) add(Math.floor(4 * rnd()) + (rnd() < 0.6 ? SW : 0), "snare", rnd() < 0.5 ? 0.22 : 0.5);
+									rnd() < 0.25 && add(3 + SW, "kick", 0.75);
+								},
+								all = (list) => list.forEach((e) => add(e[0], e[1], e[2]));
+							if ("brush" === sec) {
+								// brushes: a long sweep on 1 and 3, a pat on 2 and 4, the hi-hat foot and a soft kick
+								[0, 1, 2, 3].forEach((b) => add(b, "brush", b % 2 ? 0.6 : 0.9)), chick(), feather(0.18);
+								rnd() < 0.5 && add(3 + SW, "snare", 0.2);
+								7 === m && all([[3, "snare", 0.3], [3 + T3, "snare", 0.45], [3 + SW, "snare", 0.6]]);
+							} else if ("shout" === sec) {
+								// the shout: the ride with the bell on one, the band's figure punched on snare and kick,
+								// then the solo break
+								if (m < 6) {
+									ride(!0, 4), chick(), feather(0.22);
+									m % 2
+										? all([[1, "snare", 0.9], [1 + SW, "kick", 0.8], [3 + SW, "snare", 0.95]])
+										: all([[0, "crash", m ? 0.6 : 1], [0, "kick", 0.9], [1 + SW, "snare", 0.85], [2 + SW, "snare", 0.85], [3 + SW, "kick", 0.8]]);
+								} else all(SOLO[m - 4]);
+							} else if ("trade" === sec && m > 3) all(SOLO[m - 4]), chick();
+							else {
+								// time: a crash to start each section, a tom fill to end the first one
+								const last = "time" === sec && 7 === m;
+								m || add(0, "crash", 0.8), ride(!1, last ? 2 : 4), chick(), feather(0.2), comp("trade" === sec ? 2 : 1 + (rnd() < 0.5 ? 1 : 0));
+								last && all([[2, "snare", 0.6], [2 + T3, "snare", 0.45], [2 + SW, "t1", 0.7], [3, "t2", 0.8], [3 + T3, "t2", 0.6], [3 + SW, "t3", 0.9]]);
+							}
+							return ev;
+						};
+					// the sound: every voice is a shaped burst of noise or a falling sine, into the mix and a small room
+					let u = null,
+						mix = null,
+						room = null,
+						noise = null,
+						master = null,
+						lastV = -1;
+					const graph = () => {
+							const A = G.ctx && G.ctx();
+							if (!A) return !1;
+							if (u === A.c) return !0;
+							(u = A.c), (lastV = -1), (master = u.createGain()), (master.gain.value = 0), master.connect(A.out), (mix = u.createGain()), mix.connect(master), (room = u.createGain());
+							// (two short feedback delays through a lowpass, as for FORTIZMO's band)
+							const d1 = u.createDelay(0.5),
+								d2 = u.createDelay(0.5),
+								fb = u.createGain(),
+								lp = u.createBiquadFilter(),
+								wet = u.createGain();
+							(d1.delayTime.value = 0.053), (d2.delayTime.value = 0.089), (fb.gain.value = 0.3), (lp.type = "lowpass"), (lp.frequency.value = 3200), (wet.gain.value = 0.35);
+							room.connect(d1), room.connect(d2), d1.connect(lp), d2.connect(lp), lp.connect(fb), fb.connect(d1), fb.connect(d2), lp.connect(wet), wet.connect(master);
+							noise = u.createBuffer(1, u.sampleRate, u.sampleRate);
+							const ch = noise.getChannelData(0);
+							for (let k = 0; k < ch.length; k++) ch[k] = 2 * Math.random() - 1;
+							return !0;
+						},
+						hiss = () => {
+							const s = u.createBufferSource();
+							return (s.buffer = noise), (s.playbackRate.value = 0.9 + 0.2 * Math.random()), s;
+						},
+						filt = (type, fr, q) => {
+							const b = u.createBiquadFilter();
+							return (b.type = type), (b.frequency.value = fr), q && (b.Q.value = q), b;
+						},
+						tone = (type, f0, f1, t, dur) => {
+							const o = u.createOscillator();
+							return (o.type = type), (o.frequency.value = f0), f1 && (o.frequency.setValueAtTime(f0, t), o.frequency.exponentialRampToValueAtTime(f1, t + dur)), o;
+						},
+						// one hit: src (through fl) at loudness g, dying away over dec seconds (after a swell of att)
+						hit = (t, src, fl, g, dec, rv, att) => {
+							const a = u.createGain(),
+								end = t + (att || 0) + dec;
+							a.gain.setValueAtTime(att ? 1e-4 : g, t), att && a.gain.linearRampToValueAtTime(g, t + att), a.gain.exponentialRampToValueAtTime(1e-4, end);
+							(fl ? src.connect(fl) : src).connect(a), a.connect(mix), rv && a.connect(room);
+							src.buffer ? src.start(t, 0.5 * Math.random()) : src.start(t), src.stop(end + 0.03);
+							src.onended = () => {
+								try {
+									src.disconnect(), fl && fl.disconnect(), a.disconnect();
+								} catch (e) {}
+							};
+						},
+						tom = (t, g, fr) => (hit(t, tone("sine", 1.18 * fr, fr, t, 0.18), 0, 0.12 * g, 0.42, 1), hit(t, hiss(), filt("bandpass", 5 * fr, 1), 0.03 * g, 0.04)),
+						V = {
+							ride: (t, g) => (hit(t, hiss(), filt("bandpass", 7200, 0.9), 0.05 * g, 0.9, 1), hit(t, tone("sine", 3350), 0, 0.009 * g, 0.7, 1), hit(t, tone("sine", 5120), 0, 0.006 * g, 0.45, 1)),
+							bell: (t, g) => (hit(t, hiss(), filt("bandpass", 6e3, 1.2), 0.05 * g, 1.1, 1), hit(t, tone("sine", 2480), 0, 0.03 * g, 1.2, 1), hit(t, tone("sine", 3720), 0, 0.016 * g, 0.9, 1)),
+							chick: (t, g) => hit(t, hiss(), filt("highpass", 6500), 0.05 * g, 0.05),
+							brush: (t, g) => hit(t, hiss(), filt("bandpass", 2800, 0.6), 0.035 * g, g > 0.8 ? 0.42 : 0.16, 1, g > 0.8 ? 0.12 : 0.01),
+							snare: (t, g) => (hit(t, hiss(), filt("bandpass", 1900, 0.7), 0.09 * g, 0.14, 1), hit(t, tone("triangle", 190, 160, t, 0.08), 0, 0.05 * g, 0.1)),
+							kick: (t, g) => hit(t, tone("sine", 110, 46, t, 0.16), 0, 0.17 * g, 0.34),
+							crash: (t, g) => (hit(t, hiss(), filt("highpass", 3600), 0.08 * g, 1.9, 1), hit(t, hiss(), filt("bandpass", 5200, 1.5), 0.04 * g, 1.2, 1)),
+							t1: (t, g) => tom(t, g, 196),
+							t2: (t, g) => tom(t, g, 147),
+							t3: (t, g) => tom(t, g, 98),
+						};
+					let p = 0, // the next bar to play
+						at = -1, // when it starts, on the clock in use
+						clk = "", // "a": the audio clock (sounding); "g": the game clock (silent, for the eye)
+						quietAt = 0;
+					const due = [];
+					return {
+						// every frame: on (he is playing), heard (someone can hear it), its loudness, and cut (stop
+						// sounding at once); hands back the hits that have just sounded
+						update(tt, on, heard, vol, cut) {
+							const ok = graph() && "running" === u.state;
+							if (ok) {
+								const v = on && heard && !cut ? vol : 0;
+								if (Math.abs(v - lastV) > 0.01) {
+									const g = master.gain,
+										now = u.currentTime;
+									(lastV = v), g.cancelScheduledValues(now), g.setValueAtTime(g.value, now), g.setTargetAtTime(0.6 * v, now, cut ? 0.02 : v ? 0.08 : 0.25);
+								}
+							}
+							on && heard && !cut && (quietAt = tt + 1.5);
+							const mode = on ? (ok && tt < quietAt ? "a" : "g") : "";
+							if (mode !== clk) (clk = mode), (due.length = 0), (at = -1);
+							if (!mode) return null;
+							const now = "a" === mode ? u.currentTime : tt;
+							if (at < now - BAR) at = now + 0.06;
+							let added = !1;
+							for (; at < now + ("a" === mode ? 0.5 : 0.05); p++, at += BAR, added = !0)
+								for (const [b, v, g] of bar(p)) {
+									const t = at + b * BEAT;
+									"a" === mode && V[v](t, g), due.push([t, v]);
+								}
+							added && due.sort((x, y) => x[0] - y[0]);
+							let k = 0;
+							for (; k < due.length && due[k][0] <= now; ) k++;
+							return k ? due.splice(0, k) : null;
+						},
+						// (for the tests)
+						get state() {
+							return { clock: clk, bar: p, gain: master ? master.gain.value : 0, part: part(Math.max(0, p - 1)).join(" ") };
+						},
+						tap: () => master,
+					};
+				})();
+				JGP.jazz = JAZZ;
 				const kit = new THREE.Group();
 				kit.position.set(-34.8, 0, 19.2), (kit.rotation.y = Math.PI / 2), (kit.userData.keepInFinale = !0), C.add(kit);
 				// (no lawn tufts or pickups under the kit's rug or round KING DINO)
@@ -14776,32 +15120,34 @@ const JGP = (() => {
 				cym.add(T.cyl(0.24, 0.24, 0.012, 22), BRASS, cym.m(0, 0, 0)), cym.add(T.cyl(0.24, 0.24, 0.012, 22), BRASS, cym.m(0, 0.03, 0)), cym.done(hat);
 				crash.position.set(0.95, 1.22, 0.25), crash.rotation.set(0.35, 0, -0.2), kit.add(crash);
 				cym2.add(T.cyl(0.36, 0.3, 0.014, 26), BRASS, cym2.m(0, 0, 0)), cym2.add(T.sphere(0.035, 8, 6), BRASS, cym2.m(0, 0.02, 0)), cym2.done(crash);
-				const KICK = [1, 0, 0, 0, 1, 0, 1, 0],
-					SNARE = [0, 0, 1, 0, 0, 0, 1, 0],
-					FILL = [0, 0, 0, 0, 0, 0, 0, 1],
-					hits = new Map(),
-					// the drums are heard anywhere on the dance floor (and on the strip where the kit stands),
+				const hits = new Map(),
+					// the jazz is heard anywhere on the dance floor (and on the strip where the kit stands),
 					// a little louder near the kit, and not at all off it (for VR, by where the head is)
 					hearAt = (P) => onDance(P.x, P.z) || (P.x < -33.1 && P.x > -37.6 && Math.abs(P.z - 19.2) < 2.6),
-					play = (snd) => G.near(kit.position.x, kit.position.z, 60, snd);
-				let last = -1;
+					// which part of the kit each of the track's voices moves, how hard, and with which hand
+					// (the right keeps the ride and takes the crash and the floor tom; the left has the snare
+					// and the rack toms; the feet play the kick and the hi-hat)
+					PART = { kick: [kick, 1], chick: [hat, 1], ride: [crash, 0.35, 1], bell: [crash, 0.6, 1], crash: [crash, 1.4, 1], t3: [floor, 1, 1], snare: [snare, 1, 2], brush: [snare, 0.5, 2], t1: [toms[0], 1, 2], t2: [toms[1], 1, 2] };
 				L.push((tt, dt) => {
 					const P = we.presenting && we.headPos ? we.headPos : At.position,
 						kd = It.byId.m_kingdino,
-						// he plays whenever someone is about and never stops: not for the Event, nor while he is
-						// talked to or given a Blossom, nor during a Dance battle; he is only heard on the floor
-						on = !!kd && Math.hypot(P.x - kit.position.x, P.z - kit.position.z) < 45,
-						beat = Math.floor(((104 * tt) / 60) * 2),
-						bar = Math.floor(beat / 8);
-					if (((DRUMS.on = on), on && beat !== last)) {
-						last = beat;
-						const hear = hearAt(P);
-						const k = beat % 8;
-						(DRUMS.beat = beat), (DRUMS.k = k), (DRUMS.fill = !!(FILL[k] && bar % 2));
-						KICK[k] && (hits.set(kick, 1), hear && play("drumKick")), SNARE[k] && (hits.set(snare, 1), hear && play("drumSnare"));
-						FILL[k] && bar % 2 && (hits.set(toms[(bar >> 1) % 2], 1), hits.set(floor, 1), hear && play("drumTom"));
-						hits.set(hat, 1), k % 2 == 0 && hear && play("drumHat"), 0 === k && bar % 4 == 0 && hits.set(crash, 1.4);
-					}
+						d = Math.hypot(P.x - kit.position.x, P.z - kit.position.z),
+						// a Dance battle (and the Dancer's victory dance after it) is danced to his jazz, wherever it is
+						battle = !!(Dbt.state || It.all.some((e) => e.battleDance)),
+						// FORTIZMO's horn tune and his jazz never sound together: while she plays (until her last
+						// notes have died away) he rests his sticks and listens
+						horn = ee.playing || ee.pendingNotes() > 0,
+						// otherwise he plays whenever someone is about and never stops: not while he is talked to
+						// or given a Blossom, nor during a Dance battle
+						on = !!kd && !horn && (d < 45 || battle),
+						i = Math.max(0, 1 - d / 60);
+					DRUMS.on = on;
+					const fired = JAZZ.update(tt, on, battle || hearAt(P), battle ? 1 : 0.25 + 0.75 * i * i, horn);
+					if (fired)
+						for (const [, v] of fired) {
+							const q = PART[v];
+							q && (hits.set(q[0], Math.max(hits.get(q[0]) || 0, q[1])), 1 === q[2] ? DRUMS.r++ : 2 === q[2] && DRUMS.l++);
+						}
 					hits.forEach((v, o) => {
 						const n = Math.max(0, v - 6 * (dt || 0.016));
 						n > 0 ? hits.set(o, n) : hits.delete(o);
@@ -14976,6 +15322,92 @@ const JGP = (() => {
 		// the counter's gap (z 1.0 to 2.4) to the dance floor
 		barSpot: (z) => [-t.parkHalf + 3.6 - 1.3, z],
 		barVia: () => [-1.3, 0.23, 2.2].map((dx) => [-t.parkHalf + 3.6 + dx, 1.7]),
+		// HENNRICK's first spot: 4 m to the side of the Portal and a little in front of it
+		portalSpot: () => [ot.x + 4 * ot.nz + ot.nx, ot.z - 4 * ot.nx + ot.nz],
+		// whether a roaming creature of radius r can stand at (x, z): inside the square with room to spare,
+		// out of the garden (its plants), every building, the pond, and everything the town keeps clear
+		// (lamps, benches, trees, bins, the gazebo, the drum kit, the stations; with others, the other
+		// creatures' spots, except its own, own)
+		roamFree(x, z, r, others, own) {
+			return (
+				F.free(x, z, 0.8 * r) &&
+				Math.hypot(x, z) < t.clearingR - r - 0.6 &&
+				Math.abs(x) < t.parkHalf - r - 1 &&
+				z > -t.parkHalf + r + 1 &&
+				Math.hypot(x, z) > GARDEN_R + 0.6 + r &&
+				!F.buildings.some((B) => F.inHull(B, x, z, 0.6 + 0.5 * r)) &&
+				E.list.every(
+					(q) =>
+						!(/^(scenery|pool|phone|stump|drums)$/.test(q.tag) || (others && /^(still|portal)$/.test(q.tag) && !(own && Math.hypot(q.x - own[0], q.z - own[1]) < 0.5))) ||
+						Math.hypot(x - q.x, z - q.z) > q.r + 0.3 * r,
+				)
+			);
+		},
+		// a straight walk from p to (x, z) a roaming creature can take (every half metre clear; the first
+		// metre and a half is where it stands now, so it is not held there)
+		roamWalk(p, x, z, r, others, own, extra) {
+			const d = Math.hypot(x - p.x, z - p.z),
+				n = Math.max(2, Math.ceil(d / 0.5));
+			for (let j = 1; j <= n; j++) {
+				const qx = p.x + ((x - p.x) * j) / n,
+					qz = p.z + ((z - p.z) * j) / n;
+				if ((j / n) * d > 1.5 && (!JGP.roamFree(qx, qz, r, others, own) || (extra && !extra(qx, qz)))) return !1;
+			}
+			return !0;
+		},
+		// a spot for HENNRICK to stroll to from p: 3.2 to 6 m from the Portal and at least 2.5 m from where
+		// he is, never in its doorway or the lane in front of it (where NEXTESSA comes through), and with
+		// a clear straight walk there that does not go through the Portal's frame. He stops facing it.
+		portalRoam(p, r) {
+			const along = (x, z) => (x - ot.x) * ot.nx + (z - ot.z) * ot.nz,
+				across = (x, z) => (x - ot.x) * ot.nz - (z - ot.z) * ot.nx,
+				frame = (x, z) => !(Math.abs(across(x, z)) < 2.05 + 0.4 + r && Math.abs(along(x, z)) < 0.4 + r);
+			for (let k = 0; k < 40; k++) {
+				const a = Math.random() * l,
+					d = 3.2 + 2.8 * Math.random(),
+					x = ot.x + d * Math.cos(a),
+					z = ot.z + d * Math.sin(a);
+				if (Math.hypot(x - p.x, z - p.z) < 2.5 || (Math.abs(across(x, z)) < 2.4 + r && along(x, z) > 0)) continue;
+				if (JGP.roamFree(x, z, r) && JGP.roamWalk(p, x, z, r, !1, null, frame)) return [x, z, Math.atan2(ot.x - x, ot.z - z)];
+			}
+			return null;
+		},
+		// the dance floor's rectangle [x0, z0, x1, z1] (as laid out by the Juice Bar: 10 by 32 tiles of 1.2 m
+		// from 0.9 m in front of the bar's counter, z -9.6 on)
+		floor: [-t.parkHalf + 4.5, -9.6, -t.parkHalf + 16.5, 28.8],
+		// the Dancers' first spots, spread down the dance floor
+		floorSpot: (k) => [(JGP.floor[0] + JGP.floor[2]) / 2, JGP.floor[1] + (0.17 + 0.33 * k) * (JGP.floor[3] - JGP.floor[1])],
+		// a spot on the dance floor for a Dancer (ent) to wander to from p: anywhere on it (kept in from its
+		// edges) 3 to 12 m off, clear of the other two Dancers, where they stand and where they are
+		// going, with a clear straight walk there (the floor is one rectangle, so the walk stays on it).
+		// It stops facing the way it came.
+		floorRoam(p, r, own, ent) {
+			const [x0, z0, x1, z1] = JGP.floor,
+				m = r + 0.4,
+				apart = (x, z) =>
+					It.all.every((o) => o === ent || !FLOOR_ROAMERS.includes(o.id) || (Math.hypot(x - o.home.x, z - o.home.z) > r + (o.bodyR || 1) + 1 && Math.hypot(x - o.group.position.x, z - o.group.position.z) > r + (o.bodyR || 1) + 1));
+			for (let k = 0; k < 50; k++) {
+				const x = x0 + m + Math.random() * (x1 - x0 - 2 * m),
+					z = z0 + m + Math.random() * (z1 - z0 - 2 * m),
+					d = Math.hypot(x - p.x, z - p.z);
+				if (d < 3 || d > 12 || !apart(x, z)) continue;
+				if (JGP.roamFree(x, z, r) && JGP.roamWalk(p, x, z, r)) return [x, z, Math.atan2(x - p.x, z - p.z)];
+			}
+			return null;
+		},
+		// a spot for one of the park's wanderers (GEMTOE, MAMA GORBO, GOOWARD) to wander to from p: anywhere
+		// open in the park 5 to 16 m off, kept off the other creatures' spots, the Portal and the dance
+		// floor (the Dancers' own), with a clear straight walk there. It stops facing the way it came.
+		parkRoam(p, r, own) {
+			for (let k = 0; k < 60; k++) {
+				const a = Math.random() * l,
+					d = 5 + 11 * Math.random(),
+					x = p.x + d * Math.cos(a),
+					z = p.z + d * Math.sin(a);
+				if (JGP.roamFree(x, z, r, !0, own) && JGP.roamWalk(p, x, z, r, !0, own, offFloor(r))) return [x, z, Math.atan2(x - p.x, z - p.z)];
+			}
+			return null;
+		},
 		libTable: LIB_LAYOUT.table,
 		buildPond,
 		blossomPickup,

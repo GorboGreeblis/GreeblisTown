@@ -70,6 +70,9 @@ and drives the game through its globals.
 | `t_gem.js`, `t_pizza.js`, `vigrun.js` | Gem trade, pizza courier, many creature vignettes |
 | `t_event3.js` | The whole Garden Event, logged every 5 s of game time. Run with `VW=200 VH=150`, or it takes ages |
 | `t_stress.js` | Collides systems on purpose (Event during a battle, a pizza at the start, talk, gifts, shop, Library, stone, Event without Seeds, battle spam) and checks everyone ends up home. `VW=200 VH=150` |
+| `t_rounds.js` | Three Garden Events in a row: a batch of plants each from the first two (the second in fresh rows), none from the third, which replays the first Event's spots. `VW=200 VH=150`, slow |
+| `t_jazz.js` | King Dino's jazz: heard on the dance floor and in every Dance battle, silent elsewhere, never together with Fortizmo's horn tune; measures both levels at the speakers |
+| `t_roam.js` | The roamers (Hennrick at the Portal; Gemtoe, Mama Gorbo and Gooward in the park; the Dancers on the dance floor): spots visited, nobody stuck or somewhere they should not be, and a Gorbo meeting with hearts. `VW=320 VH=240`, `ROAM_S` game seconds |
 | `t_fixes.js` | The October bug-pass fixes: no battle from a thanks closed far away, talk target after the phone, Mushroom on his desk, Fortizmo holding still, no vignette off the spot. `VW=320 VH=240` |
 | `t_misc.js` | Drums on the floor (also while talking to King Dino, giving him a Blossom, battling), pickup respawn, the Blossom menu option |
 | `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
@@ -188,7 +191,19 @@ See [`docs/woods-ordinal-packing.md`](docs/woods-ordinal-packing.md) and [`pack/
 
 Plants wait in the ground until his water reaches them, then grow over 11 s.
 
-**Drums:** they never depend on King Dino being free; they play whenever the player is within 45 m, and are only heard on the floor.
+**King Dino's jazz** (`JAZZ` in the drum-kit block, `JGP.jazz`):
+- A synthesized jazz drum piece at 104 bpm (the beat the built-in dances keep): 8 bars of brushes once, then a 24-bar chorus (time, trading fours with tom solos, a shout with a solo break) round and round.
+- Notes are scheduled 0.5 s ahead on the audio clock; the kit and King Dino's sticks move on the hits as they sound (`DRUMS.r`/`DRUMS.l` count his right- and left-hand strokes). When nobody can hear it, it keeps time silently on the game clock.
+- Heard on the dance floor (louder near the kit) and through every Dance battle and victory dance, wherever it is. Never together with Fortizmo's horn tune: while `ee` plays or its notes ring, he rests.
+
+**Roamers** (by the Juice Bar's patrol code, `roam(id, pick, wait…)`):
+- Each walks its home to a new spot picked by `JGP.portalRoam` (Hennrick), `JGP.parkRoam` (Gemtoe, Mama Gorbo, Gooward) or `JGP.floorRoam` (the Dancers). A spot is only taken if `JGP.roamFree` passes for it and `JGP.roamWalk` passes for a straight walk there: inside the square, out of the garden, buildings, the pond and every "scenery" zone (lamps, trees, benches and so on are E zones, not colliders).
+- A roamer that has not arrived in good time settles where it is and picks again, so it never stays stuck.
+- Mama Gorbo and Gooward meet every minute or two (`JGP.meetAt(t)` forces it for tests): two hearts each, then back to wandering.
+
+**Somlet lies on her side** while resting at her spot (an animation; her model is unchanged). How low she may sit at each roll angle is worked out once from her vertices, and her tentacles droop and splay clear of the ground.
+
+**Garden Event rounds** (`garden.round`): Event 1 plants a batch, Event 2 plants a second batch in the rows Event 1 left bare (spots a metre further out), Event 3 and after replay Event 1's spots with no new plants.
 
 **Bug-pass lessons (Oct 2026):**
 - `xe.lastTarget` must be set by whatever opened the dialogue, or the next speech goes to the wrong creature.
