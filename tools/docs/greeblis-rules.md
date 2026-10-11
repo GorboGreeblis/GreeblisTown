@@ -48,7 +48,6 @@ of them. Read the guides here before changing the game.
   asked, and ask before guessing what an ambiguous shape is (Mama Gorbo's pink-and-purple octagons are her eyes).
 - No cartoony smiles. Faces are expressive but understated.
 - Nothing clips (into the body, the ground or another part) from any angle, including from inside buildings in VR.
-- Every creature is at least as tall as the player's avatar (2.39 m), except Mushroom.
 - Every creature has at least three animations: talking, planting and dancing. Planting and dancing are creature
   animations, never menu options: a creature's menu holds only Talk, plus "Give a blossom" while the player has
   one, and Zollod (Garden Supplies) only opens the shop.

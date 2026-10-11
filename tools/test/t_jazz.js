@@ -17,8 +17,8 @@ module.exports = async (p) => {
     await p.evaluate(() => { window.__fired = {}; window.__peak = 0; window.__t0 = Re.t; });
     for (let k = 0; k < 400 && (await p.evaluate((s) => Re.t - __t0 < s, secs)); k++) await W(150);
     const st = await p.evaluate(() => ({ ctx: G.ctx().c.state, ...JGP.jazz.state, gain: +JGP.jazz.state.gain.toFixed(3), hits: Object.values(__fired).reduce((a, b) => a + b, 0), kinds: Object.keys(__fired).join(','), peak: +__peak.toFixed(3), horn: ee.playing, top: jt.top }));
-    // (on the floor, by the kit or in a battle the jazz must be sounding, unless the horn plays or the sound is off)
-    const want = /floor|kit|battle|victory|woken/.test(label) && !/off the floor|horn tune playing|suspended/.test(label);
+    // (on the floor, by the kit or in a battle the jazz must be sounding, unless the horn plays or rings on, or the sound is off)
+    const want = /floor|kit|battle|victory|woken/.test(label) && !/off the floor|horn tune playing|last notes ringing|suspended/.test(label);
     log((want && (st.clock !== 'a' || st.gain < 1) ? 'FAIL ' : '') + label, JSON.stringify(st));
   };
   await run('on the floor:', () => At.position.set(-27, 0, 12), 4);

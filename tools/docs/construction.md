@@ -388,7 +388,8 @@ Goo that runs down a body and moves like goo, without clipping:
   repaint textures a few times a second at most, and never allocate in loops.
 - **Compile early:** anything that first shows mid-game (the bulb, Backpacka, his water) is built and compiled
   ahead, as a compile stall in a headset is long and crackles the music.
-- **During the Event** scenery not marked `keepInFinale` is hidden.
+- **During the Event** a safeguard hides far scenery (outside `finaleKeepR`) to protect the frame rate; mark
+  anything that must stay visible `keepInFinale`.
 - Measure with `test/t_perf.js`.
 
 ## No clipping, no flicker

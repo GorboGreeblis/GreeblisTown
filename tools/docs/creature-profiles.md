@@ -3,7 +3,7 @@
 How each creature is modelled, coloured, given a face and animated, read from the game (`index.html`). Every
 model is final: never change one without asking ([rules](greeblis-rules.md)). The methods (builders, `born()`,
 planting and dancing, roaming) are in [construction.md](construction.md); what the pulled and merged creatures'
-originals were like is in [learnings.md](learnings.md#appendix-b-where-the-town-cast-came-from).
+originals were like is in [learnings.md](learnings.md#9-where-the-town-cast-came-from).
 
 ## The cast
 
