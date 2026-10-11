@@ -213,7 +213,7 @@ const t = {
 		bought: (name) => "You bought the " + name + " and put it on. Take a look in the mirror!",
 		seedsHave: "You already have the Flower Seeds. They'll go in at the next Garden Event.",
 		seedsBought:
-			"You bought the Flower Seeds! A special batch of flowers will grow at the next Garden Event. SEEDS quest complete!",
+			"You bought the Flower Seeds! At the next Garden Event, flowers will come up wherever everyone plants them. SEEDS quest complete!",
 	},
 	// DANCE BATTLES with the three Dancers (ETCHER, GLYPH and MONTGUMMERY): Greeblis City's dance-offs,
 	// now played as rock, paper, scissors. Every round the Dancer goes first and shows their move,
@@ -11725,64 +11725,34 @@ const JGP = (() => {
 		});
 		garden.stone = g;
 	}
-	// the special batch of flowers that the Seeds from Garden Supplies grow (placeholder: tall stems
-	// with pale star blooms in a ring just inside the border stones). They come up during the first
-	// Event after the Seeds are bought and stay for the rest of the session.
-	function growSpecial() {
-		if (garden.special || !bt.seeds) return;
-		garden.special = !0;
-		for (let k = 0; k < 16; k++) {
-			const a = ((k + 0.5) / 16) * l,
-				r = GARDEN_R - 1.1,
-				parts = [],
-				add = (geo, color, m) => parts.push({ geo, color, matrix: m }),
-				h2 = 1.1 + 0.25 * (k % 3),
-				pc = k % 2 ? "#bff2ff" : "#fff1a8";
-			add(T.cyl(0.025, 0.035, h2, 5), "#3f8a2a", S(0, h2 / 2, 0));
-			for (let j = 0; j < 2; j++) add(T.cone(0.07, 0.4, 4), "#4f9a2a", S(0.05 * (j ? 1 : -1), 0.35 + 0.2 * j, 0, 0, j * 2.2, (j ? -1 : 1) * 0.9, 1, 1, 0.3));
-			for (let j = 0; j < 8; j++) add(T.cone(0.06, 0.3, 4), pc, S(0, h2, 0, 0, (j / 8) * l, 0).multiply(S(0, 0, 0.12, Math.PI / 2 - 0.25, 0, 0)));
-			add(T.sphere(0.08, 8, 6), "#ffffff", S(0, h2 + 0.02, 0));
-			const g = new THREE.Group();
-			g.position.set(r * Math.cos(a), 0.05, r * Math.sin(a)), (g.rotation.y = a), g.scale.setScalar(0.01);
-			R(v(parts), garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 })), g);
-			(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
-			// they come up one after another
-			garden.plants.push({ g, grow: -0.12 * k, water: 0, special: !0 });
-		}
+	// THE PLANTS (placeholder): for now one kind of generic plant grows, a green stem with two pairs of
+	// leaves and a closed bud on top. Nothing grows unless the Seeds quest is done (without the Seeds
+	// nobody comes to plant); with them, the one batch that grows is what the creatures plant, each
+	// plant coming up during the Event right where its creature was seen planting it. (All of them
+	// share one mesh.)
+	const plantGeo = () => {
+		if (garden.geo) return garden.geo;
+		const parts = [],
+			add = (geo, color, m) => parts.push({ geo, color, matrix: m });
+		add(T.cyl(0.022, 0.03, 0.62, 6), "#3f8a2a", S(0, 0.31, 0));
+		[0.2, 0.4].forEach((y, j) =>
+			[-1, 1].forEach((sd) => add(T.sphere(1, 8, 6), j ? "#5aa83a" : "#4f9a2a", S(0.1 * sd, y + 0.03, 0, 0, j * 1.2, -0.45 * sd, 0.13, 0.025, 0.06))),
+		);
+		add(T.sphere(1, 10, 8), "#7cc04a", S(0, 0.66, 0, 0, 0, 0, 0.07, 0.1, 0.07));
+		return (garden.geo = v(parts));
+	};
+	function putPlant(x0, z0, ry, grow) {
+		const g = new THREE.Group();
+		g.position.set(x0, 0.05, z0), (g.rotation.y = ry), g.scale.setScalar(0.01);
+		R(plantGeo(), garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 })), g);
+		(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
+		const p = { g, grow, water: 0 };
+		return garden.plants.push(p), p;
 	}
 	const PLANT_COLS = ["#e8301e", "#ffd23a", "#ff5fb0", "#9a6bff", "#ff8a1a"];
 	function makePlant(slot) {
-		const parts = [],
-			add = (geo, color, m) => parts.push({ geo, color, matrix: m }),
-			kind = Math.floor(5 * rnd()),
-			col = PLANT_COLS[Math.floor(rnd() * PLANT_COLS.length)];
-		if (0 === kind)
-			for (let k = 0; k < 5; k++) add(T.ico(0.16, 0), k % 2 ? "#4f9a2a" : "#6ab83a", S(0.12 * Math.cos(k * 1.3), 0.14, 0.12 * Math.sin(k * 1.3), k, k, 0, 1, 0.7, 1));
-		else if (1 === kind) {
-			add(T.cyl(0.015, 0.02, 0.5, 5), "#3f8a2a", S(0, 0.25, 0));
-			for (let k = 0; k < 6; k++) add(T.cone(0.05, 0.12, 5), col, S(0.06 * Math.cos(k), 0.52, 0.06 * Math.sin(k), 0, -k, 0).multiply(S(0, 0, 0, 0, 0, -1.1)));
-			add(T.sphere(0.04, 6, 4), "#ffe23a", S(0, 0.53, 0));
-			add(T.sphere(1, 6, 4), "#4f9a2a", S(0.08, 0.15, 0, 0, 0, -0.5, 0.12, 0.02, 0.05));
-		} else if (2 === kind) {
-			add(T.sphere(0.2, 10, 8), "#ff8a1a", S(0, 0.16, 0, 0, 0, 0, 1, 0.8, 1));
-			for (let k = 0; k < 3; k++) add(T.sphere(1, 6, 4), "#4f9a2a", S(0.2 * Math.cos(2 * k), 0.06, 0.2 * Math.sin(2 * k), 0, -2 * k, 0, 0.18, 0.03, 0.12));
-		} else if (3 === kind)
-			for (let k = 0; k < 6; k++) {
-				const a = (k / 6) * l;
-				add(T.cone(0.07, 0.5, 4), "#5aa83a", S(0, 0.02, 0, 0, -a, 0).multiply(S(0, 0, 0, 0, 0, -0.6)).multiply(S(0, 0.25, 0, 0, 0, 0, 1, 1, 0.3)));
-			}
-		else
-			for (let k = 0; k < 3; k++) {
-				const h2 = 0.7 + 0.25 * k;
-				add(T.cyl(0.025, 0.03, h2, 5), "#6ab83a", S(0.08 * Math.cos(2 * k), h2 / 2, 0.08 * Math.sin(2 * k)));
-				add(T.cone(0.05, 0.3, 4), "#4f9a2a", S(0.08 * Math.cos(2 * k) + 0.1, h2 * 0.6, 0.08 * Math.sin(2 * k), 0, 0, -0.9, 1, 1, 0.3));
-			}
-		const g = new THREE.Group();
-		g.position.set(slot.x + 0.15 * (rnd() - 0.5), 0.05, slot.z + 0.15 * (rnd() - 0.5)), (g.rotation.y = rnd() * l), g.scale.setScalar(0.01);
-		R(v(parts), garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 })), g);
-		(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
-		const p = { g, grow: 0, water: 0 };
-		return (slot.plant = p), garden.plants.push(p), p;
+		const p = putPlant(slot.x + 0.15 * (rnd() - 0.5), slot.z + 0.15 * (rnd() - 0.5), rnd() * l, 0);
+		return (slot.plant = p), p;
 	}
 	// unique planting animation per creature (same transform format as the old concert dances)
 	const MOVES = {
@@ -11890,7 +11860,6 @@ const JGP = (() => {
 		list.forEach((ent, k) => {
 			(ent.finaleSlot = spots[k]), (ent.plantNext = now + rr(2, 5)), (ent.watching = !1);
 		});
-		growSpecial();
 	}
 	// FORTIZMO and the shopkeeper SPARKAKUS come into the garden but don't plant. Three row models are
 	// away for the whole event: BACKPACKA (the event's own BACKPACKA flies in), NEXTESSA (she is not at
@@ -11913,11 +11882,16 @@ const JGP = (() => {
 				a = Math.atan2(sl.z, sl.x) + 3.2 / r;
 			ent.finaleSlot = { x: r * Math.cos(a), z: r * Math.sin(a) };
 		}
+		// the plant goes in right where the creature is seen planting: the free slot nearest the spot just in
+		// front of it (within 1.3 m; with none that close it digs, but nothing comes up)
+		const ry = ent.group.rotation.y,
+			fx = p.x + 0.9 * Math.sin(ry),
+			fz = p.z + 0.9 * Math.cos(ry);
 		let best = null,
-			bd = 4.5;
+			bd = 1.3;
 		for (const sl of garden.slots) {
 			if (sl.plant) continue;
-			const d = Math.hypot(sl.x - p.x, sl.z - p.z);
+			const d = Math.hypot(sl.x - fx, sl.z - fz);
 			d < bd && ((bd = d), (best = sl));
 		}
 		if (best) makePlant(best), Ut.at(best.x, 0.7, best.z, "✿", f(PLANT_COLS));
@@ -11925,9 +11899,10 @@ const JGP = (() => {
 	L.push((tt, dt) => {
 		dt = dt || 0.016;
 		// plants grow
+		// (everything grows during the Event: once it is over, any plant still coming up finishes quickly)
 		for (const pl of garden.plants) {
 			if (pl.grow >= 1) continue;
-			pl.grow = Math.min(1, pl.grow + dt / 24);
+			pl.grow = Math.min(1, pl.grow + dt / (me.active ? 24 : 3));
 			const u = pl.grow,
 				sc = u < 1 ? 1 + 2.7 * Math.pow(u - 1, 3) + 1.7 * Math.pow(u - 1, 2) : 1;
 			pl.g.scale.setScalar(Math.max(0.01, sc));
