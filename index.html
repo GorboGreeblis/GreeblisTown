@@ -4637,9 +4637,8 @@ const le = (() => {
 	// future animation that puts the diamond back together: each piece's group is centred on the
 	// piece, and userData.gemOffset is where its centre sits in the whole diamond.)
 	ARTS = (() => {
-		const shown = [],
-			// the diamond's profile [radius, height] from the middle of the table down to the point
-			GEM = [
+		// the diamond's profile [radius, height] from the middle of its top facet (the "table") down to the point
+		const GEM = [
 				[0, 0.29],
 				[0.24, 0.29],
 				[0.42, 0.11],
@@ -4694,28 +4693,16 @@ const le = (() => {
 		}
 		return {
 			build() {
-				// (the pieces on display turn slowly)
-				L.push((t2, dt) => {
-					for (const m of shown) m.rotation.y += 0.3 * (dt || 0.016);
-				}),
-					L.push((t2, dt) => Bulb.update(dt || 0.016));
+				L.push((t2, dt) => Bulb.update(dt || 0.016));
 			},
-			// once SPARKAKUS has them they float on display over his reading table
-			display(home) {
-				if (!home || shown.length) return;
-				[-0.85, -0.25, 0.3].forEach((pz, k) => {
-					const g = model(k);
-					// (on the Library's reading table, top y = 0.82)
-					// (each piece floats a little over the table, turning slowly)
-					g.position.set(JGP.libTable[0], 1.18, JGP.libTable[1] + 0.85 * (pz + 0.27)), g.scale.setScalar(0.7), home.add(g), shown.push(g);
-				});
-			},
+			// (the Library never shows them: in the final game it doesn't hold the Artifacts. A piece's model,
+			// for the animation that will put the diamond back together)
+			model,
 		};
 	})(),
 	// the librarian's talk: the Ancient Artifacts quest. With all three, SPARKAKUS steps out in
 	// front of the Library and the light bulb comes on over his head for his long speech.
 	LIB = {
-		home: null,
 		talk() {
 			const say = (txt, cb) => {
 				(st.talking = !0),
@@ -4735,7 +4722,7 @@ const le = (() => {
 			st.join({ x: fx, z: fz }, !0), (Bulb.hold = !0);
 			say(i.finale, () => {
 				clearInterval(lit), Bulb.level || Bulb.start(() => st.pos(), st.height);
-				(Bulb.hold = !1), (Kt.rewards.artifacts = !0), ARTS.display(LIB.home);
+				(Bulb.hold = !1), (Kt.rewards.artifacts = !0);
 				setTimeout(() => {
 					try {
 						G.jingle();
@@ -10395,9 +10382,8 @@ const JGP = (() => {
 			rect = ([cx, cz, al]) => (al ? [cx - 0.3, cz - 1.12, cx + 0.3, cz + 1.12] : [cx - 1.12, cz - 0.3, cx + 1.12, cz + 0.3]);
 		return {
 			cases,
-			table: [-1.75, 0.1],
 			posts: [-1.7, 1.7].map((px) => [px, -7.4]),
-			parts: [...cases.map(rect), [-2.18, -0.62, -1.32, 0.82], [-1.8, -7.5, -1.6, -7.3], [1.6, -7.5, 1.8, -7.3]],
+			parts: [...cases.map(rect), [-1.8, -7.5, -1.6, -7.3], [1.6, -7.5, 1.8, -7.3]],
 			hull: [-6.75, -7.55, 6.75, 0.95],
 			// the rug over the reading ground (its fringe reaches 0.2 m past each end) and the height of its top
 			rug: [-5.5, -6.8, 5.5, 1.0],
@@ -10597,10 +10583,6 @@ const JGP = (() => {
 			white = x.clay("#f6f2e8", { shininess: 30 });
 		LIB_LAYOUT.posts.forEach(([px, pz]) => R(T.box(0.14, 4.3, 0.14), white, o, [px, 2.15, pz]));
 		R(T.box(3.7, 0.95, 0.08), white, o, [0, 3.75, -7.4]), R(T.plane(3.5, 0.88), x.world(16777215, { map: kioskSignTex(th) }), o, [0, 3.75, -7.35]);
-		// the reading table that the Ancient Artifacts are shown on (top y = 0.82)
-		const [tx, tz] = LIB_LAYOUT.table;
-		G.box(wood, tx, 0.8, tz, 0.8, 0.05, 1.38);
-		[-1, 1].forEach((a) => [-1, 1].forEach((b2) => G.box(dark, tx + 0.33 * a, 0.39, tz + 0.62 * b2, 0.06, 0.78, 0.06)));
 		G.done(o);
 	}
 
@@ -16242,7 +16224,6 @@ const JGP = (() => {
 			}
 			return best;
 		},
-		libTable: LIB_LAYOUT.table,
 		libParts: LIB_LAYOUT.parts,
 		buildPond,
 		blossomPickup,
@@ -16346,7 +16327,7 @@ if (
 							(o.rotation.y = A(t, e)),
 							C.add(o),
 							E.add(t, e, 6.6, "stump"),
-							JGP.buildLibrary(o), (LIB.home = o);
+							JGP.buildLibrary(o);
 													H(o),
 							(function (t) {
 								const e = new THREE.Group();
@@ -16371,12 +16352,12 @@ if (
 									b = 0,
 									H = null,
 									w = 0;
-								// (the Library is open: he walks straight out to the front, past his reading table)
+								// (the Library is open: he walks straight out to the front)
 								const v = () => [t.localToWorld(new c(0, 0, 1.4))];
-								// SPARKAKUS browses his Library: when nobody needs him he strolls the open floor between his
-								// reading table and the bookcases, a few steps at a time, and stops to look along the nearest
-								// bookcase. Spots and walks (in the Library's own frame) keep 0.8 m clear of every bookcase,
-								// the table and the banner's posts, inside the band in front of the shelves.
+								// SPARKAKUS browses his Library: when nobody needs him he strolls the open floor in front of the
+								// bookcases, a few steps at a time, and stops to look along the nearest bookcase. Spots and
+								// walks (in the Library's own frame) keep 0.8 m clear of every bookcase and the banner's posts,
+								// inside the band in front of the shelves.
 								const BAND = [-5.3, -2.15, 5.3, 0.6],
 									lclear = (x, z) => x > BAND[0] && x < BAND[2] && z > BAND[1] && z < BAND[3] && JGP.libParts.every(([a, b2, c2, d2]) => x < a - 0.8 || x > c2 + 0.8 || z < b2 - 0.8 || z > d2 + 0.8),
 									lpick = (q) => {
@@ -16391,7 +16372,7 @@ if (
 										}
 										return null;
 									},
-									// the way to look on arriving: along the nearest bookcase's face, or out over the table
+									// the way to look on arriving: along the nearest bookcase's face, or out over the floor
 									lface = (q) => {
 										let best = 0,
 											bd = 3.2;
@@ -16407,7 +16388,7 @@ if (
 								// (`face`: once there he turns to the player, as for his Ancient Artifacts speech)
 								(st.join = (o, face) => {
 									const a = t.worldToLocal(new c(o.x, 0, o.z)).x < 0 ? -1 : 1,
-										// (browsing the shelves, he first goes back to his place behind the table)
+										// (browsing the shelves, he first goes back to his place)
 										back = e.parent === t && e.position.distanceTo(f) > 0.3 ? [t.localToWorld(f.clone())] : [];
 									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: back.concat(v(a, !1)), face });
 								}),

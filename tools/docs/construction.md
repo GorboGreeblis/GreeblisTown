@@ -226,7 +226,8 @@ Goo that runs down a body and moves like goo, without clipping:
   panel shows only the Dancer's move; the bar shows how it is going. The winner does a victory dance.
 - **The chain:** each Dancer's first win gives one Ancient Artifact (a third of one teal brilliant-cut diamond;
   later wins get a bow). With all three, Sparkakus walks out to the front, gives his long speech under the bulb,
-  shows the pieces floating over his reading table and hands over the Ancient Gem. Gemtoe trades the Summoning
+  and hands over the Ancient Gem (the pieces are not put on show: `ARTS.model` is kept for the animation that will
+  put the diamond back together). Gemtoe trades the Summoning
   Stone for it, and the Stone starts the Garden Event.
 - The pieces keep `userData.gemOffset` (where each sits in the whole diamond) for a future animation that puts it
   back together.
@@ -352,8 +353,9 @@ Goo that runs down a body and moves like goo, without clipping:
   - one book stands face-out on the front-left case's eye-level shelf, facing the front: OVERCOMING SHYNESS, a
     blue hardback with a gold-and-cream cover (`LIB_LAYOUT.feature`); the books beside it stop short to leave its gap;
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
-    `kioskSignTex`), and a small reading table (top 0.82 m) where the Artifacts go on show;
-  - its colliders are the bookcases, posts and table; it is kept explicitly when the engine's scenery is cleared
+    `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
+    Artifacts);
+  - its colliders are the bookcases and posts; it is kept explicitly when the engine's scenery is cleared
     (it is wider than the 12 m that rule spares);
   - a rug (`LIB_LAYOUT.rug`, 11 × 7.8 m) woven from the Buns' clothes in Greeblis Woods: Miss Bun's red floral
     print for the field, edged with her lace and gold-dotted braid; a border, corner pieces and a medallion in

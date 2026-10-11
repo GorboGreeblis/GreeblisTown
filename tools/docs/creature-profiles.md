@@ -49,7 +49,7 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   while his dialogue is open, and his head turns to greet the player.
 - **Role:** stands on the Library's rug at local (0, 0, −0.45) and browses the open floor when nobody needs him.
   He gives the Ancient Artifacts quest; with all three he walks out to the front, gives his long speech under the
-  light bulb while the town dims, shows the pieces on his reading table and hands over the Ancient Gem.
+  light bulb while the town dims, and hands over the Ancient Gem.
 
 ## Mama Gorbo (`p_mamagorbo`)
 
