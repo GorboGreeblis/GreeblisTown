@@ -41,6 +41,9 @@ cd tools && npm install          # acorn, terser (pinned), playwright
 python3 -m http.server 8765      # from the repo root, in another terminal: the tests load http://localhost:8765/index.html
 ```
 
+`package.json` pins the tools' own packages (`npm run lint`, `npm test` runs the battery); `.gitignore` keeps
+`node_modules`, renders, logs and the lint's cut-out script out of git.
+
 In a Claude Code cloud session Playwright is already installed globally with Chromium; use it with
 `NODE_PATH=/opt/node22/lib/node_modules` instead of installing it, and never run `playwright install`. The browser
 tests use SwiftShader WebGL (`--use-angle=swiftshader`).
@@ -87,6 +90,19 @@ and drives the game through its globals.
 | `px.js <url> <prefix>` | Seven fixed views with seeded randomness, for comparing two builds pixel by pixel |
 | `cov.js <url> <out.json> <scenes…>` | Records precise JS coverage over a whole session of scene scripts (`MOBILE=1`, `MODT` per-scene timeout) |
 | `uncov.js <script.js> <cov.json…>` | Lists the code that never ran, largest first (cut the scripts out of the page first, as `three/swap3.py` shows) |
+| `cov_extra.js` | A coverage module for `cov.js`: pokes everything the other modules don't (every station, every Blossom gift, every shop item, the keys, resizing, hiding the page) |
+| `t_ground.js` | Every creature's lowest point against the real surface under it (`JGP.groundAt`: lawn, walks, dance floor, garden rows and border stones, decks, rugs) through idling, Talk, Blossoms, battles and a whole Garden Event; flags any inside a building. `VW=200 VH=150`, `LIMIT` (default −5 mm) |
+| `t_zfight.js` | Z-fighting scan: every depth-written triangle grouped by plane; overlapping near-coplanar pairs (`TOL` 6 mm, `MINA` 2 cm²), kept only if a point inside the overlap can be seen from somewhere the player's eyes can be (a ray test through a 2 m grid, as the trimmed three.js has no raycaster; `VISALL=1` skips it). Prints each clash with points inside it |
+| `t_zcheck.js` | Which scan clashes really flicker: `POINTS` (JSON `[name, x, y, z]`) rendered three times from a player eye with the near plane nudged a fraction of a millimetre. Nothing moves, so changed pixels are surfaces fighting; under ~10 is edge noise. `SHOTS=1` writes the pairs for `tile.py diff` |
+| `t_goo.js` | The goo splats on the screen: flickering pixels with the old shared draw order against the fixed one |
+| `t_library.js` | Sparkakus browsing his Library: the spots he visits, never within 0.6 m of a bookcase, the table or the posts, standing still when talked to, out to the Garden Event and back |
+| `t_views.js` | Renders chosen town views (`VIEWS`: a building collider name, `parcel` or `[x, z]`, with offsets) |
+| `t_plants.js` | The plant test row: the five plants, each Talk line ("I'm Plant #k."), renders of the row and each plant; `EVENT=1` also runs an Event and counts the plants of each kind |
+| `t_avatar.js` | The player's walk and idle animation in the test modes: side renders mid-stride and standing, feet above the ground, hands clear of the skirt |
+| `t_headguard.js` | The VR head guard: distance to the nearest solid at known spots and how dark the view goes (through its test probe, as VR can't run headless). `VW=320 VH=240` |
+| `t_ez.js` | Lists the keep-clear zones near the duck pond and every stationary creature's spot (a quick look when placing things) |
+| `t_eval.js` | Boots the game and prints any expression (`EXPR`), e.g. `EXPR='JGP.unfightParts.ms'` |
+| `tile.py` | Contact sheets of renders (`sheet`), and amplified before/after differences (`diff`). Needs Pillow |
 
 **Headless game time runs about 10x slower than real time** at 1280×720. Use a tiny viewport for long scenes,
 fast-forward with the game's own hooks (e.g. `JGP.backpacka.start(Re.t - k)`), or push timers directly.
@@ -126,6 +142,9 @@ fast-forward with the game's own hooks (e.g. `JGP.backpacka.start(Re.t - k)`), o
    10 minutes, battle moves) are live even when uncovered. Remove only what no live data can reach: entries keyed
    to creatures that are gone, options no builder passes, unused fields.
 3. `npm run lint` (ESLint 8 over the game script, through `town/lint/`). The `'p' is not modified in this loop` warning is known.
+   In `town/lint/`: `extract.py` cuts the game script out of `index.html` into `block6.js` (keeping line numbers
+   aligned), `lint.sh` runs ESLint on it with `.eslintrc.json` and prints each finding at its `index.html` line,
+   and `package.json` pins ESLint 8.
 4. Re-run the battery.
 
 ## Trimming three.js (already applied in `index.html`; redo it whenever the game starts using more of three.js)
@@ -139,6 +158,9 @@ node three/min3.js three_p3.js three_p4.js          # re-minify
 - `three.js` is the page's second `<script>`.
 - `game_all.js` is every other script plus the HTML.
 - The coverage must be recorded on that same three.js build.
+
+`three/prune3-woods.js` and `three/build_three-woods.sh` are the Greeblis Woods versions the town's were made from
+(they work on the Woods folders and check the coverage's sha256), kept for reference.
 
 Put a build into a page with `python3 three/swap3.py <page.html> <three.js> <out.html>` (it replaces the page's
 second `<script>`). Before swapping the result in, check it:
@@ -161,7 +183,8 @@ second `<script>`). Before swapping the result in, check it:
 Measured on 11 Oct 2026: the unminified 1,040,924-byte page packs to **251,328 bytes** and round-trips exactly
 (about 13 s), so minifying first will only make it smaller. The full Woods toolchain is in `pack/woods/`:
 - `cmz.js` is the codec.
-- `build_loader.js` builds the decoder and loader.
+- `build_loader.js` builds the decoder and loader, from the template `loader_src.js` (it decodes the 7-bit page
+  text into bytes, runs the decoder with a LOADING % readout and writes out the page).
 - `enc.js` and `pack_cm.py` pack.
 - `tuning/` holds the native tuner.
 

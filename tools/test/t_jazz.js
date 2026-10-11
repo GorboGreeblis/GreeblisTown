@@ -10,13 +10,15 @@ module.exports = async (p) => {
     const buf = new Float32Array(2048); window.__peak = 0;
     setInterval(() => { an.getFloatTimeDomainData(buf); for (const v of buf) __peak = Math.max(__peak, Math.abs(v)); }, 40);
   });
-  const run = async (label, setup, secs) => {
-    await p.evaluate(setup);
+  const run = async (label, setup, secs, arg) => {
+    await p.evaluate(setup, arg);
     await p.evaluate(() => { window.__fired = {}; window.__peak = 0; window.__t0 = Re.t; });
     for (let k = 0; k < 400 && (await p.evaluate((s) => Re.t - __t0 < s, secs)); k++) await W(150);
     log(label, await p.evaluate(() => JSON.stringify({ ctx: G.ctx().c.state, ...JGP.jazz.state, gain: +JGP.jazz.state.gain.toFixed(3), hits: Object.values(__fired).reduce((a, b) => a + b, 0), kinds: Object.keys(__fired).join(','), peak: +__peak.toFixed(3), horn: ee.playing, top: jt.top })));
   };
   await run('on the floor:', () => At.position.set(-27, 0, 12), 4);
+  // every corner of the floor (it runs x -33.1 to -21.1, z -9.6 to 28.8; the kit is at x -34.8, z 19.2)
+  for (const [x, z] of [[-32.5, -9], [-21.7, -9], [-21.7, 28.2], [-32.5, 28.2], [-27, 4]]) await run(`floor at ${x},${z}:`, (q) => At.position.set(q[0], 0, q[1]), 3, [x, z]);
   await run('by the kit:', () => At.position.set(-31.5, 0, 19.2), 3);
   await run('talking to KING DINO:', () => { At.position.set(-31.5, 0, 19.2); te(It.byId.m_kingdino); }, 3);
   await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });

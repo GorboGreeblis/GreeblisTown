@@ -470,7 +470,8 @@ const G = (() => {
 				t
 			);
 		}
-		let a = 1;
+		let a = 1,
+			cx = null;
 		function n(t, n = 0.05, r = "square", s = 0.05, i = 0) {
 			s *= a;
 			try {
@@ -514,9 +515,10 @@ const G = (() => {
 			{
 				// (wakes the sound after a pause: the headset taken off and put back on, or left idle)
 				wake: s,
+				// (one object handed out per context: it is asked for every frame)
 				ctx() {
 					try {
-						return o(), { c: t, out: e };
+						return o(), (cx && cx.c === t) || (cx = { c: t, out: e }), cx;
 					} catch (e) {
 						return null;
 					}
@@ -631,7 +633,9 @@ const G = (() => {
 		f.position.set(50, 90, -70),
 		d.position.set(50, 90, -70),
 		C.add(m),
-		m.scale.setScalar(2.5),
+		// (the dome sits well inside the camera's far plane: any part of it past the far plane is cut away,
+		// and the bare background then shows as a pale disc in the sky that follows the view)
+		m.scale.setScalar((0.85 * t.far) / 150),
 		(I.sky = m);
 	const M = s.slice(),
 		E = new Float32Array(s.length),
@@ -904,7 +908,8 @@ function Z() {
 });
 const ke = (() => {
 		const t = [];
-		let e = null;
+		let e = null,
+			dropSeq = 0;
 		const o = {
 			hit(o, a) {
 				for (let n = 0; n < a; n++) {
@@ -925,7 +930,8 @@ const ke = (() => {
 						e.scale.set(n * (1 + 0.35 * Math.random()), n, 1),
 							e.position.set(0.26 * (Math.random() - 0.5), 0.18 * (Math.random() - 0.5), -0.3),
 							(e.rotation.z = Math.random() * l),
-							(e.renderOrder = 10002),
+							// (each drop its own place in the drawing order, the newest on top, so overlapping drops never flicker)
+							(e.renderOrder = 10002 + 1e-3 * (++dropSeq % 900)),
 							(e.frustumCulled = !1),
 							(e.userData.xrUI = !0),
 							B.add(e),
@@ -2571,14 +2577,15 @@ const It = {
 				return {
 					x: n.x + (s / l) * t,
 					z: n.z + (i / l) * t,
-					y: c * Math.max(0, 1 - l / 1.2),
+					// (rising no faster than 2.5 m/s, so arriving from a walk home never jumps him onto his desk)
+					y: Math.min(c * Math.max(0, 1 - l / 1.2), (n.y || 0) + 2.5 * o),
 					face: Math.atan2(s, i),
 				};
 			}
 			return {
 				x: r.x,
 				z: r.z,
-				y: c,
+				y: Math.min(c, (n.y || 0) + 2.5 * o),
 				face: null == a.face ? Math.atan2(-r.x, -r.z) : a.face,
 			};
 		},
@@ -2722,7 +2729,7 @@ function fo(t, e) {
 }
 const uo = {
 	fixed: [],
-	radius: (e) => (e === At ? t.player.bodyR : e.bodyR * t.bodies.solidK),
+	radius: (e) => (e === At ? t.player.bodyR : Math.max(e.bodyR * t.bodies.solidK, e.lieR || 0)),
 	solid: (t) => t.group.visible && (void 0 === t.presence || t.presence >= 0.5),
 	resolve(e, o, a) {
 		let n = !1;
@@ -2758,7 +2765,37 @@ function tkAnim(h, g, on, t, dt) {
 	w || ((w = g.userData.tkW = new THREE.Group()), g.children.slice().forEach((ch) => (g.remove(ch), w.add(ch))), g.add(w));
 	const s = Math.max(0, Math.sin(11 * t)) * (0.55 + 0.45 * Math.sin(2.7 * t)) * (Math.sin(1.3 * t) > -0.5 ? 1 : 0.25);
 	h.tkS = k * s;
-	(w.position.y = 0.045 * h.tkS), (w.rotation.x = 0.06 * h.tkS), (w.rotation.z = 0.025 * k * Math.sin(1.7 * t)), w.scale.set(1 - 0.015 * h.tkS, 1 + 0.035 * h.tkS, 1 - 0.015 * h.tkS);
+	// (the nod tips the model about its feet, lowering the front edge of its footprint: lifted by as much)
+	(w.rotation.x = 0.06 * h.tkS), (w.rotation.z = 0.025 * k * Math.sin(1.7 * t)), w.scale.set(1 - 0.015 * h.tkS, 1 + 0.035 * h.tkS, 1 - 0.015 * h.tkS);
+	w.position.y = 0.045 * h.tkS + 0.8 * (h.bodyR || 0.6) * (Math.abs(Math.sin(w.rotation.x)) + Math.abs(Math.sin(w.rotation.z)));
+}
+// every creature stands on what is under it (JGP.groundAt: the dance floor, a walk, the garden's soil and
+// rows, a kiosk's deck, the bar's boards, the drum rug), raised besides by however far its model reaches
+// below its feet at rest (measured once, on its first frame), through a wrapper group round the whole model;
+// eased, so stepping up or down never jumps. Not for one posted up off the ground (MUSHROOM on his desk).
+function gFit(e, dt) {
+	const g = e.group;
+	if (!g || !JGP.groundAt) return;
+	if (null == e.restLow) {
+		g.updateMatrixWorld(!0);
+		let lo = 1e9;
+		const v = new THREE.Vector3();
+		g.traverse((o) => {
+			if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
+			for (let a = o; a && a !== g; a = a.parent) if (!a.visible) return;
+			const P = o.geometry.attributes.position;
+			for (let k = 0; k < P.count; k += 2) lo = Math.min(lo, v.fromBufferAttribute(P, k).applyMatrix4(o.matrixWorld).y);
+		});
+		e.restLow = lo < 1e8 ? lo - g.position.y : 0;
+	}
+	const want = (g.position.y > 0.3 ? 0 : JGP.groundAt(g.position.x, g.position.z, 0.55 * (e.bodyR || 1))) + Math.max(0, 0.006 - e.restLow);
+	let w = g.userData.gW;
+	if (!w) {
+		if (Math.abs(want) < 1e-3) return;
+		(w = g.userData.gW = new THREE.Group()), g.children.slice().forEach((ch) => (g.remove(ch), w.add(ch))), g.add(w);
+	}
+	// (up quickly, so a creature walking onto a stone is never in it for long; down gently)
+	(e.gY = null == e.gY ? want : e.gY + (want - e.gY) * Math.min(1, (want > e.gY ? 20 : 8) * (dt || 0.016))), (w.position.y = e.gY);
 }
 function Lt(e, o, a, n) {
 	const r = e.group,
@@ -2781,7 +2818,8 @@ function Lt(e, o, a, n) {
 		p = e.nearPlayer && (e.nearSince ? o - e.nearSince < t.proximityFreezeS : ((e.nearSince = o), !0));
 	// (ANOMALEE, gazing up at the church window, keeps looking at it while the player is near and through
 	// her Talk lines; she turns to the player only for her Blossom line, and for any line during the Event)
-	const gazer = e.def && e.def.gazeUp && !(h && (e.gifting || me.active));
+	// (SOMLET asleep on her side doesn't turn to the player either)
+	const gazer = (e.def && e.def.gazeUp && !(h && (e.gifting || me.active))) || (e.lieK || 0) > 0.5;
 	if (n || h || (p && !e.goHome))
 		(e.gcWant = 0),
 			(e.moving = !1),
@@ -2890,6 +2928,7 @@ const Ut = (() => {
 				n.mesh.material.color.set(a),
 				n.mesh.scale.setScalar(h(0.7, 1.3));
 		}
+		let splatSeq = 0;
 		function s(t, e, a, n) {
 			let r = o.find((t) => !t.active);
 			if (!r) {
@@ -2909,7 +2948,10 @@ const Ut = (() => {
 				);
 				(t.renderOrder = 2), (r = { mesh: t, active: !1, t: 0, size: 1 }), o.push(r);
 			}
+			// (each splat gets its own fixed place in the drawing order, the newest on top: overlapping splats were
+			// sorted by their distance to the camera, so the order flipped as the view moved and they flickered)
 			Object.assign(r, { active: !0, t: 0, size: n }),
+				(r.mesh.renderOrder = 2 + 1e-3 * (++splatSeq % 900)),
 				(r.mesh.visible = !0),
 				r.mesh.material.color.set(a),
 				(r.mesh.material.opacity = 0.85),
@@ -3236,7 +3278,15 @@ function te(t, e) {
 	// giving one of the three Dancers a Blossom starts a Dance battle with them, once their thanks is said
 	// (not if the player has walked away from the line, which closes it, or the Event has begun meanwhile)
 	t.onTalk && t.onTalk(t),
-		qt.open(o.name, o.color, n, e && Dbt.has(t) && !me.active ? () => !me.active && Math.hypot(At.position.x - t.group.position.x, At.position.z - t.group.position.z) < (t.talkR || 4) + 4 && Dbt.start(t) : void 0);
+		// (measured from where the Blossom was given: one given from across the floor still starts it)
+		qt.open(
+			o.name,
+			o.color,
+			n,
+			e && Dbt.has(t) && !me.active
+				? ((d0) => () => !me.active && Math.hypot(At.position.x - t.group.position.x, At.position.z - t.group.position.z) < Math.max((t.talkR || 4) + 4, d0 + 4) && Dbt.start(t))(Math.hypot(At.position.x - t.group.position.x, At.position.z - t.group.position.z))
+				: void 0,
+		);
 }
 const ee = (function () {
 		// "Backpacka's Rain Strut": FORTIZMO's horn tune for the garden's climax. A slow, sultry swing
@@ -3476,6 +3526,7 @@ const ee = (function () {
 				s = u.createBiquadFilter(),
 				i = u.createGain();
 			(r.buffer = g),
+				(r.loop = !0),
 				(r.playbackRate.value = 0.8 + 0.4 * Math.random()),
 				(s.type = o ? "bandpass" : "highpass"),
 				(s.frequency.value = e),
@@ -3922,7 +3973,7 @@ const le = (() => {
 						);
 					const r = R(
 						T.sphere(0.024, 6, 5),
-						x.basic("#dff0ff", { transparent: !0, opacity: 0.8 }),
+						x.basic("#dff0ff", { transparent: !0, opacity: 0.8, unique: !0 }),
 						n,
 						[0.03, 0.11, 0.05],
 					);
@@ -4220,7 +4271,8 @@ const le = (() => {
 							}),
 							void (t = [])
 						);
-					(t = t.filter((t) => It.all.includes(t) && t.group.position.distanceTo(t.home) > 1.5)),
+					// (measured along the ground: MUSHROOM home on his desk stands 1.5 m above his home point)
+					(t = t.filter((t) => It.all.includes(t) && Math.hypot(t.group.position.x - t.home.x, t.group.position.z - t.home.z) > 1.5)),
 						t.forEach((t) => {
 							t.busy ||
 								t.gcNavHome ||
@@ -4276,7 +4328,8 @@ const le = (() => {
 						: []),
 					s.forEach((t) => {
 						// (a Dancer still doing a victory dance stops it to come to the garden)
-						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = 0), (t.vbk = -1), clearTimeout(t.bdT), (t.battleDance = !1);
+						// (and any route home it was on is dropped: after the Event a fresh one is planned from the garden)
+						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = 0), (t.vbk = -1), clearTimeout(t.bdT), (t.battleDance = !1), (t.goHome = t.gcNavHome = !1), (t.gcNav = null);
 					});
 				const o = Gt(s.concat([null]), gcSinger.angle);
 				bt.seeds && st.join(o.larry),
@@ -4297,6 +4350,8 @@ const le = (() => {
 					!s.includes(t) &&
 					(t.busy && It.release(t, t.busy),
 					(t.busy = e),
+					(t.goHome = t.gcNavHome = !1),
+					(t.gcNav = null),
 					(t.ph = Math.random() * l),
 					(t.finaleSlot =
 						i.shift() ||
@@ -4395,7 +4450,8 @@ const le = (() => {
 						h = i - l.z,
 						p = Math.hypot(c, h);
 					// (one being talked to stands still for it, turned to the player)
-					if ("dialogue" === jt.top && xe.lastTarget === o) o.moving = !1;
+					// (and SOMLET, asleep on her side, first gets up)
+					if (("dialogue" === jt.top && xe.lastTarget === o) || (o.lieK || 0) > 0.25) o.moving = !1;
 					else if (p > (n ? 0.12 : 0.5)) {
 						const t = Math.min(p, (o.walkSpeed || 2.4) * e);
 						(l.x += (c / p) * t), (l.z += (h / p) * t), co(o.group, Math.atan2(c, h), e, 8), (o.moving = !0);
@@ -6266,8 +6322,50 @@ const xe = (() => {
 					dz = -s * o.move.x - c * o.move.y;
 				At.rotation.y += m(At.rotation.y, Math.atan2(dx, dz)) * Math.min(1, 12 * t);
 			}
-			(dk.walk = moving ? dk.walk + 9 * t : 0), (At.position.y = moving ? 0.06 * Math.abs(Math.sin(dk.walk)) : 0);
+			(dk.walk = moving ? dk.walk + 9 * t : dk.walk), (At.position.y = 0);
+			dkAnim(t, moving ? Math.min(1, Math.hypot(mx, my)) : 0);
 			me.active !== Be && Fe(me.active, performance.now());
+		}
+		// THE AVATAR'S ANIMATION (desktop and mobile test modes only; in VR the player has no body to see):
+		// walking, her legs stride (hip pivots), her arms swing against them, held a little out (0.21 rad, walking
+		// or not) so the hands clear the skirt, she bobs on each step with her skirt swaying and her pigtails bouncing a beat behind;
+		// standing, she breathes, glances about now and then, blinks, and her pigtails settle. The walk eases
+		// in and out (dk.wk), so starting and stopping never snap.
+		function dkAnim(t, amt) {
+			const U = At.userData,
+				now = performance.now() / 1e3;
+			if (!U.legL) return;
+			dk.wk = (dk.wk || 0) + (amt - (dk.wk || 0)) * Math.min(1, 8 * t);
+			const k = dk.wk,
+				w = dk.walk,
+				sw = Math.sin(w),
+				st = 1 - k;
+			// legs and arms (each arm swings with the opposite leg)
+			(U.legL.rotation.x = 0.5 * k * sw), (U.legR.rotation.x = -0.5 * k * sw);
+			["L", "R"].forEach((sd, j) => {
+				const n = j ? 1 : -1,
+					a = U["arm" + sd];
+				(a.rotation.x = (j ? 0.45 : -0.45) * k * sw + 0.04 * st * Math.sin(1.3 * now + j)), (a.rotation.z = 0.21 * n);
+			});
+			// the bob on each step (both feet) and a little lean into the walk; breathing when still
+			const bob = Math.abs(Math.sin(w));
+			(At.position.y = 0.05 * k * bob), (U.skirt.rotation.z = 0.06 * k * Math.sin(w)), (U.skirt.scale.y = 1 + 0.012 * st * Math.sin(2.1 * now));
+			// the head: nods on the steps, and when still, a slow look one way or the other every few seconds
+			if (now > (dk.lookAt || 0)) (dk.lookAt = now + 2.5 + 3 * Math.random()), (dk.look = Math.random() < 0.4 ? 0 : (Math.random() - 0.5) * 1.1);
+			const hy = st * (dk.look || 0);
+			(U.head.rotation.y += (hy - U.head.rotation.y) * Math.min(1, 3 * t)), (U.head.rotation.x = 0.05 * k * (bob - 0.5) + 0.03 * st * Math.sin(2.1 * now));
+			// pigtails: they swing behind the stride and bounce with the bob, then settle to a gentle sway
+			["L", "R"].forEach((sd, j) => {
+				const n = j ? 1 : -1,
+					pt = U["pony" + sd];
+				(pt.rotation.x = 0.25 * k * Math.sin(w - 0.9) + 0.18 * k * bob), (pt.rotation.z = n * (0.12 * k * bob + 0.04 * st * Math.sin(1.6 * now + j)));
+			});
+			// blinks: both eyes close for a tenth of a second every few seconds
+			if (U.eyes) {
+				now > (dk.blinkAt || 0) && (dk.blinkAt = now + 2 + 3 * Math.random());
+				const b2 = dk.blinkAt - now > 0 && dk.blinkAt - now < 0.12 ? 0.1 : 1;
+				U.eyes.forEach((e) => (e.scale.y = b2));
+			}
 		}
 		function dkCam() {
 			// ease the camera toward the drag/key targets so turning is smooth even at low fps
@@ -6443,7 +6541,7 @@ const Re = (() => {
 			for (let t = 0; t < p.length; t++) {
 				const e = p[t];
 				try {
-					Lt(e, o, c, h);
+					Lt(e, o, c, h), gFit(e, c);
 				} catch (err) {
 					s.errors++, vo(err, "entity:" + (e.id || e.kind));
 				}
@@ -6697,7 +6795,7 @@ const JGP = (() => {
 			face: -Math.PI / 2,
 			list: [
 				// (these are still being worked on; GEMTOE starts here and wanders the whole park: see the roamers)
-				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 11.09]],
+				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 16.86]],
 				// MAMA GORBO (rebuilt from her artwork, with GORBO's ports and drips); given a Blossom she
 				// shoots her colourful goo at the player, as GOOWARD does
 				["p_mamagorbo", "MAMA GORBO", "born_mamagorbo", {"color": "#ff9f5c", "bodyR": 1.1, "talkR": 3.8, "goo": ["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]}, [34, 28.40]],
@@ -8120,13 +8218,17 @@ const JGP = (() => {
 		// a little gold envelope for a badge
 		const cap = new THREE.Group();
 		(cap.position.y = 0.7), (cap.rotation.x = -0.08), puff.add(cap);
+		// (the crown's top, the piping and the badge's flap meet the parts under them in the same surface:
+		// each is drawn a hair nearer in depth (a polygon offset, no change to its shape), so they never flicker)
 		const navy = KIT.surf("felt", "#2a3a6a", { rep: 2, bump: 0.02, shine: 15 }),
+			ahead = (m) => Object.assign(m.clone(), { polygonOffset: !0, polygonOffsetFactor: -1, polygonOffsetUnits: -4 }),
 			blackM = x.clay("#141418", { shininess: 90, specular: 8947848 }),
-			goldM = x.clay("#e8b830", { shininess: 90, specular: 16777215 });
+			goldM = x.clay("#e8b830", { shininess: 90, specular: 16777215 }),
+			pipe = ahead(x.clay("#f6f4ee"));
 		R(T.cyl(0.5, 0.48, 0.22, 28), x.clay("#1e2440", { shininess: 30 }), cap, [0, 0.07, 0]);
-		R(T.cyl(0.6, 0.5, 0.2, 28), navy, cap, [0, 0.27, 0]), R(T.cyl(0.6, 0.6, 0.05, 28), navy, cap, [0, 0.39, 0]);
-		R(T.torus(0.6, 0.018, 6, 32), x.clay("#f6f4ee"), cap, [0, 0.37, 0], [Math.PI / 2, 0, 0]);
-		R(T.torus(0.495, 0.015, 6, 32), x.clay("#f6f4ee"), cap, [0, 0.17, 0], [Math.PI / 2, 0, 0]);
+		R(T.cyl(0.6, 0.5, 0.2, 28), navy, cap, [0, 0.27, 0]), R(T.cyl(0.6, 0.6, 0.05, 28), ahead(navy), cap, [0, 0.39, 0]);
+		R(T.torus(0.6, 0.018, 6, 32), pipe, cap, [0, 0.37, 0], [Math.PI / 2, 0, 0]);
+		R(T.torus(0.495, 0.015, 6, 32), pipe, cap, [0, 0.17, 0], [Math.PI / 2, 0, 0]);
 		// (the visor is a thin solid half-disc, so it shows from every side, above and below)
 		R(new THREE.CylinderGeometry(0.5, 0.5, 0.03, 24, 1, !1, -Math.PI / 2, Math.PI), blackM, cap, [0, 0.0, 0.42], [0.38, 0, 0], [1, 1, 0.75]);
 		R(T.box(0.62, 0.035, 0.03), blackM, cap, [0, 0.0, 0.48], [0, 0, 0]);
@@ -8137,7 +8239,7 @@ const JGP = (() => {
 		R(T.box(0.2, 0.13, 0.024), goldM, badge);
 		const flap = new THREE.Shape([new THREE.Vector2(-0.1, 0.065), new THREE.Vector2(0.1, 0.065), new THREE.Vector2(0, -0.012)]),
 			fold = x.clay("#c8962a", { shininess: 70, specular: 16777215 });
-		R(new THREE.ExtrudeGeometry(flap, { depth: 0.008, bevelEnabled: !1 }), goldM, badge, [0, 0, 0.012]);
+		R(new THREE.ExtrudeGeometry(flap, { depth: 0.008, bevelEnabled: !1 }), ahead(goldM), badge, [0, 0, 0.012]);
 		[-1, 1].forEach((sx) => {
 			R(T.box(0.112, 0.007, 0.006), fold, badge, [0.05 * sx, 0.027, 0.022], [0, 0, 0.66 * sx]);
 			R(T.box(0.1, 0.007, 0.004), fold, badge, [0.052 * sx, -0.038, 0.014], [0, 0, -0.5 * sx]);
@@ -8240,7 +8342,8 @@ const JGP = (() => {
 				// lying (0 standing to 1 on her side): only resting at her own spot
 				const rest =
 					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && !me.active && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
-				lie += ((rest ? 1 : 0) - lie) * Math.min(1, 1.3 * (dt || 0.016));
+				// (settling slowly, getting up quickly when she is wanted: the Event waits till she is up, see ent.lieK)
+				lie += ((rest ? 1 : 0) - lie) * Math.min(1, (rest ? 1.3 : 4) * (dt || 0.016));
 				// (she rolls over while still floating, then settles down onto her side, so her tentacles are
 				// already off to the side as she comes down; getting up goes the other way)
 				const sm = (u) => ((u = Math.min(1, Math.max(0, u))), u * u * (3 - 2 * u)),
@@ -8250,6 +8353,8 @@ const JGP = (() => {
 					cs = Math.cos(th),
 					fy = (1 - s) * (1.35 + 0.1 * Math.sin(1.2 * t));
 				(fl.position.y = fy), (root.rotation.z = th);
+				// (lying, she reaches 1.5 m from her middle: what bumps into her keeps out of her cap and tentacles)
+				ent && ((ent.lieK = lie), (ent.lieR = 1.55 * s));
 				// (lifted just enough that her lowest point clears the ground, and kept over her spot)
 				root.position.set(fy * sn, Math.max(0, 0.03 - fy * cs - lowFor(lowAt, th), Math.min(1, 3 * sn) * (0.03 - fy * cs - lowFor(tentAt, th))), 0);
 				puff.scale.set(1 + 0.02 * br, 1 - 0.02 * br, 1);
@@ -8274,17 +8379,22 @@ const JGP = (() => {
 				tents.forEach((tg, k) => {
 					const ud = tg.userData,
 						p0 = tg.position,
-						clear = () => ud.pts.every((q) => (tv.copy(q).applyQuaternion(tg.quaternion), root.position.y + (p0.x + tv.x) * sn + (fy + p0.y + tv.y) * cs >= 0.02));
+						clear = () => {
+							for (let j = 0; j < ud.pts.length; j++) if ((tv.copy(ud.pts[j]).applyQuaternion(tg.quaternion), root.position.y + (p0.x + tv.x) * sn + (fy + p0.y + tv.y) * cs < 0.02)) return !1;
+							return !0;
+						};
 					tq.setFromEuler(te.set(0.18 * Math.sin(1.4 * t + k), 0, 0.12 * Math.sin(1.1 * t + 2 * k)));
 					// (searching on from just under last frame's angle, it takes only a step or two; drooping
 					// less if splaying alone cannot clear the ground)
 					let th2 = Math.max(0, (ud.th || 0) - 0.06),
 						ok = !1;
-					for (let d = 0; d < 4 && !ok; d++, th2 = 0)
+					for (let d = 0; d < 4 && !ok; d++) {
+						d && (th2 = 0);
 						for (; th2 < 1.5; th2 += 0.02) {
 							tg.quaternion.setFromAxisAngle(ud.ax, th2).premultiply(dqs[d]).multiply(tq);
 							if ((ok = clear())) break;
 						}
+					}
 					ud.th = th2;
 				});
 				hands.forEach((h, k) => (h.position.y = -0.18 + 0.05 * Math.sin(1.8 * t + k * 2) + 0.1 * tk));
@@ -9295,6 +9405,9 @@ const JGP = (() => {
 			head,
 			lids,
 			step(t, dt, tk, wk) {
+				// she floats a little above the ground, rising and settling gently, so not even the coils of her
+				// tails ever touch it (at their lowest, swaying, they come 4 cm short of it)
+				root.position.y = 0.08 + 0.03 * Math.sin(0.9 * t);
 				(body.position.y = 0.03 * Math.sin(1.4 * t) + 0.03 * wk * Math.abs(Math.sin(6 * t))), (head.rotation.y = 0.12 * Math.sin(0.7 * t)), (head.rotation.x = 0.05 * Math.sin(1.1 * t));
 				jaw.rotation.x = 0.22 + 0.06 * Math.sin(1.9 * t) + 0.3 * tk;
 				wings.forEach(({ w, sx, pair }) => ((w.rotation.z = sx * (0.07 * Math.sin(1.5 * t + 0.6 * pair) + 0.25 * wk * Math.sin(5.5 * t + 0.6 * pair))), (w.rotation.y = -sx * 0.05 * Math.sin(1.5 * t + pair))));
@@ -10156,8 +10269,9 @@ const JGP = (() => {
 				"string" == typeof d.via && /^kiosk:/.test(d.via) && (d.via = KIOSK_AT.exit(d.via.slice(6)));
 				"string" == typeof d.via && /^kiosk-front:/.test(d.via) && (d.via = KIOSK_AT.front(d.via.slice(12)));
 				"function" == typeof d.via && (d.via = d.via());
-				// no Flint or Blossoms under a creature: its spot is kept clear
-				E.add(at[0], at[1], 2.4, "still");
+				// no Flint or Blossoms under a creature: its spot is kept clear (not for the roamers, who leave
+				// their first spots: the Dancers' floor and HENNRICK's Portal are kept clear as a whole)
+				/^(gratelet|p_gemtoe|p_mamagorbo|gorbo|p_etcher|p_glyph|w_mont)$/.test(id) || E.add(at[0], at[1], 2.4, "still");
 				// one Blossom option for everyone (no quest items for now)
 				d.gift = "Placeholder 1";
 			});
@@ -10259,24 +10373,28 @@ const JGP = (() => {
 	// his speech. (LIB_LAYOUT gives the footprints, for the colliders.)
 	const LIB_LAYOUT = (() => {
 		// bookcases: [centre x, centre z, along z?]; each is 2.2 m long and 0.56 m deep
-		// (about a metre of open floor between the bookcases of a set, and two between the sets)
+		// (spaced well apart: 1.8 m between the two of a pair, 2.2 m between the front and back rows, 1.6 m
+		// between the cases down each side, and over 3 m between the middle and the sides)
 		const cases = [
-				[-1.6, -3.0, 0],
-				[1.6, -3.0, 0],
-				[-1.6, -5.0, 0],
-				[1.6, -5.0, 0],
-				[-5.0, -0.4, 1],
-				[-5.0, -3.6, 1],
-				[5.0, -0.4, 1],
-				[5.0, -3.6, 1],
+				[-2.0, -3.2, 0],
+				[2.0, -3.2, 0],
+				[-2.0, -6.0, 0],
+				[2.0, -6.0, 0],
+				[-6.4, -0.2, 1],
+				[-6.4, -4.0, 1],
+				[6.4, -0.2, 1],
+				[6.4, -4.0, 1],
 			],
 			rect = ([cx, cz, al]) => (al ? [cx - 0.3, cz - 1.12, cx + 0.3, cz + 1.12] : [cx - 1.12, cz - 0.3, cx + 1.12, cz + 0.3]);
 		return {
 			cases,
 			table: [-1.75, 0.1],
-			posts: [-1.7, 1.7].map((px) => [px, -6.0]),
-			parts: [...cases.map(rect), [-2.18, -0.62, -1.32, 0.82], [-1.8, -6.1, -1.6, -5.9], [1.6, -6.1, 1.8, -5.9]],
-			hull: [-5.35, -6.15, 5.35, 0.85],
+			posts: [-1.7, 1.7].map((px) => [px, -7.4]),
+			parts: [...cases.map(rect), [-2.18, -0.62, -1.32, 0.82], [-1.8, -7.5, -1.6, -7.3], [1.6, -7.5, 1.8, -7.3]],
+			hull: [-6.75, -7.55, 6.75, 0.95],
+			// the rug over the reading ground (its fringe reaches 0.2 m past each end) and the height of its top
+			rug: [-5.5, -6.8, 5.5, 1.0],
+			rugTop: 0.03,
 		};
 	})();
 	function buildLibrary(o) {
@@ -10322,17 +10440,230 @@ const JGP = (() => {
 			list.forEach(([color, px, py, pz, w, h, d, rx, ry2, rz]) => G.box(color, cx + px * cs + pz * sn, py, cz - px * sn + pz * cs, w, h, d, rx, ry + ry2, rz));
 		};
 		LIB_LAYOUT.cases.forEach(bookcase);
+		// THE RUG over the reading ground, under the bookcases and the table, woven from the Buns' clothes in
+		// Greeblis Woods: Miss Bun's red floral print for the field, edged with her lace and her gold-dotted
+		// braid, and a border, corner pieces and a medallion in Mr Bun's jacket green sprinkled with the
+		// specks of his shirt, her cream bow in the middle, and a cream fringe at each end. It is a slab 4 cm
+		// thick with its top 3 cm up (1 cm over a walk and 5 cm over the lawn, so it never flickers against
+		// either); creatures stand on it (JGP.groundAt) and no lawn tufts grow through it.
+		{
+			const [r0, r1, r2, r3] = LIB_LAYOUT.rug,
+				RW = r2 - r0,
+				RD = r3 - r1,
+				K = RW / RD,
+				W = 512,
+				H = 512 / K,
+				B = 40,
+				CREAM = "#f3eee2",
+				FIELD = "#a8202a",
+				GOLD = "#c9a13a",
+				// a Woods print: a 128-pixel tile of n little ellipses (and a bud beside each in Miss Bun's), each
+				// drawn again across the tile's edges so the print repeats without a seam
+				print = (base, seed, n, cols, size, ry, bud) => {
+					const k = document.createElement("canvas");
+					k.width = k.height = 128;
+					const q = k.getContext("2d"),
+						rn = srand(seed);
+					(q.fillStyle = base), q.fillRect(0, 0, 128, 128);
+					for (let j = 0; j < n; j++) {
+						const px = 128 * rn(),
+							py = 128 * rn(),
+							sz = size(rn),
+							ro = 3 * rn();
+						q.fillStyle = cols[j % cols.length];
+						for (const ox of [-128, 0, 128])
+							for (const oy of [-128, 0, 128]) {
+								q.beginPath(), q.ellipse(px + ox, py + oy, sz, ry * sz, ro, 0, l), q.fill();
+								bud && (q.beginPath(), q.arc(px + ox + 0.8 * sz, py + oy - 0.4 * sz, 0.35 * sz, 0, l), q.fill());
+							}
+					}
+					return k;
+				},
+				MISS = print(FIELD, 29, 34, ["#2e8a5a", "#e8b94a", "#f2e6d2", "#1f2f5a", "#e05a3a"], (rn) => 3 + 5 * rn(), 0.55, !0),
+				MR = print("#2f4a2c", 11, 26, ["#2e8a5a", "#e8c14a", "#f2e6d2", "#7a1414"], () => 6, 0.58, !1),
+				tex = b(
+					512,
+					512,
+					(c) => {
+						c.scale(1, K);
+						// fill a shape with a print, at 0.6 of its size
+						const paint = (img, path) => {
+								c.save(), c.beginPath(), path(), c.clip(), c.scale(0.6, 0.6), (c.fillStyle = c.createPattern(img, "repeat")), c.fillRect(0, 0, W / 0.6, H / 0.6), c.restore();
+							},
+							// Miss Bun's gold-dotted braid along a path
+							braid = (path) => {
+								(c.strokeStyle = CREAM), (c.lineWidth = 6), c.beginPath(), path(), c.stroke();
+								(c.strokeStyle = GOLD), (c.lineWidth = 2), c.setLineDash([3, 3]), c.beginPath(), path(), c.stroke(), c.setLineDash([]);
+							},
+							// a run of Miss Bun's lace, len long, from (x0, y0) along angle a, its scallops to the left of
+							// the way it runs (into the field), with its holes showing the field through
+							lace = (x0, y0, a, len) => {
+								c.save(), c.translate(x0, y0), c.rotate(a), c.scale(0.6, 0.6);
+								(c.fillStyle = CREAM), c.fillRect(0, 0, len / 0.6, 10);
+								for (let e = 0; e < len / 0.6 - 8; e += 16) c.beginPath(), c.arc(e + 8, 14, 9, 0, l), c.fill();
+								c.fillStyle = FIELD;
+								for (let e = 0; e < len / 0.6 - 8; e += 16) c.beginPath(), c.arc(e + 8, 15, 3, 0, l), c.fill(), c.beginPath(), c.arc(e + 3, 6, 1.6, 0, l), c.fill();
+								c.restore();
+							},
+							rect = (d) => () => c.rect(d, d, W - 2 * d, H - 2 * d),
+							mx = W / 2,
+							my = H / 2;
+						// the binding, then the field in her floral print, its lace round the edge
+						(c.fillStyle = "#1f2f5a"), c.fillRect(0, 0, W, H);
+						paint(MISS, rect(B));
+						lace(B, B, 0, W - 2 * B), lace(W - B, B, Math.PI / 2, H - 2 * B), lace(W - B, H - B, Math.PI, W - 2 * B), lace(B, H - B, -Math.PI / 2, H - 2 * B);
+						// a quarter medallion in each corner of the field, rimmed with braid
+						[[B, B], [W - B, B], [W - B, H - B], [B, H - B]].forEach(([cx, cy]) => {
+							const arc = () => c.ellipse(cx, cy, 44, 36, 0, 0, l);
+							c.save(), c.beginPath(), rect(B)(), c.clip(), paint(MR, arc), braid(arc), c.restore();
+						});
+						// the border in his print between two braids
+						paint(MR, () => (c.rect(4, 4, W - 8, H - 8), c.rect(B, H - B, W - 2 * B, 2 * B - H)));
+						braid(rect(8)), braid(rect(B - 3));
+						// the medallion: a ring of lace round it, his print, a braid round its rim and another inside
+						const ring = (rx, ry) => () => c.ellipse(mx, my, rx, ry, 0, 0, l),
+							N = 44;
+						c.fillStyle = CREAM;
+						for (let k = 0; k < N; k++) {
+							const a = (k / N) * l;
+							c.beginPath(), c.arc(mx + 99 * Math.cos(a), my + 69 * Math.sin(a), 5.4, 0, l), c.fill();
+						}
+						(c.strokeStyle = CREAM), (c.lineWidth = 7), c.beginPath(), ring(94, 64)(), c.stroke();
+						c.fillStyle = FIELD;
+						for (let k = 0; k < N; k++) {
+							const a = ((k + 0.5) / N) * l;
+							c.beginPath(), c.arc(mx + 100 * Math.cos(a), my + 70 * Math.sin(a), 1.8, 0, l), c.fill();
+						}
+						paint(MR, ring(92, 62)), braid(ring(92, 62)), braid(ring(62, 40));
+						// her cream chest bow in the middle: two loops, two tails and the knot
+						c.save(), c.translate(mx, my), (c.fillStyle = "#f2e6d2"), (c.strokeStyle = "#c8b890"), (c.lineWidth = 1.5);
+						[-1, 1].forEach((sd) => {
+							c.beginPath(), c.moveTo(0, 0), c.lineTo(sd * 14, 24), c.lineTo(sd * 6, 26), c.closePath(), c.fill(), c.stroke();
+							c.beginPath(), c.ellipse(sd * 15, -2, 15, 9, sd * 0.25, 0, l), c.fill(), c.stroke();
+						});
+						c.beginPath(), c.arc(0, 0, 6, 0, l), c.fill(), c.stroke(), c.restore();
+						// a soft weave over it all
+						const rn = srand(808);
+						for (let k = 0; k < 5000; k++) (c.fillStyle = rn() < 0.5 ? "rgba(0,0,0,.07)" : "rgba(255,255,255,.05)"), c.fillRect(W * rn(), H * rn(), 1.2, 0.9);
+					},
+					{ smooth: !0 },
+				),
+				edge = x.world("#1f2f5a");
+			R(T.box(RW, 0.04, RD), [edge, edge, new THREE.MeshLambertMaterial({ map: tex }), edge, edge, edge], o, [(r0 + r2) / 2, LIB_LAYOUT.rugTop - 0.02, (r1 + r3) / 2]);
+			// the fringe: cream tassels lying on the lawn at each end, tucked 2 cm under the slab
+			[-1, 1].forEach((sd) => {
+				for (let pz = r1 + 0.07; pz < r3 - 0.05; pz += 0.09) {
+					const len = 0.16 + 0.06 * rs();
+					G.box(rs() < 0.5 ? "#efe6cc" : "#e2d6b4", (r0 + r2) / 2 + sd * (RW / 2 - 0.02 + len / 2), -0.004, pz, len, 0.016, 0.035, 0, 0.12 * (rs() - 0.5), 0);
+				}
+			});
+		}
 		// the LIBRARY banner on two posts behind the back row of bookcases, high enough to show over
 		// them, facing the square
 		const th = { sign: "LIBRARY", ink: "#2a3e6a" },
 			white = x.clay("#f6f2e8", { shininess: 30 });
 		LIB_LAYOUT.posts.forEach(([px, pz]) => R(T.box(0.14, 4.3, 0.14), white, o, [px, 2.15, pz]));
-		R(T.box(3.7, 0.95, 0.08), white, o, [0, 3.75, -6.0]), R(T.plane(3.5, 0.88), x.world(16777215, { map: kioskSignTex(th) }), o, [0, 3.75, -5.95]);
+		R(T.box(3.7, 0.95, 0.08), white, o, [0, 3.75, -7.4]), R(T.plane(3.5, 0.88), x.world(16777215, { map: kioskSignTex(th) }), o, [0, 3.75, -7.35]);
 		// the reading table that the Ancient Artifacts are shown on (top y = 0.82)
 		const [tx, tz] = LIB_LAYOUT.table;
 		G.box(wood, tx, 0.8, tz, 0.8, 0.05, 1.38);
 		[-1, 1].forEach((a) => [-1, 1].forEach((b2) => G.box(dark, tx + 0.33 * a, 0.39, tz + 0.62 * b2, 0.06, 0.78, 0.06)));
 		G.done(o);
+	}
+
+	// NO Z-FIGHTING IN MERGED SCENERY (Greeblis Park's load-time fix): given the parts of a merge ({geo, matrix},
+	// world or merge space), every part's flat faces are grouped by plane; wherever two parts have faces in
+	// the same plane (within 4 mm) overlapping by more than a centimetre each way, the smaller part moves.
+	// Faces looking the same way (a sign, a window or a mat lying on a wall or a pavement, a cubby's back on
+	// its frame) both show, so the smaller one stands 8 mm proud of the bigger; faces pressed back to back
+	// (a box standing on another) are hidden, and the smaller one sinks 1 cm into the bigger. Up to three
+	// passes, as moving one part can bring it onto another. Used on the town's bins and every goods() merge
+	// (the kiosks, the Library, the Juice Bar, the drum kit); never on a creature.
+	function unfightParts(all) {
+		const t0 = performance.now(),
+			V3 = THREE.Vector3,
+			a = new V3(),
+			b2 = new V3(),
+			c = new V3(),
+			n = new V3(),
+			e1 = new V3(),
+			e2 = new V3(),
+			// a part's flat faces, grouped by plane in world space; kept until the part moves. Planes are keyed by
+			// number: the normal in 1/40ths (folded to one side, with which side kept apart) and the offset in 5 mm steps
+			cache = new Map(),
+			planesOf = (pt) => {
+				let got = cache.get(pt);
+				if (got) return got;
+				const P = pt.geo.attributes.position,
+					I = pt.geo.index,
+					cnt = I ? I.count : P.count,
+					m = pt.matrix,
+					out = new Map();
+				if (cnt > 3000) return cache.set(pt, []), [];
+				for (let k = 0; k < cnt; k += 3) {
+					a.fromBufferAttribute(P, I ? I.getX(k) : k).applyMatrix4(m);
+					b2.fromBufferAttribute(P, I ? I.getX(k + 1) : k + 1).applyMatrix4(m);
+					c.fromBufferAttribute(P, I ? I.getX(k + 2) : k + 2).applyMatrix4(m);
+					n.crossVectors(e1.subVectors(b2, a), e2.subVectors(c, a));
+					const ar = n.length() / 2;
+					if (ar < 2e-4) continue;
+					n.normalize();
+					const ax = Math.abs(n.x) >= Math.abs(n.y) && Math.abs(n.x) >= Math.abs(n.z) ? n.x : Math.abs(n.y) >= Math.abs(n.z) ? n.y : n.z,
+						sg = ax < 0 ? -1 : 1,
+						d = sg * n.dot(a),
+						key = ((Math.round(sg * n.x * 40) + 40) * 81 + Math.round(sg * n.y * 40) + 40) * 81 + Math.round(sg * n.z * 40) + 40,
+						id = (key * 2 + (sg > 0 ? 1 : 0)) * 4e6 + Math.round(d * 200) + 2e6;
+					let pl = out.get(id);
+					if (!pl) {
+						const cn = n.clone().multiplyScalar(sg),
+							u = (Math.abs(cn.y) < 0.9 ? new V3(0, 1, 0) : new V3(1, 0, 0)).cross(cn).normalize();
+						out.set(id, (pl = { key, d, n: n.clone(), area: 0, u, v: cn.clone().cross(u), r: [1e9, -1e9, 1e9, -1e9], pt }));
+					}
+					pl.area += ar;
+					for (let j = 0; j < 3; j++) {
+						const q = j ? (j > 1 ? c : b2) : a,
+							qu = q.dot(pl.u),
+							qv = q.dot(pl.v);
+						qu < pl.r[0] && (pl.r[0] = qu), qu > pl.r[1] && (pl.r[1] = qu), qv < pl.r[2] && (pl.r[2] = qv), qv > pl.r[3] && (pl.r[3] = qv);
+					}
+				}
+				got = [];
+				out.forEach((p0) => p0.area > 0.002 && got.push(p0));
+				return cache.set(pt, got), got;
+			},
+			size = (pt) => (pt.geo.boundingSphere || pt.geo.computeBoundingSphere(), pt.geo.boundingSphere.radius * pt.matrix.getMaxScaleOnAxis());
+		for (let pass = 0; pass < 3; pass++) {
+			// (buckets: the plane's normal and its offset in 5 mm steps; each is checked against itself and the next)
+			const byKey = new Map();
+			for (const pt of all)
+				for (const pl of planesOf(pt)) {
+					const k = pl.key * 4e6 + Math.round(pl.d * 200) + 2e6;
+					(byKey.get(k) || byKey.set(k, []).get(k)).push(pl);
+				}
+			const moved = new Set();
+			let n0 = 0;
+			byKey.forEach((list, k) => {
+				const nx = byKey.get(k + 1);
+				for (let i = 0; i < list.length; i++) {
+					const p0 = list[i];
+					for (let j = i + 1, L2 = list.length + (nx ? nx.length : 0); j < L2; j++) {
+						const q = j < list.length ? list[j] : nx[j - list.length];
+						if (p0.pt === q.pt || moved.has(p0.pt) || moved.has(q.pt) || Math.abs(p0.d - q.d) > 0.004) continue;
+						if (Math.min(p0.r[1], q.r[1]) - Math.max(p0.r[0], q.r[0]) < 0.01 || Math.min(p0.r[3], q.r[3]) - Math.max(p0.r[2], q.r[2]) < 0.01) continue;
+						const [big, small] = size(p0.pt) >= size(q.pt) ? [p0, q] : [q, p0],
+							step = big.n.dot(small.n) > 0 ? 0.008 : -0.01;
+						small.pt.matrix = small.pt.matrix.clone();
+						const el = small.pt.matrix.elements;
+						(el[12] += big.n.x * step), (el[13] += big.n.y * step), (el[14] += big.n.z * step);
+						cache.delete(small.pt), moved.add(small.pt), n0++;
+					}
+				}
+			});
+			unfightParts.moved = (unfightParts.moved || 0) + n0;
+			if (!n0) break;
+		}
+		// (how many parts it moved, and how long it has taken in all: for the tests)
+		unfightParts.ms = (unfightParts.ms || 0) + performance.now() - t0;
 	}
 
 	// small goods are collected per kiosk and merged into one vertex-coloured mesh
@@ -10345,7 +10676,7 @@ const JGP = (() => {
 			m,
 			add: (geo, color, mat) => list.push({ geo, color, matrix: mat }),
 			box: (color, px, py, pz, w, h, d, rx = 0, ry = 0, rz = 0) => list.push({ geo: UBX, color, matrix: m(px, py, pz, rx, ry, rz, w, h, d) }),
-			done: (o) => list.length && R(v(list), V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })), o),
+			done: (o) => list.length && (unfightParts(list), R(v(list), V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })), o)),
 		};
 	};
 	const capGeo = new THREE.SphereGeometry(1, 16, 8, 0, l, 0, Math.PI / 2),
@@ -10481,6 +10812,34 @@ const JGP = (() => {
 				G.add(G.UBX, "#b88a52", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, sz, 0.65 * sz, 0.8 * sz)));
 				G.add(G.UBX, "#e8dcb0", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, sz + 0.012, 0.65 * sz + 0.012, 0.025))), G.add(G.UBX, "#e8dcb0", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, 0.025, 0.65 * sz + 0.012, 0.8 * sz + 0.012)));
 			});
+			// ONE parcel that can be read: kraft paper and twine, sat on the heap's open end, with a white paper
+			// label addressed "To Clipston" facing out (the label stands 6 mm proud of the box, so the two
+			// never flicker against each other)
+			{
+				const P = new THREE.Group(),
+					px = 2.55,
+					pz = -4.9;
+				P.position.set(px, mound(px, pz) + 0.13, pz), (P.rotation.y = Math.PI / 2 - 0.25), (P.rotation.z = -0.12), o.add(P);
+				const kraft = KIT.surf("fabric", "#b8864e", { rep: 1, bump: 0.02, shine: 8 }),
+					twine = x.clay("#e2d4a8", { shininess: 10 });
+				R(T.box(0.62, 0.36, 0.46), kraft, P);
+				// (the twine stands a centimetre proud of the paper all round)
+				R(T.box(0.64, 0.38, 0.02), twine, P), R(T.box(0.02, 0.38, 0.48), twine, P);
+				const tag = b(
+					256,
+					128,
+					(c) => {
+						(c.fillStyle = "#fbf8ee"), c.fillRect(0, 0, 256, 128), (c.strokeStyle = "#c8b890"), (c.lineWidth = 4), c.strokeRect(4, 4, 248, 120);
+						(c.fillStyle = "#c8282a"), c.fillRect(200, 12, 42, 32), (c.fillStyle = "#fbf8ee"), c.fillRect(206, 18, 30, 20);
+						(c.fillStyle = "#1e2440"), (c.textAlign = "center"), (c.textBaseline = "middle"), (c.font = "italic bold 40px Georgia, serif");
+						c.fillText("To Clipston", 118, 70);
+						(c.strokeStyle = "#5a6070"), (c.lineWidth = 2), c.beginPath(), c.moveTo(30, 100), c.lineTo(206, 100), c.stroke();
+					},
+					{ smooth: !0 },
+				);
+				// (on the left half of the face, clear of the twine)
+				R(T.box(0.26, 0.13, 0.004), new THREE.MeshLambertMaterial({ map: tag }), P, [-0.16, 0.02, 0.234]);
+			}
 			// tall stacks leaning on its sides
 			[[-3.0, -3.3, 0.9], [3.05, -3.6, 1.1], [-3.05, -5.9, 0.8], [2.9, -6.1, 0.7]].forEach(([px, pz, h]) => stack(px, 0, pz, h, 0.3));
 			// the avalanche round its foot
@@ -11001,6 +11360,19 @@ const JGP = (() => {
 		garden = { slots: [], plants: [], startAt: 0, round: 0 },
 		// the three Dancers, who wander the dance floor
 		FLOOR_ROAMERS = ["p_etcher", "p_glyph", "w_mont"],
+		// the keep-clear zones a roamer stays out of, sorted once (rebuilt if any are added): solid ones
+		// (scenery, the pond, the phone, the Library, the drum kit) and the creatures' spots and the Portal
+		roamZones = (() => {
+			let n = -1,
+				Z = null;
+			return () => {
+				if (n === E.list.length) return Z;
+				n = E.list.length;
+				return (Z = { solid: E.list.filter((q) => /^(scenery|pool|phone|stump|drums)$/.test(q.tag)), spots: E.list.filter((q) => /^(still|portal)$/.test(q.tag)) });
+			};
+		})(),
+		// the park's wanderers (they keep clear of one another)
+		PARK_ROAMERS = ["p_gemtoe", "p_mamagorbo", "gorbo"],
 		// (a park wanderer's walk never crosses the dance floor)
 		offFloor = (r) => (x, z) => !(JGP.onDance && JGP.onDance(x, z, r + 0.3));
 	// The church stands at the end of the south walk: its back to the south fence, its steps (and the Traveler window over the door) facing
@@ -11483,11 +11855,21 @@ const JGP = (() => {
 			wood = KIT.surf("wood", "#8a5a30", { rep: 1, shine: 12 });
 		R(T.circle(GARDEN_R, 48), soil, o, [0, 0.02, 0], [-Math.PI / 2, 0, 0]);
 		// border of stones
-		const nb = Math.floor((l * GARDEN_R) / 1.3);
+		// (each stone's centre, reach and top are kept for JGP.groundAt, so creatures crossing the border
+		// step up over a stone and down between them)
+		const nb = Math.floor((l * GARDEN_R) / 1.3),
+			sv = new THREE.Vector3();
+		garden.stones = [];
 		for (let k = 0; k < nb; k++) {
 			const a = (k / nb) * l,
-				s = 0.28 + 0.1 * Math.sin(3.7 * k);
-			R(T.dodeca(s, 1), k % 4 ? stone : moss, o, [(GARDEN_R + 0.15) * Math.cos(a), 0.1, (GARDEN_R + 0.15) * Math.sin(a)], [k, 2 * k, 0], [1.3, 0.7, 1]);
+				s = 0.28 + 0.1 * Math.sin(3.7 * k),
+				m = R(T.dodeca(s, 1), k % 4 ? stone : moss, o, [(GARDEN_R + 0.15) * Math.cos(a), 0.1, (GARDEN_R + 0.15) * Math.sin(a)], [k, 2 * k, 0], [1.3, 0.7, 1]),
+				P = m.geometry.attributes.position;
+			m.updateMatrix();
+			let reach = 0,
+				top = 0;
+			for (let j = 0; j < P.count; j++) sv.fromBufferAttribute(P, j).applyMatrix4(m.matrix), (reach = Math.max(reach, Math.hypot(sv.x - m.position.x, sv.z - m.position.z))), (top = Math.max(top, sv.y));
+			garden.stones.push([m.position.x, m.position.z, reach, top]);
 		}
 		// tilled rows: raised rings every 2 m, with a planting slot every ~1.4 m along each
 		for (let r = 2.6, ri = 0; r < GARDEN_R - 1; r += 2, ri++) {
@@ -11587,34 +11969,152 @@ const JGP = (() => {
 		});
 		garden.stone = g;
 	}
-	// THE PLANTS (placeholder): for now one kind of generic plant grows, a green stem with two pairs of
-	// leaves and a closed bud on top. Nothing grows unless the Seeds quest is done (without the Seeds
-	// nobody comes to plant); with them, what grows is what the creatures plant, each plant coming up
-	// during the Event right where its creature was seen planting it. The first two Events each grow a
-	// batch (the second in fresh rows); from the third on they only go through the motions. (All of them
-	// share one mesh.)
-	const plantGeo = () => {
-		if (garden.geo) return garden.geo;
+	// THE PLANTS (placeholders, while the real designs are worked on): five kinds, each its own shape and
+	// colours, one merged vertex-coloured mesh per kind (every plant of a kind shares it). Nothing grows
+	// unless the Seeds quest is done (without the Seeds nobody comes to plant); with them, what grows is
+	// what the creatures plant, each plant coming up during the Event right where its creature was seen
+	// planting it, of a kind picked at random. The first two Events each grow a batch (the second in fresh
+	// rows); from the third on they only go through the motions.
+	// Each kind stands on its own origin, its stem going into the soil there; nothing reaches lower than
+	// 0.11 m (0.26 m once drawn at PLANT_SIZE) except the stem, so the leaves stay clear of a garden row's
+	// ridge (13 cm at its crest).
+	// PLANT_KINDS: [name, colour for its Talk line, builder(add)] (see the test row, where each stands on show)
+	const PLANT_KINDS = (() => {
+		const M4 = THREE.Matrix4,
+			at = (x, y, z) => new M4().makeTranslation(x, y, z),
+			ry = (a) => new M4().makeRotationY(a),
+			rx = (a) => new M4().makeRotationX(a),
+			rz = (a) => new M4().makeRotationZ(a),
+			sc = (x, y, z) => new M4().makeScale(x, y, z),
+			mul = (...ms) => ms.reduce((a, b2) => a.multiply(b2), new M4()),
+			SPH = () => T.sphere(1, 10, 8),
+			stem = (add, h, col = "#3f8a2a", r = 0.02) => add(T.cyl(0.8 * r, r, h, 6), col, at(0, h / 2, 0)),
+			// a leaf: a flattened ellipsoid w wide and len long, its base at height y, reaching out at angle a
+			// and tipped up by tilt
+			leaf = (add, y, a, len, w, tilt, col) => add(SPH(), col, mul(at(0, y, 0), ry(a), rx(-tilt), at(0, 0, len / 2), sc(w, 0.012, len / 2))),
+			// n petals round a centre at height y (the head tipped by lean), each out at r and leaning out by tilt
+			ring = (add, n, y, r, tilt, size, col, a0 = 0, lean = 0) => {
+				for (let k = 0; k < n; k++) add(SPH(), "function" == typeof col ? col(k) : col, mul(at(0, y, 0), rx(lean), ry(a0 + (k / n) * l), at(0, 0, r), rx(tilt), sc(...size)));
+			};
+		return [
+			// PLANT #1: a red tulip cup, yellow inside, on a straight stem between two long blade leaves
+			["PLANT #1", "#e8301e", (add) => {
+				stem(add, 0.56);
+				[0, Math.PI].forEach((a, k) => add(SPH(), "#4f9a2a", mul(at(0, 0.13 + 0.04 * k, 0), ry(a), rz(0.32), at(0, 0.18, 0), sc(0.045, 0.2, 0.014))));
+				add(SPH(), "#f2c21a", mul(at(0, 0.58, 0), sc(0.03, 0.03, 0.03)));
+				ring(add, 3, 0.6, 0.026, 0.12, [0.045, 0.085, 0.02], "#c81e18", 0);
+				ring(add, 3, 0.605, 0.03, 0.22, [0.045, 0.085, 0.02], "#e8301e", Math.PI / 3);
+			}],
+			// PLANT #2: a daisy, white rays round a golden disc, its head tipped forward, over a rosette of leaves
+			["PLANT #2", "#f2c21a", (add) => {
+				stem(add, 0.64, "#4a9a30", 0.016);
+				for (let k = 0; k < 6; k++) leaf(add, 0.12 + 0.012 * (k % 2), (k / 6) * l + 0.3, 0.16, 0.035, 0.35, k % 2 ? "#4f9a2a" : "#5aa83a");
+				add(SPH(), "#3f8a2a", mul(at(0, 0.64, 0), rx(0.6), sc(0.032, 0.016, 0.032)));
+				ring(add, 14, 0.655, 0.07, -0.15, [0.018, 0.005, 0.05], (k) => (k % 2 ? "#ffffff" : "#f4f0e6"), 0, 0.6);
+				add(SPH(), "#f2c21a", mul(at(0, 0.655, 0), rx(0.6), at(0, 0.01, 0), sc(0.036, 0.016, 0.036)));
+			}],
+			// PLANT #3: a lupin, a tall spike of little bells, deep violet at the bottom to pale lilac at the
+			// tip, over a hand of narrow leaflets
+			["PLANT #3", "#7a5ae8", (add) => {
+				stem(add, 0.95, "#3f8a2a", 0.018);
+				for (let k = 0; k < 7; k++) leaf(add, 0.16, (k / 7) * l, 0.13, 0.022, 0.5, "#4f9a2a");
+				const lo = new THREE.Color("#4a32c8"),
+					hi = new THREE.Color("#d8ccff");
+				for (let j = 0; j < 8; j++) {
+					const u = j / 7,
+						c = "#" + lo.clone().lerp(hi, u).getHexString();
+					ring(add, 6 - (j >> 2), 0.46 + 0.065 * j, 0.05 - 0.035 * u, 0.5, [0.022, 0.03, 0.022], c, j * 0.5);
+				}
+				add(SPH(), "#e8e0ff", mul(at(0, 0.98, 0), sc(0.016, 0.03, 0.016)));
+			}],
+			// PLANT #4: pink bells hanging in a row from an arching stem, a fan of fern-like leaves below
+			["PLANT #4", "#ff5fb0", (add) => {
+				// the arch: a quarter circle from the top of the upright stem, out along +x and down
+				stem(add, 0.42, "#4a8a3a", 0.016);
+				const R0 = 0.3,
+					pt = (q) => [R0 - R0 * Math.cos(q), 0.42 + R0 * Math.sin(q)];
+				for (let k = 0; k < 6; k++) {
+					const q0 = (k / 6) * (Math.PI / 2),
+						q1 = ((k + 1) / 6) * (Math.PI / 2),
+						[x0, y0] = pt(q0),
+						[x1, y1] = pt(q1),
+						len = Math.hypot(x1 - x0, y1 - y0);
+					add(T.cyl(0.011, 0.013, len, 5), "#4a8a3a", mul(at((x0 + x1) / 2, (y0 + y1) / 2, 0), rz(-Math.atan2(x1 - x0, y1 - y0)), sc(1, 1, 1)));
+				}
+				[0.3, 0.6, 0.85, 1.1].forEach((q, k) => {
+					const [x, y] = pt(q),
+						h = 0.05 + 0.012 * k;
+					add(T.cyl(0.004, 0.004, h, 4), "#4a8a3a", at(x, y - h / 2, 0));
+					add(T.cone(0.045 - 0.004 * k, 0.07, 10), "#ff5fb0", at(x, y - h - 0.03, 0));
+					add(SPH(), "#ffffff", mul(at(x, y - h - 0.07, 0), sc(0.016, 0.022, 0.016)));
+				});
+				for (let k = 0; k < 5; k++) leaf(add, 0.13, (k / 5) * l + 0.6, 0.2, 0.05, 0.55, k % 2 ? "#5aa83a" : "#3f8a2a");
+			}],
+			// PLANT #5: a marigold bush, three stems of orange pompoms (gold-tipped frills round each)
+			// over a mound of dark leaves
+			["PLANT #5", "#ff8a1a", (add) => {
+				for (let k = 0; k < 7; k++) leaf(add, 0.12 + 0.02 * (k % 3), (k / 7) * l, 0.15, 0.045, 0.6, k % 2 ? "#2f6a22" : "#3a7a2a");
+				[[0, 0.48, 0], [0.09, 0.38, 2.1], [-0.08, 0.42, 4.2]].forEach(([dx, h, a]) => {
+					const m = mul(ry(a), at(Math.abs(dx), 0, 0));
+					add(T.cyl(0.012, 0.015, h, 5), "#3f7a2a", mul(m.clone(), at(0, h / 2, 0)));
+					add(SPH(), "#ff8a1a", mul(m.clone(), at(0, h + 0.04, 0), sc(0.055, 0.045, 0.055)));
+					const fr = (n, y, r, t, col) => {
+						for (let j = 0; j < n; j++) add(SPH(), col, mul(m.clone(), at(0, h + y, 0), ry((j / n) * l), at(0, 0, r), rx(t), sc(0.03, 0.02, 0.035)));
+					};
+					fr(10, 0.03, 0.045, 0.5, "#ffb02a"), fr(7, 0.065, 0.025, 0.9, "#ff9a1a");
+				});
+			}],
+		];
+	})();
+	// (every kind is drawn at 2.4 times the size it is modelled at above, so the plants stand out)
+	const PLANT_SIZE = 2.4;
+	const plantGeo = (kind) => {
+		const G0 = garden.geos || (garden.geos = []);
+		if (G0[kind]) return G0[kind];
 		const parts = [],
-			add = (geo, color, m) => parts.push({ geo, color, matrix: m });
-		add(T.cyl(0.022, 0.03, 0.62, 6), "#3f8a2a", S(0, 0.31, 0));
-		[0.2, 0.4].forEach((y, j) =>
-			[-1, 1].forEach((sd) => add(T.sphere(1, 8, 6), j ? "#5aa83a" : "#4f9a2a", S(0.1 * sd, y + 0.03, 0, 0, j * 1.2, -0.45 * sd, 0.13, 0.025, 0.06))),
-		);
-		add(T.sphere(1, 10, 8), "#7cc04a", S(0, 0.66, 0, 0, 0, 0, 0.07, 0.1, 0.07));
-		return (garden.geo = v(parts));
+			big = new THREE.Matrix4().makeScale(PLANT_SIZE, PLANT_SIZE, PLANT_SIZE);
+		PLANT_KINDS[kind][2]((geo, color, m) => parts.push({ geo, color, matrix: big.clone().multiply(m) }));
+		return (G0[kind] = v(parts));
 	};
-	function putPlant(x0, z0, ry, grow) {
+	const plantMat = () => garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 }));
+	function putPlant(x0, z0, ry, grow, kind) {
 		const g = new THREE.Group();
 		g.position.set(x0, 0.05, z0), (g.rotation.y = ry), g.scale.setScalar(0.01);
-		R(plantGeo(), garden.mat || (garden.mat = new THREE.MeshLambertMaterial({ vertexColors: !0 })), g);
+		R(plantGeo(kind), plantMat(), g);
 		(g.userData.keepInFinale = !0), C.add(g), gcEB.ready && _e(g);
-		const p = { g, grow, water: 0 };
+		const p = { g, grow, water: 0, kind };
 		return garden.plants.push(p), p;
+	}
+	// THE PLANT TEST ROW (for testing the plant designs): one of each kind on a little mound of soil,
+	// spaced along the east side where the old line-up stood (between the duck pond and the fence),
+	// facing in. Each has a Talk option (testing only) that says which plant it is.
+	function plantRow() {
+		const soil = x.clay("#5e4028", { shininess: 4 });
+		PLANT_KINDS.forEach(([name, col], k) => {
+			const X = 34,
+				Z = -12 + 5.77 * k,
+				g = new THREE.Group();
+			g.position.set(X, 0, Z), (g.rotation.y = -Math.PI / 2 + 0.5), (g.userData.keepInFinale = !0), (g.userData.jgpKeep = !0), C.add(g);
+			// (the mound is 16 cm high, and the plant's lowest leaves 31 cm up over it)
+			R(T.sphere(1, 20, 8), soil, g, [0, 0, 0], null, [0.85, 0.16, 0.85]);
+			R(plantGeo(k), plantMat(), g, [0, 0.05, 0]);
+			// (its collider is kept when the engine's scenery is cleared)
+			F.add(X, Z, 0.85), (F.list[F.list.length - 1].keep = !0), E.add(X, Z, 1.8, "scenery");
+			z.add({
+				id: "plant" + (k + 1),
+				x: X,
+				z: Z,
+				r: 3,
+				solidR: 0.85,
+				markerTop: () => 2.8,
+				label: () => "Talk",
+				run: () => qt.open(name, col, "I'm " + name.replace("PLANT", "Plant") + "."),
+			});
+		});
 	}
 	const PLANT_COLS = ["#e8301e", "#ffd23a", "#ff5fb0", "#9a6bff", "#ff8a1a"];
 	function makePlant(slot) {
-		const p = putPlant(slot.x + 0.15 * (rnd() - 0.5), slot.z + 0.15 * (rnd() - 0.5), rnd() * l, 0);
+		const p = putPlant(slot.x + 0.15 * (rnd() - 0.5), slot.z + 0.15 * (rnd() - 0.5), rnd() * l, 0, (rnd() * PLANT_KINDS.length) | 0);
 		return (slot.plant = p), p;
 	}
 	// unique planting animation per creature (same transform format as the old concert dances)
@@ -11690,9 +12190,8 @@ const JGP = (() => {
 	}
 	// called by the event when planting begins: everyone walks to a spot inside the garden, except
 	// FORTIZMO, who walks slowly from her bar to the garden's edge on the bar's side to play from there.
-	// Event 1 plants a batch; Event 2 plants a second batch in the rows Event 1 left bare (spots a
-	// metre further out, so the soil in front of each planter is on a fresh row, and turned half a
-	// space); from Event 3 on everyone goes back to their Event 1 spots and plants, but nothing more
+	// Event 1 plants a batch in the rows at 2.6, 6.6 and 10.6 m; Event 2 plants a second batch in the
+	// rows Event 1 left bare, 4.6, 8.6 and 12.6 m (spots 2 m further out, turned half a space); from Event 3 on everyone goes back to their Event 1 spots and plants, but nothing more
 	// comes up and the garden stays as it is.
 	function beginPlanting(list, now) {
 		const fz = list.find(noPlant);
@@ -11707,9 +12206,10 @@ const JGP = (() => {
 						[13.5, 99],
 					]
 				: [
-						[0.3 * GARDEN_R, 4],
-						[0.55 * GARDEN_R, 6],
-						[0.8 * GARDEN_R, 99],
+						// (the soil 0.9 m in front of each planter falls on rows 2.6, 6.6 and 10.6)
+						[3.5, 4],
+						[7.5, 6],
+						[11.5, 99],
 					],
 			spots = [];
 		let left = list.length;
@@ -11752,7 +12252,7 @@ const JGP = (() => {
 		},
 		eventActor = (ent) => !!ent && AT_POST.includes(ent.id);
 	function plantTick(ent, now) {
-		if (ent.moving || now < (ent.plantNext || 0) || ent.hornWant || ent.watching || noPlant(ent)) return;
+		if (ent.moving || now < (ent.plantNext || 0) || ent.hornWant || ent.watching || noPlant(ent) || ("dialogue" === jt.top && xe.lastTarget === ent)) return;
 		ent.plantNext = now + rr(5, 9);
 		ent.plantCount = (ent.plantCount || 0) + 1;
 		const p = ent.group.position;
@@ -11776,7 +12276,7 @@ const JGP = (() => {
 			const d = Math.hypot(sl.x - fx, sl.z - fz);
 			d < bd && ((bd = d), (best = sl));
 		}
-		if (best) makePlant(best), Ut.at(best.x, 0.7, best.z, "✿", f(PLANT_COLS));
+		if (best) makePlant(best), Ut.at(best.x, 1.7, best.z, "✿", f(PLANT_COLS));
 	}
 	L.push((tt, dt) => {
 		dt = dt || 0.016;
@@ -12279,7 +12779,7 @@ const JGP = (() => {
 								dz = pl.g.position.z - J.land.z;
 							if (dx * dx + dz * dz < 2.6) {
 								pl.wet = !0;
-								if (pl.grow >= 1 && !pl.bloomed) (pl.bloomed = !0), Math.random() < 0.35 && Ut.at(pl.g.position.x, 0.9, pl.g.position.z, "✿", f(PLANT_COLS));
+								if (pl.grow >= 1 && !pl.bloomed) (pl.bloomed = !0), Math.random() < 0.35 && Ut.at(pl.g.position.x, 2.5, pl.g.position.z, "✿", f(PLANT_COLS));
 							}
 						}
 				}
@@ -12348,7 +12848,7 @@ const JGP = (() => {
 		L.push((tt, dt) => {
 			// (an Event wrapped some other way, as by its time limit, leaves nothing pending for the next one)
 			me.active || (ending = 0);
-			if (ending && me.active && (!ee.playing || tt - ending > 15)) (ending = 0), me.wrap();
+			if (ending && me.active && ((!ee.playing && "dialogue" !== jt.top) || tt - ending > 15)) (ending = 0), me.wrap();
 			const live = me.active && bt.live;
 			// the event ended early (or was left): put everything away
 			active && !me.active && ((active = !1), hideAll());
@@ -12803,7 +13303,8 @@ const JGP = (() => {
 			talkedTo = (en) => "dialogue" === jt.top && xe.lastTarget === en;
 		function pick(now) {
 			const m = lineUp(),
-				ok = PAIRS.filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]));
+				// (only a pair within 25 m of each other: the roamers can be far apart)
+				ok = PAIRS.filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && m[pk[0]].group.position.distanceTo(m[pk[1]].group.position) < 25);
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
@@ -13094,7 +13595,7 @@ const JGP = (() => {
 		// obstacles that creatures path round and pickups avoid
 		for (let k = F.list.length - 1; k >= 0; k--) {
 			const f = F.list[k];
-			(f.scenery || !keepAt.some(([x0, z0]) => Math.hypot(f.x - x0, f.z - z0) < 6)) && F.list.splice(k, 1);
+			(f.scenery || (!f.keep && !keepAt.some(([x0, z0]) => Math.hypot(f.x - x0, f.z - z0) < 6))) && F.list.splice(k, 1);
 		}
 
 		const grp = new THREE.Group();
@@ -13161,7 +13662,7 @@ const JGP = (() => {
 			return geo.setAttribute("color", new THREE.BufferAttribute(col, 3)), geo;
 		};
 
-		// ground: flat prairie; lawns inside town, field lanes beyond (the fields are laid on top).
+		// ground: flat prairie; lawns inside town, paler grass beyond.
 		// Under the streets and sidewalks it drops a little so the curbs read.
 		{
 			const gN = 128,
@@ -13253,13 +13754,6 @@ const JGP = (() => {
 			metal: tiled("metal", (cx, sz) => {
 				for (let k = 0; k < sz; k++) (cx.fillStyle = grey(206 + 42 * Math.sin((k / sz) * 12 * l))), cx.fillRect(k, 0, 1, sz);
 			}),
-			rows: tiled("rows", (cx, sz, pr) => {
-				(cx.fillStyle = grey(140)), cx.fillRect(0, 0, sz, sz), fuzz(cx, sz, pr, 1500, 0.4, 90, 190);
-				for (let r = 0; r < 4; r++)
-					for (let k = 0; k < 420; k++)
-						(cx.fillStyle = grey(196 + 59 * pr())), (cx.globalAlpha = 0.85), cx.beginPath(), cx.arc(sz * pr(), (r * sz) / 4 + sz / 16 + (sz / 8) * pr(), 2 + 3 * pr(), 0, l), cx.fill();
-				cx.globalAlpha = 1;
-			}),
 			lawn: (() => {
 				const g2 = KIT.surf("grass", "#ffffff", { rep: 110 }).map.clone();
 				return g2.repeat.set(1, 1), (g2.needsUpdate = !0), g2;
@@ -13294,10 +13788,6 @@ const JGP = (() => {
 				(cx.fillStyle = "rgba(0,0,0,.14)"), cx.fillRect(0, 0.8 * h, w, 0.2 * h);
 			};
 		// tall items first so the shelves pack well
-		slot("wtower", 1024, 128, (cx, w, h) => {
-			cx.clearRect(0, 0, w, h), fitFont(cx, "GREEBLIS TOWN", 0.86 * w, 0.8 * h, SANS), (cx.textAlign = "center"), (cx.textBaseline = "middle");
-			(cx.lineWidth = 10), (cx.strokeStyle = "#ffffff"), cx.strokeText("GREEBLIS TOWN", w / 2, h / 2 + 4), (cx.fillStyle = "#1e3c6e"), cx.fillText("GREEBLIS TOWN", w / 2, h / 2 + 4);
-		});
 		slot("clock", 256, 256, (cx, w) => {
 			(cx.fillStyle = "#f2ede0"), cx.fillRect(0, 0, w, w), (cx.fillStyle = "#1a1a1e"), cx.beginPath(), cx.arc(128, 128, 124, 0, l), cx.fill();
 			(cx.fillStyle = "#fbf8ee"), cx.beginPath(), cx.arc(128, 128, 112, 0, l), cx.fill(), (cx.fillStyle = "#1a1a1e"), (cx.textAlign = "center"), (cx.textBaseline = "middle"), (cx.font = "bold 30px Georgia, serif");
@@ -13326,7 +13816,6 @@ const JGP = (() => {
 			oct(62, "#ffffff"), oct(56, "#c8202a"), (cx.fillStyle = "#ffffff"), (cx.font = "bold 34px Arial, sans-serif"), (cx.textAlign = "center"), (cx.textBaseline = "middle"), cx.fillText("STOP", 64, 66);
 		});
 		[
-			["s_hardware", "HARDWARE", "#2f5a3a", "#f4ecd0", { edge: "#d8c890" }],
 			["s_diner", "DINER", "#f6eed6", "#c22a2a", { edge: "#c22a2a", face: SANS }],
 			["s_barber", "BARBER", "#f8f6f0", "#1e3c8a", { edge: "#c22a2a" }],
 			["s_theater", "THEATER", "#f8f4e4", "#1a1a1e", { edge: "#e8b830", face: SANS }],
@@ -13447,8 +13936,7 @@ const JGP = (() => {
 
 		// ---- material bins: everything is merged per bin at the end -----------------------------
 		const lam = (o2) => new THREE.MeshLambertMaterial(Object.assign({ vertexColors: !0 }, o2)),
-			glassM = () => new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 90, specular: 0x7a8a9a }),
-			rowsM = lam({ map: TX.rows });
+			glassM = () => new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 90, specular: 0x7a8a9a });
 		const BIN = {
 			lawn: { m: lam({ map: TX.lawn }), tile: 4 },
 			concrete: { m: lam({ map: TX.concrete }), tile: 1.6 },
@@ -13459,8 +13947,6 @@ const JGP = (() => {
 			stone: { m: lam({ map: TX.stone }), tile: 2, shade: !0 },
 			boards: { m: lam({ map: TX.boards }), tile: 2.2, shade: !0 },
 			metal: { m: lam({ map: TX.metal }), tile: 1.4, shade: !0 },
-			rows: { m: rowsM, tile: 3.2 },
-			rowsZ: { m: rowsM, tile: 3.2, swap: !0 },
 			plain: { m: lam({ side: THREE.DoubleSide }) },
 			glass: { m: glassM() },
 			lit: { m: glassM() }, // windows that glow at night
@@ -13933,8 +14419,8 @@ const JGP = (() => {
 		// walls under a red mansard roof, wraparound windows, a giant bolt burger on the roof, golden
 		// "M" arches on a tall pylon sign, a drive-thru lane with a menu board and speaker, umbrella
 		// tables, a little red slide, and a parking lot. Local +Z faces the street.
-		const MISTERGUMMERYS = (X, Z) => {
-			const B = place(X, Z, 0),
+		const MISTERGUMMERYS = (X, Z, ry = 0) => {
+			const B = place(X, Z, ry),
 				red = "#c8282a",
 				gold = "#ffc81e",
 				cream = "#fbf1dc",
@@ -14306,16 +14792,20 @@ const JGP = (() => {
 		});
 
 		// ---- the buildings ----------------------------------------------------------------------------
-		// Main Street, east side (fronts face the square)
+		// Main Street, east side (fronts face the square): Mistergummery's drive-in on the north end, its
+		// parking lot to the street and its big M pylon over the rooftops (its 20 m lot takes the
+		// place of the old hardware store; the six stores after it are narrowed to share the rest)
 		let zc = -37;
+		const MGW = 20 / MK,
+			NARROW = (74 - MGW) / 64;
 		[
-			[10, 9, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#a4482f", sign: "s_hardware", awn: "aw_green", front: "#2f4a38" })],
-			[12, 12, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#c8a072", sign: "s_pharmacy", awn: "aw_blue", front: "#24404a", crest: !0 })],
-			[8, 8, (X, Z, w, h) => FRONTIER(X, Z, -Math.PI / 2, w, h, { col: "#a8c4d8", sign: "s_barber", front: "#22325a", shutter: "#22325a", extra: (B, w2) => barberPole(B, w2 / 2 - 0.45) })],
-			[12, 10.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#7a3a2a", front: "#1a1a1e", signBg: "#1a1a1e", extra: (B, w2) => theater(B, w2) })],
-			[10, 9, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#d8c8a0", sign: "s_bakery", awn: "aw_pink", front: "#6a3a28", lintel: "#b8a888" })],
-			[11, 9.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#a8402c", sign: "s_diner", awn: "aw_red", front: "#7a1a1a", crest: !0 })],
-			[11, 8.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#b86a42", sign: "s_books", awn: "aw_yellow", front: "#22325a" })],
+			[MGW, 0, (X, Z) => MISTERGUMMERYS(X + 12.4, Z, -Math.PI / 2)],
+			[12 * NARROW, 12, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#c8a072", sign: "s_pharmacy", awn: "aw_blue", front: "#24404a", crest: !0 })],
+			[8 * NARROW, 8, (X, Z, w, h) => FRONTIER(X, Z, -Math.PI / 2, w, h, { col: "#a8c4d8", sign: "s_barber", front: "#22325a", shutter: "#22325a", extra: (B, w2) => barberPole(B, w2 / 2 - 0.45) })],
+			[12 * NARROW, 10.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#7a3a2a", front: "#1a1a1e", signBg: "#1a1a1e", extra: (B, w2) => theater(B, w2) })],
+			[10 * NARROW, 9, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#d8c8a0", sign: "s_bakery", awn: "aw_pink", front: "#6a3a28", lintel: "#b8a888" })],
+			[11 * NARROW, 9.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#a8402c", sign: "s_diner", awn: "aw_red", front: "#7a1a1a", crest: !0 })],
+			[11 * NARROW, 8.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#b86a42", sign: "s_books", awn: "aw_yellow", front: "#22325a" })],
 		].forEach(([w, h, mk]) => (mk(52.6, zc + (w * MK) / 2, w * MK, h), (zc += w * MK)));
 		// Main Street, west side
 		zc = -37;
@@ -14349,8 +14839,6 @@ const JGP = (() => {
 		SCHOOL(-82, 60 + ZS, Math.PI);
 		// north-east: the gas station on the corner
 		GAS_STATION(72, -62);
-		// Mistergummery's drive-in on the lot behind the gas station (its big M stands clear over the rooftops)
-		MISTERGUMMERYS(90.5, -64);
 		// lamp posts along Main Street's far sidewalks
 		[-32, -16, 0, 16, 32].forEach((Z) => (lampPost(50.6, ZS / 2 + Z * MK), lampPost(-50.6, ZS / 2 + Z * MK)));
 
@@ -14366,7 +14854,7 @@ const JGP = (() => {
 			[-108, -58, 52 + ZS, 72 + ZS],
 			[-90, -74, 52 + ZS, 76 + ZS],
 			[62, 82, -72, -52],
-			[80, 101, -77, -51],
+			[52, 77, -38, -16],
 		];
 		const blocked = (X, Z, m) => FOOT.some(([x0, x1, z0, z1]) => X > x0 - m && X < x1 + m && Z > z0 - m && Z < z1 + m);
 		for (let k = 0, placed = 0; k < 900 && placed < 80 * LOD; k++) {
@@ -14421,6 +14909,8 @@ const JGP = (() => {
 		F.addBuilding(KIOSK_AT.K.shop.x, KIOSK_AT.K.shop.z, KIOSK_AT.K.shop.ry, LIB_LAYOUT.hull, LIB_LAYOUT.parts, "shop");
 		// no lawn tufts through the bookcases
 		LIB_LAYOUT.cases.forEach(([lx, lz]) => keepAt.push(KIOSK_AT.at("shop", lx, lz)));
+		// nor through its rug
+		for (let lx = -4.2; lx < 4.3; lx += 2.8) for (let lz = -5.6; lz < 0.1; lz += 2.8) keepAt.push(KIOSK_AT.at("shop", lx, lz));
 
 		// ---- the church at the end of the south walk, the Traveler window over its door ------------
 		{
@@ -14489,12 +14979,15 @@ const JGP = (() => {
 						pt = 0;
 					L.push((t2) => {
 						const h = It.byId[id];
-						if (!h || h.busy || h.vig || h.meeting || h.battleDance || me.active || h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void (waitTo = -1);
+						// (taken away for something else, its own walk is over: the way back is the engine's)
+						if (!h || h.busy || h.vig || h.meeting || h.battleDance || me.active) return void ((waitTo = -1), (giveUp = 0));
+						if (h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void ((waitTo = -1), (pt = t2));
 						const p = h.group.position;
 						if (Math.hypot(p.x - h.home.x, p.z - h.home.z) > 0.1) {
-							// (no headway for 2.5 s, another creature in the way, or not there in good time: it settles)
+							// (no headway for 2.5 s, another creature in the way, or not there in good time: it settles,
+							// dropping any detour the engine planned round the blockage)
 							Math.hypot(p.x - px, p.z - pz) > 0.3 && ((px = p.x), (pz = p.z), (pt = t2));
-							giveUp && (t2 > giveUp || t2 - pt > 2.5) && !h.goHome && (h.home.set(p.x, h.home.y, p.z), (giveUp = 0));
+							giveUp && (t2 > giveUp || t2 - pt > 2.5) && (h.home.set(p.x, h.home.y, p.z), (h.goHome = h.gcNavHome = !1), (h.gcNav = null), (giveUp = 0));
 							return void (waitTo = -1);
 						}
 						if (((giveUp = 0), waitTo < 0)) return void (waitTo = t2 + w0 + w1 * Math.random());
@@ -14504,7 +14997,11 @@ const JGP = (() => {
 						if (sp) (fails = 0), h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), (px = p.x), (pz = p.z), (pt = t2), h.pattern && (h.pattern[1].face = sp[2]);
 						// (boxed in somewhere with no clear walk out, it heads back to the spot it started from, and
 						// the walk home finds its way round whatever is in the way)
-						else if (++fails >= 3 && h.def.at) (fails = 0), h.home.set(h.def.at[0], h.home.y, h.def.at[1]);
+						else if (++fails >= 3) {
+							fails = 0;
+							const q = JGP.roamEscape(p, h.bodyR || 1);
+							q ? (h.home.set(q[0], h.home.y, q[1]), (giveUp = t2 + Math.hypot(q[0] - p.x, q[1] - p.z) + 6), (pt = t2)) : h.def.at && (h.home.set(h.def.at[0], h.home.y, h.def.at[1]), Be(h, h.def.at[0], h.def.at[1], t2), (h.gcNavHome = !0));
+						}
 					});
 				};
 				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.parkRoam, 3, 5);
@@ -14519,7 +15016,7 @@ const JGP = (() => {
 						until = 0;
 					let tryAt = 0;
 					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
-						free = (h) => h && !h.busy && !h.vig && !h.battleDance && !h.nearPlayer && !("dialogue" === jt.top && xe.lastTarget === h),
+						free = (h) => h && !h.busy && !h.vig && !h.battleDance && !h.nearPlayer && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h),
 						off = (t2, wait) => {
 							for (const h of pair()) h && ((h.seek = null), h.meeting && ((h.meeting = !1), h.home.set(h.group.position.x, h.home.y, h.group.position.z)));
 							(st = 0), (next = t2 + wait);
@@ -14550,7 +15047,7 @@ const JGP = (() => {
 									uz = (b.z - a.z) / d,
 									pa = [mx - (ux * gap) / 2, mz - (uz * gap) / 2],
 									pb = [mx + (ux * gap) / 2, mz + (uz * gap) / 2],
-									ok = (h, q) => JGP.roamFree(q[0], q[1], h.bodyR || 1, !0, h.def.at) && JGP.roamWalk(h.group.position, q[0], q[1], h.bodyR || 1, !0, h.def.at, offFloor(h.bodyR || 1));
+									ok = (h, q) => JGP.roamApart(q[0], q[1], h.bodyR || 1, h, [A, B]) && JGP.roamFree(q[0], q[1], h.bodyR || 1, !0, h.def.at) && JGP.roamWalk(h.group.position, q[0], q[1], h.bodyR || 1, !0, h.def.at, offFloor(h.bodyR || 1));
 								if (ok(A, pa) && ok(B, pb)) {
 									(A.seek = B.seek = null), (A.meeting = B.meeting = !0), A.home.set(pa[0], A.home.y, pa[1]), B.home.set(pb[0], B.home.y, pb[1]);
 									A.pattern && (A.pattern[1].face = Math.atan2(ux, uz)), B.pattern && (B.pattern[1].face = Math.atan2(-ux, -uz));
@@ -14662,7 +15159,7 @@ const JGP = (() => {
 								all = (list) => list.forEach((e) => add(e[0], e[1], e[2]));
 							if ("brush" === sec) {
 								// brushes: a long sweep on 1 and 3, a pat on 2 and 4, the hi-hat foot and a soft kick
-								[0, 1, 2, 3].forEach((b) => add(b, "brush", b % 2 ? 0.6 : 0.9)), chick(), feather(0.18);
+								[0, 1, 2, 3].forEach((b) => add(b, "brush", b % 2 ? 0.6 : 0.9)), chick(), feather(0.3);
 								rnd() < 0.5 && add(3 + SW, "snare", 0.2);
 								7 === m && all([[3, "snare", 0.3], [3 + T3, "snare", 0.45], [3 + SW, "snare", 0.6]]);
 							} else if ("shout" === sec) {
@@ -14689,7 +15186,9 @@ const JGP = (() => {
 						room = null,
 						noise = null,
 						master = null,
-						lastV = -1;
+						lastV = -1,
+						bus = null,
+						busR = null;
 					const graph = () => {
 							const A = G.ctx && G.ctx();
 							if (!A) return !1;
@@ -14710,7 +15209,8 @@ const JGP = (() => {
 						},
 						hiss = () => {
 							const s = u.createBufferSource();
-							return (s.buffer = noise), (s.playbackRate.value = 0.9 + 0.2 * Math.random()), s;
+							// (looped: a long crash would otherwise run off the end of the 1 s buffer and stop dead)
+							return (s.buffer = noise), (s.loop = !0), (s.playbackRate.value = 0.9 + 0.2 * Math.random()), s;
 						},
 						filt = (type, fr, q) => {
 							const b = u.createBiquadFilter();
@@ -14721,11 +15221,13 @@ const JGP = (() => {
 							return (o.type = type), (o.frequency.value = f0), f1 && (o.frequency.setValueAtTime(f0, t), o.frequency.exponentialRampToValueAtTime(f1, t + dur)), o;
 						},
 						// one hit: src (through fl) at loudness g, dying away over dec seconds (after a swell of att)
+						// (every note goes through the bus of the stretch it was scheduled in: when the jazz stops
+						// sounding, that bus is cut, so notes already scheduled ahead never play over the next stretch)
 						hit = (t, src, fl, g, dec, rv, att) => {
 							const a = u.createGain(),
 								end = t + (att || 0) + dec;
 							a.gain.setValueAtTime(att ? 1e-4 : g, t), att && a.gain.linearRampToValueAtTime(g, t + att), a.gain.exponentialRampToValueAtTime(1e-4, end);
-							(fl ? src.connect(fl) : src).connect(a), a.connect(mix), rv && a.connect(room);
+							(fl ? src.connect(fl) : src).connect(a), a.connect(bus), rv && a.connect(busR);
 							src.buffer ? src.start(t, 0.5 * Math.random()) : src.start(t), src.stop(end + 0.03);
 							src.onended = () => {
 								try {
@@ -14738,7 +15240,7 @@ const JGP = (() => {
 							ride: (t, g) => (hit(t, hiss(), filt("bandpass", 7200, 0.9), 0.05 * g, 0.9, 1), hit(t, tone("sine", 3350), 0, 0.009 * g, 0.7, 1), hit(t, tone("sine", 5120), 0, 0.006 * g, 0.45, 1)),
 							bell: (t, g) => (hit(t, hiss(), filt("bandpass", 6e3, 1.2), 0.05 * g, 1.1, 1), hit(t, tone("sine", 2480), 0, 0.03 * g, 1.2, 1), hit(t, tone("sine", 3720), 0, 0.016 * g, 0.9, 1)),
 							chick: (t, g) => hit(t, hiss(), filt("highpass", 6500), 0.05 * g, 0.05),
-							brush: (t, g) => hit(t, hiss(), filt("bandpass", 2800, 0.6), 0.035 * g, g > 0.8 ? 0.42 : 0.16, 1, g > 0.8 ? 0.12 : 0.01),
+							brush: (t, g) => hit(t, hiss(), filt("bandpass", 2800, 0.6), 0.07 * g, g > 0.8 ? 0.42 : 0.16, 1, g > 0.8 ? 0.12 : 0.01),
 							snare: (t, g) => (hit(t, hiss(), filt("bandpass", 1900, 0.7), 0.09 * g, 0.14, 1), hit(t, tone("triangle", 190, 160, t, 0.08), 0, 0.05 * g, 0.1)),
 							kick: (t, g) => hit(t, tone("sine", 110, 46, t, 0.16), 0, 0.17 * g, 0.34),
 							crash: (t, g) => (hit(t, hiss(), filt("highpass", 3600), 0.08 * g, 1.9, 1), hit(t, hiss(), filt("bandpass", 5200, 1.5), 0.04 * g, 1.2, 1)),
@@ -14761,15 +15263,23 @@ const JGP = (() => {
 								if (Math.abs(v - lastV) > 0.01) {
 									const g = master.gain,
 										now = u.currentTime;
-									(lastV = v), g.cancelScheduledValues(now), g.setValueAtTime(g.value, now), g.setTargetAtTime(0.6 * v, now, cut ? 0.02 : v ? 0.08 : 0.25);
+									(lastV = v), g.cancelScheduledValues(now), g.setValueAtTime(g.value, now), g.setTargetAtTime(1.5 * v, now, cut ? 0.02 : v ? 0.08 : 0.25);
 								}
 							}
 							on && heard && !cut && (quietAt = tt + 1.5);
 							const mode = on ? (ok && tt < quietAt ? "a" : "g") : "";
-							if (mode !== clk) (clk = mode), (due.length = 0), (at = -1);
+							if (mode !== clk) {
+								if ("a" === clk && bus)
+									try {
+										bus.disconnect(), busR.disconnect();
+									} catch (e) {}
+								"a" === mode && ((bus = u.createGain()), bus.connect(mix), (busR = u.createGain()), busR.connect(room));
+								(clk = mode), (due.length = 0), (at = -1);
+							}
 							if (!mode) return null;
 							const now = "a" === mode ? u.currentTime : tt;
-							if (at < now - BAR) at = now + 0.06;
+							// (behind, after a stall: start afresh rather than build a bar in the past)
+							if (at < now - ("a" === mode ? 0 : BAR)) at = now + 0.06;
 							let added = !1;
 							for (; at < now + ("a" === mode ? 0.5 : 0.05); p++, at += BAR, added = !0)
 								for (const [b, v, g] of bar(p)) {
@@ -14795,6 +15305,12 @@ const JGP = (() => {
 				keepAt.push([-35.05, 19.2], [-36.35, 19.2]), E.add(-35.35, 19.2, 2.6, "scenery");
 				// sized for KING DINO standing behind it: a third bigger than the Woods kit, the toms and cymbals set lower
 				kit.scale.setScalar(1.35);
+				// (the rug's centre, reach and top, for creatures standing on it: see JGP.groundAt)
+				kit.updateMatrixWorld(!0);
+				{
+					const rp = kit.localToWorld(new THREE.Vector3(0, 0.058, -0.2));
+					JGP.rug = [rp.x, rp.z, 1.36 * 1.35, rp.y];
+				}
 				const RED = "#c23b3b",
 					HEAD = "#f3efe4",
 					CHROME = "#c9ccd4",
@@ -14842,22 +15358,27 @@ const JGP = (() => {
 					// which part of the kit each of the track's voices moves, how hard, and with which hand
 					// (the right keeps the ride and takes the crash and the floor tom; the left has the snare
 					// and the rack toms; the feet play the kick and the hi-hat)
+					anyVictory = () => {
+						for (let k = 0; k < It.all.length; k++) if (It.all[k].battleDance) return !0;
+						return !1;
+					},
 					PART = { kick: [kick, 1], chick: [hat, 1], ride: [crash, 0.35, 1], bell: [crash, 0.6, 1], crash: [crash, 1.4, 1], t3: [floor, 1, 1], snare: [snare, 1, 2], brush: [snare, 0.5, 2], t1: [toms[0], 1, 2], t2: [toms[1], 1, 2] };
 				L.push((tt, dt) => {
 					const P = we.presenting && we.headPos ? we.headPos : At.position,
 						kd = It.byId.m_kingdino,
 						d = Math.hypot(P.x - kit.position.x, P.z - kit.position.z),
 						// a Dance battle (and the Dancer's victory dance after it) is danced to his jazz, wherever it is
-						battle = !!(Dbt.state || It.all.some((e) => e.battleDance)),
+						battle = !!Dbt.state || anyVictory(),
 						// FORTIZMO's horn tune and his jazz never sound together: while she plays (until her last
 						// notes have died away) he rests his sticks and listens
 						horn = ee.playing || ee.pendingNotes() > 0,
 						// otherwise he plays whenever someone is about and never stops: not while he is talked to
 						// or given a Blossom, nor during a Dance battle
 						on = !!kd && !horn && (d < 45 || battle),
-						i = Math.max(0, 1 - d / 60);
+						// (as loud anywhere on the floor, a touch louder right by the kit)
+						i = Math.max(0, 1 - d / 35);
 					DRUMS.on = on;
-					const fired = JAZZ.update(tt, on, battle || hearAt(P), battle ? 1 : 0.25 + 0.75 * i * i, horn);
+					const fired = JAZZ.update(tt, on, battle || hearAt(P), battle ? 1 : 0.85 + 0.15 * i, horn);
 					if (fired)
 						for (const [, v] of fired) {
 							const q = PART[v];
@@ -14883,6 +15404,129 @@ const JGP = (() => {
 				})
 			);
 		};
+		// THE GROUND under a creature: the height of the top of whatever it stands on at (x, z), the highest
+		// anywhere within r of it (its feet): the lawn is 2 cm below 0; the walks and the ring walk, the dance
+		// floor, the bar's boards, the gazebo's deck, the drum rug and the kiosks' decks stand a little above
+		// it, and in the garden the soil, its raised rows, the stepping stones and the border stones. Creatures
+		// are kept on it (see gFit).
+		{
+			const kioskDeck = F.buildings.filter((B) => /^(post|sheriff|garden)$/.test(B.name)),
+				bar = F.buildings.find((B) => "juice" === B.name),
+				JXb = -t.parkHalf + 3.6,
+				LK = KIOSK_AT.K.shop,
+				LKc = Math.cos(LK.ry),
+				LKs = Math.sin(LK.ry),
+				LR = LIB_LAYOUT.rug,
+				at1 = (x, z) => {
+					let y = -0.02;
+					const r = Math.hypot(x, z);
+					if (r < GARDEN_R + 0.7) {
+						y = 0.02;
+						// raised rows every 2 m from 2.6 m (0.26 m wide, 13 cm high at their crests)
+						for (let rr2 = 2.6; rr2 < GARDEN_R - 1; rr2 += 2) {
+							const d = Math.abs(r - rr2);
+							d < 0.26 && (y = Math.max(y, 0.04 + 0.091 * Math.sqrt(1 - (d / 0.26) * (d / 0.26))));
+						}
+						// the stepping stones of the four paths, and the border of stones round the garden
+						for (let q = 0; q < 4; q++)
+							for (let rs = 2; rs < GARDEN_R; rs += 1.1) {
+								const as = (q / 4) * l + l / 8;
+								Math.hypot(x - rs * Math.cos(as), z - rs * Math.sin(as)) < 0.46 && (y = Math.max(y, 0.1));
+							}
+						// (a stone of the border: a dome over its reach, as high as its top)
+						if (Math.abs(r - (GARDEN_R + 0.15)) < 0.75 && JGP.garden.stones) {
+							const SN = JGP.garden.stones,
+								k0 = Math.round((Math.atan2(z, x) / l) * SN.length);
+							for (let j = k0 - 1; j <= k0 + 1; j++) {
+								const [sx, sz, rch, top] = SN[(j + SN.length) % SN.length],
+									q = Math.hypot(x - sx, z - sz) / rch;
+								q < 1 && (y = Math.max(y, top * Math.sqrt(1 - q * q)));
+							}
+						}
+					}
+					onWalk(x, z) && (y = Math.max(y, 0.02));
+					onDance(x, z) && (y = Math.max(y, 0.035));
+					bar && x < JXb + 0.05 && F.inHull(bar, x, z) && (y = Math.max(y, 0.04));
+					Math.hypot(x - GAZEBO[0], z - GAZEBO[1]) < 3.8 && (y = Math.max(y, 0.07));
+					JGP.rug && Math.hypot(x - JGP.rug[0], z - JGP.rug[1]) < JGP.rug[2] && (y = Math.max(y, JGP.rug[3]));
+					// the Library's rug (in the Library's own frame)
+					{
+						const dx = x - LK.x,
+							dz = z - LK.z,
+							lx = dx * LKc - dz * LKs,
+							lz = dx * LKs + dz * LKc;
+						lx > LR[0] && lx < LR[2] && lz > LR[1] && lz < LR[3] && (y = Math.max(y, LIB_LAYOUT.rugTop));
+					}
+					for (const B of kioskDeck) F.inHull(B, x, z) && (y = Math.max(y, 0.2));
+					return y;
+				};
+			JGP.groundAt = (x, z, r = 0) => {
+				let y = at1(x, z);
+				if (r > 0) for (let k = 0; k < 6; k++) y = Math.max(y, at1(x + r * Math.cos((k * l) / 6), z + r * Math.sin((k * l) / 6)));
+				return y;
+			};
+		}
+		// THE HEAD GUARD (VR): the body can't walk into anything solid, but a head can lean into it, and
+		// seeing the inside of a wall or a bookcase is disorienting. So when the headset comes within 20 cm of
+		// a solid structure the view darkens, and it is fully black from 8 cm (the near plane is at 15 cm);
+		// it clears again as the head comes back out. Solids: every building's parts (in its own frame, each
+		// as tall as what stands there) and the round colliders (the Summoning Stone, the portal's pillars).
+		{
+			// how tall each part is ([part index] → top, by building), and how far in a rough-edged one starts
+			const TOPS = {
+					post: [4.6, 4.6, 4.6, 1.2, 1, 1, 2.6],
+					sheriff: [4.6, 4.6, 4.6, 1.2, 1, 1],
+					garden: [4.6, 4.6, 4.6, 1.2, 1, 1],
+					shop: [2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 0.85, 4.3, 4.3],
+					church: [8, 14, 0.8],
+					juice: [1.15, 1.15, 3],
+				},
+				INSET = { post: [0, 0, 0, 0, 0, 0, 0.5] },
+				blk = new THREE.Mesh(
+					new THREE.SphereGeometry(0.25, 12, 8),
+					new THREE.MeshBasicMaterial({ color: 0, side: THREE.BackSide, transparent: !0, opacity: 0, depthTest: !1, depthWrite: !1, fog: !1 }),
+				);
+			(blk.renderOrder = 10010), (blk.frustumCulled = !1), (blk.visible = !1), (blk.userData.xrUI = !0), B.add(blk);
+			// signed distance from (x, y, z) to the nearest solid: positive outside, negative inside
+			const sdist = (x, y, z) => {
+				let best = 9;
+				for (const Bd of F.buildings) {
+					const [lx, lz] = F.local(Bd, x, z),
+						tops = TOPS[Bd.name] || [],
+						ins = INSET[Bd.name] || [];
+					Bd.parts.forEach((P0, k) => {
+						const m = ins[k] || 0,
+							x0 = P0[0] + m,
+							z0 = P0[1] + m,
+							x1 = P0[2] - m,
+							z1 = P0[3] - m,
+							top = tops[k] || 3,
+							dx = Math.max(x0 - lx, 0, lx - x1),
+							dz = Math.max(z0 - lz, 0, lz - z1),
+							dy = Math.max(y - top, 0);
+						best = Math.min(best, dx || dz || dy ? Math.hypot(dx, dy, dz) : -Math.min(lx - x0, x1 - lx, lz - z0, z1 - lz, top - y));
+					});
+				}
+				for (const f of F.list) {
+					if (f.keep || f.r > 2) continue; // (the test plants and the pond are not solid at head height)
+					const dh = Math.hypot(x - f.x, z - f.z) - 0.55 * f.r,
+						dy = Math.max(y - 3, 0);
+					best = Math.min(best, dh > 0 || dy > 0 ? Math.hypot(Math.max(dh, 0), dy) : dh);
+				}
+				return best;
+			};
+			let dark = 0;
+			// (at: a head position to test with, outside VR; tools/test/t_headguard.js)
+			JGP.headGuard = { sdist, level: () => dark, at: null };
+			L.push((tt, dt) => {
+				dt = dt || 0.016;
+				const H0 = JGP.headGuard.at || (we.presenting && we.headPos);
+				const want = H0 ? Math.max(0, Math.min(1, (0.2 - sdist(H0.x, H0.y, H0.z)) / 0.12)) : 0;
+				// (in at once, out over a fifth of a second)
+				dark = want > dark ? want : Math.max(want, dark - 5 * dt);
+				(blk.visible = dark > 0.01), (blk.material.opacity = dark);
+			});
+		}
 		for (let k = 0; k < 1750 * LOD; k++) {
 			const X = rr(-37.5, 37.5),
 				Z = rr(-37.5, 37.5 + ZS);
@@ -14900,6 +15544,12 @@ const JGP = (() => {
 					Z = pt.matrix.elements[14] - ZS / 2;
 				return Math.max(Math.abs(X), Math.abs(Z)) < 46 ? "q" + (X < 0 ? 0 : 1) + (Z < 0 ? 0 : 1) : "s" + (Math.floor(((Math.atan2(Z, X) + Math.PI) / l) * 8) % 8);
 			};
+		{
+			const all = [];
+			for (const key in bins) for (const pt of bins[key]) all.push(pt);
+			// (no z-fighting: see unfightParts)
+			unfightParts(all);
+		}
 		for (const key in bins) {
 			if (!bins[key].length) continue;
 			if (triCount(bins[key]) < 12e3) {
@@ -15019,12 +15669,15 @@ const JGP = (() => {
 	}
 
 	return {
+		// (the load-time z-fight fix: stats in unfightParts.moved / .ms)
+		unfightParts,
 		GARDEN_R,
 		GATHER_S,
 		garden,
 		buildGarden,
 		beginPlanting,
 		plantTick,
+		plantRow,
 		noPlant,
 		plantMove,
 		danceMove,
@@ -15038,6 +15691,28 @@ const JGP = (() => {
 		barVia: () => [-1.3, 0.23, 2.2].map((dx) => [-t.parkHalf + 3.6 + dx, 1.7]),
 		// HENNRICK's first spot: 4 m to the side of the Portal and a little in front of it
 		portalSpot: () => [ot.x + 4 * ot.nz + ot.nx, ot.z - 4 * ot.nx + ot.nz],
+		// whether (x, z) is clear of the other park wanderers (GEMTOE, MAMA GORBO, GOOWARD): where they stand and
+		// where they are going (but for those in skip, as a meeting pair's own spots)
+		roamApart(x, z, r, ent, skip) {
+			for (const id of PARK_ROAMERS) {
+				const o = It.byId[id];
+				if (!o || o === ent || (skip && skip.includes(o))) continue;
+				const m = r + (o.bodyR || 1) + 1;
+				if (Math.hypot(x - o.group.position.x, z - o.group.position.z) < m || Math.hypot(x - o.home.x, z - o.home.z) < m) return !1;
+			}
+			return !0;
+		},
+		// the nearest spot a boxed-in roamer can walk to straight and clear: rings out from p
+		roamEscape(p, r) {
+			for (let d = 1.5; d <= 24; d += 1.5)
+				for (let k = 0; k < 16; k++) {
+					const a = (k / 16) * l + 0.2 * d,
+						x = p.x + d * Math.cos(a),
+						z = p.z + d * Math.sin(a);
+					if (JGP.roamFree(x, z, r) && JGP.roamWalk(p, x, z, r)) return [x, z];
+				}
+			return null;
+		},
 		// whether a roaming creature of radius r can stand at (x, z): inside the square with room to spare,
 		// out of the garden (its plants), every building, the pond, and everything the town keeps clear
 		// (lamps, benches, trees, bins, the gazebo, the drum kit, the stations; with others, the other
@@ -15051,11 +15726,8 @@ const JGP = (() => {
 				z < t.parkSouth - r - 1 &&
 				Math.hypot(x, z) > GARDEN_R + 0.6 + r &&
 				!F.buildings.some((B) => F.inHull(B, x, z, 0.6 + 0.5 * r)) &&
-				E.list.every(
-					(q) =>
-						!(/^(scenery|pool|phone|stump|drums)$/.test(q.tag) || (others && /^(still|portal)$/.test(q.tag) && !(own && Math.hypot(q.x - own[0], q.z - own[1]) < 0.5))) ||
-						Math.hypot(x - q.x, z - q.z) > q.r + 0.3 * r,
-				)
+				roamZones().solid.every((q) => Math.hypot(x - q.x, z - q.z) > q.r + 0.3 * r) &&
+				(!others || roamZones().spots.every((q) => (own && Math.hypot(q.x - own[0], q.z - own[1]) < 0.5) || Math.hypot(x - q.x, z - q.z) > q.r + 0.3 * r))
 			);
 		},
 		// a straight walk from p to (x, z) a roaming creature can take (every half metre clear; the first
@@ -15115,7 +15787,8 @@ const JGP = (() => {
 		// floor (the Dancers' own), with a clear straight walk there. It stops facing the way it came.
 		// One looking for another (ent.seek) takes the spot that brings it nearest.
 		parkRoam(p, r, own, ent) {
-			const to = ent && ent.seek && ent.seek.group.position;
+			const to = ent && ent.seek && ent.seek.group.position,
+				near = to ? r + (ent.seek.bodyR || 1) + 1.2 : 0;
 			let best = null,
 				bd = 1e9;
 			for (let k = 0; k < 60; k++) {
@@ -15123,15 +15796,16 @@ const JGP = (() => {
 					d = 5 + 11 * Math.random(),
 					x = p.x + d * Math.cos(a),
 					z = p.z + d * Math.sin(a);
-				if (!JGP.roamFree(x, z, r, !0, own) || !JGP.roamWalk(p, x, z, r, !0, own, offFloor(r))) continue;
+				if (!JGP.roamApart(x, z, r, ent) || !JGP.roamFree(x, z, r, !0, own) || !JGP.roamWalk(p, x, z, r, !0, own, offFloor(r))) continue;
 				const sp = [x, z, Math.atan2(x - p.x, z - p.z)];
 				if (!to) return sp;
 				const dd = Math.hypot(x - to.x, z - to.z);
-				dd < bd && ((bd = dd), (best = sp));
+				dd > near && dd < bd && ((bd = dd), (best = sp));
 			}
 			return best;
 		},
 		libTable: LIB_LAYOUT.table,
+		libParts: LIB_LAYOUT.parts,
 		buildPond,
 		blossomPickup,
 		backpacka: BP,
@@ -15191,7 +15865,6 @@ if (
 							t.def.pattern[1].y && ((t.busy && "finale" !== t.busy) || t.goHome) && (t.group.position.y = 0);
 						}
 					}),
-					E.add(-15.9, -26.8, 4.2, "drums"),
 					E.add(0, 24, 3.5, "path"),
 					E.add(0.8, 19, 2.6, "path"),
 					(function (t, e) {
@@ -15200,6 +15873,8 @@ if (
 							C.add(o),
 							E.add(0, 0, JGP.GARDEN_R + 1, "campfire");
 						JGP.buildGarden(o),
+							// the plant test row on the east side
+							JGP.plantRow(),
 							// the Summoning Stone in the centre starts the Event (once it is yours: the Summoning
 							// Stone quest's reward, owned from the start for testing)
 							F.add(0, 0, 1.15),
@@ -15229,10 +15904,12 @@ if (
 					})(),
 					(function (t, e) {
 						const o = new THREE.Group();
+						// (kept when the engine's scenery is cleared: the Library is wider than the 12 m that rule spares)
+						(o.userData.jgpKeep = !0),
 						o.position.set(t, 0, e),
 							(o.rotation.y = A(t, e)),
 							C.add(o),
-							E.add(t, e, 3.8, "stump"),
+							E.add(t, e, 6.6, "stump"),
 							JGP.buildLibrary(o), (LIB.home = o);
 													H(o),
 							(function (t) {
@@ -15260,10 +15937,43 @@ if (
 									w = 0;
 								// (the Library is open: he walks straight out to the front, past his reading table)
 								const v = () => [t.localToWorld(new c(0, 0, 1.4))];
+								// SPARKAKUS browses his Library: when nobody needs him he strolls the open floor between his
+								// reading table and the bookcases, a few steps at a time, and stops to look along the nearest
+								// bookcase. Spots and walks (in the Library's own frame) keep 0.8 m clear of every bookcase,
+								// the table and the banner's posts, inside the band in front of the shelves.
+								const BAND = [-5.3, -2.15, 5.3, 0.6],
+									lclear = (x, z) => x > BAND[0] && x < BAND[2] && z > BAND[1] && z < BAND[3] && JGP.libParts.every(([a, b2, c2, d2]) => x < a - 0.8 || x > c2 + 0.8 || z < b2 - 0.8 || z > d2 + 0.8),
+									lpick = (q) => {
+										for (let k = 0; k < 30; k++) {
+											const x = BAND[0] + (BAND[2] - BAND[0]) * Math.random(),
+												z = BAND[1] + (BAND[3] - BAND[1]) * Math.random(),
+												dd = Math.hypot(x - q.x, z - q.z);
+											if (dd < 1.5 || !lclear(x, z)) continue;
+											let ok = !0;
+											for (let j = 1; j <= 10 && ok; j++) ok = lclear(q.x + ((x - q.x) * j) / 10, q.z + ((z - q.z) * j) / 10) || (j * dd) / 10 < 0.5;
+											if (ok) return new c(x, 0, z);
+										}
+										return null;
+									},
+									// the way to look on arriving: along the nearest bookcase's face, or out over the table
+									lface = (q) => {
+										let best = 0,
+											bd = 3.2;
+										for (const [cx, cz] of JGP.libParts.slice(0, 8).map(([a, b2, c2, d2]) => [(a + c2) / 2, (b2 + d2) / 2])) {
+											const dd = Math.hypot(cx - q.x, cz - q.z);
+											dd < bd && ((bd = dd), (best = Math.atan2(cx - q.x, cz - q.z)));
+										}
+										return best;
+									};
+								let wT = null,
+									wAt = 3 + 4 * Math.random(),
+									wFace = 0;
 								// (`face`: once there he turns to the player, as for his Ancient Artifacts speech)
 								(st.join = (o, face) => {
-									const a = t.worldToLocal(new c(o.x, 0, o.z)).x < 0 ? -1 : 1;
-									C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: v(a, !1), face });
+									const a = t.worldToLocal(new c(o.x, 0, o.z)).x < 0 ? -1 : 1,
+										// (browsing the shelves, he first goes back to his place behind the table)
+										back = e.parent === t && e.position.distanceTo(f) > 0.3 ? [t.localToWorld(f.clone())] : [];
+									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: back.concat(v(a, !1)), face });
 								}),
 									(st.leave = () => {
 										if (!H) return;
@@ -15292,13 +16002,13 @@ if (
 											const o = Math.min(l, 2.2 * c);
 											(a.x += (s / l) * o),
 												(a.z += (i / l) * o),
-												(a.y = 0),
+												(a.y = Math.max(0, JGP.groundAt(a.x, a.z, 0.3))),
 												(r.moving = !0),
 												e.rotation.set(0, Math.atan2(s, i), 0);
 										} else
 											H.back
 												? (t.attach(e), e.position.copy(f), e.rotation.set(0, 0, 0), e.scale.setScalar(g), (H = null))
-												: ((a.y = 0), e.rotation.set(0, H.face ? Math.atan2(At.position.x - a.x, At.position.z - a.z) : Math.atan2(-a.x, -a.z), 0));
+												: ((a.y = Math.max(0, JGP.groundAt(a.x, a.z, 0.3))), e.rotation.set(0, H.face ? Math.atan2(At.position.x - a.x, At.position.z - a.z) : Math.atan2(-a.x, -a.z), 0));
 										if (((p.x = e.position.x), (p.z = e.position.z), H)) {
 											o.rotation.y = 0;
 											const t = !bt.live || H.back || r.moving ? 0 : 1;
@@ -15314,11 +16024,29 @@ if (
 										}
 										(w = 0), e.getWorldPosition(h), (p.x = h.x), (p.z = h.z);
 									}
-									e.getWorldPosition(h);
+									if (e.parent === t && !me.active && !(st.talking && qt.isOpen)) {
+										const q = e.position;
+										if (wT) {
+											const dx = wT.x - q.x,
+												dz = wT.z - q.z,
+												dd = Math.hypot(dx, dz);
+											if (dd > 0.06) {
+												const k = Math.min(dd, 0.8 * c);
+												(q.x += (dx / dd) * k), (q.z += (dz / dd) * k), (r.moving = !0);
+												e.rotation.y += m(e.rotation.y, Math.atan2(dx, dz)) * Math.min(1, 6 * c);
+											} else (wT = null), (wFace = lface(q)), (wAt = s + 4 + 6 * Math.random());
+										} else {
+											e.rotation.y += m(e.rotation.y, wFace) * Math.min(1, 3 * c);
+											s > wAt && ((wT = lpick(q)), wT || (wAt = s + 3));
+										}
+									}
+									// (standing on whatever is under him: the rug, a walk or the lawn)
+									e.getWorldPosition(h), (p.x = h.x), (p.z = h.z), (e.position.y = Math.max(0, JGP.groundAt(h.x, h.z, 0.3)));
 									const T = At.position.x - h.x,
 										R = At.position.z - h.z,
 										v = Math.hypot(T, R),
-										z = v < 1.6 * i.greetR ? u(m(l, Math.atan2(T, R)), -0.9, 0.9) : 0;
+										// (his head turns to greet the player from whichever way he is facing)
+										z = v < 1.6 * i.greetR && !r.moving ? u(m(l + (e.parent === t ? e.rotation.y : 0), Math.atan2(T, R)), -0.9, 0.9) : 0;
 									if (
 										((b += (z - b) * d(4, c)),
 										(o.rotation.y = b),
@@ -15487,11 +16215,13 @@ if (
 							a = t;
 						const n = [],
 							// while FORTIZMO plays at the Event, everyone round the garden dances
-							music = me.active && ee.playing;
+							// (the tune of this Event: an earlier Event's tag still sounding at a restart is not it)
+							music = me.active && ee.playing && bt.live && "playing" === gcHorn.phase;
 						for (const t of It.all) {
 							// (the pizza courier never dances or plants, and is not kept after she leaves)
 							if ("courier" === t.kind) continue;
-							const at = "finale" === t.busy && !t.moving && !t.hornWant && !JGP.eventActor(t);
+							// (one being talked to stops dancing or planting for it)
+							const at = "finale" === t.busy && !t.moving && !t.hornWant && !JGP.eventActor(t) && !("dialogue" === jt.top && xe.lastTarget === t);
 							n.push({
 								key: Xt(t),
 								grp: t.group,
