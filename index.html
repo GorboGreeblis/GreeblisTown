@@ -512,6 +512,8 @@ const G = (() => {
 			}),
 			["pageshow", "focus"].forEach((t) => addEventListener(t, s)),
 			{
+				// (wakes the sound after a pause: the headset taken off and put back on, or left idle)
+				wake: s,
 				ctx() {
 					try {
 						return o(), { c: t, out: e };
@@ -551,11 +553,7 @@ const G = (() => {
 						? (n(95, 0.14, "sine", 0.09), n(55, 0.2, "sine", 0.07, 0.02))
 						: "snare" === t
 							? (n(190, 0.07, "triangle", 0.05), n(2400, 0.05, "square", 0.012), n(3700, 0.04, "square", 0.008, 0.01))
-							: "hat" === t
-								? n(6200, 0.025, "square", 0.006)
-								: "tom" === t
-									? (n(150, 0.16, "sine", 0.07), n(110, 0.2, "sine", 0.04, 0.03))
-									: (this.drum("kick"), this.drum("snare"));
+							: (n(150, 0.16, "sine", 0.07), n(110, 0.2, "sine", 0.04, 0.03));
 				},
 				drumKick() {
 					this.drum("kick");
@@ -565,9 +563,6 @@ const G = (() => {
 				},
 				drumTom() {
 					this.drum("tom");
-				},
-				drumHat() {
-					this.drum("hat");
 				},
 			}
 		);
@@ -1603,7 +1598,7 @@ function et(t) {
 	return !(!t || !(t.concertDance || t.battleDance));
 }
 // the beat the built-in dances keep, in beats per second: FORTIZMO's 88 bpm at the Garden Event,
-// otherwise KING DINO's 104 bpm drums (Dance battles)
+// otherwise KING DINO's 104 bpm jazz (Dance battles)
 function gcBeatHz() {
 	return (me.active ? 88 : 104) / 60;
 }
@@ -2784,11 +2779,15 @@ function Lt(e, o, a, n) {
 	c > t.greetClear && ((e.greeted = !1), (e.nearSince = 0));
 	const h = "dialogue" === jt.top && xe.lastTarget === e,
 		p = e.nearPlayer && (e.nearSince ? o - e.nearSince < t.proximityFreezeS : ((e.nearSince = o), !0));
+	// (ANOMALEE, gazing up at the church window, keeps looking at it while the player is near and through
+	// her Talk lines; she turns to the player only for her Blossom line, and for any line during the Event)
+	const gazer = e.def && e.def.gazeUp && !(h && (e.gifting || me.active));
 	if (n || h || (p && !e.goHome))
 		(e.gcWant = 0),
 			(e.moving = !1),
-			(e.nearPlayer || h) &&
-				(e.greeted || (e.greeted = !0), co(r, Math.atan2(At.position.x - s.x, At.position.z - s.z), a));
+			gazer && e.pattern
+				? co(r, e.pattern[1].face, a, 4)
+				: (e.nearPlayer || h) && (e.greeted || (e.greeted = !0), co(r, Math.atan2(At.position.x - s.x, At.position.z - s.z), a));
 	else if (e.pattern && !e.goHome) {
 		const [t, o] = e.pattern,
 			n = lo[t];
@@ -3217,7 +3216,8 @@ function te(t, e) {
 	const o = t.def,
 		a = t.id;
 	let n;
-	if ((Kt.met.add(a), (xe.lastTarget = t), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t);
+	// (gifting: this dialogue is the creature's Blossom line, not its Talk line)
+	if ((Kt.met.add(a), (xe.lastTarget = t), (t.gifting = !!e), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t);
 	else if ("p_gemtoe" === a && Kt.gem)
 		// GEMTOE trades the Summoning Stone for the Ancient Gem
 		return (
@@ -4394,11 +4394,13 @@ const le = (() => {
 					const c = s - l.x,
 						h = i - l.z,
 						p = Math.hypot(c, h);
-					if (p > (n ? 0.12 : 0.5)) {
+					// (one being talked to stands still for it, turned to the player)
+					if ("dialogue" === jt.top && xe.lastTarget === o) o.moving = !1;
+					else if (p > (n ? 0.12 : 0.5)) {
 						const t = Math.min(p, (o.walkSpeed || 2.4) * e);
 						(l.x += (c / p) * t), (l.z += (h / p) * t), co(o.group, Math.atan2(c, h), e, 8), (o.moving = !0);
 					} else
-						(!m || bt.live || (m.a !== o && m.b !== o)) && co(o.group, Math.atan2(-l.x, -l.z), e, 4), (o.moving = !1);
+						(!m || bt.live || (m.a !== o && m.b !== o)) && !("dialogue" === jt.top && xe.lastTarget === o) && co(o.group, Math.atan2(-l.x, -l.z), e, 4), (o.moving = !1);
 					F.resolve(l, 0.8 * o.bodyR), uo.resolve(l, uo.radius(o), o), bt.live && JGP.plantTick(o, t);
 				});
 				const l = u(i / 90, 0, 1);
@@ -5506,6 +5508,10 @@ const xe = (() => {
 						a(),
 							Oe.addEventListener("frameratechange", a),
 							Oe.addEventListener("end", Xe),
+							// the headset taken off, left idle (it sleeps) or the system menu up: the scene is kept
+							// safe while hidden; put back on, everything is restored, the clock picks up where it
+							// left off (no jump), and the sound is woken (the headset may have suspended it, and
+							// no page event says so in VR)
 							Oe.addEventListener("visibilitychange", () => {
 								(o.blurred = Oe && "visible" !== Oe.visibilityState),
 									o.blurred
@@ -5513,8 +5519,12 @@ const xe = (() => {
 										: (Ho.restore(),
 											requestAnimationFrame(Ho.restore),
 											(o.lastFrame = performance.now()),
-											Re.resetClock());
+											Re.resetClock(),
+											G.wake(),
+											setTimeout(G.wake, 300));
 							}),
+							// (a controller press in VR is not a page pointer event: it wakes the sound too)
+							["selectstart", "squeezestart"].forEach((ev) => Oe.addEventListener(ev, () => G.wake())),
 							Ue(2500, () => Ho.capture()),
 							Ue(2600, () => De(!0));
 					})();
@@ -5554,7 +5564,8 @@ const xe = (() => {
 				o.onPresenting && o.onPresenting(!1),
 				(O.xr.enabled = !1),
 				Ho.restore(),
-				Re.resetClock());
+				Re.resetClock(),
+				G.wake());
 		}
 		function _e() {
 			B.updateMatrixWorld(!0);
@@ -6685,14 +6696,10 @@ const JGP = (() => {
 		lineup: {
 			face: -Math.PI / 2,
 			list: [
-				// (HENNRICK, MONTGUMMERY and ETCHER are final; the others here are still being worked on)
-				["gratelet", "HENNRICK", "city_hennrick", {"color": "#c85ac8", "bodyR": 1.25, "modelScale": 0.88}, [34, -0.46]],
-				["p_etcher", "ETCHER", "born_etcher", {"color": "#9ee09a", "bodyR": 1.15, "talkR": 3.6, "modelScale": 1.16}, [33.25, 5.31]],
+				// (these are still being worked on; GEMTOE starts here and wanders the whole park: see the roamers)
 				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 11.09]],
-				["p_glyph", "GLYPH", "born_glyph", {"color": "#e88a8a", "bodyR": 1.1, "talkR": 3.6, "modelScale": 1.11}, [34, 16.86]],
-				["w_mont", "MONTGUMMERY", "woods_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9, "talkR": 3.8}, [34, 22.63]],
 				// MAMA GORBO (rebuilt from her artwork, with GORBO's ports and drips); given a Blossom she
-				// shoots her colourful goo at the player, as GOWARD does
+				// shoots her colourful goo at the player, as GOOWARD does
 				["p_mamagorbo", "MAMA GORBO", "born_mamagorbo", {"color": "#ff9f5c", "bodyR": 1.1, "talkR": 3.8, "goo": ["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]}, [34, 28.40]],
 			],
 		},
@@ -6701,8 +6708,24 @@ const JGP = (() => {
 			list: [
 				// (NEXTESSA and BACKPACKA are not in the park: each appears only for its own event, NEXTESSA
 				// through the portal with the pizza, BACKPACKA at the Garden Event)
-				["gorbo", "GOWARD", "born_goward", {"color": "#30b4e4", "bodyR": 1.2}, [27, 4]],
+				["gorbo", "GOOWARD", "born_gooward", {"color": "#30b4e4", "bodyR": 1.2}, [27, 4]],
 			],
+		},
+		// the three Dancers wander the whole dance floor by the Juice Bar (see the roamers), starting spread
+		// along it, facing the square (ETCHER and MONTGUMMERY are final)
+		floor: {
+			face: "center",
+			list: [
+				["p_etcher", "ETCHER", "born_etcher", {"color": "#9ee09a", "bodyR": 1.15, "talkR": 3.6, "modelScale": 1.16}, () => JGP.floorSpot(0)],
+				["p_glyph", "GLYPH", "born_glyph", {"color": "#e88a8a", "bodyR": 1.1, "talkR": 3.6, "modelScale": 1.11}, () => JGP.floorSpot(1)],
+				["w_mont", "MONTGUMMERY", "woods_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9, "talkR": 3.8}, () => JGP.floorSpot(2)],
+			],
+		},
+		// HENNRICK (final) roams round the Portal: he starts beside its doorway, looking at it, and strolls
+		// from spot to spot around it (see his roam, by FORTIZMO's patrol)
+		portal: {
+			face: (at) => Math.atan2(ot.x - at[0], ot.z - at[1]),
+			list: [["gratelet", "HENNRICK", "city_hennrick", {"color": "#c85ac8", "bodyR": 1.25, "modelScale": 0.88}, () => JGP.portalSpot()]],
 		},
 		// FORTIZMO tends the Juice Bar: she starts behind the counter by its gap and walks up and down
 		// behind it (see the Juice Bar), facing the dance floor whenever she stops; for the Garden Event
@@ -7492,13 +7515,13 @@ const JGP = (() => {
 		return tg.computeVertexNormals(), tg;
 	};
 
-	// GOWARD = HOWARD + GORBO + MAMA GORBO (the goo family).
-	// (This model is final: keep GOWARD as he is.)
+	// GOOWARD = HOWARD + GORBO + MAMA GORBO (the goo family).
+	// (This model is final: keep GOOWARD as he is.)
 	// GORBO / MAMA's egg built from HOWARD's fused bubbles; cyan above, MAMA's peach below. HOWARD's
 	// "+" eyes, cheek spots, wavy brow lines, gold leaf crests and ribbon tongue; the purple octagon
 	// ports and float ring that GORBO and MAMA share (with a little AP tag); MAMA's crystal wings;
 	// HOWARD's pastel root tendrils spilling out underneath.
-	BORN.goward = (g) => {
+	BORN.gooward = (g) => {
 		const root = new THREE.Group(),
 			body = new THREE.Group();
 		g.add(root), (body.position.y = 0.55), root.add(body);
@@ -8144,7 +8167,7 @@ const JGP = (() => {
 				const P = m.geometry.attributes.position;
 				for (let k = 0; k < P.count; k += 2) pts.push(new c0().fromBufferAttribute(P, k));
 			});
-			(tg.userData.pts = pts.filter((q) => q.y < -0.25)), (tg.userData.ax = new c0(-Math.sin(a), 0, Math.cos(a)));
+			(tg.userData.pts = pts.filter((q) => q.y < -0.1)), (tg.userData.ax = new c0(-Math.sin(a), 0, Math.cos(a)));
 		}
 		// Zs drifting up and away beside the cap, each fading in, growing and fading out
 		const zTex =
@@ -8163,34 +8186,106 @@ const JGP = (() => {
 				return (sp.userData.keep = !0), fl.add(sp), sp;
 			});
 		const tq = new THREE.Quaternion(),
+			// (the droop at full, two thirds, a third and none)
+			dqs = [0, 1, 2, 3].map(() => new THREE.Quaternion()),
+			ZA = new c0(0, 0, 1),
 			te = new THREE.Euler(),
 			tv = new c0();
+		// LYING DOWN: resting at her own spot she sleeps on her side (rolled onto her right, her head to her
+		// right), and floats back up to go anywhere (the Garden Event, a vignette). How low she can sit at
+		// each angle of the roll is worked out once from the model itself (every part but the tentacles and
+		// the Zs), so as she rolls over and settles nothing ever goes into the ground; the tentacles droop
+		// toward the ground as she lies and splay off it, as they do when she floats low.
+		const ROLLS = 16,
+			lowAt = new Float32Array(ROLLS + 1).fill(1e9),
+			// (and the tentacles' own lowest points, hanging straight: tipped over on her way down or up, the
+			// ones on the low side cannot splay clear, so she is held up for them)
+			tentAt = new Float32Array(ROLLS + 1).fill(1e9);
+		{
+			fl.position.y = 0;
+			root.updateMatrixWorld(!0);
+			const inv = new THREE.Matrix4().copy(fl.matrixWorld).invert(),
+				rel = new THREE.Matrix4(),
+				q = new c0();
+			fl.traverse((o) => {
+				let tab = lowAt;
+				for (let a = o; a && a !== fl; a = a.parent) {
+					if (zs.includes(a)) return;
+					tents.includes(a) && (tab = tentAt);
+				}
+				if (!o.isMesh) return;
+				rel.multiplyMatrices(inv, o.matrixWorld);
+				const P = o.geometry.attributes.position;
+				for (let k = 0; k < P.count; k += 2) {
+					q.fromBufferAttribute(P, k).applyMatrix4(rel);
+					for (let j = 0; j <= ROLLS; j++) {
+						const th = ((j / ROLLS) * Math.PI) / 2;
+						tab[j] = Math.min(tab[j], q.x * Math.sin(th) + q.y * Math.cos(th));
+					}
+				}
+			});
+			fl.position.y = 1.35;
+		}
+		const lowFor = (tab, th) => {
+			const f = Math.min(ROLLS, Math.max(0, (th / (Math.PI / 2)) * ROLLS)),
+				j = Math.min(ROLLS - 1, Math.floor(f));
+			// (the lower of the two angles either side, with a little room for her breathing and rocking)
+			return Math.min(tab[j], tab[j + 1]) - 0.05;
+		};
+		let lie = 0;
 		return born(g, {
 			height: 3.0,
-			step(t, dt, tk) {
+			step(t, dt, tk, wk, ent) {
 				const br = Math.sin(1.6 * t);
-				(fl.position.y = 1.35 + 0.1 * Math.sin(1.2 * t)), puff.scale.set(1 + 0.02 * br, 1 - 0.02 * br, 1);
+				// lying (0 standing to 1 on her side): only resting at her own spot
+				const rest =
+					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && !me.active && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
+				lie += ((rest ? 1 : 0) - lie) * Math.min(1, 1.3 * (dt || 0.016));
+				// (she rolls over while still floating, then settles down onto her side, so her tentacles are
+				// already off to the side as she comes down; getting up goes the other way)
+				const sm = (u) => ((u = Math.min(1, Math.max(0, u))), u * u * (3 - 2 * u)),
+					s = sm((lie - 0.35) / 0.65),
+					th = (sm(lie / 0.6) * Math.PI) / 2,
+					sn = Math.sin(th),
+					cs = Math.cos(th),
+					fy = (1 - s) * (1.35 + 0.1 * Math.sin(1.2 * t));
+				(fl.position.y = fy), (root.rotation.z = th);
+				// (lifted just enough that her lowest point clears the ground, and kept over her spot)
+				root.position.set(fy * sn, Math.max(0, 0.03 - fy * cs - lowFor(lowAt, th), Math.min(1, 3 * sn) * (0.03 - fy * cs - lowFor(tentAt, th))), 0);
+				puff.scale.set(1 + 0.02 * br, 1 - 0.02 * br, 1);
 				(puff.rotation.x = 0.05 + 0.03 * Math.sin(0.8 * t)), (mouth.scale.y = 1 + 0.5 * br + 1.2 * tk);
 				(cap.rotation.z = 0.04 * Math.sin(1.1 * t));
+				// the Zs rise straight up from beside her face whichever way she lies
 				zs.forEach((sp, k) => {
 					const u = (0.33 * t + k / 3) % 1,
-						sz = 0.22 + 0.3 * u;
-					sp.position.set(0.62 + 0.5 * u + 0.06 * Math.sin(5 * u + k), 0.75 + 1.0 * u, 0.45 - 0.1 * u);
+						sz = 0.22 + 0.3 * u,
+						ax = 0.62,
+						ay = 0.75 + fy,
+						gx = ax * cs - ay * sn + root.position.x + (0.5 - s) * u + 0.06 * Math.sin(5 * u + k),
+						gy = ax * sn + ay * cs + root.position.y + 1.0 * u,
+						lx = gx - root.position.x,
+						ly = gy - root.position.y;
+					sp.position.set(lx * cs + ly * sn, -lx * sn + ly * cs - fy, 0.45 - 0.1 * u);
 					sp.scale.set(sz, sz, 1), (sp.material.rotation = 0.25 - 0.3 * u), (sp.material.opacity = Math.min(1, u / 0.15) * Math.min(1, (1 - u) / 0.4) * 0.9);
 				});
-				// the tentacles sway, and as she sinks toward the ground they splay outward just enough to
-				// keep clear of it (rather than pushing into it)
-				const room = fl.position.y - 0.68 - 0.02;
+				// the tentacles sway (and droop toward the ground as she lies), and splay outward just enough
+				// to keep clear of the ground (rather than pushing into it)
+				dqs.forEach((q, d) => q.setFromAxisAngle(ZA, -0.75 * s * (1 - d / 3)));
 				tents.forEach((tg, k) => {
-					const ud = tg.userData;
+					const ud = tg.userData,
+						p0 = tg.position,
+						clear = () => ud.pts.every((q) => (tv.copy(q).applyQuaternion(tg.quaternion), root.position.y + (p0.x + tv.x) * sn + (fy + p0.y + tv.y) * cs >= 0.02));
 					tq.setFromEuler(te.set(0.18 * Math.sin(1.4 * t + k), 0, 0.12 * Math.sin(1.1 * t + 2 * k)));
-					// (searching on from just under last frame's angle, it takes only a step or two)
-					let th = Math.max(0, (ud.th || 0) - 0.06);
-					for (; th < 1.5; th += 0.02) {
-						tg.quaternion.setFromAxisAngle(ud.ax, th).multiply(tq);
-						if (ud.pts.every((q) => tv.copy(q).applyQuaternion(tg.quaternion).y >= -room)) break;
-					}
-					ud.th = th;
+					// (searching on from just under last frame's angle, it takes only a step or two; drooping
+					// less if splaying alone cannot clear the ground)
+					let th2 = Math.max(0, (ud.th || 0) - 0.06),
+						ok = !1;
+					for (let d = 0; d < 4 && !ok; d++, th2 = 0)
+						for (; th2 < 1.5; th2 += 0.02) {
+							tg.quaternion.setFromAxisAngle(ud.ax, th2).premultiply(dqs[d]).multiply(tq);
+							if ((ok = clear())) break;
+						}
+					ud.th = th2;
 				});
 				hands.forEach((h, k) => (h.position.y = -0.18 + 0.05 * Math.sin(1.8 * t + k * 2) + 0.1 * tk));
 			},
@@ -8328,8 +8423,8 @@ const JGP = (() => {
 	};
 
 	// KING DINO's drum set at the Juice Bar (built with the town) tells him when to play: on while the
-	// kit is playing, beat = the eighth note it is on, k = its place in the bar
-	const DRUMS = { on: !1, beat: -1, k: 0, fill: !1 };
+	// kit is playing; r and l count the strokes of his right and left hands
+	const DRUMS = { on: !1, r: 0, l: 0 };
 	// KING DINO, after the King Dino artwork: an upright lemon-yellow gummy dino with a citrus-peel skin, a
 	// rounded muzzle with glossy navy bead eyes and a quiet smile line; a glossy turquoise crown (the front
 	// prong tallest, with a knob) under a great feathered plume that runs purple down the back of the head,
@@ -8503,7 +8598,8 @@ const JGP = (() => {
 		// drumming: the right hand keeps the hi-hat going on every eighth, the left takes the snare and
 		// both come in on the tom fills; each stroke snaps the arm down onto the drum and lets it ride back up
 		const hitK = [0, 0];
-		let beatWas = -1,
+		let rWas = 0,
+			lWas = 0,
 			playK = 0;
 		// the big turquoise donut rings on the hips
 		[-1, 1].forEach((sx) => {
@@ -8749,10 +8845,9 @@ const JGP = (() => {
 				(plume.rotation.x = 0.025 * Math.sin(1.7 * t)), (plume.rotation.z = 0.03 * Math.sin(1.3 * t + 1));
 				const play = DRUMS.on && !wk;
 				playK += ((play ? 1 : 0) - playK) * Math.min(1, 5 * (dt || 0.016));
-				if (play && DRUMS.beat !== beatWas) {
-					beatWas = DRUMS.beat;
-					hitK[1] = 1, (2 === DRUMS.k || 6 === DRUMS.k || DRUMS.fill) && (hitK[0] = 1);
-				}
+				// (each stroke of the right hand, on the ride, the crash or the floor tom, and of the left, on the
+				// snare or the rack toms, as his jazz plays it)
+				play && DRUMS.r !== rWas && ((rWas = DRUMS.r), (hitK[1] = 1)), play && DRUMS.l !== lWas && ((lWas = DRUMS.l), (hitK[0] = 1));
 				for (let k = 0; k < 2; k++) hitK[k] = Math.max(0, hitK[k] - 7 * (dt || 0.016));
 				(body.rotation.x = playK * 0.05 * hitK[1]), (body.rotation.y = playK * 0.06 * Math.sin(1.9 * t));
 				arms.forEach(
@@ -10012,7 +10107,8 @@ const JGP = (() => {
 			head &&
 				(r.anim = function (t2, dt2, ent) {
 					a0.apply(this, arguments);
-					const want = ent && !ent.moving && !ent.busy ? 1 : 0;
+					// (her head comes level when she turns to the player: her Blossom line, or a line at the Event)
+					const want = ent && !ent.moving && !ent.busy && !("dialogue" === jt.top && xe.lastTarget === ent && (ent.gifting || me.active)) ? 1 : 0;
 					(gk += (want - gk) * Math.min(1, 2.5 * (dt2 || 0.016))), (head.rotation.x -= d.gazeUp * gk);
 				});
 		}
@@ -10901,7 +10997,12 @@ const JGP = (() => {
 	// this block provides the garden, the plants and the planting behaviour.
 	const GARDEN_R = 15,
 		GATHER_S = 0.5, // seconds before planting starts (everyone walks straight into the garden)
-		garden = { slots: [], plants: [], startAt: 0 };
+		// (round: how many Events with planters there have been; see beginPlanting)
+		garden = { slots: [], plants: [], startAt: 0, round: 0 },
+		// the three Dancers, who wander the dance floor
+		FLOOR_ROAMERS = ["p_etcher", "p_glyph", "w_mont"],
+		// (a park wanderer's walk never crosses the dance floor)
+		offFloor = (r) => (x, z) => !(JGP.onDance && JGP.onDance(x, z, r + 0.3));
 	// The church stands at the end of the south walk: its back to the south fence, its steps (and the Traveler window over the door) facing
 	// the garden. s runs along the walk from the garden's ring toward the fence, p across it.
 	const CHURCH_AT = (() => {
@@ -11488,8 +11589,9 @@ const JGP = (() => {
 	}
 	// THE PLANTS (placeholder): for now one kind of generic plant grows, a green stem with two pairs of
 	// leaves and a closed bud on top. Nothing grows unless the Seeds quest is done (without the Seeds
-	// nobody comes to plant); with them, the one batch that grows is what the creatures plant, each
-	// plant coming up during the Event right where its creature was seen planting it. (All of them
+	// nobody comes to plant); with them, what grows is what the creatures plant, each plant coming up
+	// during the Event right where its creature was seen planting it. The first two Events each grow a
+	// batch (the second in fresh rows); from the third on they only go through the motions. (All of them
 	// share one mesh.)
 	const plantGeo = () => {
 		if (garden.geo) return garden.geo;
@@ -11587,22 +11689,34 @@ const JGP = (() => {
 		}
 	}
 	// called by the event when planting begins: everyone walks to a spot inside the garden, except
-	// FORTIZMO, who walks slowly from her bar to the garden's edge on the bar's side to play from there
+	// FORTIZMO, who walks slowly from her bar to the garden's edge on the bar's side to play from there.
+	// Event 1 plants a batch; Event 2 plants a second batch in the rows Event 1 left bare (spots a
+	// metre further out, so the soil in front of each planter is on a fresh row, and turned half a
+	// space); from Event 3 on everyone goes back to their Event 1 spots and plants, but nothing more
+	// comes up and the garden stays as it is.
 	function beginPlanting(list, now) {
 		const fz = list.find(noPlant);
 		fz && ((fz.finaleSlot = { x: -(GARDEN_R + 2.3), z: 0 }), (fz.walkSpeed = 1), (fz.watching = !1));
 		list = list.filter((ent) => !noPlant(ent));
-		const rings = [
-				[0.3 * GARDEN_R, 4],
-				[0.55 * GARDEN_R, 6],
-				[0.8 * GARDEN_R, 99],
-			],
+		list.length && garden.round++;
+		const second = 2 === garden.round,
+			rings = second
+				? [
+						[5.5, 3],
+						[9.5, 4],
+						[13.5, 99],
+					]
+				: [
+						[0.3 * GARDEN_R, 4],
+						[0.55 * GARDEN_R, 6],
+						[0.8 * GARDEN_R, 99],
+					],
 			spots = [];
 		let left = list.length;
 		rings.forEach(([r, cap], ri) => {
 			const k = Math.min(cap, left);
 			for (let j = 0; j < k; j++) {
-				const a = ((j + 0.5 * ri) / k) * l + 0.3;
+				const a = ((j + 0.5 * ri + (second ? 0.5 : 0)) / k) * l + 0.3;
 				spots.push({ x: r * Math.cos(a), z: r * Math.sin(a) });
 			}
 			left -= k;
@@ -11649,7 +11763,9 @@ const JGP = (() => {
 			ent.finaleSlot = { x: r * Math.cos(a), z: r * Math.sin(a) };
 		}
 		// the plant goes in right where the creature is seen planting: the free slot nearest the spot just in
-		// front of it (within 1.3 m; with none that close it digs, but nothing comes up)
+		// front of it (within 1.3 m; with none that close it digs, but nothing comes up). From the third
+		// Event on it only digs: the garden stays as the first two left it.
+		if (garden.round > 2) return;
 		const ry = ent.group.rotation.y,
 			fx = p.x + 0.9 * Math.sin(ry),
 			fz = p.z + 0.9 * Math.cos(ry);
@@ -12290,7 +12406,7 @@ const JGP = (() => {
 	// styles: 0 swap, 1 volley, 2 boomerang, 3 parade, 4 juggle, 5 orbit dance, 6 bounce, 7 bubble,
 	// 8 zip, 9 confetti, 10 serenade, 11 tag
 	(() => {
-		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY" },
+		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY" },
 			PAIRS = [
 			["HN", "MU", 7, "Your spore count is... adorable.", "P-please don't put me in a spreadsheet."],
 			["HN", "AN", 1, "Your signal is buffering again.", "I'm not buffering! I'm thinking. Loudly."],
@@ -12988,9 +13104,9 @@ const JGP = (() => {
 		// The play area is the town square: a mowed green with the garden at its heart, crossed by
 		// concrete walks and ringed by sidewalks and four streets. Main Street storefronts line the
 		// east and west sides, the courthouse, church and fire station face the square from the north
-		// and porch houses from the south. Beyond them: the gas station and water tower, the grain
-		// elevator by the railroad, a schoolhouse, red-barn farmsteads with windmills, wind turbines,
-		// and corn, soybean and wheat fields out to the horizon. Static scenery is merged into one
+		// and porch houses from the south. Behind them: the gas station, Mistergummery's and a
+		// schoolhouse, with trees between, and open prairie to the horizon (nothing is built far out:
+		// it cost draw time and could hardly be seen from the square). Static scenery is merged into one
 		// mesh per material (a handful of draw calls, no collision).
 		// the square is ZS longer to the south: the south street, its houses and the south corners move
 		// out by ZS, and Main Street stretches by MK to match
@@ -13149,33 +13265,6 @@ const JGP = (() => {
 				return g2.repeat.set(1, 1), (g2.needsUpdate = !0), g2;
 			})(),
 		};
-		// corn: stalks with arching leaves and tassels on a transparent card (tiles along a row)
-		const cornTx = cached("txcorn", () => {
-			const pr = srand(4242),
-				tx = b(
-					256,
-					128,
-					(cx) => {
-						cx.clearRect(0, 0, 256, 128), (cx.lineCap = "round");
-						for (let k = 0; k < 7; k++) {
-							const x0 = 18 + 36 * k + 8 * (pr() - 0.5),
-								top = 8 + 14 * pr();
-							(cx.strokeStyle = grey(170 + 40 * pr())), (cx.lineWidth = 4), cx.beginPath(), cx.moveTo(x0, 128), cx.lineTo(x0 + 3, top), cx.stroke();
-							for (let j = 0; j < 7; j++) {
-								const y0 = 122 - 15 * j - 4 * pr(),
-									d = j % 2 ? 1 : -1,
-									len = 22 + 14 * pr();
-								(cx.strokeStyle = grey(190 + 60 * pr())), (cx.lineWidth = 3 + 2 * pr()), cx.beginPath(), cx.moveTo(x0, y0);
-								cx.quadraticCurveTo(x0 + d * len * 0.6, y0 - 16, x0 + d * len, y0 - 4 + 10 * pr()), cx.stroke();
-							}
-							(cx.strokeStyle = "rgb(255,240,180)"), (cx.lineWidth = 2);
-							for (let j = 0; j < 4; j++) cx.beginPath(), cx.moveTo(x0 + 3, top), cx.lineTo(x0 + 3 + 9 * (pr() - 0.5), top - 7), cx.stroke();
-						}
-					},
-					{ smooth: !0 },
-				);
-			return (tx.wrapS = THREE.RepeatWrapping), tx;
-		});
 
 		// ---- sign atlas: every painted sign, awning, clock and flag on one texture ---------------
 		const ATW = 2048,
@@ -13254,7 +13343,6 @@ const JGP = (() => {
 			["s_townhall", "TOWN HALL", "#eae2cc", "#3a3228", { shadow: "rgba(255,255,255,.6)", fill: 0.7 }],
 			["s_school", "SCHOOL", "#fbf8f0", "#1a1a1e", { edge: "#1a1a1e" }],
 			["s_gas", "GAS", "#c8202a", "#ffffff", { face: SANS, size: 0.7 }],
-			["s_coop", "FARMERS CO-OP", "#e8e2d4", "#2a4a2a", { face: SANS }],
 			["s_hotel", "HOTEL", "#2a3a2a", "#f0e2b0", { edge: "#f0e2b0" }],
 			["s_mgum", "Mistergummery's", "#c8282a", "#ffffff", { edge: "#ffc81e", face: SANS, shadow: "rgba(0,0,0,.25)" }],
 			["s_bolt", "BOLT BURGERS", "#fbf1dc", "#c8282a", { face: SANS, size: 0.6 }],
@@ -13267,8 +13355,6 @@ const JGP = (() => {
 			["st_oak", "ZORTO ST"],
 			["st_maple", "DECIBELLE AVE"],
 		].forEach(([key, txt]) => slot(key, 256, 64, board(txt, "#1e6a3a", "#ffffff", { edge: "#ffffff", face: SANS, size: 0.62 })));
-		slot("rr", 256, 48, board("RAILROAD", "#f8f8f4", "#141414", { face: SANS, size: 0.75, fill: 0.9 }));
-		slot("rr2", 256, 48, board("CROSSING", "#f8f8f4", "#141414", { face: SANS, size: 0.75, fill: 0.9 }));
 		[
 			["aw_red", "#c8282e", "#f8f4ec"],
 			["aw_green", "#2a6a3a", "#f8f4ec"],
@@ -13357,13 +13443,6 @@ const JGP = (() => {
 				[-0.5, 0],
 				[0, 1],
 				[0.5, 0],
-			]),
-			GAMBREL = prism("gambrel", [
-				[-0.5, 0],
-				[-0.42, 0.55],
-				[0, 1],
-				[0.42, 0.55],
-				[0.5, 0],
 			]);
 
 		// ---- material bins: everything is merged per bin at the end -----------------------------
@@ -13389,7 +13468,6 @@ const JGP = (() => {
 			// signs hang 1-2 cm off their boards: a constant depth bias (units only, no slope factor, so it
 			// stays tiny at grazing angles) keeps them in front where depth precision is low
 			sign: { m: lam({ map: atlasTx, alphaTest: 0.5, side: THREE.DoubleSide, polygonOffset: !0, polygonOffsetFactor: 0, polygonOffsetUnits: -4 }), uv: !0 },
-			corn: { m: lam({ map: cornTx, alphaTest: 0.45, side: THREE.DoubleSide }), uv: !0 },
 		};
 		const bins = {},
 			put = (bin, geo, color, m) => (bins[bin] || (bins[bin] = [])).push({ geo, color, matrix: m });
@@ -13478,21 +13556,6 @@ const JGP = (() => {
 		};
 		const place = (cx, cz, ry = 0, y0 = 0) => frame(S(cx, y0, cz, 0, ry, 0)),
 			faceIn = (X, Z) => A(X, Z); // rotation that turns a local +Z front towards the square
-		// a beam between two world points (legs, braces, wires)
-		const strut = (bin, col, p0, p1, w, geo = UB) => {
-			const d = new THREE.Vector3(p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]),
-				len = d.length();
-			put(
-				bin,
-				geo,
-				col,
-				new THREE.Matrix4().compose(
-					new THREE.Vector3((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2, (p0[2] + p1[2]) / 2),
-					new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()),
-					new THREE.Vector3(w, len, w),
-				),
-			);
-		};
 
 		// ---- Main Street: brick storefronts and wooden false fronts -------------------------------
 		// the ground floor: kickplates, big display windows, a recessed door, transom lights, a sign
@@ -13866,33 +13929,6 @@ const JGP = (() => {
 			B.box("asphalt", "#5c5c60", 0, -0.04, 6, 12, 0.08, 9);
 			return B;
 		};
-		const WATER_TOWER = (X, Z) => {
-			const B = place(X, Z, faceIn(X, Z)),
-				legH = 26,
-				steel = "#8e9aa4",
-				tank = "#d6e6ee",
-				wp = (px, py, pz) => new THREE.Vector3(px, py, pz).applyMatrix4(B.M0).toArray(),
-				leg = (k, y) => {
-					const a = [[-1, -1], [1, -1], [1, 1], [-1, 1]][k % 4],
-						r2 = 5.5 - (1.9 * y) / legH;
-					return wp(a[0] * r2, y, a[1] * r2);
-				};
-			for (let k = 0; k < 4; k++) {
-				strut("plain", steel, leg(k, 0), leg(k, legH), 0.5);
-				for (let j = 0; j < 3; j++) {
-					const y0 = 1 + 8 * j,
-						y1 = y0 + 8;
-					strut("plain", steel, leg(k, y1), leg(k + 1, y1), 0.16), strut("plain", steel, leg(k, y0), leg(k + 1, y1), 0.1), strut("plain", steel, leg(k + 1, y0), leg(k, y1), 0.1);
-				}
-			}
-			B.geo("plain", ucyl(10), steel, 0, legH / 2, 0, 1.4, legH, 1.4).geo("plain", ucyl(28), "#6a7682", 0, legH + 0.3, 0, 15, 0.16, 15);
-			B.geo("plain", cached("wtrail", () => new THREE.TorusGeometry(7.4, 0.05, 4, 40).rotateX(Math.PI / 2)), "#6a7682", 0, legH + 1.3, 0);
-			for (let k = 0; k < 16; k++) B.box("plain", "#6a7682", 7.4 * Math.sin((k * l) / 16), legH + 0.8, 7.4 * Math.cos((k * l) / 16), 0.06, 1.0, 0.06);
-			B.geo("plain", ucyl(32), tank, 0, legH + 4.4, 0, 13, 7, 13).geo("plain", usph(28, !0), tank, 0, legH + 0.9, 0, 13, -3.2, 13);
-			B.geo("plain", ucone(32), "#c4d6de", 0, legH + 9.1, 0, 13.6, 2.4, 13.6).geo("plain", usph(8), "#c4d6de", 0, legH + 10.4, 0, 0.6, 0.6, 0.6).box("plain", "#2a2a2e", 0, legH + 11.2, 0, 0.05, 1.4, 0.05);
-			B.geo("sign", cached("wtband", () => onSlot("wtower", new THREE.CylinderGeometry(6.56, 6.56, 2.6, 40, 1, !0, -Math.PI / 2, Math.PI))), "#ffffff", 0, legH + 4.6, 0);
-			return B;
-		};
 		// Mistergummery's: Greeblis Town's own burger drive-in (a fast-food parody). Red and cream tiled
 		// walls under a red mansard roof, wraparound windows, a giant bolt burger on the roof, golden
 		// "M" arches on a tall pylon sign, a drive-thru lane with a menu board and speaker, umbrella
@@ -13989,98 +14025,6 @@ const JGP = (() => {
 			B.box("plain", red, sx0 + 1.7, 0.8, sz0, 2.6, 0.08, 0.8, 0, 0, -0.55);
 			for (let k = 0; k < 4; k++) B.box("plain", "#5a5a60", sx0 - 0.75, 0.3 + 0.35 * k, sz0, 0.06, 0.06, 0.9);
 			return B;
-		};
-		const ELEVATOR = (X, Z) => {
-			const B = place(X, Z, 0),
-				conc = "#d6d0c2",
-				tin = "#b8bcc0",
-				wp = (px, py, pz) => new THREE.Vector3(px, py, pz).applyMatrix4(B.M0).toArray();
-			for (let r2 = 0; r2 < 2; r2++) for (let k = 0; k < 4; k++) B.geo("concrete", ucyl(20), conc, -10.8 + 7.2 * k, 14, -3.6 + 7.2 * r2, 7.2, 28, 7.2);
-			B.box("concrete", "#ccc6b8", 0, 28.3, 0, 29, 0.6, 14.6).box("metal", tin, 0, 29.8, 0, 28, 2.4, 3.0).geo("metal", GABLE.slopes, "#9aa0a6", 0, 31, 0, 28.2, 1, 3.2);
-			B.box("concrete", conc, -16.5, 22, 0, 6, 44, 10).box("metal", tin, -16.5, 46, 0, 6.6, 4, 10.6).geo("metal", GABLE.slopes, "#9aa0a6", -16.5, 48, 0, 6.8, 2, 10.8).geo("metal", GABLE.ends, tin, -16.5, 48, 0, 6.6, 2, 10.6);
-			B.sign("s_coop", -16.5, 38, 5.04, 5.4, 1.35);
-			for (let k = 0; k < 3; k++) B.win(-16.5, 8 + 11 * k, 1.0, 1.6, { trim: "#c8c2b4", z: 5.0, dark: !0 });
-			B.box("metal", "#c4c8cc", 4, 5, -14, 16, 10, 12).geo("metal", GABLE.slopes, "#9aa0a6", 4, 10, -14, 16.6, 3, 12.6).geo("metal", GABLE.ends, "#c4c8cc", 4, 10, -14, 16, 3, 12);
-			B.box("plain", "#6a6a70", 12.03, 3.2, -14, 0.06, 6.4, 6);
-			strut("plain", "#7a8088", wp(-14.5, 44, -2), wp(2, 13.2, -12), 0.6);
-			strut("plain", "#7a8088", wp(-14.5, 40, 1), wp(-2, 30.5, 1), 0.3);
-			B.box("brick", "#a8503a", 15, 2, 6, 5, 4, 4).box("plain", "#3a3a3e", 15, 4.05, 6, 5.2, 0.1, 4.2).win(15, 1.2, 1.2, 1.2, { z: 8.0, trim: "#f4f0e6" });
-			return B;
-		};
-		const BARN = (cx, cz, ry, col = "#a8302a") => {
-			const B = place(cx, cz, ry),
-				w = 14,
-				d = 20,
-				h = 5.5,
-				tr = "#f6f4ee",
-				top = 0.5 + h;
-			B.box("concrete", "#a8a49a", 0, 0.25, -d / 2, w + 0.3, 0.5, d + 0.3).box("boards", col, 0, 0.5 + h / 2, -d / 2, w, h, d);
-			B.geo("shingle", GAMBREL.slopes, "#4a4a52", 0, top, -d / 2, d + 0.8, 7.0, w + 1.0, 0, Math.PI / 2, 0).geo("boards", GAMBREL.ends, col, 0, top, -d / 2, d, 7.0, w, 0, Math.PI / 2, 0);
-			// sliding doors with white X bracing, hayloft door and hay hood, cupola
-			const xDoor = (px, py, dw, dh) => {
-				B.box("boards", col, px, py, 0.08, dw, dh, 0.12);
-				[
-					[px, py + dh / 2, dw + 0.2, 0.2],
-					[px, py - dh / 2, dw + 0.2, 0.2],
-				].forEach(([qx, qy, qw, qh]) => B.box("plain", tr, qx, qy, 0.16, qw, qh, 0.06));
-				[-1, 1].forEach((sx) => B.box("plain", tr, px + (sx * dw) / 2, py, 0.16, 0.2, dh, 0.06).box("plain", tr, px, py, 0.17, 0.18, Math.hypot(dw, dh), 0.05, 0, 0, sx * Math.atan2(dw, dh)));
-			};
-			xDoor(-1.3, 2.7, 2.6, 4.4), xDoor(1.3, 2.7, 2.6, 4.4), xDoor(0, top + 2.4, 2.2, 2.2);
-			B.box("plain", "#4a4a52", 0, top + 4.0, 0.5, 2.8, 0.15, 1.2);
-			[-1, 1].forEach((sx) => {
-				const Sd = B.sub((sx * w) / 2, -d / 2, (sx * Math.PI) / 2);
-				[-6, 0, 6].forEach((px) => Sd.win(px, 2.6, 1.0, 1.0, { trim: tr, dark: !0 }));
-			});
-			B.box("boards", tr, 0, top + 7.4, -d / 2, 2.2, 1.6, 2.2).geo("shingle", upyr, "#4a4a52", 0, top + 8.2, -d / 2, 3.0, 1.6, 3.0).box("plain", "#2a2a2e", 0, top + 10.2, -d / 2, 0.05, 1.2, 0.05).box("plain", "#2a2a2e", 0, top + 10.4, -d / 2, 1.0, 0.05, 0.05);
-			return B;
-		};
-		const SILO = (X, Z, r2, h, col, dome) => {
-			put("concrete", ucyl(22), col, S(X, h / 2, Z, 0, 0, 0, 2 * r2, h, 2 * r2));
-			put("plain", usph(22, !0), dome, S(X, h, Z, 0, 0, 0, 2 * r2 + 0.2, 1.6 * r2, 2 * r2 + 0.2));
-			for (let k = 1; k < 6; k++) put("plain", ucyl(22, 0.5, !0), "#8a8a8e", S(X, (k * h) / 6, Z, 0, 0, 0, 2 * r2 + 0.08, 0.12, 2 * r2 + 0.08));
-		};
-		// farm windmill: lattice tower, tail vane, and a wheel that turns in the wind
-		const SPINNERS = [];
-		const WINDMILL = (X, Z, ry) => {
-			const top = 11,
-				steel = "#8a9098";
-			for (let k = 0; k < 4; k++) {
-				const a = [[-1, -1], [1, -1], [1, 1], [-1, 1]],
-					p = (j, y) => {
-						const r2 = 1.6 - (1.3 * y) / top;
-						return [X + a[j % 4][0] * r2, y, Z + a[j % 4][1] * r2];
-					};
-				strut("plain", steel, p(k, 0), p(k, top), 0.14);
-				for (let j = 1; j < 4; j++) strut("plain", steel, p(k, (j * top) / 4), p(k + 1, (j * top) / 4), 0.07);
-			}
-			const B = place(X, Z, ry, top);
-			B.box("plain", "#6a5440", 0, 0.1, 0, 1.4, 0.12, 1.4).box("plain", steel, 0, 0.6, -1.2, 0.1, 0.1, 2.6).box("metal", "#d8dce0", 0, 0.8, -2.8, 0.05, 1.1, 1.6);
-			const geo = cached("mill", () => {
-				const pts = [];
-				for (let k = 0; k < 18; k++) {
-					const a = (k * l) / 18;
-					pts.push({ geo: UB, color: "#c8ccd0", matrix: S(1.45 * Math.cos(a), 1.45 * Math.sin(a), 0, 0, 0, a).multiply(S(0, 0, 0, 0.4, 0, 0, 1.6, 0.34, 0.03)) });
-				}
-				[0.7, 2.2].forEach((r3) => pts.push({ geo: new THREE.TorusGeometry(r3, 0.04, 4, 24), color: "#8a9098", matrix: new THREE.Matrix4() }));
-				pts.push({ geo: usph(8), color: "#5a5a60", matrix: S(0, 0, 0, 0, 0, 0, 0.4, 0.4, 0.5) });
-				return mergeBin(pts, BIN.plain);
-			});
-			const wheel = new THREE.Mesh(geo, BIN.plain.m);
-			wheel.position.copy(new THREE.Vector3(0, top + 0.6, 0.55).applyMatrix4(S(X, 0, Z, 0, ry, 0))), (wheel.rotation.y = ry), grp.add(wheel), SPINNERS.push([wheel, 1.8]);
-		};
-		const TURBINE = (X, Z) => {
-			const ry = faceIn(X, Z),
-				hub = 58;
-			put("plain", ucyl(10, 0.32), "#eef0f2", S(X, hub / 2, Z, 0, 0, 0, 3.2, hub, 3.2));
-			const B = place(X, Z, ry, hub);
-			B.box("plain", "#e8eaec", 0, 0.6, -1.0, 2.4, 2.4, 6.4);
-			const geo = cached("rotor", () => {
-				const pts = [{ geo: usph(10), color: "#e8eaec", matrix: S(0, 0, 0.2, 0, 0, 0, 1.6, 1.6, 2.2) }];
-				for (let k = 0; k < 3; k++) pts.push({ geo: UB, color: "#f2f4f6", matrix: S(0, 0, 0, 0, 0, (k * l) / 3).multiply(S(0, 13.5, 0, 0, 0.25, 0, 1.6, 26, 0.3)) });
-				return mergeBin(pts, BIN.plain);
-			});
-			const rotor = new THREE.Mesh(geo, BIN.plain.m);
-			rotor.position.copy(new THREE.Vector3(0, hub + 0.6, 2.4).applyMatrix4(S(X, 0, Z, 0, ry, 0))), (rotor.rotation.y = ry), (rotor.rotation.z = X), grp.add(rotor), SPINNERS.push([rotor, 0.55]);
 		};
 
 		// ---- trees and street furniture (no cars: they cost draw time and nobody needs them) -----
@@ -14403,12 +14347,10 @@ const JGP = (() => {
 			[-64, { col: "#f0e6c8", roof: "#4a4a52", door: "#2a4a8a", shutter: "#3a5a3a", w: 9 }],
 		].forEach(([X, o2]) => HOUSE(X, 60 + ZS, Math.PI, o2));
 		SCHOOL(-82, 60 + ZS, Math.PI);
-		// north-east: the gas station on the corner and the water tower behind it
-		GAS_STATION(72, -62), WATER_TOWER(86, -86);
-		// Mistergummery's drive-in on the lot between the gas station and the water tower
+		// north-east: the gas station on the corner
+		GAS_STATION(72, -62);
+		// Mistergummery's drive-in on the lot behind the gas station (its big M stands clear over the rooftops)
 		MISTERGUMMERYS(90.5, -64);
-		// north-west: the grain elevator by the railroad
-		ELEVATOR(-76, -80);
 		// lamp posts along Main Street's far sidewalks
 		[-32, -16, 0, 16, 32].forEach((Z) => (lampPost(50.6, ZS / 2 + Z * MK), lampPost(-50.6, ZS / 2 + Z * MK)));
 
@@ -14424,10 +14366,7 @@ const JGP = (() => {
 			[-108, -58, 52 + ZS, 72 + ZS],
 			[-90, -74, 52 + ZS, 76 + ZS],
 			[62, 82, -72, -52],
-			[78, 94, -94, -78],
 			[80, 101, -77, -51],
-			[-98, -54, -102, -70],
-			[-322, 322, -107, -99],
 		];
 		const blocked = (X, Z, m) => FOOT.some(([x0, x1, z0, z1]) => X > x0 - m && X < x1 + m && Z > z0 - m && Z < z1 + m);
 		for (let k = 0, placed = 0; k < 900 && placed < 80 * LOD; k++) {
@@ -14436,146 +14375,6 @@ const JGP = (() => {
 			if ((Math.abs(X) < 56 && Z > -56 && Z < 56 + ZS) || Math.abs(Math.abs(X) - 45) < 8 || Math.abs(Z + 45) < 8 || Math.abs(Z - SZ) < 8 || blocked(X, Z, 4)) continue;
 			tree(X, Z, rr(0.9, 1.5), rnd() < 0.15 ? 2 : rnd() < 0.5 ? 1 : 0, 1), placed++;
 		}
-
-		// ---- farmland -----------------------------------------------------------------------------
-		// a 7 x 7 grid of sections: the town takes the middle 3 x 3, fields fill the rest
-		const CELLS = [
-				[-320, -196],
-				[-190, -106],
-				[-100, -52],
-				[-38, 38],
-				[52, 100],
-				[106, 190],
-				[196, 320],
-			],
-			CELLZ = CELLS.map(([a0, a1], j) => (3 === j ? [a0, a1 + ZS] : 4 === j ? [a0 + ZS, a1] : [a0, a1])),
-			FIELD = { corn: "#4a6a28", soy: "#5a8a2e", wheat: "#d0a850", pasture: "#6a9440", plowed: "#7a5a3c" },
-			TYPES = ["corn", "soy", "wheat", "corn", "pasture", "plowed", "soy", "corn", "wheat", "soy"],
-			fr = srand(31),
-			cornQuad = (len, h) =>
-				cached("corn" + len.toFixed(1) + "|" + h, () => {
-					const geo = new THREE.BufferGeometry(),
-						n = segs(len),
-						pos = [],
-						uv = [],
-						col = [];
-					for (let k = 0; k < n; k++) {
-						const xa = -len / 2 + (k * len) / n,
-							xb = xa + len / n,
-							ua = (xa + len / 2) / 2.2,
-							ub = (xb + len / 2) / 2.2;
-						pos.push(xa, 0, 0, xb, 0, 0, xb, h, 0, xa, 0, 0, xb, h, 0, xa, h, 0);
-						uv.push(ua, 0, ub, 0, ub, 1, ua, 0, ub, 1, ua, 1);
-						col.push(0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 1, 1, 1, 0.55, 0.55, 0.55, 1, 1, 1, 1, 1, 1);
-					}
-					geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pos), 3));
-					geo.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(uv), 2));
-					geo.setAttribute("color", new THREE.BufferAttribute(new Float32Array(col), 3));
-					return geo.computeVertexNormals(), geo;
-				});
-		for (let i = 0; i < 7; i++)
-			for (let j = 0; j < 7; j++) {
-				if (Math.abs(i - 3) <= 1 && Math.abs(j - 3) <= 1) continue;
-				const farm = (5 === i || 1 === i) && 3 === j,
-					type = farm ? "pasture" : TYPES[Math.floor(fr() * TYPES.length)],
-					alongX = fr() < 0.5,
-					x0 = CELLS[i][0] + 2,
-					x1 = CELLS[i][1] - 2,
-					z0 = CELLZ[j][0] + 2,
-					z1 = CELLZ[j][1] - 2,
-					cx = (x0 + x1) / 2,
-					cz = (z0 + z1) / 2;
-				put("pasture" === type ? "lawn" : alongX ? "rows" : "rowsZ", UHs(segs(x1 - x0), segs(z1 - z0)), FIELD[type], S(cx, 0.02, cz, 0, 0, 0, x1 - x0, 1, z1 - z0));
-				if ("corn" === type) {
-					const len = alongX ? x1 - x0 : z1 - z0,
-						span = alongX ? z1 - z0 : x1 - x0,
-						step = 1.2 / LOD,
-						h = 2.3 + 0.3 * fr();
-					for (let u = 0.6; u < span; u += step) {
-						const tint = new THREE.Color("#7aa040").multiplyScalar(0.9 + 0.2 * fr()).getStyle();
-						alongX ? put("corn", cornQuad(len, h), tint, S(cx, 0, z0 + u, 0, 0, 0)) : put("corn", cornQuad(len, h), tint, S(x0 + u, 0, cz, 0, Math.PI / 2, 0));
-					}
-					// the ends of the rows, so the field reads as a wall from every side
-					[-1, 1].forEach((sd) => (alongX ? put("corn", cornQuad(span, h), "#7aa040", S(cx + (sd * len) / 2, 0, cz, 0, Math.PI / 2, 0)) : put("corn", cornQuad(span, h), "#7aa040", S(cx, 0, cz + (sd * len) / 2, 0, 0, 0))));
-				}
-				if ("pasture" === type && !farm) for (let k = 0; k < 6; k++) put("plain", ucyl(14), "#d8b860", S(rr(x0 + 8, x1 - 8), 0.7, rr(z0 + 8, z1 - 8), Math.PI / 2, rnd() * l, 0, 1.6, 1.4, 1.6));
-				// hedgerows along some section lines
-				if (fr() < 0.35) for (let u = x0 + 4; u < x1; u += 9 / LOD) tree(u, z1 + 3, rr(0.9, 1.3), rnd() < 0.3 ? 3 : 0, 0);
-			}
-		// farmsteads: red barn, silos, white farmhouse, windmill, hay bales, spruce windbreak
-		[
-			[148, 0, -1],
-			[-148, 4, 1],
-		].forEach(([X, Z, sd]) => {
-			const ry = faceIn(X, Z);
-			BARN(X - 6 * sd, Z - 10, ry), SILO(X + 6 * sd, Z - 26, 3.2, 18, "#c8c4bc", "#c8ccd0"), SILO(X + 13 * sd, Z - 24, 2.6, 15, "#4a6a8a", "#d8dce0");
-			HOUSE(X - 14 * sd, Z + 22, ry, { col: "#f6f4ee", roof: "#4a4a52", door: "#8a2a2a", shutter: "#2a4a3a", w: 9 });
-			WINDMILL(X + 12 * sd, Z + 16, ry);
-			for (let k = 0; k < 7; k++) put("plain", ucyl(14), "#d8b860", S(X + rr(-30, 30), 0.7, Z + rr(26, 33), Math.PI / 2, rnd() * l, 0, 1.6, 1.4, 1.6));
-			for (let k = 0; k < 9; k++) tree(X - 30 + 7.5 * k, Z - 38, rr(1, 1.3), 3, 1);
-		});
-		// wind turbines on the horizon
-		[
-			[172, -152],
-			[226, -40],
-			[-202, -122],
-			[-160, 182],
-			[122, 212],
-			[-40, -236],
-		]
-			.slice(0, window.__jgpMobile ? 4 : 6)
-			.forEach(([X, Z]) => TURBINE(X, Z));
-		// the railroad along the north section line, with crossings and hopper cars by the elevator
-		{
-			const RZ = -103;
-			put("plain", UBs(64, 1), "#8a8278", S(0, 0.1, RZ, 0, 0, 0, 640, 0.35, 3.6));
-			for (let u = -319; u < 319; u += 1.3 / LOD) put("plain", UB, "#5a4a3a", S(u, 0.33, RZ, 0, 0, 0, 0.26, 0.14, 2.6));
-			[-0.72, 0.72].forEach((dz) => put("plain", UBs(64, 1), "#7a7a80", S(0, 0.46, RZ + dz, 0, 0, 0, 640, 0.14, 0.09)));
-			[-45, 45].forEach((X) =>
-				[-1, 1].forEach((sd) => {
-					const PX = X + 5.5 * sd,
-						PZ = RZ + 3.5 * sd;
-					put("plain", ucyl(6), "#d8dce0", S(PX, 1.8, PZ, 0, 0, 0, 0.12, 3.6, 0.12));
-					const B = place(PX, PZ, sd > 0 ? Math.PI : 0);
-					put("sign", onSlot("rr", UQ), "#ffffff", B.M0.clone().multiply(S(0, 3.2, 0.06, 0, 0, 0.6, 1.5, 0.28, 1)));
-					put("sign", onSlot("rr2", UQ), "#ffffff", B.M0.clone().multiply(S(0, 3.2, 0.07, 0, 0, -0.6, 1.5, 0.28, 1)));
-					B.box("plain", "#1a1a1e", 0, 2.4, 0.08, 0.9, 0.12, 0.1);
-					[-0.4, 0.4].forEach((px) => B.geo("lit", ucyl(10), "#a8201e", px, 2.4, 0.16, 0.24, 0.06, 0.24, Math.PI / 2, 0, 0));
-				}),
-			);
-			[-92, -76, -60].forEach((X) => {
-				const B = place(X, RZ, Math.PI / 2);
-				B.box("plain", "#8a4a34", 0, 3.4, 0, 3.0, 3.0, 13).box("plain", "#7a4030", 0, 1.9, 3.2, 2.6, 1.2, 4.0, 0.5).box("plain", "#7a4030", 0, 1.9, -3.2, 2.6, 1.2, 4.0, -0.5);
-				B.box("plain", "#2a2a2e", 0, 1.4, 0, 2.2, 0.3, 12.4);
-				[-4.6, 4.6].forEach((pz) => [-0.72, 0.72].forEach((px) => B.geo("plain", ucyl(10), "#2a2a2e", px, 0.93, pz, 0.8, 0.12, 0.8, 0, 0, Math.PI / 2)));
-			});
-		}
-		// telephone poles and wires along the county roads
-		[
-			[1, 0],
-			[-1, 0],
-			[0, 1],
-			[0, -1],
-		].forEach(([dx, dz]) =>
-			(dx ? [-45, SZ] : [-45, 45]).forEach((c0) => {
-				let prev = null;
-				for (let u = 112; u <= 312; u += 40) {
-					const X = dx ? dx * u : c0 + 6,
-						Z = dz ? dz * u : c0 + 6;
-					put("plain", ucyl(6), "#6a5440", S(X, 4.5, Z, 0, 0, 0, 0.3, 9, 0.3)), put("plain", UB, "#6a5440", S(X, 8.4, Z, 0, dx ? Math.PI / 2 : 0, 0, 2.4, 0.14, 0.14));
-					if (prev)
-						[-1, 0, 1].forEach((k) => {
-							const ax = dx ? 0 : 1.0 * k,
-								az = dz ? 0 : 1.0 * k,
-								a = [prev[0] + ax, 8.55, prev[1] + az],
-								b2 = [X + ax, 8.55, Z + az],
-								m = [(a[0] + b2[0]) / 2, 7.6, (a[2] + b2[2]) / 2];
-							put("plain", ao([a, m, b2], 0.03, 0.03, 8, 3), "#222226", new THREE.Matrix4());
-						});
-					prev = [X, Z];
-				}
-			}),
-		);
 
 		// ---- the park fence: black iron pickets between brick pillars, all the way round (the church
 		// stands with its back to the south side). It marks the edge of the play area.
@@ -14669,6 +14468,111 @@ const JGP = (() => {
 					f.home.set(ax, f.home.y, z), (waitTo = -1);
 				});
 			}
+			// The roamers: HENNRICK strolls round the Portal, GEMTOE wanders the whole park and the three
+			// Dancers wander the dance floor. Whenever one
+			// has stood at a spot for a few seconds it picks another (JGP.portalRoam, JGP.parkRoam: always
+			// open ground with a clear straight walk there), walks there (its home moves; its walk home
+			// takes it to it) and stops, HENNRICK to look at the Portal, GEMTOE looking on the way he came.
+			// Not while it is busy (talking, at the Garden Event, or in a vignette with another creature) or
+			// with the player close by. One that has not got there in good time (the player or another
+			// creature in its way) settles where it is and picks again from there, so it never stays stuck.
+			{
+				// (no Flint or Blossoms where HENNRICK strolls)
+				E.add(ot.x, ot.z, 7.4, "still");
+				const roam = (id, pick, w0, w1) => {
+					let waitTo = -1,
+						giveUp = 0,
+						fails = 0,
+						// (where it was last seen making headway, and when)
+						px = 0,
+						pz = 0,
+						pt = 0;
+					L.push((t2) => {
+						const h = It.byId[id];
+						if (!h || h.busy || h.vig || h.meeting || h.battleDance || me.active || h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void (waitTo = -1);
+						const p = h.group.position;
+						if (Math.hypot(p.x - h.home.x, p.z - h.home.z) > 0.1) {
+							// (no headway for 2.5 s, another creature in the way, or not there in good time: it settles)
+							Math.hypot(p.x - px, p.z - pz) > 0.3 && ((px = p.x), (pz = p.z), (pt = t2));
+							giveUp && (t2 > giveUp || t2 - pt > 2.5) && !h.goHome && (h.home.set(p.x, h.home.y, p.z), (giveUp = 0));
+							return void (waitTo = -1);
+						}
+						if (((giveUp = 0), waitTo < 0)) return void (waitTo = t2 + w0 + w1 * Math.random());
+						if (t2 < waitTo) return;
+						waitTo = -1;
+						const sp = pick(p, h.bodyR || 1, h.def.at, h);
+						if (sp) (fails = 0), h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), (px = p.x), (pz = p.z), (pt = t2), h.pattern && (h.pattern[1].face = sp[2]);
+						// (boxed in somewhere with no clear walk out, it heads back to the spot it started from, and
+						// the walk home finds its way round whatever is in the way)
+						else if (++fails >= 3 && h.def.at) (fails = 0), h.home.set(h.def.at[0], h.home.y, h.def.at[1]);
+					});
+				};
+				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.parkRoam, 3, 5);
+				FLOOR_ROAMERS.forEach((id) => roam(id, JGP.floorRoam, 3, 4));
+				// MAMA GORBO and GOOWARD wander the park, and every minute or two they find each other: each
+				// walks to a meeting spot between them (clear ground both can walk straight to), they turn
+				// face to face and show hearts, and after a few seconds go back to wandering. Anything that
+				// takes either of them away (talking, a vignette, the Garden Event) calls it off till later.
+				{
+					let next = 60 + 60 * Math.random(),
+						st = 0, // 0: apart, 1: on the way, 2: together
+						until = 0;
+					let tryAt = 0;
+					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
+						free = (h) => h && !h.busy && !h.vig && !h.battleDance && !h.nearPlayer && !("dialogue" === jt.top && xe.lastTarget === h),
+						off = (t2, wait) => {
+							for (const h of pair()) h && ((h.seek = null), h.meeting && ((h.meeting = !1), h.home.set(h.group.position.x, h.home.y, h.group.position.z)));
+							(st = 0), (next = t2 + wait);
+						};
+					// (for the tests: meet at game time t)
+					JGP.meetAt = (t) => (next = t);
+					L.push((t2) => {
+						const [A, B] = pair();
+						if (!A || !B) return;
+						if (me.active || A.busy || B.busy || A.vig || B.vig) return void (st && off(t2, 40));
+						if (0 === st) {
+							if (t2 < next) return;
+							// (due: they wander toward each other till there is a clear way to meet)
+							(A.seek = B), (B.seek = A);
+							if (t2 < tryAt || !free(A) || !free(B)) return;
+							tryAt = t2 + 2;
+							const a = A.group.position,
+								b = B.group.position,
+								d = Math.hypot(b.x - a.x, b.z - a.z) || 1,
+								gap = (A.bodyR || 1) + (B.bodyR || 1) + 0.5;
+							// (the middle between them, or near it)
+							for (let k = 0; k < 30; k++) {
+								const j = k ? 1.5 + 0.2 * k : 0,
+									ang = Math.random() * l,
+									mx = (a.x + b.x) / 2 + j * Math.cos(ang),
+									mz = (a.z + b.z) / 2 + j * Math.sin(ang),
+									ux = (b.x - a.x) / d,
+									uz = (b.z - a.z) / d,
+									pa = [mx - (ux * gap) / 2, mz - (uz * gap) / 2],
+									pb = [mx + (ux * gap) / 2, mz + (uz * gap) / 2],
+									ok = (h, q) => JGP.roamFree(q[0], q[1], h.bodyR || 1, !0, h.def.at) && JGP.roamWalk(h.group.position, q[0], q[1], h.bodyR || 1, !0, h.def.at, offFloor(h.bodyR || 1));
+								if (ok(A, pa) && ok(B, pb)) {
+									(A.seek = B.seek = null), (A.meeting = B.meeting = !0), A.home.set(pa[0], A.home.y, pa[1]), B.home.set(pb[0], B.home.y, pb[1]);
+									A.pattern && (A.pattern[1].face = Math.atan2(ux, uz)), B.pattern && (B.pattern[1].face = Math.atan2(-ux, -uz));
+									return void ((st = 1), (until = t2 + d + 30));
+								}
+							}
+							return;
+						}
+						if (1 === st) {
+							const at = (h) => Math.hypot(h.group.position.x - h.home.x, h.group.position.z - h.home.z) < 0.15;
+							if (t2 > until) return void off(t2, 40);
+							if (at(A) && at(B)) (st = 2), (until = t2 + 1), (A.hearts = B.hearts = 0);
+							return;
+						}
+						// together: a heart each, then another, then back to wandering
+						if (t2 > until) {
+							if (A.hearts < 2) return void ([A, B].forEach((h) => (h.hearts++, Ut.above(h, "♥", "#ff5fb0"))), (until = t2 + 1.8));
+							off(t2, 60 + 60 * Math.random());
+						}
+					});
+				}
+			}
 			// no lawn tufts through its floors, and no pickups under it
 			for (let zz = -10.5; zz <= 10.6; zz += 2.1) keepAt.push([JX - 2, zz], [JX + 1.5, zz], [JX + 5, zz]), E.add(JX + 1, zz, 3, "scenery");
 			// THE DANCE FLOOR: 1.2 m tiles, all the same dark purple, set in thin darker grout with a soft
@@ -14709,11 +14613,182 @@ const JGP = (() => {
 			}
 			// KING DINO's drum set from Greeblis Woods, on the grass behind the dance floor's south half
 			// (its rug and cymbals stop just short of the floor), facing out across it: red shells with white heads and chrome rims, his name on the bass drum, two rack toms, a snare, a floor tom,
-			// a hi-hat and a crash. KING DINO stands behind it with his sticks and stays there through the
-			// Garden event. While he is at his kit and the player is anywhere near, he plays his 104 bpm
-			// groove (kick, snare, hi-hat, a tom fill every other bar and a crash every four), each drum
-			// jumping as it is hit; the drums are heard from around the bar. Each drum is one merged mesh.
+			// a hi-hat and a crash (which he rides). KING DINO stands behind it with his sticks and stays there
+			// through the Garden event. While he is at his kit and the player is anywhere near (or a Dance
+			// battle is on), he plays his jazz (below), each drum jumping as it is hit; it is heard on the
+			// dance floor and through every Dance battle, and never while FORTIZMO plays her horn. Each drum
+			// is one merged mesh.
 			{
+				// KING DINO's jazz, "Stomp at the Juice Bar": a drum-kit jazz piece at 104 bpm (the beat every
+				// built-in dance keeps), all synthesized. Eight bars of brushes open it (once); then a 24-bar
+				// chorus goes round for as long as anyone listens: 8 bars of swinging time on the ride, 8
+				// trading fours (4 bars of time, then 4 bars of solo round the tuned toms) and an 8-bar shout of
+				// kicks and crashes under the ride that ends on a 2-bar solo break. Notes are scheduled a
+				// little ahead on the audio clock, and the kit and his sticks move on the hits as they sound;
+				// when nobody can hear it, it keeps time silently on the game clock, for the eye.
+				const JAZZ = (() => {
+					const BEAT = 60 / 104,
+						BAR = 4 * BEAT,
+						SW = 2 / 3, // the swung eighth: two thirds of the way through the beat
+						T3 = 1 / 3,
+						// bar n of the piece: the brushes once, then the chorus round and round
+						part = (n) => {
+							if (n < 8) return ["brush", n];
+							const m = (n - 8) % 24;
+							return m < 8 ? ["time", m] : m < 16 ? ["trade", m - 8] : ["shout", m - 16];
+						},
+						// the solo bars, as [beat, voice, loudness] (t1, t2, t3: the high, middle and floor toms)
+						SOLO = [
+							[[0, "t1", 0.8], [SW, "t2", 0.6], [1, "t1", 0.7], [1 + SW, "t3", 0.6], [2, "t2", 0.8], [2 + T3, "t1", 0.5], [2 + SW, "t2", 0.6], [3, "t3", 0.9], [3 + SW, "kick", 0.7]],
+							[[0, "snare", 0.9], [SW, "kick", 0.6], [1, "snare", 0.5], [1 + SW, "snare", 0.7], [2, "t2", 0.8], [2 + SW, "t3", 0.7], [3, "kick", 0.8], [3 + SW, "snare", 0.6]],
+							[[0, "snare", 0.8], [T3, "snare", 0.4], [SW, "t1", 0.6], [1, "t1", 0.7], [1 + T3, "t2", 0.5], [1 + SW, "t2", 0.6], [2, "t3", 0.8], [2 + SW, "kick", 0.6], [3, "snare", 0.9], [3 + SW, "t3", 0.7]],
+							// a buzz roll that swells into two big tom hits
+							Array.from({ length: 18 }, (_, k) => [k / 6, "snare", 0.25 + 0.035 * k]).concat([[3, "t1", 0.9], [3 + SW, "t3", 1]]),
+						],
+						bar = (n) => {
+							const [sec, m] = part(n),
+								rnd = ((s) => () => (s = (16807 * s) % 2147483647) / 2147483647)(977 * n + 13),
+								ev = [],
+								add = (b, v, g) => ev.push([b, v, g]),
+								// the ride: "ding, ding-a ding, ding-a", leaning on 2 and 4 (the bell on one in the shout)
+								ride = (bell, upTo) => [0, 1, 1 + SW, 2, 3, 3 + SW].forEach((b, k) => b < upTo && add(b, bell && !k ? "bell" : "ride", [0.6, 0.75, 0.42, 0.6, 0.75, 0.42][k])),
+								feather = (g) => [0, 1, 2, 3].forEach((b) => add(b, "kick", g)),
+								chick = () => (add(1, "chick", 0.7), add(3, "chick", 0.7)),
+								// comping: a few snare hits on the swung eighths, and now and then a kick "bomb"
+								comp = (k) => {
+									for (let j = 0; j < k; j++) add(Math.floor(4 * rnd()) + (rnd() < 0.6 ? SW : 0), "snare", rnd() < 0.5 ? 0.22 : 0.5);
+									rnd() < 0.25 && add(3 + SW, "kick", 0.75);
+								},
+								all = (list) => list.forEach((e) => add(e[0], e[1], e[2]));
+							if ("brush" === sec) {
+								// brushes: a long sweep on 1 and 3, a pat on 2 and 4, the hi-hat foot and a soft kick
+								[0, 1, 2, 3].forEach((b) => add(b, "brush", b % 2 ? 0.6 : 0.9)), chick(), feather(0.18);
+								rnd() < 0.5 && add(3 + SW, "snare", 0.2);
+								7 === m && all([[3, "snare", 0.3], [3 + T3, "snare", 0.45], [3 + SW, "snare", 0.6]]);
+							} else if ("shout" === sec) {
+								// the shout: the ride with the bell on one, the band's figure punched on snare and kick,
+								// then the solo break
+								if (m < 6) {
+									ride(!0, 4), chick(), feather(0.22);
+									m % 2
+										? all([[1, "snare", 0.9], [1 + SW, "kick", 0.8], [3 + SW, "snare", 0.95]])
+										: all([[0, "crash", m ? 0.6 : 1], [0, "kick", 0.9], [1 + SW, "snare", 0.85], [2 + SW, "snare", 0.85], [3 + SW, "kick", 0.8]]);
+								} else all(SOLO[m - 4]);
+							} else if ("trade" === sec && m > 3) all(SOLO[m - 4]), chick();
+							else {
+								// time: a crash to start each section, a tom fill to end the first one
+								const last = "time" === sec && 7 === m;
+								m || add(0, "crash", 0.8), ride(!1, last ? 2 : 4), chick(), feather(0.2), comp("trade" === sec ? 2 : 1 + (rnd() < 0.5 ? 1 : 0));
+								last && all([[2, "snare", 0.6], [2 + T3, "snare", 0.45], [2 + SW, "t1", 0.7], [3, "t2", 0.8], [3 + T3, "t2", 0.6], [3 + SW, "t3", 0.9]]);
+							}
+							return ev;
+						};
+					// the sound: every voice is a shaped burst of noise or a falling sine, into the mix and a small room
+					let u = null,
+						mix = null,
+						room = null,
+						noise = null,
+						master = null,
+						lastV = -1;
+					const graph = () => {
+							const A = G.ctx && G.ctx();
+							if (!A) return !1;
+							if (u === A.c) return !0;
+							(u = A.c), (lastV = -1), (master = u.createGain()), (master.gain.value = 0), master.connect(A.out), (mix = u.createGain()), mix.connect(master), (room = u.createGain());
+							// (two short feedback delays through a lowpass, as for FORTIZMO's band)
+							const d1 = u.createDelay(0.5),
+								d2 = u.createDelay(0.5),
+								fb = u.createGain(),
+								lp = u.createBiquadFilter(),
+								wet = u.createGain();
+							(d1.delayTime.value = 0.053), (d2.delayTime.value = 0.089), (fb.gain.value = 0.3), (lp.type = "lowpass"), (lp.frequency.value = 3200), (wet.gain.value = 0.35);
+							room.connect(d1), room.connect(d2), d1.connect(lp), d2.connect(lp), lp.connect(fb), fb.connect(d1), fb.connect(d2), lp.connect(wet), wet.connect(master);
+							noise = u.createBuffer(1, u.sampleRate, u.sampleRate);
+							const ch = noise.getChannelData(0);
+							for (let k = 0; k < ch.length; k++) ch[k] = 2 * Math.random() - 1;
+							return !0;
+						},
+						hiss = () => {
+							const s = u.createBufferSource();
+							return (s.buffer = noise), (s.playbackRate.value = 0.9 + 0.2 * Math.random()), s;
+						},
+						filt = (type, fr, q) => {
+							const b = u.createBiquadFilter();
+							return (b.type = type), (b.frequency.value = fr), q && (b.Q.value = q), b;
+						},
+						tone = (type, f0, f1, t, dur) => {
+							const o = u.createOscillator();
+							return (o.type = type), (o.frequency.value = f0), f1 && (o.frequency.setValueAtTime(f0, t), o.frequency.exponentialRampToValueAtTime(f1, t + dur)), o;
+						},
+						// one hit: src (through fl) at loudness g, dying away over dec seconds (after a swell of att)
+						hit = (t, src, fl, g, dec, rv, att) => {
+							const a = u.createGain(),
+								end = t + (att || 0) + dec;
+							a.gain.setValueAtTime(att ? 1e-4 : g, t), att && a.gain.linearRampToValueAtTime(g, t + att), a.gain.exponentialRampToValueAtTime(1e-4, end);
+							(fl ? src.connect(fl) : src).connect(a), a.connect(mix), rv && a.connect(room);
+							src.buffer ? src.start(t, 0.5 * Math.random()) : src.start(t), src.stop(end + 0.03);
+							src.onended = () => {
+								try {
+									src.disconnect(), fl && fl.disconnect(), a.disconnect();
+								} catch (e) {}
+							};
+						},
+						tom = (t, g, fr) => (hit(t, tone("sine", 1.18 * fr, fr, t, 0.18), 0, 0.12 * g, 0.42, 1), hit(t, hiss(), filt("bandpass", 5 * fr, 1), 0.03 * g, 0.04)),
+						V = {
+							ride: (t, g) => (hit(t, hiss(), filt("bandpass", 7200, 0.9), 0.05 * g, 0.9, 1), hit(t, tone("sine", 3350), 0, 0.009 * g, 0.7, 1), hit(t, tone("sine", 5120), 0, 0.006 * g, 0.45, 1)),
+							bell: (t, g) => (hit(t, hiss(), filt("bandpass", 6e3, 1.2), 0.05 * g, 1.1, 1), hit(t, tone("sine", 2480), 0, 0.03 * g, 1.2, 1), hit(t, tone("sine", 3720), 0, 0.016 * g, 0.9, 1)),
+							chick: (t, g) => hit(t, hiss(), filt("highpass", 6500), 0.05 * g, 0.05),
+							brush: (t, g) => hit(t, hiss(), filt("bandpass", 2800, 0.6), 0.035 * g, g > 0.8 ? 0.42 : 0.16, 1, g > 0.8 ? 0.12 : 0.01),
+							snare: (t, g) => (hit(t, hiss(), filt("bandpass", 1900, 0.7), 0.09 * g, 0.14, 1), hit(t, tone("triangle", 190, 160, t, 0.08), 0, 0.05 * g, 0.1)),
+							kick: (t, g) => hit(t, tone("sine", 110, 46, t, 0.16), 0, 0.17 * g, 0.34),
+							crash: (t, g) => (hit(t, hiss(), filt("highpass", 3600), 0.08 * g, 1.9, 1), hit(t, hiss(), filt("bandpass", 5200, 1.5), 0.04 * g, 1.2, 1)),
+							t1: (t, g) => tom(t, g, 196),
+							t2: (t, g) => tom(t, g, 147),
+							t3: (t, g) => tom(t, g, 98),
+						};
+					let p = 0, // the next bar to play
+						at = -1, // when it starts, on the clock in use
+						clk = "", // "a": the audio clock (sounding); "g": the game clock (silent, for the eye)
+						quietAt = 0;
+					const due = [];
+					return {
+						// every frame: on (he is playing), heard (someone can hear it), its loudness, and cut (stop
+						// sounding at once); hands back the hits that have just sounded
+						update(tt, on, heard, vol, cut) {
+							const ok = graph() && "running" === u.state;
+							if (ok) {
+								const v = on && heard && !cut ? vol : 0;
+								if (Math.abs(v - lastV) > 0.01) {
+									const g = master.gain,
+										now = u.currentTime;
+									(lastV = v), g.cancelScheduledValues(now), g.setValueAtTime(g.value, now), g.setTargetAtTime(0.6 * v, now, cut ? 0.02 : v ? 0.08 : 0.25);
+								}
+							}
+							on && heard && !cut && (quietAt = tt + 1.5);
+							const mode = on ? (ok && tt < quietAt ? "a" : "g") : "";
+							if (mode !== clk) (clk = mode), (due.length = 0), (at = -1);
+							if (!mode) return null;
+							const now = "a" === mode ? u.currentTime : tt;
+							if (at < now - BAR) at = now + 0.06;
+							let added = !1;
+							for (; at < now + ("a" === mode ? 0.5 : 0.05); p++, at += BAR, added = !0)
+								for (const [b, v, g] of bar(p)) {
+									const t = at + b * BEAT;
+									"a" === mode && V[v](t, g), due.push([t, v]);
+								}
+							added && due.sort((x, y) => x[0] - y[0]);
+							let k = 0;
+							for (; k < due.length && due[k][0] <= now; ) k++;
+							return k ? due.splice(0, k) : null;
+						},
+						// (for the tests)
+						get state() {
+							return { clock: clk, bar: p, gain: master ? master.gain.value : 0, part: part(Math.max(0, p - 1)).join(" ") };
+						},
+						tap: () => master,
+					};
+				})();
+				JGP.jazz = JAZZ;
 				const kit = new THREE.Group();
 				kit.position.set(-34.8, 0, 19.2), (kit.rotation.y = Math.PI / 2), (kit.userData.keepInFinale = !0), C.add(kit);
 				// (no lawn tufts or pickups under the kit's rug or round KING DINO)
@@ -14760,32 +14835,34 @@ const JGP = (() => {
 				cym.add(T.cyl(0.24, 0.24, 0.012, 22), BRASS, cym.m(0, 0, 0)), cym.add(T.cyl(0.24, 0.24, 0.012, 22), BRASS, cym.m(0, 0.03, 0)), cym.done(hat);
 				crash.position.set(0.95, 1.22, 0.25), crash.rotation.set(0.35, 0, -0.2), kit.add(crash);
 				cym2.add(T.cyl(0.36, 0.3, 0.014, 26), BRASS, cym2.m(0, 0, 0)), cym2.add(T.sphere(0.035, 8, 6), BRASS, cym2.m(0, 0.02, 0)), cym2.done(crash);
-				const KICK = [1, 0, 0, 0, 1, 0, 1, 0],
-					SNARE = [0, 0, 1, 0, 0, 0, 1, 0],
-					FILL = [0, 0, 0, 0, 0, 0, 0, 1],
-					hits = new Map(),
-					// the drums are heard anywhere on the dance floor (and on the strip where the kit stands),
+				const hits = new Map(),
+					// the jazz is heard anywhere on the dance floor (and on the strip where the kit stands),
 					// a little louder near the kit, and not at all off it (for VR, by where the head is)
 					hearAt = (P) => onDance(P.x, P.z) || (P.x < -33.1 && P.x > -37.6 && Math.abs(P.z - 19.2) < 2.6),
-					play = (snd) => G.near(kit.position.x, kit.position.z, 60, snd);
-				let last = -1;
+					// which part of the kit each of the track's voices moves, how hard, and with which hand
+					// (the right keeps the ride and takes the crash and the floor tom; the left has the snare
+					// and the rack toms; the feet play the kick and the hi-hat)
+					PART = { kick: [kick, 1], chick: [hat, 1], ride: [crash, 0.35, 1], bell: [crash, 0.6, 1], crash: [crash, 1.4, 1], t3: [floor, 1, 1], snare: [snare, 1, 2], brush: [snare, 0.5, 2], t1: [toms[0], 1, 2], t2: [toms[1], 1, 2] };
 				L.push((tt, dt) => {
 					const P = we.presenting && we.headPos ? we.headPos : At.position,
 						kd = It.byId.m_kingdino,
-						// he plays whenever someone is about and never stops: not for the Event, nor while he is
-						// talked to or given a Blossom, nor during a Dance battle; he is only heard on the floor
-						on = !!kd && Math.hypot(P.x - kit.position.x, P.z - kit.position.z) < 45,
-						beat = Math.floor(((104 * tt) / 60) * 2),
-						bar = Math.floor(beat / 8);
-					if (((DRUMS.on = on), on && beat !== last)) {
-						last = beat;
-						const hear = hearAt(P);
-						const k = beat % 8;
-						(DRUMS.beat = beat), (DRUMS.k = k), (DRUMS.fill = !!(FILL[k] && bar % 2));
-						KICK[k] && (hits.set(kick, 1), hear && play("drumKick")), SNARE[k] && (hits.set(snare, 1), hear && play("drumSnare"));
-						FILL[k] && bar % 2 && (hits.set(toms[(bar >> 1) % 2], 1), hits.set(floor, 1), hear && play("drumTom"));
-						hits.set(hat, 1), k % 2 == 0 && hear && play("drumHat"), 0 === k && bar % 4 == 0 && hits.set(crash, 1.4);
-					}
+						d = Math.hypot(P.x - kit.position.x, P.z - kit.position.z),
+						// a Dance battle (and the Dancer's victory dance after it) is danced to his jazz, wherever it is
+						battle = !!(Dbt.state || It.all.some((e) => e.battleDance)),
+						// FORTIZMO's horn tune and his jazz never sound together: while she plays (until her last
+						// notes have died away) he rests his sticks and listens
+						horn = ee.playing || ee.pendingNotes() > 0,
+						// otherwise he plays whenever someone is about and never stops: not while he is talked to
+						// or given a Blossom, nor during a Dance battle
+						on = !!kd && !horn && (d < 45 || battle),
+						i = Math.max(0, 1 - d / 60);
+					DRUMS.on = on;
+					const fired = JAZZ.update(tt, on, battle || hearAt(P), battle ? 1 : 0.25 + 0.75 * i * i, horn);
+					if (fired)
+						for (const [, v] of fired) {
+							const q = PART[v];
+							q && (hits.set(q[0], Math.max(hits.get(q[0]) || 0, q[1])), 1 === q[2] ? DRUMS.r++ : 2 === q[2] && DRUMS.l++);
+						}
 					hits.forEach((v, o) => {
 						const n = Math.max(0, v - 6 * (dt || 0.016));
 						n > 0 ? hits.set(o, n) : hits.delete(o);
@@ -14934,7 +15011,6 @@ const JGP = (() => {
 		}
 		let nightWas = -1;
 		L.push((tt, dt) => {
-			SPINNERS.forEach(([m, spd]) => (m.rotation.z += spd * (dt || 0.016)));
 			const k = I.nightK || 0;
 			if (Math.abs(k - nightWas) < 0.01) return;
 			(nightWas = k), BIN.lit.m.emissive.setRGB(0.95 * k, 0.7 * k, 0.36 * k), BIN.lamp.m.emissive.setRGB(k, 0.86 * k, 0.56 * k);
@@ -14960,6 +15036,101 @@ const JGP = (() => {
 		// the counter's gap (z 1.0 to 2.4) to the dance floor
 		barSpot: (z) => [-t.parkHalf + 3.6 - 1.3, z],
 		barVia: () => [-1.3, 0.23, 2.2].map((dx) => [-t.parkHalf + 3.6 + dx, 1.7]),
+		// HENNRICK's first spot: 4 m to the side of the Portal and a little in front of it
+		portalSpot: () => [ot.x + 4 * ot.nz + ot.nx, ot.z - 4 * ot.nx + ot.nz],
+		// whether a roaming creature of radius r can stand at (x, z): inside the square with room to spare,
+		// out of the garden (its plants), every building, the pond, and everything the town keeps clear
+		// (lamps, benches, trees, bins, the gazebo, the drum kit, the stations; with others, the other
+		// creatures' spots, except its own, own)
+		roamFree(x, z, r, others, own) {
+			return (
+				// (inside the fenced square, the long south end included)
+				F.list.every((c) => Math.hypot(x - c.x, z - c.z) > c.r + 0.8 * r) &&
+				Math.abs(x) < t.parkHalf - r - 1 &&
+				z > -t.parkHalf + r + 1 &&
+				z < t.parkSouth - r - 1 &&
+				Math.hypot(x, z) > GARDEN_R + 0.6 + r &&
+				!F.buildings.some((B) => F.inHull(B, x, z, 0.6 + 0.5 * r)) &&
+				E.list.every(
+					(q) =>
+						!(/^(scenery|pool|phone|stump|drums)$/.test(q.tag) || (others && /^(still|portal)$/.test(q.tag) && !(own && Math.hypot(q.x - own[0], q.z - own[1]) < 0.5))) ||
+						Math.hypot(x - q.x, z - q.z) > q.r + 0.3 * r,
+				)
+			);
+		},
+		// a straight walk from p to (x, z) a roaming creature can take (every half metre clear; the first
+		// metre and a half is where it stands now, so it is not held there)
+		roamWalk(p, x, z, r, others, own, extra) {
+			const d = Math.hypot(x - p.x, z - p.z),
+				n = Math.max(2, Math.ceil(d / 0.5));
+			for (let j = 1; j <= n; j++) {
+				const qx = p.x + ((x - p.x) * j) / n,
+					qz = p.z + ((z - p.z) * j) / n;
+				if ((j / n) * d > 1.5 && (!JGP.roamFree(qx, qz, r, others, own) || (extra && !extra(qx, qz)))) return !1;
+			}
+			return !0;
+		},
+		// a spot for HENNRICK to stroll to from p: 3.2 to 6 m from the Portal and at least 2.5 m from where
+		// he is, never in its doorway or the lane in front of it (where NEXTESSA comes through), and with
+		// a clear straight walk there that does not go through the Portal's frame. He stops facing it.
+		portalRoam(p, r) {
+			const along = (x, z) => (x - ot.x) * ot.nx + (z - ot.z) * ot.nz,
+				across = (x, z) => (x - ot.x) * ot.nz - (z - ot.z) * ot.nx,
+				frame = (x, z) => !(Math.abs(across(x, z)) < 2.05 + 0.4 + r && Math.abs(along(x, z)) < 0.4 + r);
+			for (let k = 0; k < 40; k++) {
+				const a = Math.random() * l,
+					d = 3.2 + 2.8 * Math.random(),
+					x = ot.x + d * Math.cos(a),
+					z = ot.z + d * Math.sin(a);
+				if (Math.hypot(x - p.x, z - p.z) < 2.5 || (Math.abs(across(x, z)) < 2.4 + r && along(x, z) > 0)) continue;
+				if (JGP.roamFree(x, z, r) && JGP.roamWalk(p, x, z, r, !1, null, frame)) return [x, z, Math.atan2(ot.x - x, ot.z - z)];
+			}
+			return null;
+		},
+		// the dance floor's rectangle [x0, z0, x1, z1] (as laid out by the Juice Bar: 10 by 32 tiles of 1.2 m
+		// from 0.9 m in front of the bar's counter, z -9.6 on)
+		floor: [-t.parkHalf + 4.5, -9.6, -t.parkHalf + 16.5, 28.8],
+		// the Dancers' first spots, spread down the dance floor
+		floorSpot: (k) => [(JGP.floor[0] + JGP.floor[2]) / 2, JGP.floor[1] + (0.17 + 0.33 * k) * (JGP.floor[3] - JGP.floor[1])],
+		// a spot on the dance floor for a Dancer (ent) to wander to from p: anywhere on it (kept in from its
+		// edges) 3 to 12 m off, clear of the other two Dancers, where they stand and where they are
+		// going, with a clear straight walk there (the floor is one rectangle, so the walk stays on it).
+		// It stops facing the way it came.
+		floorRoam(p, r, own, ent) {
+			const [x0, z0, x1, z1] = JGP.floor,
+				m = r + 0.4,
+				apart = (x, z) =>
+					It.all.every((o) => o === ent || !FLOOR_ROAMERS.includes(o.id) || (Math.hypot(x - o.home.x, z - o.home.z) > r + (o.bodyR || 1) + 1 && Math.hypot(x - o.group.position.x, z - o.group.position.z) > r + (o.bodyR || 1) + 1));
+			for (let k = 0; k < 50; k++) {
+				const x = x0 + m + Math.random() * (x1 - x0 - 2 * m),
+					z = z0 + m + Math.random() * (z1 - z0 - 2 * m),
+					d = Math.hypot(x - p.x, z - p.z);
+				if (d < 3 || d > 12 || !apart(x, z)) continue;
+				if (JGP.roamFree(x, z, r) && JGP.roamWalk(p, x, z, r)) return [x, z, Math.atan2(x - p.x, z - p.z)];
+			}
+			return null;
+		},
+		// a spot for one of the park's wanderers (GEMTOE, MAMA GORBO, GOOWARD) to wander to from p: anywhere
+		// open in the park 5 to 16 m off, kept off the other creatures' spots, the Portal and the dance
+		// floor (the Dancers' own), with a clear straight walk there. It stops facing the way it came.
+		// One looking for another (ent.seek) takes the spot that brings it nearest.
+		parkRoam(p, r, own, ent) {
+			const to = ent && ent.seek && ent.seek.group.position;
+			let best = null,
+				bd = 1e9;
+			for (let k = 0; k < 60; k++) {
+				const a = Math.random() * l,
+					d = 5 + 11 * Math.random(),
+					x = p.x + d * Math.cos(a),
+					z = p.z + d * Math.sin(a);
+				if (!JGP.roamFree(x, z, r, !0, own) || !JGP.roamWalk(p, x, z, r, !0, own, offFloor(r))) continue;
+				const sp = [x, z, Math.atan2(x - p.x, z - p.z)];
+				if (!to) return sp;
+				const dd = Math.hypot(x - to.x, z - to.z);
+				dd < bd && ((bd = dd), (best = sp));
+			}
+			return best;
+		},
 		libTable: LIB_LAYOUT.table,
 		buildPond,
 		blossomPickup,

@@ -57,7 +57,7 @@ it became a small Midwest town, and with #31 it was renamed **Greeblis Town USA*
   - No bones. A merge is a new, cohesive creature. Creatures rebuilt from artwork follow the artwork; keep current
     colour and size when asked.
   - No cartoony smiles. Nothing clips, from any angle, including from inside buildings in VR.
-  - Locked models stay as they are: Nextessa, Goward, Mushroom, Backpacka, Fortizmo, Anomalee, Zollod, Etcher,
+  - Locked models stay as they are: Nextessa, Gooward, Mushroom, Backpacka, Fortizmo, Anomalee, Zollod, Etcher,
     Hennrick and Montgummery.
   - NPCs stand still in rows. Dialogue is placeholder text; shop and quest menus are written in full.
   - Every creature has at least three animations: talking, planting and dancing. Planting and dancing are

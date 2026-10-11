@@ -30,7 +30,7 @@ the drum set's 104 BPM.
 | Hennrick | `gratelet` | pat (1.4, 1.2) | his own built-in Greeblis City dance |
 | Etcher | `p_etcher` | pat (2.1, 0.9) | wiggle (5.45, 1) |
 | King Dino | `m_kingdino` | scatter (1.9, 1.1), stepping forward | groove (5.45, 1.1) |
-| Goward | `gorbo` | pat (1.6, 1.1) | bounce (5.45, 1.1) |
+| Gooward | `gorbo` | pat (1.6, 1.1) | bounce (5.45, 1.1) |
 | Nextessa | `t_nextessa` | scatter (2.2, 0.9) | twist (5.45, 0.9) |
 | Backpacka | `t_backpacka` | dig (1.4, 0.8) | bounce (2.7, 0.8), half time |
 | Mushroom | `drifter` | pat (1.8, 1) | shimmy (5.45, 1) |
@@ -98,7 +98,7 @@ the drum set's 104 BPM.
 - **Animation:**
   - She breathes and jiggles like jelly: a slow squash with a quicker wobble on top. The puddle swells with her.
   - She sways, bobs when talked to, and her eyes pulse slightly.
-- **Given a Blossom:** she shoots her colourful goo at the player, eight arcs that splat on the view, as Goward
+- **Given a Blossom:** she shoots her colourful goo at the player, eight arcs that splat on the view, as Gooward
   does (her def's `goo` palette: cyan, magenta, violet, lime and peach).
 - **Removed on request:** a red eye in a side fold, a dangling knob under the chin, and the smoke wisps.
 - **In stained glass:** she appears in the church's two side windows (ported from Greeblis City), with the faceless
@@ -194,9 +194,9 @@ the drum set's 104 BPM.
   - While the player is near he plays the 104 BPM groove, his arms hitting on the beat and his body rocking.
   - He stays at his kit all through the Garden Event (`AT_POST`).
 
-## Goward (gorbo): locked
+## Gooward (gorbo): locked
 
-- **Build:** `born_goward`, a merge of Howard, Gorbo and Mama Gorbo (the goo family). Marked final.
+- **Build:** `born_gooward`, a merge of Howard, Gorbo and Mama Gorbo (the goo family). Marked final.
 - **Body:** Gorbo and Mama's egg built from Howard's fused bubbles, cyan above and peach below. Howard's pastel root
   tendrils spill out underneath.
 - **Face:** Howard's "+" eyes (they blink every 4.3 s), cheek spots, wavy brow lines and a ribbon tongue that waggles
