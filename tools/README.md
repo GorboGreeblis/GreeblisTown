@@ -216,11 +216,12 @@ Plants wait in the ground until his water reaches them, then grow over 11 s.
 
 **King Dino's jazz** (`JAZZ` in the drum-kit block, `JGP.jazz`):
 - A synthesized jazz drum piece at 104 bpm (the beat the built-in dances keep): 8 bars of brushes once, then a 24-bar chorus (time, trading fours with tom solos, a shout with a solo break) round and round.
-- Notes are scheduled 0.5 s ahead on the audio clock; the kit and King Dino's sticks move on the hits as they sound (`DRUMS.r`/`DRUMS.l` count his right- and left-hand strokes). When nobody can hear it, it keeps time silently on the game clock.
-- Heard on the dance floor (louder near the kit) and through every Dance battle and victory dance, wherever it is. Never together with Fortizmo's horn tune: while `ee` plays or its notes ring, he rests.
+- Notes are scheduled 3 s ahead on the audio clock (more than a bar, so a frame held up while walking never leaves a gap; stopping cuts the bus they play through); the kit and King Dino's sticks move on the hits as they sound (`DRUMS.r`/`DRUMS.l` count his right- and left-hand strokes). When nobody can hear it, it keeps time silently on the game clock.
+- Heard on the dance floor (louder near the kit) and through every Dance battle and victory dance, wherever it is. Never together with Fortizmo's horn tune: from when she raises her horn in the Event until its last notes die away, he rests.
+- "Heard" is judged from the player's head (`we.headPos`). In the desktop and mobile test modes that is the avatar's head, never the orbiting camera (it once followed the camera, 6.5 m behind the avatar, and cut out near the floor's south end).
 
 **Roamers** (by the Juice Bar's patrol code, `roam(id, pick, wait…)`):
-- Each walks its home to a new spot picked by `JGP.portalRoam` (Hennrick), `JGP.parkRoam` (Gemtoe, Mama Gorbo, Gooward) or `JGP.floorRoam` (the Dancers). A spot is only taken if `JGP.roamFree` passes for it and `JGP.roamWalk` passes for a straight walk there: inside the square, out of the garden, buildings, the pond and every "scenery" zone (lamps, trees, benches and so on are E zones, not colliders).
+- Each walks its home to a new spot picked by `JGP.portalRoam` (Hennrick), `JGP.parkRoam` (Gemtoe, Mama Gorbo, Gooward) or `JGP.floorRoam` (the Dancers). A spot is only taken if `JGP.roamFree` passes for it and `JGP.roamWalk` passes for a straight walk there: inside the square, out of the garden, buildings, the pond and every "scenery" zone (lamps, trees, the gazebo and so on are E zones, not colliders).
 - A roamer that has not arrived in good time settles where it is and picks again, so it never stays stuck.
 - Mama Gorbo and Gooward meet every minute or two (`JGP.meetAt(t)` forces it for tests): two hearts each, then back to wandering.
 

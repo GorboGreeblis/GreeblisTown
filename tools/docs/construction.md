@@ -265,6 +265,11 @@ Goo that runs down a body and moves like goo, without clipping:
     each bin is merged into one mesh at the end.
   - Unit geometries are cached and scaled. Tiling textures are painted in greys and tinted per vertex. All signs
     share one atlas.
+  - Every door is wood: the `boards` bin under its paint (owner's rule), and a storefront's door has a framed
+    transom light over it up to the band above the windows, so no wall shows above the door.
+- **Mistergummery's** (owner's choices): MONTGUMMERY's teal (`#55b8c6`) wherever a burger chain
+  would have its yellow, on the building, its trim, the lot and the menu; no burger on the roof; the pylon is just
+  the big M on a beam, about as tall as the Main Street rooftops, beside the restaurant's front corner.
 - **Kiosks:**
   - `kioskFrame(o, {sign, ink, wall, wall2, tin})` builds the shared shell. Each kiosk adds its goods through
     `goods()`, which merges every small item into one vertex-coloured mesh.
@@ -291,8 +296,8 @@ Goo that runs down a body and moves like goo, without clipping:
   - Plants are merged meshes that grow from scale 0.01 and are never removed.
   - The Seeds flowers are a ring of 16 that come up one after another.
 - **Summoning Stone:**
-  - A six-sided standing stone with rune strokes (shapes, not letters) in one merged unlit mesh, and five
-    floating pebbles.
+  - A six-sided standing stone with rune strokes (shapes, not letters) in one merged unlit mesh (the
+    floating pebbles round it were removed at the owner's request).
   - The runes stay dark until the player uses the stone while holding the Summoning Stone item
     (`garden.stoneAwake` is set when its panel opens). Then they light up over 1.5 s, breathe from then on, and
     blaze during the Event.
@@ -358,7 +363,9 @@ Goo that runs down a body and moves like goo, without clipping:
     same `on(i, j)` test tells tufts and pickups where the floor is.
   - One plane whose black-and-white checker is a tiny canvas with one texel per tile and nearest filtering, at
     y = 0.035; anything standing on it starts 1 cm or more above that (the bar stools' feet, the drum kit's
-    two-layer rug, which also stays inside the floor's edge).
+    two-layer rug, which also stays inside the floor's edge). The rug's inner layer stands 6 mm into the outer
+    one with its top 1.2 cm above it, so no face of one is within 4 mm of the other's: laid face to face,
+    `unfightParts` sank the inner layer level with the outer and their tops flickered.
 
 ## Performance
 
@@ -417,8 +424,10 @@ plane.
 - **Merged scenery fixes itself at load:** `unfightParts()` (Greeblis Park's fix) runs on the town's bins and every
   `goods()` merge (kiosks, Library, Juice Bar, drum kit) before they are merged. Wherever two parts' faces share a
   plane (within 4 mm, overlapping over 1 cm each way), the smaller part moves: 8 mm proud when both faces look
-  the same way (a sign, window or mat on a wall or pavement, the cubbies' back on their frame), 1 cm into the
-  bigger part when they press back to back. It moved about 5,900 parts and costs about 0.5 s at load (stats in
+  the same way (a sign, window or mat on a wall or pavement, the cubbies' back on their frame), into the
+  bigger part when they press back to back: 1 cm, or half the thinner part's depth if that is less (a full
+  centimetre into a slab barely thicker brings the far faces level, and they fight), and not at all when both
+  are only a few millimetres thick. It moved about 5,900 parts and costs about 0.5 s at load (stats in
   `JGP.unfightParts.moved` / `.ms`). It is never run on a creature.
 - **Locked creatures:** where a final model's own parts share a surface (Somlet's cap: the crown's top, the white
   piping, the badge's flap), give the overlay a cloned material with `polygonOffset` (factor −1, units −4). The
