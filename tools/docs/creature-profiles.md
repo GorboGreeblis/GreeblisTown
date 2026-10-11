@@ -1,255 +1,250 @@
 # Greeblis Town USA: creature profiles
 
-How each Greeblis Town USA creature is modelled, coloured, given a face and animated, read from the game
-(`index.html`). Builders named `born_*` are readable functions in `BORN`. Builders named `city_*` and `woods_*`
-are pulled from earlier games; what their originals were like is in [learnings.md](learnings.md) ("Where the Town
-cast came from"). The construction methods are in [construction.md](construction.md).
+How each creature is modelled, coloured, given a face and animated, read from the game (`index.html`). Every
+model is final: never change one without asking ([rules](greeblis-rules.md)). The methods (builders, `born()`,
+planting and dancing, roaming) are in [construction.md](construction.md); what the pulled and merged creatures'
+originals were like is in [learnings.md](learnings.md#appendix-b-where-the-town-cast-came-from).
 
-Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)})`, where `tk` is talking (0 to 1) and
-`wk` is walking (0 to 1). Every creature also nods and bobs while it is talked to, through the shared talk animation.
+## The cast
 
-## Talking, planting and dancing
+Planting and dance speeds are in radians per second of game time; 5.45 is one bob per beat of King Dino's
+104 BPM, 2.7 half time.
 
-Every creature has at least these three animations. Talking is each builder's own `tk` animation plus the shared
-nod and bob. Planting and dancing come from the `MOVES` and `DANCES` tables (see "Planting and dancing" in
-[construction.md](construction.md)). They are creature animations, not menu options: at the Garden Event the
-creatures plant, or dance while Fortizmo plays. Every creature's menu holds only Talk, plus "Give a blossom" while
-the player has one. Speed is in radians per second of game time; 5.45 is one bob per beat at
-the drum set's 104 BPM.
+| Creature | Id | Builder | Where | Planting (speed, size) | Dance (beat, size) |
+| --- | --- | --- | --- | --- | --- |
+| Sparkakus | `keeper` | `BORN.sparkakus`, via the Library's worker `st` | The Library, browsing | pat (1.6, 1) | twist (5.45, 1) |
+| Mama Gorbo | `p_mamagorbo` | `born_mamagorbo` | Wanders the park | pat (1.3, 1.2) | jelly (5.45, 1) |
+| Gooward | `gorbo` | `born_gooward` | Wanders the park | pat (1.6, 1.1) | bounce (5.45, 1.1) |
+| Gemtoe | `p_gemtoe` | `born_gemtoe` | Wanders the park | scatter (2.4, 1) | twirl (2.7, 1) |
+| Montgummery | `w_mont` | `woods_mont` | Wanders the dance floor (a Dancer) | pat (1.9, 1) | his own: the robot |
+| Etcher | `p_etcher` | `born_etcher` | Wanders the dance floor (a Dancer) | pat (2.1, 0.9) | his own: the tentacle dance |
+| Glyph | `p_glyph` | `born_glyph` | Wanders the dance floor (a Dancer) | dig (2.3, 1) | his own: the macarena |
+| Hennrick | `gratelet` | `city_hennrick` | Strolls round the Portal | pat (1.4, 1.2) | his own Greeblis City dance |
+| King Dino | `m_kingdino` | `born_kingdino` | At his drum kit behind the dance floor | scatter (1.9, 1.1), stepping forward | groove (5.45, 1.1) |
+| Fortizmo | `frog` | `fortizmoPick` (`city_fortizmo`) | Behind the Juice Bar's counter | scatter (2, 1) | sway (5.45, 1) |
+| Somlet | `m_somlet` | `born_somlet` | In front of the Post Office, asleep | pat (1.5, 1.1) | sway (2.7, 0.8) |
+| Mushroom | `drifter` | `born_mushroom` | On the Sheriff's desk | pat (1.8, 1) | shimmy (5.45, 1) |
+| Zollod | `cutebex` | `born_zollod` | Behind the Garden Supplies counter | dig (3, 0.8) | groove (5.45, 0.9) |
+| Anomalee | `blinker` | `anomaleePeg` (`city_anomalee`) | In front of the church, gazing up | dig (1.5, 1) | stomp (5.45, 1) |
+| Nextessa | `t_nextessa` | `city_nextessa` | Only through the portal with a pizza | – | – |
+| Backpacka | – | `BP` (the Event) | Only at the Garden Event | – | – |
 
-| Creature | Id | Planting move (speed, size) | Dance (beat, size) |
-| --- | --- | --- | --- |
-| Sparkakus, the librarian | `keeper` | pat (1.6, 1) | twist (5.45, 1) |
-| Sparkakus, lineup stand-in | `orbiter` | dig (1.2, 0.7), with a little sway | twist (5.45, 1) |
-| Mama Gorbo | `p_mamagorbo` | pat (1.3, 1.2) | jelly (5.45, 1): squash and stretch |
-| Montgummery | `w_mont` | pat (1.9, 1) | robot (5.45, 1): snapping turns |
-| Glyph | `p_glyph` | dig (2.3, 1) | hop (5.45, 1) |
-| Somlet | `m_somlet` | pat (1.5, 1.1) | sway (2.7, 0.8), half time |
-| Gemtoe | `p_gemtoe` | scatter (2.4, 1) | twirl (2.7, 1), half time |
-| Hennrick | `gratelet` | pat (1.4, 1.2) | his own built-in Greeblis City dance |
-| Etcher | `p_etcher` | pat (2.1, 0.9) | wiggle (5.45, 1) |
-| King Dino | `m_kingdino` | scatter (1.9, 1.1), stepping forward | groove (5.45, 1.1) |
-| Gooward | `gorbo` | pat (1.6, 1.1) | bounce (5.45, 1.1) |
-| Nextessa | `t_nextessa` | scatter (2.2, 0.9) | twist (5.45, 0.9) |
-| Backpacka | `t_backpacka` | dig (1.4, 0.8) | bounce (2.7, 0.8), half time |
-| Mushroom | `drifter` | pat (1.8, 1) | shimmy (5.45, 1) |
-| Fortizmo | `frog` | scatter (2, 1) | sway (5.45, 1) |
-| Anomalee | `blinker` | dig (1.5, 1) | stomp (5.45, 1) |
-| Zollod | `cutebex` | dig (3, 0.8) | groove (5.45, 0.9) |
+At the Garden Event King Dino stays at his drums, Fortizmo plays instead of planting, Sparkakus plants with
+everyone (only when Seeds are in) but nothing comes up where he digs, Nextessa never comes and Backpacka is its
+climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)})`.
 
-- **At the Garden Event:** King Dino stays at his drums; Nextessa, Backpacka's lineup stand-in and Sparkakus's
-  stand-in stay away; Fortizmo and Backpacka come but don't plant. Their moves are still there for when the
-  player asks.
-- **Moves:** dig leans in and scoops; pat rocks and presses down; scatter turns and tosses. The dances are bounce,
-  sway, twirl, hop, wiggle, twist, robot, shimmy, stomp, groove and jelly.
+## Sparkakus (`keeper`): the librarian
 
-## Sparkakus (orbiter): the librarian
-
-- **Build:** `born_sparkakus`, a merge of Sparkakus and Shopstar, standing on two legs.
+- **Build:** a merge of Sparkakus and Shopstar, standing on two legs, at 1.16 scale (3.13 m, as tall as Hennrick).
 - **Body:** a royal-blue wolf painted all over like an alebrije (winding vines, little flowers and dots in gold,
-  green, magenta, orange and teal). Shopstar's orange for his paws and socks. A fluffy cream ruff down his throat
-  and chest.
-- **Face:** tall ears lined in purple with two little purple horn nubs, yellow eyes and a glossy black nose. Ears
-  twitch now and then.
-- **Signature:**
-  - yellow daffodils on his shoulder and a dark feather fin between his shoulders;
-  - Shopstar's collar with the orange APR coin, and red sleeve garters;
-  - a long tail with a gold star at its tip, trailing Sparkakus's glowing mist from Greeblis Park. The mist is a
-    pool of puffs that rise and swirl out of the tail tip for two seconds each.
-- **Animation:**
-  - Idle: the tail sways, he breathes, and his arms move slowly.
-  - Walking: the tail and arms swing.
-  - He talks while his dialogue is open.
-- **Role:** the Library's librarian. He stands on the ground at local (0, 0, -0.45), scale 0.85, among open rows
-  of bookcases, with the LIBRARY banner just behind him. A stand-in stands in the lineup.
-  - He gives the Ancient Artifacts quest.
-  - With all three artifacts he walks straight out to the front, turns to the player, and gives his long speech
-    under the light bulb while the town dims. The artifacts then go on show on his reading table.
-  - (Final game: each of the three Dancers gives one artifact for winning a Dance battle.)
-  - He comes to the Garden Event only when Seeds are owned.
+  green, magenta, orange and teal), with Shopstar's orange for his paws and socks and a fluffy cream ruff down his
+  throat and chest.
+- **Face:** tall ears lined in purple with two little purple horn nubs, yellow eyes, a glossy black nose and a
+  closed mouth line. His ears twitch now and then.
+- **Signature:** yellow daffodils on his left shoulder and a dark feather fin between his shoulders; Shopstar's
+  collar with the orange APR coin and red sleeve garters; a long tail with a gold star at its tip, trailing
+  Sparkakus's glowing mist from Greeblis Park (puffs that rise and swirl out of the tip for two seconds each, pink
+  fading through cyan).
+- **Animation:** his tail sways, he breathes and his arms move slowly; tail and arms swing as he walks; he talks
+  while his dialogue is open, and his head turns to greet the player.
+- **Role:** stands on the Library's rug at local (0, 0, −0.45) and browses the open floor when nobody needs him.
+  He gives the Ancient Artifacts quest; with all three he walks out to the front, gives his long speech under the
+  light bulb while the town dims, shows the pieces on his reading table and hands over the Ancient Gem.
 
-## Mama Gorbo (p_mamagorbo)
+## Mama Gorbo (`p_mamagorbo`)
 
-- **Build:** `born_mamagorbo`, rebuilt from her artwork as a merge with Gorbo, in a bright, vibrant peach
-  `#ff9f5c` (made brighter and more saturated on request; her shading darkens only a little in folds and toward her
-  base), height 2.95.
-- **Body:** a round, glossy goo drop. A big round head (blob part 1.13 × 1.0 × 1.08) melts into a narrower base
-  and a foot of goo spread on the ground (flat part 1.06 × 0.15 × 1.02) over a shiny translucent puddle. The
-  foot rests on a flat sole 1.2 cm up, and her body lifts as it sways, so she never sinks into the ground.
-- **Goo:**
-  - Six runs of paler goo slide down her sides; they are ellipsoids half out of the skin, lightened in the vertex
-    colours.
-  - Each run ends in a hanging drop (a sphere with a cone neck) that swells, stretches, falls and leaves a peach
-    splat on the ground.
-  - Two wet highlights sit on the upper left of her head.
-- **Eyes:** the two octagon ports, big one high and small one low. Each has a raised magenta rim with a dark
-  edge, sunk by the sagitta so it meets her curve, around a domed glassy purple lens with a glint. They blink
-  together by squashing the lens to 6% height.
-- **Signature:**
-  - a thick lime goo tail with pale yellow highlights, running from her upper left down her side, round the
-    front of her foot and up her right;
-  - three colourful goo streams (cyan `#36d0e8`, magenta `#e8409e`, violet `#9a52e0`) welling out of her back and
-    right side, running down her skin and pooling in little puddles beside her foot. Bulges roll down them and a
-    glob slides down each, and the puddles swell as it arrives. (They replaced white smoke wisps, on request.)
-    Both ends of each stream are capped;
-  - yellow sparks flickering off her upper left;
-  - three red pin tags (AP, IP, wifi) and a purple wifi sign, orbiting at 1.78 m (well clear of her body).
-- **Animation:**
-  - She breathes and jiggles like jelly: a slow squash with a quicker wobble on top. The puddle swells with her.
-  - She sways, bobs when talked to, and her eyes pulse slightly.
-- **Given a Blossom:** she shoots her colourful goo at the player, eight arcs that splat on the view, as Gooward
-  does (her def's `goo` palette: cyan, magenta, violet, lime and peach).
+- **Build:** rebuilt from her artwork as a merge with Gorbo, in a bright, vibrant peach `#ff9f5c` (made brighter
+  and more saturated on request; her shading darkens only a little in folds and toward her base), height 2.95.
+- **Body:** a round, glossy goo drop: a big round head (blob part 1.13 × 1.0 × 1.08) melts into a narrower base and
+  a foot of goo spread on the ground (1.06 × 0.15 × 1.02) over a shiny translucent puddle. The foot rests on a flat
+  sole 1.2 cm up, and her body lifts as it sways, so she never sinks into the ground.
+- **Goo:** six runs of paler goo slide down her sides (ellipsoids half out of the skin, lightened in the vertex
+  colours), each ending in a hanging drop that swells, stretches, falls and leaves a peach splat. Two wet
+  highlights sit on the upper left of her head.
+- **Eyes:** the two octagon ports, big one high and small one low: a raised magenta rim with a dark edge, sunk by
+  the sagitta to meet her curve, round a domed glassy purple lens with a glint. They blink together by squashing
+  the lens to 6% height for 0.18 s every 2.5 to 6 s.
+- **Signature:** a thick lime goo tail with pale yellow highlights, from her upper left down her side, round the
+  front of her foot and up her right; three goo streams (cyan `#36d0e8`, magenta `#e8409e`, violet `#9a52e0`)
+  welling out of her back and right side and pooling beside her foot, with bulges and a glob rolling down each and
+  both ends capped (they replaced white smoke wisps, on request); yellow sparks off her upper left; three red pin
+  tags (AP, IP, wifi) and a purple wifi sign orbiting at 1.78 m.
+- **Animation:** she breathes and jiggles like jelly (a slow squash with a quicker wobble), the puddle swelling
+  with her; she sways, bobs when talked to, and her eyes pulse slightly.
+- **Given a Blossom:** she shoots her colourful goo at the player, eight arcs that splat on the view (her def's
+  `goo` palette: cyan, magenta, violet, lime and peach).
 - **Removed on request:** a red eye in a side fold, a dangling knob under the chin, and the smoke wisps.
-- **In stained glass:** she appears in the church's two side windows (ported from Greeblis City), with the faceless
-  robed figure, in the window's own cyan. See "Church" in [construction.md](construction.md).
-- **Role:** at the south end of the lineup with the other creatures still being worked on, at (34, 28.4).
-  Placeholder lines.
+- **Role:** wanders the park and meets Gooward every minute or two, with hearts. She also appears, in the
+  window's own cyan, in the church's two Garden windows.
 
-## Montgummery (w_mont): locked
+## Gooward (`gorbo`)
 
-- **Build:** `woods_mont`, Mont pulled from Greeblis Woods (height 3.3, `modelScale` 0.9). He replaced Gorton
-  everywhere. Marked final.
-- **Face:** a CRT screen head. The mouth was changed from a U-shaped smile to a flat line of pixels.
-- **Behaviour:**
-  - Planting move: pat.
-  - Vignette code `MG`: item coin, colour `#3db2d6`, gesture nod, emote "!", sound pickup.
-  - He speaks in robot all-caps lines ("BPM: VERY GOOD, YOUR MAJESTY.").
-
-## Glyph (p_glyph)
-
-- **Build:** `born_glyph`, from his artwork.
-- **Body:** a crouching blue dinosaur glazed like old porcelain and engraved all over with swirling filigree.
-  Short clawed arms are held up in front, and he has thick clawed legs. Nothing of him floats.
-- **Face:** one great glowing orange eye on each side of a round head studded with little bumps, and two gold
-  coiled horns.
-- **Signature:**
-  - **Armour plates:** overlapping rounded-hexagon plates (dark blue, gold and teal filigree, tiny inset gems)
-    shingled over his back and down his tail. Each row stands a little further off the skin than the one below.
-  - **Shield:** a gold shield on his left flank bearing a red R, placed low and behind the arm's swing. No plate
-    sits under it.
-  - **Tiles:** Gigglyph's two purple tiles on his back, carrying glowing coins with his red trident symbol from
-    the artwork.
-  - **Tubes:** two ribbed tubes (orange and grey) coming out of his back and coiling on the ground.
-- **Animation:**
-  - Every 5.3 s he gives an excited little shake and lifts his head to look about.
-  - His tail sways, his arms bob, and he strides when walking.
-
-## Somlet (m_somlet)
-
-- **Build:** `born_somlet`, a merge of Gratelet and Somnux.
-- **Body:** a floating cotton puffball squared off like Somnux's box body, with Gratelet's swirl, cream-puff hands
-  and dangling plum root tentacles.
-- **Face:** always asleep. Big heavy eyelids are closed over full eyes, with a soft brow and a small mouth that
-  breathes (and opens more as she talks). Zs drift up beside the cap.
-- **Signature:** a mail carrier's peaked cap with a navy band, white piping and a solid black visor (a thin
-  half-disc, so it shows from every angle). Her badge is a little gold envelope.
-- **Animation:**
-  - She floats up and down (centre 1.35 ± 0.1 m) and her cap tilts.
-  - Her tentacles sway, and as she sinks they splay outward just enough to keep every vertex at least 2 cm above
-    the ground. The search starts from last frame's angle.
-
-## Gemtoe (p_gemtoe)
-
-- **Build:** `born_gemtoe`, from her artwork, in red.
-- **Body:** a crimson feathered dragon with a deep fur ruff over the chest and two pairs of great feathered wings.
-- **Face:**
-  - a bird's face on a feathered horned head with a mint crest;
-  - glowing magenta eyes under heavy brows;
-  - a hooked pale beak a little open, which opens more as she talks;
-  - feather tufts at the cheeks.
-- **Signature:** four long scaly tails run out along the ground and rise at their ends to hold up her amethyst
-  crystals, coiled round them. The crystals sparkle.
-- **Animation:** she breathes, turns her head, and her wings and tails sway. Sized down to fit the talk UI.
-
-## Hennrick (gratelet): locked
-
-- **Build:** `city_hennrick`, pulled from Greeblis City (`modelScale` 0.88). Marked final. See the Greeblis City
-  profile.
-- **Role:** in the lineup. He plants with a pat. When he dances (while Fortizmo plays at the Garden Event) he
-  does his own built-in Greeblis City dance instead of a table dance.
-
-## Etcher (p_etcher): locked
-
-- **Build:** `born_etcher`, from his artwork. Marked final.
-- **Body:** a blue-teal serpent-dragon whose body rises like a bell of overlapping scales from the ground into a
-  long neck.
-- **Face:** a lizard's head with golden eyes and a row of little purple knobs.
-- **Signature:** a green gem in the chest, two stubby clawed front feet, and long segmented purple tentacle tails
-  spreading across the ground around him.
-- **Animation:** a slow sway and lean. His tails drift slightly.
-
-## King Dino (m_kingdino)
-
-- **Build:** `born_kingdino`, from his artwork.
-- **Body:** an upright lemon-yellow gummy dino with a citrus-peel skin, three square turquoise buttons with green
-  lights down each side, turquoise ball joints with holes, donut rings on the hips, a holed plate on the back,
-  and stubby feet.
-- **Face:** a rounded muzzle, glossy navy bead eyes and a quiet smile line.
-- **Signature:** a glossy turquoise crown (the front prong tallest) under a great feathered plume that runs purple
-  down the back of the head, over the crown and orange down the front.
-- **Drumming:**
-  - He stands behind his drum set, centred at the back of the dance floor's wide southern extension, holding drumsticks. The set is from Greeblis Woods, a
-    third bigger.
-  - While the player is near he plays the 104 BPM groove, his arms hitting on the beat and his body rocking.
-  - He stays at his kit all through the Garden Event (`AT_POST`).
-
-## Gooward (gorbo): locked
-
-- **Build:** `born_gooward`, a merge of Howard, Gorbo and Mama Gorbo (the goo family). Marked final.
-- **Body:** Gorbo and Mama's egg built from Howard's fused bubbles, cyan above and peach below. Howard's pastel root
-  tendrils spill out underneath.
-- **Face:** Howard's "+" eyes (they blink every 4.3 s), cheek spots, wavy brow lines and a ribbon tongue that waggles
-  more when he talks.
+- **Build:** a merge of Howard, Gorbo and Mama Gorbo (the goo family).
+- **Body:** Gorbo and Mama's egg built from Howard's fused bubbles, cyan above and peach below, with little bubbles
+  caught in the jelly and goo drips off the lower blobs. Howard's pastel root tendrils spill out underneath.
+- **Face:** Howard's white "+" eyes (they squint instead of blinking), cheek spots, wavy teal brow lines and a
+  ribbon tongue that waggles more when he talks.
 - **Signature:** gold leaf crests, the purple octagon ports and float ring Gorbo and Mama share (with a little AP
   tag), and Mama's crystal wings, which flutter.
+- **Given a Blossom:** he shoots goo at the player, as Mama Gorbo does.
+- **Role:** wanders the park and meets Mama Gorbo.
 
-## Nextessa (t_nextessa): locked
+## Gemtoe (`p_gemtoe`)
+
+- **Build:** from her artwork, in red, at 1.06 scale (as tall as Montgummery), a little smaller than life so her
+  wings stay inside the talk view.
+- **Body:** a crimson feathered dragon with a deep fur ruff over the chest and two pairs of great feathered wings.
+- **Face:** a bird's face on a feathered horned head with a mint crest: glowing magenta eyes with slit pupils under
+  heavy brows, a hooked pale beak a little open (more as she talks), feather tufts at the cheeks.
+- **Signature:** four long scaly tails run out along the ground and rise at their ends to hold up her amethyst
+  crystals, coiled round them. The crystals sparkle.
+- **Animation:** she breathes, turns her head, and her wings and tails sway. She floats a little above the ground,
+  so her tail coils never touch it (4 cm clear at their lowest).
+- **Role:** wanders the park. She trades the Summoning Stone for the Ancient Gem.
+
+## Montgummery (`w_mont`): a Dancer
+
+- **Build:** Mont pulled from Greeblis Woods (`modelScale` 0.9), about 2.92 m. He replaced Gorton everywhere.
+  His hands are mirrored so the palms face his body.
+- **Face:** a CRT screen head, redrawn only when it changes: pixel eyes with a flat mouth (it was a U-shaped
+  smile); the mouth opens and closes as he talks; a pixel smile for a while after a Blossom; a pixel shovel while he
+  plants; a robot face (square eyes flicking on the beat over a grille mouth) while he dances; a pixel fist,
+  scissors or blank page in a Dance battle.
+- **Dance, the robot:** a new pose on every beat, snapped into and held with a little mechanical settle; arms
+  forward, out or down (never across him or up into his screen), body and screen turning in hard stops, his pots
+  marking time; 16 beats.
+- **Battle moves:** Rock out!, an air guitar with his screen banging; the splits, pots planted wide and arms
+  chopping like blades; paper, tipped forward on one pot with the other kicked out behind.
+- **Voice:** robot all-caps lines ("BPM: VERY GOOD, YOUR MAJESTY."). Vignette code `MG`.
+
+## Etcher (`p_etcher`): a Dancer
+
+- **Build:** from his artwork, at 1.16 scale (as tall as Montgummery).
+- **Body:** a blue-teal serpent-dragon whose body rises like a bell of overlapping scales (larger low down) into a
+  long neck.
+- **Face:** a lizard's head with golden eyes, nostrils, a closed mouth and a row of little purple knobs.
+- **Signature:** a green gem in the chest, two stubby clawed front feet, and six long segmented purple tentacle
+  tails spreading over the ground, each tip rounded off closed.
+- **Animation:** a slow sway and lean; his tails drift. A nod lifts him by as much as his base's front edge dips.
+- **Dance, the tentacle dance** (16 beats, four to a move): a ripple runs down all six; they curl up high one after
+  another round the circle; he twirls and they swing after him like a skirt; all six curl up together and wiggle.
+  Each tentacle bends in its own upright plane, so it only ever lifts off the ground and never curls back into him.
+- **Battle moves:** Rock out!, headbanging and drumming all six on the ground; the splits, the two front tentacles
+  snipping; paper, all six lifted flat and rippling.
+
+## Glyph (`p_glyph`): a Dancer
+
+- **Build:** from his artwork, at 1.11 scale (as tall as Montgummery). Nothing of him floats.
+- **Body:** a crouching blue dinosaur glazed like old porcelain and engraved all over with swirling filigree, short
+  clawed arms held up in front, thick clawed legs and a heavy tail swinging along the ground.
+- **Face:** one great glowing orange eye on each side of a round head studded with little bumps, heavy brows and
+  two gold coiled horns.
+- **Signature:** overlapping rounded-hexagon armour plates (dark blue, gold and teal filigree, tiny inset gems)
+  shingled over his back and tail, each row a little further off the skin than the one below; a gold shield low on
+  his left flank, behind the arm's swing, bearing a red glyph, with no plate under it; Gigglyph's two purple tiles
+  on his back with glowing coins bearing his red trident; two ribbed tubes (orange and grey) coiling on the ground.
+- **Animation:** every few seconds an excited little shake (a quick twist: a roll would tip his tubes into the
+  grass); his tail sways and his arms bob. When his sway would tip a coil under the ground, he rises by just that
+  much.
+- **Dance, the macarena:** all 16 moves, from arms out and palms up to the hip sways and a hop with a quarter turn.
+  His arms stretch out long so each move reads from across the floor, and his idle roll rests while he dances.
+- **Battle moves:** Rock out!, a long-armed air guitar, stomping; the splits, a jump into a mid-air split with arms
+  snipping overhead; paper, arms stretched flat as wings, gliding.
+
+## Hennrick (`gratelet`)
+
+- **Build:** pulled unchanged from Greeblis City (`modelScale` 0.88), 3.15 m.
+- **Role:** strolls from spot to spot round the Portal and stops to look at it. He keeps his own built-in Greeblis
+  City dance, which rolls him side to side about his feet; he is lifted by the roll so the outer foot never dips
+  into the ground.
+
+## King Dino (`m_kingdino`)
+
+- **Build:** from his artwork.
+- **Body:** an upright lemon-yellow gummy dino (one smooth blob: trunk, domed head, muzzle and thighs) with a
+  citrus-peel skin, three square turquoise buttons with green lights down each side, short arms out of turquoise
+  ball joints with holes, turquoise donut rings on the hips, a holed plate on the lower back, and stubby feet.
+- **Face:** a rounded muzzle, glossy navy bead eyes with yellow lids for the blink, and a quiet smile line.
+- **Signature:** a glossy turquoise crown (five rounded prongs, the front one tallest, with a knob) under a great
+  feathered plume that runs purple down the back of the head, over the crown and orange down the front.
+- **Drumming:** behind his kit with a stick in each hand. While the player is anywhere near (or a Dance battle is
+  on) he plays his jazz: the right hand keeps the ride and takes the crash and the floor tom, the left has the
+  snare and the rack toms; each stroke snaps the arm down onto the drum and lets it ride back up. He stays at the
+  kit all through the Garden Event. Walking, each step lifts him a little more than his feet swing down.
+
+## Fortizmo (`frog`)
+
+- **Build:** `fortizmoPick` wraps `city_fortizmo` (`modelScale` 0.78). She sculpts her geometry after its bounds are
+  computed, so the wrapper refreshes them with headroom: taps on her outer body always pick her.
+- **Role:** the Juice Bar's bartender, walking up and down behind the counter. At the Garden Event she walks slowly
+  to the garden's edge, raises her horn as Backpacka arrives and plays "Backpacka's Rain Strut" until the Event
+  ends. Without Seeds she doesn't play.
+
+## Somlet (`m_somlet`)
+
+- **Build:** a merge of Gratelet and Somnux.
+- **Body:** a floating cotton puffball squared off like Somnux's box body, with Gratelet's swirl, cream-puff hands
+  and dangling root tentacles tinted plum (between Gratelet's red and Somnux's blue).
+- **Face:** always asleep: big heavy eyelids closed over full eyes, each with a dark lash line, a soft brow and a
+  small mouth that breathes (and opens more as she talks). Zs drift up beside the cap.
+- **Signature:** a mail carrier's peaked cap with a navy band, white piping and a solid black visor (a thin
+  half-disc, so it shows from every angle); her badge is a little gold envelope. The crown's top, the piping and
+  the badge's flap are depth-biased so they never flicker; the shape is unchanged.
+- **Animation:** she floats up and down (centre 1.35 ± 0.1 m) and her cap tilts. Her tentacles sway, and splay
+  outward just enough to keep every vertex at least 2 cm above the ground, searching on from last frame's angle.
+- **Lying down:** resting at her spot she sleeps on her right side, her head to her right. How low she may sit at
+  each roll angle is worked out once from her vertices, so nothing goes into the ground as she rolls over and
+  settles; her tentacles droop toward the ground and splay off it. She settles slowly and gets up quickly when
+  wanted (the Event waits for her). Asleep on her side, she doesn't turn to the player.
+
+## Mushroom (`drifter`): the sheriff
+
+- **Build:** a merge of Mushroom from Greeblis City and Mushroom from Greeblis Woods. The one creature allowed to be
+  shorter than the avatar.
+- **Body:** City's domed cap with Woods' rim band and raised white warts in both sizes, glowing from gold at the
+  crown to deep orange at the rim, gills under it; a cream stem with City's grain, Woods' collar skirt (a frilled
+  ring of drooping scallops), City's little feet trailing mycelium, and two baby mushrooms on the stem.
+- **Face:** eyes, City's brows, the blush both share, and a little smile.
+- **Signature:** a gold sheriff's star on his stem and a sheriff's hat (pinched felt crown, band, star, brim turned
+  up) on his cap.
+- **Animation:** the stem sways, and the cap bobs and tilts more as he talks.
+- **Role:** stands on the Sheriff's raised desk (top 1.5 m up), looking down at the player, and steps down off
+  its front for the Garden Event.
+
+## Zollod (`cutebex`)
+
+- **Build:** a merge of Zollox and Kollod, standing on two legs.
+- **Body:** Zollox's segmented body fading from cyan at the head to Kollod's green at the feet; Kollod's mossy
+  garden bed over his back with small pink and white flowers and Kollod's little worm peeking out; fern fronds and
+  yellow plumes along his shoulders; a thick tail with Zollox's magenta tip.
+- **Signature:** Zollox's curling trunk with its magenta tip, small pink flowers on his head, an olive canvas
+  gardener's apron with seed packets in the pocket, and a trowel in his right hand.
+- **Animation:** his fronds sway, the worm turns, his trunk and tail move, and he strides when walking.
+- **Role:** the Garden Supplies keeper. Interacting with him opens the shop at once.
+
+## Anomalee (`blinker`)
+
+- **Build:** `anomaleePeg` wraps her Greeblis City model (`modelScale` 0.95). She lost her back-right leg in City;
+  here she stomps about on a wooden peg leg (an iron-banded socket, a tapered peg with a rubber tip, a knot and a
+  little nailed-on patch) on that empty hip, which still swings with her walk. Her screen glows with scanlines;
+  the plain casing has a moulded plastic finish.
+- **Role:** stands on the walk in front of the church, a little to one side of its door, her screen head tipped
+  back to gaze up at the Traveler window. She keeps gazing through her Talk lines and turns to the player (head
+  level) only for her Blossom line, or for any line during the Event.
+
+## Nextessa (`t_nextessa`)
 
 - **Build:** `city_nextessa`, her Greeblis City model.
-- **Role:** the pizza courier. Call from the phone booth, and she comes through the portal with a pizza.
-- **Garden Event:** she is not at it.
+- **Role:** the pizza courier. Called from the phone booth, she comes through the portal with a pizza, which
+  completes the Snacks quest. She is never in the park otherwise, never at the Garden Event, and never dances or
+  plants.
 
-## Backpacka (t_backpacka): locked
+## Backpacka
 
-- **Build:** `born_backpacka`, marked final.
-- **Line-up stand-in:** hovers on his wings, half full, with his neck swaying and legs dangling.
-- **Garden Event climax:**
-  - Fills up: he drinks from the pond, gulps running up his neck as he swells.
-  - Sprays: he flies to the garden, spins and sprays four arcs from his feet.
-  - With Seeds: plants bloom where the water lands, and a rainbow comes out.
-  - Leaves: he slims down and flies off.
-
-## Mushroom (drifter): locked
-
-- **Build:** `born_mushroom`, a merge of Mushroom from Greeblis City and Mushroom from Greeblis Woods. Marked final.
-- **Body:**
-  - City's domed cap with Woods' rim band and white spots in both sizes, glowing from gold at the crown to deep
-    orange at the rim.
-  - A cream stem with City's grain, Woods' collar skirt, and City's little feet and brows.
-  - The blush both share.
-- **Signature:** the town's sheriff, with a gold sheriff's star on his stem and a sheriff's hat on his cap.
-- **Animation:** the stem sways, and the cap bobs and tilts more as he talks.
-
-## Fortizmo (frog): locked
-
-- **Build:** `fortizmoPick` wraps `city_fortizmo`. It refreshes her bounds so taps on her outer body always pick her.
-- **Role:** in the final row. With Seeds, she raises her horn as Backpacka arrives and plays "Backpacka's Rain Strut"
-  until the Event ends. Without Seeds she doesn't play.
-
-## Anomalee (blinker): locked
-
-- **Build:** `anomaleePeg` wraps her pulled model with a wooden peg leg.
-
-## Zollod (cutebex): locked
-
-- **Build:** `born_zollod`, a merge of Zollox and Kollod, standing on two legs. Marked final.
-- **Body:**
-  - Zollox's segmented body fades from cyan at the head to Kollod's green at the feet.
-  - Kollod's mossy garden bed grows over his back with small pink and white flowers and Kollod's little worm
-    peeking out.
-  - Fern fronds and yellow plumes run along his shoulders, and a thick tail has Zollox's magenta tip.
-- **Signature:** Zollox's curling trunk with its magenta tip, small pink flowers on his head, an olive canvas
-  gardener's apron with seed packets in the pocket, and a trowel.
-- **Animation:** his fronds sway, the worm turns, his trunk and tail move, and he strides when walking.
-- **Role:** the Garden Supplies keeper. Interacting with him opens the shop straight away; he has no other
-  menu options.
+- **Build:** made by the Garden Event (`BP`) when he sets off: a tan, crackle-skinned pear of a body with glassy
+  coloured patches shrink-wrapped onto it, two pairs of veined teal dragonfly wings, a long banded neck with a
+  green stripe up to a little open-mouthed head, a stubby tail, and four tube legs ending in open pipes. Everything
+  is a function of the time since he set off (`pose(e)`), so any moment can be shown (`JGP.backpacka.preview`).
+- **The climax:** he flies in skinny, hovers over the pond's far bank and dips his head in, gulps running up his
+  neck as he swells; flies heavily to the garden, spins and sprays four arcs from his feet; with Seeds, plants
+  bloom where the water lands and a rainbow comes out; he slims down and flies off.
