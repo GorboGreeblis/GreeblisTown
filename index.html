@@ -2779,11 +2779,15 @@ function Lt(e, o, a, n) {
 	c > t.greetClear && ((e.greeted = !1), (e.nearSince = 0));
 	const h = "dialogue" === jt.top && xe.lastTarget === e,
 		p = e.nearPlayer && (e.nearSince ? o - e.nearSince < t.proximityFreezeS : ((e.nearSince = o), !0));
+	// (ANOMALEE, gazing up at the church window, keeps looking at it while the player is near and through
+	// her Talk lines; she turns to the player only for her Blossom line, and for any line during the Event)
+	const gazer = e.def && e.def.gazeUp && !(h && (e.gifting || me.active));
 	if (n || h || (p && !e.goHome))
 		(e.gcWant = 0),
 			(e.moving = !1),
-			(e.nearPlayer || h) &&
-				(e.greeted || (e.greeted = !0), co(r, Math.atan2(At.position.x - s.x, At.position.z - s.z), a));
+			gazer && e.pattern
+				? co(r, e.pattern[1].face, a, 4)
+				: (e.nearPlayer || h) && (e.greeted || (e.greeted = !0), co(r, Math.atan2(At.position.x - s.x, At.position.z - s.z), a));
 	else if (e.pattern && !e.goHome) {
 		const [t, o] = e.pattern,
 			n = lo[t];
@@ -3212,7 +3216,8 @@ function te(t, e) {
 	const o = t.def,
 		a = t.id;
 	let n;
-	if ((Kt.met.add(a), (xe.lastTarget = t), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t);
+	// (gifting: this dialogue is the creature's Blossom line, not its Talk line)
+	if ((Kt.met.add(a), (xe.lastTarget = t), (t.gifting = !!e), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t);
 	else if ("p_gemtoe" === a && Kt.gem)
 		// GEMTOE trades the Summoning Stone for the Ancient Gem
 		return (
@@ -4393,7 +4398,7 @@ const le = (() => {
 						const t = Math.min(p, (o.walkSpeed || 2.4) * e);
 						(l.x += (c / p) * t), (l.z += (h / p) * t), co(o.group, Math.atan2(c, h), e, 8), (o.moving = !0);
 					} else
-						(!m || bt.live || (m.a !== o && m.b !== o)) && co(o.group, Math.atan2(-l.x, -l.z), e, 4), (o.moving = !1);
+						(!m || bt.live || (m.a !== o && m.b !== o)) && !("dialogue" === jt.top && xe.lastTarget === o) && co(o.group, Math.atan2(-l.x, -l.z), e, 4), (o.moving = !1);
 					F.resolve(l, 0.8 * o.bodyR), uo.resolve(l, uo.radius(o), o), bt.live && JGP.plantTick(o, t);
 				});
 				const l = u(i / 90, 0, 1);
@@ -10100,7 +10105,8 @@ const JGP = (() => {
 			head &&
 				(r.anim = function (t2, dt2, ent) {
 					a0.apply(this, arguments);
-					const want = ent && !ent.moving && !ent.busy ? 1 : 0;
+					// (her head comes level when she turns to the player: her Blossom line, or a line at the Event)
+					const want = ent && !ent.moving && !ent.busy && !("dialogue" === jt.top && xe.lastTarget === ent && (ent.gifting || me.active)) ? 1 : 0;
 					(gk += (want - gk) * Math.min(1, 2.5 * (dt2 || 0.016))), (head.rotation.x -= d.gazeUp * gk);
 				});
 		}
