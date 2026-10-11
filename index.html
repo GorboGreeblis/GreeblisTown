@@ -9295,6 +9295,9 @@ const JGP = (() => {
 			head,
 			lids,
 			step(t, dt, tk, wk) {
+				// she floats a little above the ground, rising and settling gently, so not even the coils of her
+				// tails ever touch it (at their lowest, swaying, they come 4 cm short of it)
+				root.position.y = 0.08 + 0.03 * Math.sin(0.9 * t);
 				(body.position.y = 0.03 * Math.sin(1.4 * t) + 0.03 * wk * Math.abs(Math.sin(6 * t))), (head.rotation.y = 0.12 * Math.sin(0.7 * t)), (head.rotation.x = 0.05 * Math.sin(1.1 * t));
 				jaw.rotation.x = 0.22 + 0.06 * Math.sin(1.9 * t) + 0.3 * tk;
 				wings.forEach(({ w, sx, pair }) => ((w.rotation.z = sx * (0.07 * Math.sin(1.5 * t + 0.6 * pair) + 0.25 * wk * Math.sin(5.5 * t + 0.6 * pair))), (w.rotation.y = -sx * 0.05 * Math.sin(1.5 * t + pair))));
