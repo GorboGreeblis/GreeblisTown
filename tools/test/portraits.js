@@ -8,7 +8,7 @@ module.exports = async (p, out) => {
     const box = new THREE.Box3(), c = new THREE.Vector3(), sz = new THREE.Vector3();
     for (const id of ids) {
       let e = It.byId[id], def, builder, opts;
-      if (id === 'keeper') { def = { name: 'PTERO' }; builder = 'jgpKeeper'; opts = {}; }
+      if (id === 'keeper') { def = { name: 'SPARKAKUS' }; builder = 'born_sparkakus'; opts = {}; }
       else if (id === 'courier') { def = { name: s.name, color: s.color, modelScale: s.modelScale }; builder = s.builder; opts = {}; }
       else if (!e && n[id]) { def = Object.assign({}, n[id]); builder = def.builder; opts = def.builderOpts || {}; }
       else { if (!e) { out.push(null); continue; } def = Object.assign({}, e.def); builder = def.builder || e.def.builder; opts = def.builderOpts || {}; }

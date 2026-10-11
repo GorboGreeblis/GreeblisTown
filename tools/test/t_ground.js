@@ -58,7 +58,7 @@ module.exports = async (p) => {
   }
   // 4. the whole Garden Event
   await phase('event');
-  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   for (let k = 0; k < 4000; k++) { await W(1000); const r = await p.evaluate(() => [me.active, Re.t]); if (!r[0] && k > 20) break; }
   await phase('after-event'); await waitGame(25);
   log(await p.evaluate(() => Object.entries(__G).map(([nm, r]) => `${nm}: lowest ${r.min.toFixed(3)} m (${r.at})${Object.keys(r.bad).length ? ' CLIPS ' + JSON.stringify(r.bad) : ''}${Object.keys(r.inB).length ? ' INSIDE ' + Object.keys(r.inB).join(', ') : ''}`).join('\n')));

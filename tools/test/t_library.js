@@ -28,7 +28,7 @@ module.exports = async (p) => {
   await p.evaluate(() => { window.__talking = 0; for (let i = 0; i < 40 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });
   await waitGame(20);
   // the Garden Event: out and back
-  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   let away = !1;
   for (let k = 0; k < 4000; k++) { await W(1000); const r = await p.evaluate(() => [me.active, st.away()]); r[1] && (away = !0); if (!r[0] && k > 20) break; }
   await waitGame(30);

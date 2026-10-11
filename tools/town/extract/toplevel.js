@@ -1,8 +1,13 @@
-const espree=require(process.argv[3]+'/node_modules/espree');
+// Lists a script's top-level names (variables, functions, classes) with the line each is declared on: writes them
+// to <out.json> as {name: line} and prints how many.
+// Give it a page (its last <script> block, the game script, is read) or a .js file:
+//   node toplevel.js <index.html | script.js> <a folder whose node_modules has espree> <out.json>
+const espree=require(require('path').resolve(process.argv[3],'node_modules/espree'));
 const fs=require('fs');
-const lines=fs.readFileSync(process.argv[2],'utf8').split('\n');
-const start=37, end=15034; // 1-based: lines 38..15034 are app script
-const src=lines.slice(start,end).join('\n');
+// a page's game script is its last <script> block; names are reported at their line in the file
+const txt=fs.readFileSync(process.argv[2],'utf8'), i=txt.lastIndexOf('<script>'), j=txt.lastIndexOf('</script>');
+const html=/\.html?$/.test(process.argv[2]), start=html?txt.slice(0,i+8).split('\n').length-1:0;
+const src=html?txt.slice(i+8,j):txt;
 const ast=espree.parse(src,{ecmaVersion:2022,loc:true,sourceType:'script'});
 const out={};
 function add(n,l){ if(!(n in out)) out[n]=l+start; }

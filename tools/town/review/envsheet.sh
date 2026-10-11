@@ -3,7 +3,7 @@
 # VIEWS_JSON is a list of [name, camPos, lookAt] for env.js; writes town/<prefix>_<name>.png and town/<prefix>_all.png
 H="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p town
-VIEWS="$2" NOSHOT=1 WAIT=9000 timeout 300 node "$H/../test/run.js" "http://localhost:8765/index.html?desktop=1" town/$1.png "$H/env.js" 2>&1 | grep err
+VIEWS="$2" NOSHOT=1 WAIT=9000 timeout 300 node "$H/../../test/shot2.js" "http://localhost:8765/index.html?desktop=1" town/$1.png "$H/env.js" 2>&1 | grep err
 python3 - "$1" "$2" <<'P'
 import sys, json
 from PIL import Image

@@ -17,8 +17,8 @@ of them. Read the guides here before changing the game.
    `index.html` stays readable, comments and all; that pass minifies it, then packs it with the Woods compressor
    (see the [tools README](../README.md#the-final-pass-release-minify-pack)).
 5. **Creature models and their characteristics are protected.** Never change a creature's shape, palette,
-   signature parts or personality without asking. Every model is now final (its builder says so in a comment);
-   animation changes on request are fine.
+   signature parts or personality without asking. Every model is now final (its builder says so in a comment),
+   and so are the five plants and the church's secret room with its slug; animation changes on request are fine.
 6. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
    Once the previous PR is merged, restart the branch from `main`.
 7. **Write down how the creatures and environments were built**, in [`construction.md`](construction.md) and
@@ -41,6 +41,11 @@ of them. Read the guides here before changing the game.
 ## Creatures and art (from the owner)
 
 - Creature models, behaviour and interactions matter most. Take the time to do them well.
+- The plant and flower models are just as important. Take a lot of time and care with them: build each in its
+  totality from the images the owner uploaded for it, and only from those (its shape, colours, leaves, buds and
+  how it branches; nothing the photos don't show), render it from several angles next to the photos, and refine
+  until it matches. The same goes for anything else the owner asks to be built from an image (the inside of the
+  church is built only from the photo of the slug).
 - No bones anywhere: no skeletal rigs and no bone props.
 - A merge is a new, cohesive creature that blends its parents' silhouettes, palettes and signature features,
   never parts glued together.

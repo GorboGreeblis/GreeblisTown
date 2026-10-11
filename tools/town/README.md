@@ -6,13 +6,9 @@ the battery, the game's globals and the release steps are in the [tools README](
 
 Most scripts read the game's minified globals (`It`, `Re`, `so`, `bt`, `C`, `O`, `B`, `At`, `F`, `JGP`, …): check
 the names still match before relying on a result. Run Python tools from the folder holding `index.html`, and
-browser scene scripts through `test/run.js` (see [`test/README.md`](test/README.md)). Uploads are untrusted:
-`decode/` is the only place to open them.
-
-## `test/`: older checks
-
-Runners and scene scripts for creatures, quests, the Garden Event, the church and performance. See
-[`test/README.md`](test/README.md).
+browser scene scripts through `../test/shot2.js` (see the [tools README](../README.md)). Uploads are untrusted:
+`decode/` is the only place to open them. (The older test scripts that were still useful moved to
+[`../test/`](../test); the rest were superseded there and removed.)
 
 ## `extract/`: pulling creatures out of earlier games
 
@@ -32,8 +28,8 @@ with `decode/`).
 | `run_same.js`, `run_woods.js`, `try_city.js` | Single-game runs of the extractor, for trying one builder at a time |
 | `integrate.py` | Puts `pulled.js` into `index.html` between the `PULLED-MODELS-BEGIN` and `-END` markers |
 | `specs.py` | Portrait specs for each pulled builder and its original, to render them side by side |
-| `toplevel.js`, `extract.js` | Cut a game script out of a page and list its top-level names (`espree`) |
-| `analyze.js`, `harness.js`, `equiv.js`, `wrapped_check.js` | Build a pulled creature in Node, with three.js and a fake canvas, and check it matches the original (same meshes, positions and bounds). `analyze.js` and `harness.js` load a `three_env.js` that exposes the game's three.js bundle as a global; make it from the page's three.js script |
+| `toplevel.js`, `extract.js` | List a script's top-level names, and cut named declarations out of one (`espree`, from the folder passed as an argument): `node toplevel.js <script.js> <dir with node_modules>`; `extract.js` reads `app.js` |
+| `analyze.js`, `harness.js`, `wrapped_check.js` | Build a pulled creature in Node, with three.js and a fake canvas, and compare it with the original (meshes, positions and bounds). `analyze.js` and `harness.js` load a `three_env.js` that exposes the game's three.js bundle as a global; make it from the page's three.js script |
 | `mont_patch.md` | Worked example: how Mont was pulled from Greeblis Woods and became Montgummery |
 | `oldworld.md` | Analysis of the Greeblis City world-build chain the town replaced |
 
@@ -50,7 +46,6 @@ with `decode/`).
 | Script | What it does |
 | --- | --- |
 | `study.js` | Large renders of builders built directly (no spawn batching), from two angles, from a `SPECS` JSON file |
-| `swatch.js` | A sheet of every `KIT.surf` texture kind on spheres |
 | `env.js`, `envsheet.sh` | Renders the town from fixed viewpoints (`VIEWS`) and tiles them into one sheet: `envsheet.sh <prefix> '<VIEWS JSON>'` |
 | `canvas_shot.js` | Screenshots a standalone canvas page (used for the stained-glass window paintings) |
 | `sheet.py`, `grid.py`, `rowsheet.py`, `partsheet.py` | Contact sheets from portrait renders (two angles per creature, four per row, or part by part). Need Pillow |
@@ -68,11 +63,10 @@ with `decode/`).
 | `rowcheck_all.js` | After a long run (`RUN` ms), lists creatures more than 0.5 m off their `def.at` spot, moving, or facing wrong |
 | `snap.js`, `snapdiff.py` | Dump every creature's final definition before and after a change (such as removing dead code) and diff the two |
 
-## `size/`, `edit/`, `vignettes/`
+## `edit/`, `vignettes/`
 
 | Script | What it does |
 | --- | --- |
-| `size/stubdead.js` | Replaces builders no creature uses with a tiny stub (edit its `DEAD` list, which is from the first size pass). Check with `audit/sosz.js` first and `snap.js` / `snapdiff.py` after. Needs `acorn-walk` |
 | `edit/lib.py` | Helpers for editing `index.html` safely: `load`, `save`, `sub1` (replace text that must appear exactly once) and `span` (find a whole function by its header) |
 | `edit/replace.py` | Swaps whole builders for new versions from a file of `//@@ <header>` blocks |
 | `vignettes/pairs.py` | How the creature-pair vignette lines were written: a table of pairs (two codes, a gesture style, two lines). Running it lists any missing or duplicated pair and prints the longest line. Some codes belong to creatures since replaced; the game's `PAIRS` table is the current one |

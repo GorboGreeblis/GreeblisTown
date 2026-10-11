@@ -15,7 +15,7 @@ module.exports = async (p) => {
     const before = await p.evaluate(() => {
       Kt.rewards.seeds = !0; At.position.set(0, 0, 3);
       window.__snap = JGP.garden.plants.map((q) => [q.g.position.x, q.g.position.z, q.g.scale.x, q.grow]);
-      z.list.find((s) => s.id === 'campfire').run(); oe.yes();
+      (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes();
       return window.__snap.length;
     });
     let spots = null, maxPlanting = 0;

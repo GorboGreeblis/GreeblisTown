@@ -204,7 +204,9 @@ Goo that runs down a body and moves like goo, without clipping:
   Match creatures by `Xt(ent)` (the builder key): some entities have no `id`.
 - **Gifts:** Gooward and Mama Gorbo (a `goo` palette in their def and listed in `te()`) shoot goo at the player's
   head (`Ie()`: eight `Nt.gooArc` shots that splat on the view). A Blossom to a Dancer starts a Dance battle once
-  their thanks is said, unless the player has walked away or the Event has begun.
+  their thanks is said, unless the player has walked away or the Event has begun. A battle is only ever started
+  that way, so each one costs a Blossom, and with none in hand there is no Blossom option (`te()` also refuses a
+  gift then).
 - **The light bulb** (from Greeblis City): `Bulb.start(getPos, height)` fades a bulb in over a speaker, lights them
   with a cone and dims the town toward night until the dialogue closes. It is built and compiled at load, so
   turning it on never stalls.
@@ -215,6 +217,9 @@ Goo that runs down a body and moves like goo, without clipping:
 
 - **Three quests** on the HUD: the Seeds (sold at Garden Supplies as a "bagel seasoning packet", 10 flint), the
   Summoning Stone and the Snacks (Nextessa's pizza, called from the phone booth).
+- **The phone is locked** until Mushroom has been given a Blossom (`Kt.phone`, set in `te()`): before, it rings and
+  no one answers, so Nextessa can't be called; after, it works for the rest of the session (also in testing).
+  `test/t_phone.js` checks both.
 - **Dance battles** (Greeblis City's panel and bar) with the three Dancers: rock, paper, scissors. The Dancer goes
   first and shows its move with its own animation; Rock out! beats the splits, the splits beat going horizontal,
   going horizontal beats Rock out!. Each round won teaches one of the Dancer's steps; learn them all to win. The
@@ -247,8 +252,10 @@ Goo that runs down a body and moves like goo, without clipping:
   never there; Backpacka only appears for it. Sparkakus leaves the Library to plant and dance with everyone (only
   when Seeds are in), but nothing comes up where he digs.
 - **Seeds decide it** (`bt.seeds`, fixed for the whole Event). Without them nobody comes, there is no music, and
-  Backpacka sprays a garden that doesn't grow. With them each plant comes up right where a creature was seen
-  planting it (the free slot nearest the spot 0.9 m in front of it, within 1.3 m), of a kind picked at random.
+  Backpacka sprays a garden that doesn't grow. With them each planter puts in exactly one flower per Event, of a
+  kind picked at random, right where it does its planting: in the soil 0.9 m in front of it, 1.5 s into its first
+  dig at its spot (`plantTick`). It stays at that spot for the rest of the planting. The spots (`beginPlanting`)
+  put that soil on a row and at least 0.75 m clear of the stepping-stone paths.
 - **Rounds** (`garden.round`): Event 1 plants a batch in the rows at 2.6, 6.6 and 10.6 m; Event 2 a second batch in
   the rows Event 1 left bare (4.6, 8.6, 12.6 m); from Event 3 on everyone replays their Event 1 spots and nothing
   more comes up. Plants stay for the session.
@@ -317,14 +324,24 @@ Goo that runs down a body and moves like goo, without clipping:
 
 ### Set pieces
 
-- **Garden:** tilled rings every 2 m from 2.6 m (13 cm ridges) with a planting slot every ~1.4 m (none on a
-  stepping stone), four stepping-stone paths, and a border of stones that creatures step over (`JGP.groundAt`).
-  Plants are merged meshes that grow from scale 0.01.
-- **The plants** (placeholders): five kinds in `PLANT_KINDS` (a red tulip, a daisy, a lupin spike, arching pink
-  bells, a marigold bush), one merged vertex-coloured mesh per kind, drawn at `PLANT_SIZE` 2.4. Leaves stay 0.26 m
-  up so they clear a row's ridge.
-- **Plant test row** (testing): one of each kind on a soil mound along the east side (x 34, from z −12 every
-  5.77 m). Each is a station whose Talk line says which plant it is.
+- **Garden:** tilled rings every 2 m from 2.6 m (13 cm ridges), four stepping-stone paths, and a border of stones
+  that creatures step over (`JGP.groundAt`). Plants are merged meshes that grow from scale 0.01; each has a full
+  and a light mesh (`plantMesh`), the full one shown within `PLANT_NEAR` (7 m) of the eye.
+- **The plants** (final; each built only from the owner's photos of it): five kinds in `PLANT_KINDS`, each
+  `[name, flower, talk colour, builder]`: a creeping thistle, a scentless mayweed, a chicory, a common milkweed and
+  a zebra mallow. One merged vertex-coloured mesh per kind, drawn at `PLANT_SIZE` 2.4; leaves stay 0.11 model units
+  up (stems aside) so they clear a row's ridge.
+  - The toolkit inside `PLANT_KINDS`: `part(name, make, lit)` builds a flat double-sided part once from its
+    triangles (`lit`: the back lit like the face, for thin petals the light comes through); `blade` fans an outline
+    into a curved blade; `ribLeaf` folds a leaf along its midrib; `stems(add, STEMS, o)` grows stems, branches,
+    flower stalks and leaves (with `o.leafPlus` parts such as ribs, veins and spines laid on each leaf);
+    `faceFrom` turns a flower head away from its stalk; `cup` is the green cup of bracts under a head.
+  - Details from the photos: the thistle's pale midribs and spines, the mayweed's toothed rays and bract cups, the
+    chicory's ray veins and bracts at its joints, the milkweed's side veins and five-hooded crowns, the mallow's
+    leaf veins, sepals and anther fuzz.
+- **Seeing a plant up close** (testing): the plant test row was removed once the plants were final; instead
+  `JGP.plantShow(kind, x, z, ry)` puts a full-grown one on show anywhere, and `test/plantshots.js` uses it to
+  render each kind from four views for checking against the photos.
 - **Summoning Stone:** a six-sided standing stone on a round plinth with rune strokes (shapes, not letters) in one
   merged unlit mesh; no floating pebbles (removed at the owner's request). The runes stay dark until the player
   uses the stone while holding the Summoning Stone (`garden.stoneAwake` is set when its panel opens); then they
@@ -332,6 +349,8 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Library:** open ground with no walls, roof or raised floor (`LIB_LAYOUT`):
   - eight freestanding double-sided bookcases (2.2 m long, 2.1 m tall), two rows behind Sparkakus and one down
     each side, with open aisles;
+  - one book stands face-out on the front-left case's eye-level shelf, facing the front: OVERCOMING SHYNESS, a
+    blue hardback with a gold-and-cream cover (`LIB_LAYOUT.feature`); the books beside it stop short to leave its gap;
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
     `kioskSignTex`), and a small reading table (top 0.82 m) where the Artifacts go on show;
   - its colliders are the bookcases, posts and table; it is kept explicitly when the engine's scenery is cleared
@@ -341,8 +360,20 @@ Goo that runs down a body and moves like goo, without clipping:
     Mr Bun's jacket green with his shirt's specks; her cream bow in the middle; a cream fringe at each end. The
     prints are the Woods 128-pixel tiles (same seeds and colours) drawn seamlessly at 0.6 scale. It is a 4 cm slab
     with its top 3 cm up (1 cm over a walk, 5 cm over the lawn), part of `JGP.groundAt`.
-- **Church:** at the end of the south walk, its back to the fence. Nothing is placed inside it, and there are no
-  flowerbeds by it (removed at the owner's request).
+- **Church:** at the end of the south walk, its back to the fence. The park has no flowerbeds, benches or trash
+  cans (removed at the owner's request).
+  - **The secret room** (final; built only from the owner's photo of a slug at night): the player gets in
+    through the wall under the right-hand Garden window, marked only by a small red X painted there: the
+    building's parts leave a 2.6 m gap in that wall, and every mode (desktop, mobile, VR) moves the same body
+    through it. Inside, floor, walls and ceiling are one gritty olive-grey ground texture (lit best at the floor,
+    least at the ceiling), with pebbles, big flat dark stones, shell flakes, cracks and dry grass on the floor.
+    `test/t_church.js` checks the way in, the walls and the head guard; `test/churchshots.js` renders it.
+  - **The slug** lies across the middle of the floor and never moves from there. It has one Talk (no Blossom;
+    it is not one of the creatures), and its own moves: idle (stalks swaying and pulling in, breathing, looking
+    round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
+    `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
+  - **No creature goes inside:** they path round the hull and never pick a spot in it, and `JGP.churchGuard`
+    puts any that ends up inside (or heads there) straight back out. No lawn tufts grow inside any building.
   - **Roof:** a `GABLE` prism's slopes rise from its outer edge, so with eaves the base sits lower than the wall
     tops by `height · overhang / half-width` (0.5 m here) for the slopes to meet the walls; the gable ends fill up
     to the same slope, `height − that drop` tall.
@@ -372,7 +403,8 @@ Goo that runs down a body and moves like goo, without clipping:
   cymbals stopping just short of the floor; King Dino stands behind it facing across the floor. Each drum is one
   merged mesh. The two-layer rug's inner layer stands 6 mm into the outer with its top 1.2 cm above it, so no
   face of one is within 4 mm of the other's.
-- **The square:** no benches or trash cans (removed at the owner's request). The UFO crosses the sky every
+- **The square:** no benches or trash cans (removed at the owner's request). The Town Hall's spire ends in a gilded
+  ball (its cross was removed at the owner's request). The UFO crosses the sky every
   10 minutes, never during the Event.
 - **The avatar in the test modes:** `dkAnim` strides her legs, swings her arms against them (held 0.21 rad out so
   the hands clear the skirt), bobs her on each step, sways the skirt and bounces the pigtails a beat behind; still,

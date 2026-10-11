@@ -28,11 +28,12 @@ python3 -m http.server 8765      # from the repo root, in another terminal: the 
 
 ## Checking the game
 
-`test/battery.sh > battery.log 2>&1` runs, one browser at a time: boot on desktop and on mobile (with the GIVE
+`test/battery.sh > test/battery.log 2>`test/battery.sh > battery.log 2>&1` runs1` runs, one browser at a time: boot on desktop and on mobile (with the GIVE
 button); both ordinal sandboxes; talking to every creature; battles, Artifacts and the Library finale; the Gem
 trade; pizza; vignettes; pickup reachability; the jazz on the floor, pickup respawn and the Blossom option;
-Fortizmo's patrol; the shaders; a walking soak; King Dino's jazz; Somlet asleep; the roamers; the plant test row;
-the avatar's walk; the VR head guard; Sparkakus browsing; and the z-fighting scan. Every line should end with
+Fortizmo's patrol; the shaders; a walking soak; King Dino's jazz; Somlet asleep; the roamers; the avatar's walk;
+the VR head guard; Sparkakus browsing; the church's secret room and its slug; a Dance battle's Blossom; the phone lock; and the z-fighting
+scan. Every line should end with
 `err 0` / `errors 0`.
 
 | Runner | What it does |
@@ -59,7 +60,15 @@ row says otherwise, run it with `shot2.js`.
 | `t_jazz.js` | King Dino's jazz: heard on every corner of the dance floor and in every Dance battle, silent elsewhere, never with Fortizmo's horn tune; measures both at the speakers and prints FAIL where the jazz should sound and does not |
 | `t_somlet.js` | Somlet asleep on her side: her lowest point stays above the ground resting and getting up (`SHOTS=<prefix>` for renders) |
 | `t_roam.js` | The roamers: spots visited, nobody stuck or somewhere they should not be, trap scenarios, a Gorbo meeting with hearts. `VW=320 VH=240`, `ROAM_S`/`TRAP_S` game seconds |
-| `t_plants.js` | The plant test row: the five plants, each Talk line ("I'm Plant #k."), renders of the row and each plant; `EVENT=1` also runs an Event and counts the plants of each kind |
+| `t_plants.js` | The new flowers at a whole Garden Event: one plant per planter, by kind; how many show the full or the light model from the garden's edge; what the slug did; game time against real time (a slow-down means the plants cost too much); renders of the grown garden. Slow |
+| `plantshots.js` | Renders each plant kind from four views (`JGP.plantShow`) for checking against the owner's photos. `ONLY=1,3` |
+| `t_church.js` | The church's secret room: in through the wall under the right-hand Garden window (the little X) and nowhere else, the head guard, no creature inside, and the slug: one Talk (no Blossom), its idle and Talk moves, never leaving its spot |
+| `churchshots.js` | Renders the way in from outside and the secret room (down the nave, the slug, the ceiling) |
+| `t_battlecost.js` | A Dance battle costs a Blossom: no Blossom option (and no battle from a gift) with none in hand; with one, giving it empties the hand and opens the battle |
+| `t_phone.js` | The phone is locked (it rings, no one answers) until Mushroom has a Blossom, then calls Nextessa for the rest of the session |
+| `dance-plant.js` | Planting and dancing are animations, not menu options: every menu holds only Talk (and Give a blossom), each creature's moves move it, and at the Event they plant, then dance while Fortizmo plays. Slow |
+| `portraits.js` | Isolated portraits of creatures (`IDS`) on open lawn (`SPAWN=x,z`), two angles each |
+| `topview.js` | The whole town from straight above |
 | `t_avatar.js` | The avatar's walk and idle in the test modes: side renders mid-stride and standing, feet above the ground, hands clear of the skirt |
 | `t_headguard.js` | The VR head guard: distance to the nearest solid at known spots and how dark the view goes (through its test probe, as VR can't run headless). `VW=320 VH=240` |
 | `t_library.js` | Sparkakus browsing his Library: the spots he visits, never within 0.6 m of a bookcase, the table or the posts, still when talked to, out to the Garden Event and back. `VW=320 VH=240` |
@@ -76,9 +85,6 @@ row says otherwise, run it with `shot2.js`.
 | `t_views.js` | Renders chosen town views (`VIEWS`: a building collider name, `parcel` or `[x, z]`, with offsets; `AWAY=1` moves the player off) |
 | `t_shots.js` | Renders chosen creatures from chosen offsets (`VIEWS`; `AWAY=1` moves the player off) |
 | `t_eval.js` | Prints any expression (`EXPR`), e.g. `EXPR='JGP.unfightParts.ms'` |
-| `t_place.js` | Prints every creature's position, the Seeds shop item and welcome line, then Fortizmo's position every second for 40 s |
-| `t_an.js` | Prints Anomalee's position and facing |
-| `t_ez.js` | Lists the keep-clear zones within 8 m of (33.5, 2) and every stationary creature's spot |
 
 | Other tool | What it does |
 | --- | --- |
@@ -87,6 +93,8 @@ row says otherwise, run it with `shot2.js`.
 | `test/cov_extra.js` | A scene for `cov.js`: pokes everything the others don't (every station, every Blossom gift, every shop item, the keys, resizing, hiding the page) |
 | `test/uncov.js <script.js> <cov.json…>` | Lists the code that never ran, largest first (cut the script out of the page first, as `three/swap3.py` shows) |
 | `test/tile.py` | Contact sheets of renders (`sheet`) and amplified before/after differences (`diff`). Needs Pillow |
+| `pack/size.js [index.html] [outdir]` | What the page weighs at each release step: readable, minified (the release terser settings) and packed into the ordinal (round trip checked), with the intermediate pages written out for boot tests |
+| `town/lint/deadprops.js [index.html]` | Properties the game defines but never reads (object keys, methods, `x.name =` assignments), apart from those only the tests read: a lead for the dead-code pass |
 
 **Tips:**
 - Headless game time runs about 10× slower than real time at 1280×720. Use a tiny viewport for long scenes,
@@ -115,7 +123,7 @@ Check a name still exists before trusting a result: a rename in the game breaks 
 | `_t` | The panel (shop, battle, Summoning Stone) |
 | `xe` | Menus (`actionsFor`, `actions`, `lastTarget`) |
 | `te(ent, gift)` | Talk to a creature, or give it a Blossom |
-| `Kt` | State (`rewards`, `artifacts`, `blossoms`, `acorns` = flint, `owned`, `equip`, `danceWins`, `gem`) |
+| `Kt` | State (`rewards`, `artifacts`, `blossoms`, `acorns` = flint, `owned`, `equip`, `danceWins`, `gem`, `phone`: the phone unlocked by Mushroom's Blossom) |
 | `me`, `bt` | The Garden Event and its state (`bt.tg`: each creature's planting or dancing state) |
 | `ue` | The pizza courier |
 | `le`, `ce` | Blossoms, flint |
@@ -123,9 +131,8 @@ Check a name still exists before trusting a result: a rename in the game breaks 
 | `ARTS`, `LIB` | Ancient Artifacts, Sparkakus's talk |
 | `gcHorn`, `ee` | Fortizmo's horn, her tune |
 | `st` | The Library's worker, Sparkakus (`away()`, `pos()`) |
-| `JGP` | The game layer's exports: `garden`, `backpacka`, `barSpot`, `barVia`, `noPlant`, `onDance`, `groundAt`, `headGuard`, `jazz`, `meetAt`, `unfightParts`, `roamFree`, `roamWalk`, … |
-| `z.list` | Stations: `campfire` = the Summoning Stone, `gshop`, `stump` = the Library, `pool`, `phone` |
-| `TEST_QUESTS` | Top of the game script: `!0` starts the three quests complete (see the release steps) |
+| `JGP` | The game layer's exports: `garden` (`plants`, `lods`: each plant's full and light mesh), `plantShow`, `backpacka`, `barSpot`, `barVia`, `noPlant`, `onDance`, `groundAt`, `headGuard`, `jazz`, `meetAt`, `unfightParts`, `roamFree`, `roamWalk`, `slug` and `eventMove` (the church's slug and the Event move it follows), `churchGuard`, `ufoNow` (a UFO pass now), … |
+| `z.list` | Stations: `campfire` = the Summoning Stone, `gshop`, `stump` = the Library, `pool`, `phone`, `slug` |
 
 ## Finding dead code (how the size pass was done)
 
@@ -134,11 +141,12 @@ Check a name still exists before trusting a result: a rename in the game breaks 
 2. Treat coverage as a lead, not proof. VR, mobile, error handlers and random events (vignettes, the UFO every
    10 minutes, battle moves) are live even when uncovered. Remove only what no live data can reach: entries keyed
    to creatures that are gone, options no builder passes, unused fields.
-3. `npm run lint`: ESLint 8 over the game script, through `town/lint/`. There, `extract.py` cuts the game script
+3. `town/lint/deadprops.js` lists properties nothing reads (ESLint only sees unused local variables).
+4. `npm run lint`: ESLint 8 over the game script, through `town/lint/`. There, `extract.py` cuts the game script
    out of `index.html` into `block6.js` (keeping line numbers aligned), `lint.sh` runs ESLint with
    `.eslintrc.json` and prints each finding at its `index.html` line, and `package.json` lists ESLint 8 for that
    folder. The `'p' is not modified in this loop` warning is known.
-4. Re-run the battery.
+5. Re-run the battery, and measure with `pack/size.js`.
 
 ## Trimming three.js
 
@@ -160,9 +168,8 @@ swapping the result in:
 
 ## The final pass: release, minify, pack
 
-1. **Testing switches off.** `const TEST_QUESTS = !0` at the top of the game script starts the three quests
-   (Seeds, Summoning Stone, Snacks) complete, so the Summoning Stone is owned from the start. Set it to `!1` before
-   release.
+1. Nothing to switch off: the game starts with no quest or item progress (the testing head start, `TEST_QUESTS`,
+   was removed; the tests give themselves what they need, e.g. `Kt.rewards.stone = Kt.rewards.seeds = !0`).
 2. Cut the game script (the last `<script>` in `index.html`) out to `game.js`.
 3. Minify it: `node pack/woods-build/min.js game.js game.min.js` (terser 5, `toplevel` mangling, 2 passes). The
    test scripts rely on the global names, so test the unminified page and ship the minified one.

@@ -25,7 +25,7 @@ module.exports = async (p) => {
     return 'menus ' + (bad.length ? 'BAD: ' + bad.join(' | ') : 'ok') + '\n' + moves.join('\n');
   }));
   // the Garden Event: count creatures well into each move
-  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 2.8); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 2.8); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   const seen = { plant: 0, dance: 0 };
   for (let k = 0; k < 300 && !(seen.plant && seen.dance); k++) {
     await W(1000);
