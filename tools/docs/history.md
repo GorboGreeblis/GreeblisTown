@@ -7,7 +7,7 @@ Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 
 | PR | Merged | What changed |
 | --- | --- | --- |
-| [#50](https://github.com/GorboGreeblis/GreeblisTown/pull/50) | Open (2026-10-11) | One repo: the other games' copies removed, so [learnings.md](learnings.md) is the only record of City, Park and Woods; the privacy rule; a final pass over the docs. Every building door is wood, with a transom over storefront doors. Mistergummery's in Montgummery's teal, with no burger on the roof and the pylon just the M. King Dino's drum rug layers no longer fight (`unfightParts` sinks a part at most half the thinner part's depth). His jazz is scheduled 3 s ahead, judged from the avatar's head in the test modes, and rests from when Fortizmo raises her horn. The Summoning Stone's floating pebbles, the church's two flowerbeds and the park's benches and trash cans removed. The player starts just south of the Summoning Stone, facing the church. The ground grid has a third of the triangles (5 m cells in play, 40 m in the fog), and merged scenery drops faces lying face-down on the ground. Tools: `t_zfight.js` names clashes by the triangles' own colours (it had lumped unnamed merges together and missed real clashes), `t_jazz.js` prints FAIL where the jazz is missing, `t_perf.js` attributes draws from the render list. |
+| [#51](https://github.com/GorboGreeblis/GreeblisTown/pull/51) | Open (2026-10-11) | One repo: the other games' copies removed, so [learnings.md](learnings.md) is the only record of City, Park and Woods; the privacy rule; a final pass over the docs. Every building door is wood, with a transom over storefront doors. Mistergummery's in Montgummery's teal, with no burger on the roof and the pylon just the M. King Dino's drum rug layers no longer fight (`unfightParts` sinks a part at most half the thinner part's depth). His jazz is scheduled 3 s ahead, judged from the avatar's head in the test modes, and rests from when Fortizmo raises her horn. The Summoning Stone's floating pebbles, the church's two flowerbeds and the park's benches and trash cans removed. The player starts just south of the Summoning Stone, facing the church. The ground grid has a third of the triangles (5 m cells in play, 40 m in the fog), and merged scenery drops faces lying face-down on the ground. Tools: `t_zfight.js` names clashes by the triangles' own colours (it had lumped unnamed merges together and missed real clashes), `t_jazz.js` prints FAIL where the jazz is missing, `t_perf.js` attributes draws from the render list. |
 | [#49](https://github.com/GorboGreeblis/GreeblisTown/pull/49) | 2026-10-11 | Tools only: `t_perf.js` (performance profile), `t_ground.js` prints where each worst dip happens, learnings on the uploaded final builds. |
 | [#48](https://github.com/GorboGreeblis/GreeblisTown/pull/48) | 2026-10-11 | Plant test row with five placeholder kinds, which the Event now grows. Library rug from the Buns' Woods prints. VR head guard. No z-fighting in merged scenery (load-time fix); Somlet's cap depth-biased. Creatures stand on the real surface under them. The avatar walks and idles in the test modes. Sky dome inside the far plane. The readable parcel in the mail pile; Mistergummery's replaces the hardware store. Bug-pass fixes (Event, Somlet, roamers, Mushroom's desk, goo splat order); Sparkakus browses his Library. |
 | [#47](https://github.com/GorboGreeblis/GreeblisTown/pull/47) | 2026-10-11 | King Dino's jazz. Roaming creatures (Hennrick at the Portal, Gemtoe and the Gorbos in the park, the Dancers on the floor) and the Gorbos' meetings. Somlet asleep on her side. Anomalee keeps gazing at the window through Talk. Garden Event rounds. Goward renamed Gooward. Far scenery removed. The VR sound wakes when the headset is put back on. |
@@ -62,7 +62,7 @@ Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 The standing rules that came out of these are in [greeblis-rules.md](greeblis-rules.md); these are the other
 decisions, with the PR that carried them.
 
-- **The game:** it is called "Greeblis Town USA" (#31). One repo from #50 on; the readable parcel's label in the
+- **The game:** it is called "Greeblis Town USA" (#31). One repo from #51 on; the readable parcel's label in the
   mail pile is the one exception to the privacy rule.
 - **Creatures:**
   - Every model is final (#43); Montgummery's screen mouth is a flat line, with a pixel smile only for a while
@@ -81,7 +81,7 @@ decisions, with the PR that carried them.
   session.
 - **The church:** a garden window on each side wall, the right one as in Greeblis City and the left a copy with the
   figure and Mama Gorbo swapped (#37); figures in the windows have no faces; the windows are final (#42). Nothing
-  is placed inside the church, and no flowerbeds by it (#50).
+  is placed inside the church, and no flowerbeds by it (#51).
 - **The town:**
   - Every path leads to a kiosk or a building and ends there (#36).
   - The Library is open: only rows of bookcases spaced out, the LIBRARY banner behind them, no walls or raised
@@ -89,7 +89,7 @@ decisions, with the PR that carried them.
   - The dance floor is one 10 × 32-tile rectangle from the bar's north end, twice the bar's length (#39, #41); King
     Dino and his kit stand on the grass behind its south half (#40).
   - No cars (#36), no far scenery (#47), no benches or trash cans, and no floating pebbles round the Summoning
-    Stone (#50).
+    Stone (#51).
   - Every door is wood, with a transom over storefront doors; Mistergummery's uses Montgummery's teal instead of
-    yellow, has no roof burger, and its pylon is just the M (#50).
-  - The player starts just south of the Summoning Stone, facing the church (#50).
+    yellow, has no roof burger, and its pylon is just the M (#51).
+  - The player starts just south of the Summoning Stone, facing the church (#51).
