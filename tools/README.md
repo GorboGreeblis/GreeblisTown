@@ -73,6 +73,8 @@ and drives the game through its globals.
 | `t_rounds.js` | Three Garden Events in a row: a batch of plants each from the first two (the second in fresh rows), none from the third, which replays the first Event's spots. `VW=200 VH=150`, slow |
 | `t_jazz.js` | King Dino's jazz: heard on the dance floor and in every Dance battle, silent elsewhere, never together with Fortizmo's horn tune; measures both levels at the speakers |
 | `t_roam.js` | The roamers (Hennrick at the Portal; Gemtoe, Mama Gorbo and Gooward in the park; the Dancers on the dance floor): spots visited, nobody stuck or somewhere they should not be, and a Gorbo meeting with hearts. `VW=320 VH=240`, `ROAM_S` game seconds |
+| `t_somlet.js` | Somlet asleep on her side: her lowest point stays above the ground resting and getting up (`SHOTS=<prefix>` for renders) |
+| `t_anomalee.js` | Anomalee keeps gazing at the window with the player close and through Talk; turns to the player for her Blossom line and for Talk at the Event |
 | `t_fixes.js` | The October bug-pass fixes: no battle from a thanks closed far away, talk target after the phone, Mushroom on his desk, Fortizmo holding still, no vignette off the spot. `VW=320 VH=240` |
 | `t_misc.js` | Drums on the floor (also while talking to King Dino, giving him a Blossom, battling), pickup respawn, the Blossom menu option |
 | `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
@@ -202,6 +204,10 @@ Plants wait in the ground until his water reaches them, then grow over 11 s.
 - Mama Gorbo and Gooward meet every minute or two (`JGP.meetAt(t)` forces it for tests): two hearts each, then back to wandering.
 
 **Somlet lies on her side** while resting at her spot (an animation; her model is unchanged). How low she may sit at each roll angle is worked out once from her vertices, and her tentacles droop and splay clear of the ground.
+
+**Anomalee's gaze:** she keeps facing the church window (head tipped back) with the player close and through her Talk lines; `te(ent, gift)` sets `ent.gifting`, and she turns to the player (head level) only for her Blossom line or for any line during the Event. Any creature talked to during the Event stands still for it.
+
+**No far scenery:** the fields, farmsteads, turbines, windmills, railroad, telephone poles, water tower and grain elevator were removed for performance (about 48k triangles and 8 draw calls fewer, and no spinners to turn every frame); the town ring around the square, the trees between its buildings and Mistergummery's (its M is meant to show over the rooftops) stay.
 
 **Garden Event rounds** (`garden.round`): Event 1 plants a batch, Event 2 plants a second batch in the rows Event 1 left bare (spots a metre further out), Event 3 and after replay Event 1's spots with no new plants.
 

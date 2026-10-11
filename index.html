@@ -4394,7 +4394,9 @@ const le = (() => {
 					const c = s - l.x,
 						h = i - l.z,
 						p = Math.hypot(c, h);
-					if (p > (n ? 0.12 : 0.5)) {
+					// (one being talked to stands still for it, turned to the player)
+					if ("dialogue" === jt.top && xe.lastTarget === o) o.moving = !1;
+					else if (p > (n ? 0.12 : 0.5)) {
 						const t = Math.min(p, (o.walkSpeed || 2.4) * e);
 						(l.x += (c / p) * t), (l.z += (h / p) * t), co(o.group, Math.atan2(c, h), e, 8), (o.moving = !0);
 					} else
