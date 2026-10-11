@@ -14668,7 +14668,7 @@ const JGP = (() => {
 								all = (list) => list.forEach((e) => add(e[0], e[1], e[2]));
 							if ("brush" === sec) {
 								// brushes: a long sweep on 1 and 3, a pat on 2 and 4, the hi-hat foot and a soft kick
-								[0, 1, 2, 3].forEach((b) => add(b, "brush", b % 2 ? 0.6 : 0.9)), chick(), feather(0.18);
+								[0, 1, 2, 3].forEach((b) => add(b, "brush", b % 2 ? 0.6 : 0.9)), chick(), feather(0.3);
 								rnd() < 0.5 && add(3 + SW, "snare", 0.2);
 								7 === m && all([[3, "snare", 0.3], [3 + T3, "snare", 0.45], [3 + SW, "snare", 0.6]]);
 							} else if ("shout" === sec) {
@@ -14749,7 +14749,7 @@ const JGP = (() => {
 							ride: (t, g) => (hit(t, hiss(), filt("bandpass", 7200, 0.9), 0.05 * g, 0.9, 1), hit(t, tone("sine", 3350), 0, 0.009 * g, 0.7, 1), hit(t, tone("sine", 5120), 0, 0.006 * g, 0.45, 1)),
 							bell: (t, g) => (hit(t, hiss(), filt("bandpass", 6e3, 1.2), 0.05 * g, 1.1, 1), hit(t, tone("sine", 2480), 0, 0.03 * g, 1.2, 1), hit(t, tone("sine", 3720), 0, 0.016 * g, 0.9, 1)),
 							chick: (t, g) => hit(t, hiss(), filt("highpass", 6500), 0.05 * g, 0.05),
-							brush: (t, g) => hit(t, hiss(), filt("bandpass", 2800, 0.6), 0.035 * g, g > 0.8 ? 0.42 : 0.16, 1, g > 0.8 ? 0.12 : 0.01),
+							brush: (t, g) => hit(t, hiss(), filt("bandpass", 2800, 0.6), 0.07 * g, g > 0.8 ? 0.42 : 0.16, 1, g > 0.8 ? 0.12 : 0.01),
 							snare: (t, g) => (hit(t, hiss(), filt("bandpass", 1900, 0.7), 0.09 * g, 0.14, 1), hit(t, tone("triangle", 190, 160, t, 0.08), 0, 0.05 * g, 0.1)),
 							kick: (t, g) => hit(t, tone("sine", 110, 46, t, 0.16), 0, 0.17 * g, 0.34),
 							crash: (t, g) => (hit(t, hiss(), filt("highpass", 3600), 0.08 * g, 1.9, 1), hit(t, hiss(), filt("bandpass", 5200, 1.5), 0.04 * g, 1.2, 1)),
@@ -14772,7 +14772,7 @@ const JGP = (() => {
 								if (Math.abs(v - lastV) > 0.01) {
 									const g = master.gain,
 										now = u.currentTime;
-									(lastV = v), g.cancelScheduledValues(now), g.setValueAtTime(g.value, now), g.setTargetAtTime(0.6 * v, now, cut ? 0.02 : v ? 0.08 : 0.25);
+									(lastV = v), g.cancelScheduledValues(now), g.setValueAtTime(g.value, now), g.setTargetAtTime(1.5 * v, now, cut ? 0.02 : v ? 0.08 : 0.25);
 								}
 							}
 							on && heard && !cut && (quietAt = tt + 1.5);
@@ -14878,9 +14878,10 @@ const JGP = (() => {
 						// otherwise he plays whenever someone is about and never stops: not while he is talked to
 						// or given a Blossom, nor during a Dance battle
 						on = !!kd && !horn && (d < 45 || battle),
-						i = Math.max(0, 1 - d / 60);
+						// (as loud anywhere on the floor, a touch louder right by the kit)
+						i = Math.max(0, 1 - d / 35);
 					DRUMS.on = on;
-					const fired = JAZZ.update(tt, on, battle || hearAt(P), battle ? 1 : 0.25 + 0.75 * i * i, horn);
+					const fired = JAZZ.update(tt, on, battle || hearAt(P), battle ? 1 : 0.85 + 0.15 * i, horn);
 					if (fired)
 						for (const [, v] of fired) {
 							const q = PART[v];
