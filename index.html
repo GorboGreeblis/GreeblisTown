@@ -8160,7 +8160,7 @@ const JGP = (() => {
 				const P = m.geometry.attributes.position;
 				for (let k = 0; k < P.count; k += 2) pts.push(new c0().fromBufferAttribute(P, k));
 			});
-			(tg.userData.pts = pts.filter((q) => q.y < -0.25)), (tg.userData.ax = new c0(-Math.sin(a), 0, Math.cos(a)));
+			(tg.userData.pts = pts.filter((q) => q.y < -0.1)), (tg.userData.ax = new c0(-Math.sin(a), 0, Math.cos(a)));
 		}
 		// Zs drifting up and away beside the cap, each fading in, growing and fading out
 		const zTex =
@@ -8190,16 +8190,22 @@ const JGP = (() => {
 		// the Zs), so as she rolls over and settles nothing ever goes into the ground; the tentacles droop
 		// toward the ground as she lies and splay off it, as they do when she floats low.
 		const ROLLS = 16,
-			lowAt = new Float32Array(ROLLS + 1).fill(1e9);
+			lowAt = new Float32Array(ROLLS + 1).fill(1e9),
+			// (and the tentacles' own lowest points, hanging straight: tipped over on her way down or up, the
+			// ones on the low side cannot splay clear, so she is held up for them)
+			tentAt = new Float32Array(ROLLS + 1).fill(1e9);
 		{
 			fl.position.y = 0;
 			root.updateMatrixWorld(!0);
 			const inv = new THREE.Matrix4().copy(fl.matrixWorld).invert(),
 				rel = new THREE.Matrix4(),
-				q = new c0(),
-				skip = new Set([...tents, ...zs]);
+				q = new c0();
 			fl.traverse((o) => {
-				for (let a = o; a && a !== fl; a = a.parent) if (skip.has(a)) return;
+				let tab = lowAt;
+				for (let a = o; a && a !== fl; a = a.parent) {
+					if (zs.includes(a)) return;
+					tents.includes(a) && (tab = tentAt);
+				}
 				if (!o.isMesh) return;
 				rel.multiplyMatrices(inv, o.matrixWorld);
 				const P = o.geometry.attributes.position;
@@ -8207,17 +8213,17 @@ const JGP = (() => {
 					q.fromBufferAttribute(P, k).applyMatrix4(rel);
 					for (let j = 0; j <= ROLLS; j++) {
 						const th = ((j / ROLLS) * Math.PI) / 2;
-						lowAt[j] = Math.min(lowAt[j], q.x * Math.sin(th) + q.y * Math.cos(th));
+						tab[j] = Math.min(tab[j], q.x * Math.sin(th) + q.y * Math.cos(th));
 					}
 				}
 			});
 			fl.position.y = 1.35;
 		}
-		const lowFor = (th) => {
+		const lowFor = (tab, th) => {
 			const f = Math.min(ROLLS, Math.max(0, (th / (Math.PI / 2)) * ROLLS)),
 				j = Math.min(ROLLS - 1, Math.floor(f));
 			// (the lower of the two angles either side, with a little room for her breathing and rocking)
-			return Math.min(lowAt[j], lowAt[j + 1]) - 0.05;
+			return Math.min(tab[j], tab[j + 1]) - 0.05;
 		};
 		let lie = 0;
 		return born(g, {
@@ -8226,16 +8232,19 @@ const JGP = (() => {
 				const br = Math.sin(1.6 * t);
 				// lying (0 standing to 1 on her side): only resting at her own spot
 				const rest =
-					!!ent && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && !me.active && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
+					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && !me.active && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
 				lie += ((rest ? 1 : 0) - lie) * Math.min(1, 1.3 * (dt || 0.016));
-				const s = lie * lie * (3 - 2 * lie),
-					th = (s * Math.PI) / 2,
+				// (she rolls over while still floating, then settles down onto her side, so her tentacles are
+				// already off to the side as she comes down; getting up goes the other way)
+				const sm = (u) => ((u = Math.min(1, Math.max(0, u))), u * u * (3 - 2 * u)),
+					s = sm((lie - 0.35) / 0.65),
+					th = (sm(lie / 0.6) * Math.PI) / 2,
 					sn = Math.sin(th),
 					cs = Math.cos(th),
 					fy = (1 - s) * (1.35 + 0.1 * Math.sin(1.2 * t));
 				(fl.position.y = fy), (root.rotation.z = th);
 				// (lifted just enough that her lowest point clears the ground, and kept over her spot)
-				root.position.set(fy * sn, Math.max(0, 0.03 - fy * cs - lowFor(th)), 0);
+				root.position.set(fy * sn, Math.max(0, 0.03 - fy * cs - lowFor(lowAt, th), Math.min(1, 3 * sn) * (0.03 - fy * cs - lowFor(tentAt, th))), 0);
 				puff.scale.set(1 + 0.02 * br, 1 - 0.02 * br, 1);
 				(puff.rotation.x = 0.05 + 0.03 * Math.sin(0.8 * t)), (mouth.scale.y = 1 + 0.5 * br + 1.2 * tk);
 				(cap.rotation.z = 0.04 * Math.sin(1.1 * t));
@@ -14807,10 +14816,11 @@ const JGP = (() => {
 					let next = 60 + 60 * Math.random(),
 						st = 0, // 0: apart, 1: on the way, 2: together
 						until = 0;
+					let tryAt = 0;
 					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
 						free = (h) => h && !h.busy && !h.vig && !h.battleDance && !h.nearPlayer && !("dialogue" === jt.top && xe.lastTarget === h),
 						off = (t2, wait) => {
-							for (const h of pair()) h && h.meeting && ((h.meeting = !1), h.home.set(h.group.position.x, h.home.y, h.group.position.z));
+							for (const h of pair()) h && ((h.seek = null), h.meeting && ((h.meeting = !1), h.home.set(h.group.position.x, h.home.y, h.group.position.z)));
 							(st = 0), (next = t2 + wait);
 						};
 					// (for the tests: meet at game time t)
@@ -14820,7 +14830,11 @@ const JGP = (() => {
 						if (!A || !B) return;
 						if (me.active || A.busy || B.busy || A.vig || B.vig) return void (st && off(t2, 40));
 						if (0 === st) {
-							if (t2 < next || !free(A) || !free(B)) return;
+							if (t2 < next) return;
+							// (due: they wander toward each other till there is a clear way to meet)
+							(A.seek = B), (B.seek = A);
+							if (t2 < tryAt || !free(A) || !free(B)) return;
+							tryAt = t2 + 2;
 							const a = A.group.position,
 								b = B.group.position,
 								d = Math.hypot(b.x - a.x, b.z - a.z) || 1,
@@ -14837,12 +14851,12 @@ const JGP = (() => {
 									pb = [mx + (ux * gap) / 2, mz + (uz * gap) / 2],
 									ok = (h, q) => JGP.roamFree(q[0], q[1], h.bodyR || 1, !0, h.def.at) && JGP.roamWalk(h.group.position, q[0], q[1], h.bodyR || 1, !0, h.def.at, offFloor(h.bodyR || 1));
 								if (ok(A, pa) && ok(B, pb)) {
-									(A.meeting = B.meeting = !0), A.home.set(pa[0], A.home.y, pa[1]), B.home.set(pb[0], B.home.y, pb[1]);
+									(A.seek = B.seek = null), (A.meeting = B.meeting = !0), A.home.set(pa[0], A.home.y, pa[1]), B.home.set(pb[0], B.home.y, pb[1]);
 									A.pattern && (A.pattern[1].face = Math.atan2(ux, uz)), B.pattern && (B.pattern[1].face = Math.atan2(-ux, -uz));
 									return void ((st = 1), (until = t2 + d + 30));
 								}
 							}
-							return void (next = t2 + 15);
+							return;
 						}
 						if (1 === st) {
 							const at = (h) => Math.hypot(h.group.position.x - h.home.x, h.group.position.z - h.home.z) < 0.15;
@@ -15330,10 +15344,11 @@ const JGP = (() => {
 		// creatures' spots, except its own, own)
 		roamFree(x, z, r, others, own) {
 			return (
-				F.free(x, z, 0.8 * r) &&
-				Math.hypot(x, z) < t.clearingR - r - 0.6 &&
+				// (inside the fenced square, the long south end included)
+				F.list.every((c) => Math.hypot(x - c.x, z - c.z) > c.r + 0.8 * r) &&
 				Math.abs(x) < t.parkHalf - r - 1 &&
 				z > -t.parkHalf + r + 1 &&
+				z < t.parkSouth - r - 1 &&
 				Math.hypot(x, z) > GARDEN_R + 0.6 + r &&
 				!F.buildings.some((B) => F.inHull(B, x, z, 0.6 + 0.5 * r)) &&
 				E.list.every(
@@ -15398,15 +15413,23 @@ const JGP = (() => {
 		// a spot for one of the park's wanderers (GEMTOE, MAMA GORBO, GOOWARD) to wander to from p: anywhere
 		// open in the park 5 to 16 m off, kept off the other creatures' spots, the Portal and the dance
 		// floor (the Dancers' own), with a clear straight walk there. It stops facing the way it came.
-		parkRoam(p, r, own) {
+		// One looking for another (ent.seek) takes the spot that brings it nearest.
+		parkRoam(p, r, own, ent) {
+			const to = ent && ent.seek && ent.seek.group.position;
+			let best = null,
+				bd = 1e9;
 			for (let k = 0; k < 60; k++) {
 				const a = Math.random() * l,
 					d = 5 + 11 * Math.random(),
 					x = p.x + d * Math.cos(a),
 					z = p.z + d * Math.sin(a);
-				if (JGP.roamFree(x, z, r, !0, own) && JGP.roamWalk(p, x, z, r, !0, own, offFloor(r))) return [x, z, Math.atan2(x - p.x, z - p.z)];
+				if (!JGP.roamFree(x, z, r, !0, own) || !JGP.roamWalk(p, x, z, r, !0, own, offFloor(r))) continue;
+				const sp = [x, z, Math.atan2(x - p.x, z - p.z)];
+				if (!to) return sp;
+				const dd = Math.hypot(x - to.x, z - to.z);
+				dd < bd && ((bd = dd), (best = sp));
 			}
-			return null;
+			return best;
 		},
 		libTable: LIB_LAYOUT.table,
 		buildPond,
