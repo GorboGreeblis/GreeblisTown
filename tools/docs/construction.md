@@ -305,7 +305,13 @@ Goo that runs down a body and moves like goo, without clipping:
     Sparkakus and a row down each side, with open aisles;
   - the LIBRARY banner on two posts 1.4 m behind him (the kiosks' sign painter, `kioskSignTex`);
   - a small reading table to his left, where the Ancient Artifacts go on show;
-  - its colliders are the bookcases, posts and table, and lawn tufts keep off the bookcases.
+  - its colliders are the bookcases, posts and table, and lawn tufts keep off the bookcases and the rug;
+  - a big rug (`LIB_LAYOUT.rug`, 11 × 7.8 m, under the bookcases and the table) woven from the Buns' clothes
+    in Greeblis Woods: Miss Bun's red floral skirt print for the field, edged with her lace and gold-dotted
+    braid, and a border, corner pieces and a medallion in Mr Bun's jacket green sprinkled with his shirt's
+    specks, her cream chest bow in the middle, a cream fringe at each end. The prints are the Woods 128-pixel
+    tiles (same seeds and colours) drawn seamlessly and painted at 0.6 scale. It is a 4 cm slab with its top
+    at 3 cm (1 cm over a walk, 5 cm over the lawn) and is part of `JGP.groundAt`; Sparkakus stands on it.
 - **Ancient Artifacts (placeholder):** for now three pickups hidden round town. In the final game each of the
   three Dancers gives one unique artifact for winning a Dance battle, and the player must hold all three to
   complete that part of the quest and move on.
@@ -387,6 +393,7 @@ Goo that runs down a body and moves like goo, without clipping:
 | Bar stool feet flickered against the dance floor | Their tops were flush with the floor (y 0.035): raise them 1 cm |
 | The menu showed Talk only for Zollod's shop check | His entity has no `id`; match creatures by `Xt(ent)` (the builder key) |
 | Headless tests run very slowly in game time | Fast-forward with `JGP.backpacka.start(Re.t - …)`; give planting checks minutes |
+| A pale disc in the sky that turned with the view | The sky dome (375 m) was bigger than the camera's far plane (310 m, 260 m on mobile), so its middle was cut away. Size the dome from the far plane: `0.85 · t.far` |
 | Two headless browsers at once time out | Run one at a time. Don't `pkill -f` a pattern that matches your own shell command |
 
 ## No clipping, no flicker
