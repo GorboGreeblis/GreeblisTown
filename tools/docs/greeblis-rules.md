@@ -29,6 +29,11 @@ game is `index.html`, and everything used to make it (tools, guides, notes) is i
    `tools/`, with a README saying what each one does and how to run it. Don't leave tools only in a scratch
    folder.
 
+## Privacy (from the owner)
+
+- This repo is public. Never put the owner's full name, workplace, job or location in anything pushed: code,
+  game text, docs, tools, comments, commit messages or PR descriptions. Refer to them only as "the owner".
+
 ## Creature and art rules (from the owner)
 
 - No bones anywhere: no skeletal rigs and no bone props.
