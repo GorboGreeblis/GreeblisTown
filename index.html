@@ -13102,9 +13102,9 @@ const JGP = (() => {
 		// The play area is the town square: a mowed green with the garden at its heart, crossed by
 		// concrete walks and ringed by sidewalks and four streets. Main Street storefronts line the
 		// east and west sides, the courthouse, church and fire station face the square from the north
-		// and porch houses from the south. Beyond them: the gas station and water tower, the grain
-		// elevator by the railroad, a schoolhouse, red-barn farmsteads with windmills, wind turbines,
-		// and soybean, wheat, pasture and plowed fields out to the horizon. Static scenery is merged into one
+		// and porch houses from the south. Behind them: the gas station, Mistergummery's and a
+		// schoolhouse, with trees between, and open prairie to the horizon (nothing is built far out:
+		// it cost draw time and could hardly be seen from the square). Static scenery is merged into one
 		// mesh per material (a handful of draw calls, no collision).
 		// the square is ZS longer to the south: the south street, its houses and the south corners move
 		// out by ZS, and Main Street stretches by MK to match
@@ -13341,7 +13341,6 @@ const JGP = (() => {
 			["s_townhall", "TOWN HALL", "#eae2cc", "#3a3228", { shadow: "rgba(255,255,255,.6)", fill: 0.7 }],
 			["s_school", "SCHOOL", "#fbf8f0", "#1a1a1e", { edge: "#1a1a1e" }],
 			["s_gas", "GAS", "#c8202a", "#ffffff", { face: SANS, size: 0.7 }],
-			["s_coop", "FARMERS CO-OP", "#e8e2d4", "#2a4a2a", { face: SANS }],
 			["s_hotel", "HOTEL", "#2a3a2a", "#f0e2b0", { edge: "#f0e2b0" }],
 			["s_mgum", "Mistergummery's", "#c8282a", "#ffffff", { edge: "#ffc81e", face: SANS, shadow: "rgba(0,0,0,.25)" }],
 			["s_bolt", "BOLT BURGERS", "#fbf1dc", "#c8282a", { face: SANS, size: 0.6 }],
@@ -13354,8 +13353,6 @@ const JGP = (() => {
 			["st_oak", "ZORTO ST"],
 			["st_maple", "DECIBELLE AVE"],
 		].forEach(([key, txt]) => slot(key, 256, 64, board(txt, "#1e6a3a", "#ffffff", { edge: "#ffffff", face: SANS, size: 0.62 })));
-		slot("rr", 256, 48, board("RAILROAD", "#f8f8f4", "#141414", { face: SANS, size: 0.75, fill: 0.9 }));
-		slot("rr2", 256, 48, board("CROSSING", "#f8f8f4", "#141414", { face: SANS, size: 0.75, fill: 0.9 }));
 		[
 			["aw_red", "#c8282e", "#f8f4ec"],
 			["aw_green", "#2a6a3a", "#f8f4ec"],
@@ -13443,13 +13440,6 @@ const JGP = (() => {
 			GABLE = prism("gable", [
 				[-0.5, 0],
 				[0, 1],
-				[0.5, 0],
-			]),
-			GAMBREL = prism("gambrel", [
-				[-0.5, 0],
-				[-0.42, 0.55],
-				[0, 1],
-				[0.42, 0.55],
 				[0.5, 0],
 			]);
 
@@ -13564,21 +13554,6 @@ const JGP = (() => {
 		};
 		const place = (cx, cz, ry = 0, y0 = 0) => frame(S(cx, y0, cz, 0, ry, 0)),
 			faceIn = (X, Z) => A(X, Z); // rotation that turns a local +Z front towards the square
-		// a beam between two world points (legs, braces, wires)
-		const strut = (bin, col, p0, p1, w, geo = UB) => {
-			const d = new THREE.Vector3(p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]),
-				len = d.length();
-			put(
-				bin,
-				geo,
-				col,
-				new THREE.Matrix4().compose(
-					new THREE.Vector3((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2, (p0[2] + p1[2]) / 2),
-					new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()),
-					new THREE.Vector3(w, len, w),
-				),
-			);
-		};
 
 		// ---- Main Street: brick storefronts and wooden false fronts -------------------------------
 		// the ground floor: kickplates, big display windows, a recessed door, transom lights, a sign
@@ -13952,33 +13927,6 @@ const JGP = (() => {
 			B.box("asphalt", "#5c5c60", 0, -0.04, 6, 12, 0.08, 9);
 			return B;
 		};
-		const WATER_TOWER = (X, Z) => {
-			const B = place(X, Z, faceIn(X, Z)),
-				legH = 26,
-				steel = "#8e9aa4",
-				tank = "#d6e6ee",
-				wp = (px, py, pz) => new THREE.Vector3(px, py, pz).applyMatrix4(B.M0).toArray(),
-				leg = (k, y) => {
-					const a = [[-1, -1], [1, -1], [1, 1], [-1, 1]][k % 4],
-						r2 = 5.5 - (1.9 * y) / legH;
-					return wp(a[0] * r2, y, a[1] * r2);
-				};
-			for (let k = 0; k < 4; k++) {
-				strut("plain", steel, leg(k, 0), leg(k, legH), 0.5);
-				for (let j = 0; j < 3; j++) {
-					const y0 = 1 + 8 * j,
-						y1 = y0 + 8;
-					strut("plain", steel, leg(k, y1), leg(k + 1, y1), 0.16), strut("plain", steel, leg(k, y0), leg(k + 1, y1), 0.1), strut("plain", steel, leg(k + 1, y0), leg(k, y1), 0.1);
-				}
-			}
-			B.geo("plain", ucyl(10), steel, 0, legH / 2, 0, 1.4, legH, 1.4).geo("plain", ucyl(28), "#6a7682", 0, legH + 0.3, 0, 15, 0.16, 15);
-			B.geo("plain", cached("wtrail", () => new THREE.TorusGeometry(7.4, 0.05, 4, 40).rotateX(Math.PI / 2)), "#6a7682", 0, legH + 1.3, 0);
-			for (let k = 0; k < 16; k++) B.box("plain", "#6a7682", 7.4 * Math.sin((k * l) / 16), legH + 0.8, 7.4 * Math.cos((k * l) / 16), 0.06, 1.0, 0.06);
-			B.geo("plain", ucyl(32), tank, 0, legH + 4.4, 0, 13, 7, 13).geo("plain", usph(28, !0), tank, 0, legH + 0.9, 0, 13, -3.2, 13);
-			B.geo("plain", ucone(32), "#c4d6de", 0, legH + 9.1, 0, 13.6, 2.4, 13.6).geo("plain", usph(8), "#c4d6de", 0, legH + 10.4, 0, 0.6, 0.6, 0.6).box("plain", "#2a2a2e", 0, legH + 11.2, 0, 0.05, 1.4, 0.05);
-			B.geo("sign", cached("wtband", () => onSlot("wtower", new THREE.CylinderGeometry(6.56, 6.56, 2.6, 40, 1, !0, -Math.PI / 2, Math.PI))), "#ffffff", 0, legH + 4.6, 0);
-			return B;
-		};
 		// Mistergummery's: Greeblis Town's own burger drive-in (a fast-food parody). Red and cream tiled
 		// walls under a red mansard roof, wraparound windows, a giant bolt burger on the roof, golden
 		// "M" arches on a tall pylon sign, a drive-thru lane with a menu board and speaker, umbrella
@@ -14075,98 +14023,6 @@ const JGP = (() => {
 			B.box("plain", red, sx0 + 1.7, 0.8, sz0, 2.6, 0.08, 0.8, 0, 0, -0.55);
 			for (let k = 0; k < 4; k++) B.box("plain", "#5a5a60", sx0 - 0.75, 0.3 + 0.35 * k, sz0, 0.06, 0.06, 0.9);
 			return B;
-		};
-		const ELEVATOR = (X, Z) => {
-			const B = place(X, Z, 0),
-				conc = "#d6d0c2",
-				tin = "#b8bcc0",
-				wp = (px, py, pz) => new THREE.Vector3(px, py, pz).applyMatrix4(B.M0).toArray();
-			for (let r2 = 0; r2 < 2; r2++) for (let k = 0; k < 4; k++) B.geo("concrete", ucyl(20), conc, -10.8 + 7.2 * k, 14, -3.6 + 7.2 * r2, 7.2, 28, 7.2);
-			B.box("concrete", "#ccc6b8", 0, 28.3, 0, 29, 0.6, 14.6).box("metal", tin, 0, 29.8, 0, 28, 2.4, 3.0).geo("metal", GABLE.slopes, "#9aa0a6", 0, 31, 0, 28.2, 1, 3.2);
-			B.box("concrete", conc, -16.5, 22, 0, 6, 44, 10).box("metal", tin, -16.5, 46, 0, 6.6, 4, 10.6).geo("metal", GABLE.slopes, "#9aa0a6", -16.5, 48, 0, 6.8, 2, 10.8).geo("metal", GABLE.ends, tin, -16.5, 48, 0, 6.6, 2, 10.6);
-			B.sign("s_coop", -16.5, 38, 5.04, 5.4, 1.35);
-			for (let k = 0; k < 3; k++) B.win(-16.5, 8 + 11 * k, 1.0, 1.6, { trim: "#c8c2b4", z: 5.0, dark: !0 });
-			B.box("metal", "#c4c8cc", 4, 5, -14, 16, 10, 12).geo("metal", GABLE.slopes, "#9aa0a6", 4, 10, -14, 16.6, 3, 12.6).geo("metal", GABLE.ends, "#c4c8cc", 4, 10, -14, 16, 3, 12);
-			B.box("plain", "#6a6a70", 12.03, 3.2, -14, 0.06, 6.4, 6);
-			strut("plain", "#7a8088", wp(-14.5, 44, -2), wp(2, 13.2, -12), 0.6);
-			strut("plain", "#7a8088", wp(-14.5, 40, 1), wp(-2, 30.5, 1), 0.3);
-			B.box("brick", "#a8503a", 15, 2, 6, 5, 4, 4).box("plain", "#3a3a3e", 15, 4.05, 6, 5.2, 0.1, 4.2).win(15, 1.2, 1.2, 1.2, { z: 8.0, trim: "#f4f0e6" });
-			return B;
-		};
-		const BARN = (cx, cz, ry, col = "#a8302a") => {
-			const B = place(cx, cz, ry),
-				w = 14,
-				d = 20,
-				h = 5.5,
-				tr = "#f6f4ee",
-				top = 0.5 + h;
-			B.box("concrete", "#a8a49a", 0, 0.25, -d / 2, w + 0.3, 0.5, d + 0.3).box("boards", col, 0, 0.5 + h / 2, -d / 2, w, h, d);
-			B.geo("shingle", GAMBREL.slopes, "#4a4a52", 0, top, -d / 2, d + 0.8, 7.0, w + 1.0, 0, Math.PI / 2, 0).geo("boards", GAMBREL.ends, col, 0, top, -d / 2, d, 7.0, w, 0, Math.PI / 2, 0);
-			// sliding doors with white X bracing, hayloft door and hay hood, cupola
-			const xDoor = (px, py, dw, dh) => {
-				B.box("boards", col, px, py, 0.08, dw, dh, 0.12);
-				[
-					[px, py + dh / 2, dw + 0.2, 0.2],
-					[px, py - dh / 2, dw + 0.2, 0.2],
-				].forEach(([qx, qy, qw, qh]) => B.box("plain", tr, qx, qy, 0.16, qw, qh, 0.06));
-				[-1, 1].forEach((sx) => B.box("plain", tr, px + (sx * dw) / 2, py, 0.16, 0.2, dh, 0.06).box("plain", tr, px, py, 0.17, 0.18, Math.hypot(dw, dh), 0.05, 0, 0, sx * Math.atan2(dw, dh)));
-			};
-			xDoor(-1.3, 2.7, 2.6, 4.4), xDoor(1.3, 2.7, 2.6, 4.4), xDoor(0, top + 2.4, 2.2, 2.2);
-			B.box("plain", "#4a4a52", 0, top + 4.0, 0.5, 2.8, 0.15, 1.2);
-			[-1, 1].forEach((sx) => {
-				const Sd = B.sub((sx * w) / 2, -d / 2, (sx * Math.PI) / 2);
-				[-6, 0, 6].forEach((px) => Sd.win(px, 2.6, 1.0, 1.0, { trim: tr, dark: !0 }));
-			});
-			B.box("boards", tr, 0, top + 7.4, -d / 2, 2.2, 1.6, 2.2).geo("shingle", upyr, "#4a4a52", 0, top + 8.2, -d / 2, 3.0, 1.6, 3.0).box("plain", "#2a2a2e", 0, top + 10.2, -d / 2, 0.05, 1.2, 0.05).box("plain", "#2a2a2e", 0, top + 10.4, -d / 2, 1.0, 0.05, 0.05);
-			return B;
-		};
-		const SILO = (X, Z, r2, h, col, dome) => {
-			put("concrete", ucyl(22), col, S(X, h / 2, Z, 0, 0, 0, 2 * r2, h, 2 * r2));
-			put("plain", usph(22, !0), dome, S(X, h, Z, 0, 0, 0, 2 * r2 + 0.2, 1.6 * r2, 2 * r2 + 0.2));
-			for (let k = 1; k < 6; k++) put("plain", ucyl(22, 0.5, !0), "#8a8a8e", S(X, (k * h) / 6, Z, 0, 0, 0, 2 * r2 + 0.08, 0.12, 2 * r2 + 0.08));
-		};
-		// farm windmill: lattice tower, tail vane, and a wheel that turns in the wind
-		const SPINNERS = [];
-		const WINDMILL = (X, Z, ry) => {
-			const top = 11,
-				steel = "#8a9098";
-			for (let k = 0; k < 4; k++) {
-				const a = [[-1, -1], [1, -1], [1, 1], [-1, 1]],
-					p = (j, y) => {
-						const r2 = 1.6 - (1.3 * y) / top;
-						return [X + a[j % 4][0] * r2, y, Z + a[j % 4][1] * r2];
-					};
-				strut("plain", steel, p(k, 0), p(k, top), 0.14);
-				for (let j = 1; j < 4; j++) strut("plain", steel, p(k, (j * top) / 4), p(k + 1, (j * top) / 4), 0.07);
-			}
-			const B = place(X, Z, ry, top);
-			B.box("plain", "#6a5440", 0, 0.1, 0, 1.4, 0.12, 1.4).box("plain", steel, 0, 0.6, -1.2, 0.1, 0.1, 2.6).box("metal", "#d8dce0", 0, 0.8, -2.8, 0.05, 1.1, 1.6);
-			const geo = cached("mill", () => {
-				const pts = [];
-				for (let k = 0; k < 18; k++) {
-					const a = (k * l) / 18;
-					pts.push({ geo: UB, color: "#c8ccd0", matrix: S(1.45 * Math.cos(a), 1.45 * Math.sin(a), 0, 0, 0, a).multiply(S(0, 0, 0, 0.4, 0, 0, 1.6, 0.34, 0.03)) });
-				}
-				[0.7, 2.2].forEach((r3) => pts.push({ geo: new THREE.TorusGeometry(r3, 0.04, 4, 24), color: "#8a9098", matrix: new THREE.Matrix4() }));
-				pts.push({ geo: usph(8), color: "#5a5a60", matrix: S(0, 0, 0, 0, 0, 0, 0.4, 0.4, 0.5) });
-				return mergeBin(pts, BIN.plain);
-			});
-			const wheel = new THREE.Mesh(geo, BIN.plain.m);
-			wheel.position.copy(new THREE.Vector3(0, top + 0.6, 0.55).applyMatrix4(S(X, 0, Z, 0, ry, 0))), (wheel.rotation.y = ry), grp.add(wheel), SPINNERS.push([wheel, 1.8]);
-		};
-		const TURBINE = (X, Z) => {
-			const ry = faceIn(X, Z),
-				hub = 58;
-			put("plain", ucyl(10, 0.32), "#eef0f2", S(X, hub / 2, Z, 0, 0, 0, 3.2, hub, 3.2));
-			const B = place(X, Z, ry, hub);
-			B.box("plain", "#e8eaec", 0, 0.6, -1.0, 2.4, 2.4, 6.4);
-			const geo = cached("rotor", () => {
-				const pts = [{ geo: usph(10), color: "#e8eaec", matrix: S(0, 0, 0.2, 0, 0, 0, 1.6, 1.6, 2.2) }];
-				for (let k = 0; k < 3; k++) pts.push({ geo: UB, color: "#f2f4f6", matrix: S(0, 0, 0, 0, 0, (k * l) / 3).multiply(S(0, 13.5, 0, 0, 0.25, 0, 1.6, 26, 0.3)) });
-				return mergeBin(pts, BIN.plain);
-			});
-			const rotor = new THREE.Mesh(geo, BIN.plain.m);
-			rotor.position.copy(new THREE.Vector3(0, hub + 0.6, 2.4).applyMatrix4(S(X, 0, Z, 0, ry, 0))), (rotor.rotation.y = ry), (rotor.rotation.z = X), grp.add(rotor), SPINNERS.push([rotor, 0.55]);
 		};
 
 		// ---- trees and street furniture (no cars: they cost draw time and nobody needs them) -----
@@ -14489,12 +14345,10 @@ const JGP = (() => {
 			[-64, { col: "#f0e6c8", roof: "#4a4a52", door: "#2a4a8a", shutter: "#3a5a3a", w: 9 }],
 		].forEach(([X, o2]) => HOUSE(X, 60 + ZS, Math.PI, o2));
 		SCHOOL(-82, 60 + ZS, Math.PI);
-		// north-east: the gas station on the corner and the water tower behind it
-		GAS_STATION(72, -62), WATER_TOWER(86, -86);
-		// Mistergummery's drive-in on the lot between the gas station and the water tower
+		// north-east: the gas station on the corner
+		GAS_STATION(72, -62);
+		// Mistergummery's drive-in on the lot behind the gas station (its big M stands clear over the rooftops)
 		MISTERGUMMERYS(90.5, -64);
-		// north-west: the grain elevator by the railroad
-		ELEVATOR(-76, -80);
 		// lamp posts along Main Street's far sidewalks
 		[-32, -16, 0, 16, 32].forEach((Z) => (lampPost(50.6, ZS / 2 + Z * MK), lampPost(-50.6, ZS / 2 + Z * MK)));
 
@@ -14510,10 +14364,7 @@ const JGP = (() => {
 			[-108, -58, 52 + ZS, 72 + ZS],
 			[-90, -74, 52 + ZS, 76 + ZS],
 			[62, 82, -72, -52],
-			[78, 94, -94, -78],
 			[80, 101, -77, -51],
-			[-98, -54, -102, -70],
-			[-322, 322, -107, -99],
 		];
 		const blocked = (X, Z, m) => FOOT.some(([x0, x1, z0, z1]) => X > x0 - m && X < x1 + m && Z > z0 - m && Z < z1 + m);
 		for (let k = 0, placed = 0; k < 900 && placed < 80 * LOD; k++) {
@@ -14522,114 +14373,6 @@ const JGP = (() => {
 			if ((Math.abs(X) < 56 && Z > -56 && Z < 56 + ZS) || Math.abs(Math.abs(X) - 45) < 8 || Math.abs(Z + 45) < 8 || Math.abs(Z - SZ) < 8 || blocked(X, Z, 4)) continue;
 			tree(X, Z, rr(0.9, 1.5), rnd() < 0.15 ? 2 : rnd() < 0.5 ? 1 : 0, 1), placed++;
 		}
-
-		// ---- farmland -----------------------------------------------------------------------------
-		// a 7 x 7 grid of sections: the town takes the middle 3 x 3, fields fill the rest
-		const CELLS = [
-				[-320, -196],
-				[-190, -106],
-				[-100, -52],
-				[-38, 38],
-				[52, 100],
-				[106, 190],
-				[196, 320],
-			],
-			CELLZ = CELLS.map(([a0, a1], j) => (3 === j ? [a0, a1 + ZS] : 4 === j ? [a0 + ZS, a1] : [a0, a1])),
-			// (no corn: its tall rows of stalk cards looked poor from the square and cost a lot to draw)
-			FIELD = { soy: "#5a8a2e", wheat: "#d0a850", pasture: "#6a9440", plowed: "#7a5a3c" },
-			TYPES = ["soy", "wheat", "pasture", "plowed", "soy", "wheat", "soy"],
-			fr = srand(31);
-		for (let i = 0; i < 7; i++)
-			for (let j = 0; j < 7; j++) {
-				if (Math.abs(i - 3) <= 1 && Math.abs(j - 3) <= 1) continue;
-				const farm = (5 === i || 1 === i) && 3 === j,
-					type = farm ? "pasture" : TYPES[Math.floor(fr() * TYPES.length)],
-					alongX = fr() < 0.5,
-					x0 = CELLS[i][0] + 2,
-					x1 = CELLS[i][1] - 2,
-					z0 = CELLZ[j][0] + 2,
-					z1 = CELLZ[j][1] - 2,
-					cx = (x0 + x1) / 2,
-					cz = (z0 + z1) / 2;
-				put("pasture" === type ? "lawn" : alongX ? "rows" : "rowsZ", UHs(segs(x1 - x0), segs(z1 - z0)), FIELD[type], S(cx, 0.02, cz, 0, 0, 0, x1 - x0, 1, z1 - z0));
-				if ("pasture" === type && !farm) for (let k = 0; k < 6; k++) put("plain", ucyl(14), "#d8b860", S(rr(x0 + 8, x1 - 8), 0.7, rr(z0 + 8, z1 - 8), Math.PI / 2, rnd() * l, 0, 1.6, 1.4, 1.6));
-				// hedgerows along some section lines
-				if (fr() < 0.35) for (let u = x0 + 4; u < x1; u += 9 / LOD) tree(u, z1 + 3, rr(0.9, 1.3), rnd() < 0.3 ? 3 : 0, 0);
-			}
-		// farmsteads: red barn, silos, white farmhouse, windmill, hay bales, spruce windbreak
-		[
-			[148, 0, -1],
-			[-148, 4, 1],
-		].forEach(([X, Z, sd]) => {
-			const ry = faceIn(X, Z);
-			BARN(X - 6 * sd, Z - 10, ry), SILO(X + 6 * sd, Z - 26, 3.2, 18, "#c8c4bc", "#c8ccd0"), SILO(X + 13 * sd, Z - 24, 2.6, 15, "#4a6a8a", "#d8dce0");
-			HOUSE(X - 14 * sd, Z + 22, ry, { col: "#f6f4ee", roof: "#4a4a52", door: "#8a2a2a", shutter: "#2a4a3a", w: 9 });
-			WINDMILL(X + 12 * sd, Z + 16, ry);
-			for (let k = 0; k < 7; k++) put("plain", ucyl(14), "#d8b860", S(X + rr(-30, 30), 0.7, Z + rr(26, 33), Math.PI / 2, rnd() * l, 0, 1.6, 1.4, 1.6));
-			for (let k = 0; k < 9; k++) tree(X - 30 + 7.5 * k, Z - 38, rr(1, 1.3), 3, 1);
-		});
-		// wind turbines on the horizon
-		[
-			[172, -152],
-			[226, -40],
-			[-202, -122],
-			[-160, 182],
-			[122, 212],
-			[-40, -236],
-		]
-			.slice(0, window.__jgpMobile ? 4 : 6)
-			.forEach(([X, Z]) => TURBINE(X, Z));
-		// the railroad along the north section line, with crossings and hopper cars by the elevator
-		{
-			const RZ = -103;
-			put("plain", UBs(64, 1), "#8a8278", S(0, 0.1, RZ, 0, 0, 0, 640, 0.35, 3.6));
-			for (let u = -319; u < 319; u += 1.3 / LOD) put("plain", UB, "#5a4a3a", S(u, 0.33, RZ, 0, 0, 0, 0.26, 0.14, 2.6));
-			[-0.72, 0.72].forEach((dz) => put("plain", UBs(64, 1), "#7a7a80", S(0, 0.46, RZ + dz, 0, 0, 0, 640, 0.14, 0.09)));
-			[-45, 45].forEach((X) =>
-				[-1, 1].forEach((sd) => {
-					const PX = X + 5.5 * sd,
-						PZ = RZ + 3.5 * sd;
-					put("plain", ucyl(6), "#d8dce0", S(PX, 1.8, PZ, 0, 0, 0, 0.12, 3.6, 0.12));
-					const B = place(PX, PZ, sd > 0 ? Math.PI : 0);
-					put("sign", onSlot("rr", UQ), "#ffffff", B.M0.clone().multiply(S(0, 3.2, 0.06, 0, 0, 0.6, 1.5, 0.28, 1)));
-					put("sign", onSlot("rr2", UQ), "#ffffff", B.M0.clone().multiply(S(0, 3.2, 0.07, 0, 0, -0.6, 1.5, 0.28, 1)));
-					B.box("plain", "#1a1a1e", 0, 2.4, 0.08, 0.9, 0.12, 0.1);
-					[-0.4, 0.4].forEach((px) => B.geo("lit", ucyl(10), "#a8201e", px, 2.4, 0.16, 0.24, 0.06, 0.24, Math.PI / 2, 0, 0));
-				}),
-			);
-			[-92, -76, -60].forEach((X) => {
-				const B = place(X, RZ, Math.PI / 2);
-				B.box("plain", "#8a4a34", 0, 3.4, 0, 3.0, 3.0, 13).box("plain", "#7a4030", 0, 1.9, 3.2, 2.6, 1.2, 4.0, 0.5).box("plain", "#7a4030", 0, 1.9, -3.2, 2.6, 1.2, 4.0, -0.5);
-				B.box("plain", "#2a2a2e", 0, 1.4, 0, 2.2, 0.3, 12.4);
-				[-4.6, 4.6].forEach((pz) => [-0.72, 0.72].forEach((px) => B.geo("plain", ucyl(10), "#2a2a2e", px, 0.93, pz, 0.8, 0.12, 0.8, 0, 0, Math.PI / 2)));
-			});
-		}
-		// telephone poles and wires along the county roads
-		[
-			[1, 0],
-			[-1, 0],
-			[0, 1],
-			[0, -1],
-		].forEach(([dx, dz]) =>
-			(dx ? [-45, SZ] : [-45, 45]).forEach((c0) => {
-				let prev = null;
-				for (let u = 112; u <= 312; u += 40) {
-					const X = dx ? dx * u : c0 + 6,
-						Z = dz ? dz * u : c0 + 6;
-					put("plain", ucyl(6), "#6a5440", S(X, 4.5, Z, 0, 0, 0, 0.3, 9, 0.3)), put("plain", UB, "#6a5440", S(X, 8.4, Z, 0, dx ? Math.PI / 2 : 0, 0, 2.4, 0.14, 0.14));
-					if (prev)
-						[-1, 0, 1].forEach((k) => {
-							const ax = dx ? 0 : 1.0 * k,
-								az = dz ? 0 : 1.0 * k,
-								a = [prev[0] + ax, 8.55, prev[1] + az],
-								b2 = [X + ax, 8.55, Z + az],
-								m = [(a[0] + b2[0]) / 2, 7.6, (a[2] + b2[2]) / 2];
-							put("plain", ao([a, m, b2], 0.03, 0.03, 8, 3), "#222226", new THREE.Matrix4());
-						});
-					prev = [X, Z];
-				}
-			}),
-		);
 
 		// ---- the park fence: black iron pickets between brick pillars, all the way round (the church
 		// stands with its back to the south side). It marks the edge of the play area.
@@ -15260,7 +15003,6 @@ const JGP = (() => {
 		}
 		let nightWas = -1;
 		L.push((tt, dt) => {
-			SPINNERS.forEach(([m, spd]) => (m.rotation.z += spd * (dt || 0.016)));
 			const k = I.nightK || 0;
 			if (Math.abs(k - nightWas) < 0.01) return;
 			(nightWas = k), BIN.lit.m.emissive.setRGB(0.95 * k, 0.7 * k, 0.36 * k), BIN.lamp.m.emissive.setRGB(k, 0.86 * k, 0.56 * k);
