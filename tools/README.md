@@ -85,6 +85,7 @@ row says otherwise, run it with `shot2.js`.
 | `portraits.js` | Isolated portraits of creatures (`IDS`) on open lawn (`SPAWN=x,z`), two angles each |
 | `topview.js` | The whole town from straight above |
 | `t_avatar.js` | The avatar's walk and idle in the test modes: side renders mid-stride and standing, feet above the ground, hands clear of the skirt |
+| `t_outfits.js` | The avatar's outfits: the default and each Garden Supplies piece alone and all together, from the front, side, back and a head close-up, with the fit numbers (hat over the head, frogs on the ground, hem at the skirt's edge), and the Sheriff's Wanted poster of the avatar. `VW=320 VH=240` |
 | `t_headguard.js` | The VR head guard: distance to the nearest solid at known spots and how dark the view goes (through its test probe, as VR can't run headless). `VW=320 VH=240` |
 | `t_library.js` | Sparkakus browsing his Library: the spots he visits, never within 0.6 m of a bookcase or the posts, still when talked to, out to the Garden Event and back. `VW=320 VH=240` |
 | `t_zfight.js` | Z-fighting scan: every depth-written triangle grouped by plane (normals folded by their largest component); overlapping near-coplanar pairs (`TOL` 6 mm, `MINA` 2 cm²) are kept only if a point in the overlap can be seen from where the player's eyes can be (a ray test through a 2 m grid, as the trimmed three.js has no raycaster; `VISALL=1` skips it, `CREATURES=0` leaves creatures out). Each clash is named by its triangles' own vertex colours, plus a 4 m area for unnamed scenery, with points inside it |
