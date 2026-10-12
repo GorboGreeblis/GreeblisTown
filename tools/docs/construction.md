@@ -196,9 +196,9 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Mama Gorbo and Gooward** meet every 20 to 40 s (`JGP.meetAt(t)` forces it for tests): they walk to a spot
   between them, turn face to face and throw colourful goo balls to each other, a heart over the one who catches
   each, then go back to wandering.
-- **Visits** (owner's rules): about once a minute (45 to 65 s apart, two at most on their way out or meeting at
-  once) one creature leaves its place to call on another, so that every pair's two vignettes play in about three
-  hours (about 200 meetings). The pair is the one that has met least (its animation and lines counted together, in random order, so no
+- **Visits** (owner's rules): about twice a minute (22 to 32 s apart, twice as often as before at the owner's
+  request; two at most on their way out or meeting at once) one creature leaves its place to call on another, so
+  that every pair's two vignettes play in about an hour and a half (about 200 meetings). The pair is the one that has met least (its animation and lines counted together, in random order, so no
   pair meets a second time before every pair has met once),
   and the meeting plays whichever of its two vignettes, the animation or the lines, has played less: never both.
   Everyone visits everyone, kiosk workers included; King Dino (at his drums), Somlet (asleep at the Post Office)
@@ -322,7 +322,7 @@ Goo that runs down a body and moves like goo, without clipping:
 - They play only with the two side by side (owner's rule): two who already stand together (as the Dancers on the
   floor) play there, fair among the pairs standing together just then (none plays again before each of those has
   had its turn); every other pair meets by a visit (see the visits), so every pair's two come round in about
-  three hours. Talking to either, or the Event,
+  an hour and a half. Talking to either, or the Event,
   stops one. King Dino and the Ancient never turn or spin in one, and take no gestures at all (a bow or a hop
   would tip King Dino's sticks into his kit). Wrappers turn in `YXZ` order: the turn to the partner first, then a
   gesture's lean and roll in the turned frame, so a bow tips toward the partner.
