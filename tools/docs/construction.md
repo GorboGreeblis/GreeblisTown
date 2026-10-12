@@ -374,6 +374,8 @@ Goo that runs down a body and moves like goo, without clipping:
     it is not one of the creatures), and its own moves: idle (stalks swaying and pulling in, breathing, looking
     round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
     `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
+  - **No Blossom or Flint ever spawns inside:** every pickup spot comes from `go()`, which turns down anything within
+    0.8 m of a building's hull, and the room lies inside the church's (`test/t_church.js` samples it).
   - **No creature goes inside:** they path round the hull and never pick a spot in it, and `JGP.churchGuard`
     puts any that ends up inside (or heads there) straight back out. No lawn tufts grow inside any building.
   - **Roof:** a `GABLE` prism's slopes rise from its outer edge, so with eaves the base sits lower than the wall
