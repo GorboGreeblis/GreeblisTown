@@ -1,3 +1,7 @@
+// Depth audit of every visible mesh: stale bounding spheres (geometry outside them), frustum-culled instanced meshes,
+// materials with polygon offset, and up to 400 pairs of flat, near-horizontal surfaces below 3 m that overlap in plan
+// within 3 cm of each other. Prints one JSON object.
+// Run (from this folder): NOSHOT=1 node ../../test/shot2.js <url> x.png ./audit_depth.js
 module.exports = async (p) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(3000);
   console.log(await p.evaluate(() => {

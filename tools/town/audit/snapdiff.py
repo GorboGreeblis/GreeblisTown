@@ -1,3 +1,6 @@
+# Diffs two snap.js dumps: prints each changed, added (+) or removed (-) value, and each list whose length changed,
+# by its path, values cut to 150 characters.
+#   python3 snapdiff.py before.json after.json
 import json,sys
 a=json.load(open(sys.argv[1]));b=json.load(open(sys.argv[2]))
 def walk(x,y,path):

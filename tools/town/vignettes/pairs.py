@@ -1,3 +1,7 @@
+# How the creature-pair vignette lines were written: a table of pairs (two creature codes, a gesture style, two lines).
+# Running it prints the number of pairs, any pair of the codes in K missing or duplicated, the longest line's length
+# and how often each gesture style is used. Some codes belong to creatures since replaced; the game's PAIRS is current.
+#   python3 pairs.py
 P = [
 ("HN","MT",8,"SCAN COMPLETE. You are 41% mushroom.","And 100% the law. Mind the sidewalk!"),
 ("HN","MU",7,"Your spore count is... adorable.","P-please don't put me in a spreadsheet."),

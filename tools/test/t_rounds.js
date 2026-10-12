@@ -1,6 +1,6 @@
-// Three Garden Events in a row: the first two each grow a batch of plants (the second in fresh soil),
-// the third sends everyone back to their first-Event spots to plant, with the garden left unchanged.
-// Run with a tiny viewport (VW=200 VH=150); it takes a while.
+// Three Garden Events in a row: only the first grows flowers (one per planter); the second and third send
+// everyone back to the same spots to plant, and the garden is left exactly as the first Event left it.
+//   VW=200 VH=150 NOSHOT=1 node shot2.js <url> x.png ./t_rounds.js   (a tiny viewport; it takes a while)
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(1500);
@@ -36,15 +36,13 @@ module.exports = async (p) => {
       const pl = JGP.garden.plants, nw = pl.slice(n0), old = pl.slice(0, n0);
       // the older plants are untouched (same place, same size, fully grown)
       const changed = old.filter((q, i) => { const s = __snap[i]; return Math.abs(q.g.position.x - s[0]) > 1e-6 || Math.abs(q.g.position.z - s[1]) > 1e-6 || Math.abs(q.g.scale.x - s[2]) > 1e-6; }).length;
-      const slotsUsed = JGP.garden.slots.filter((s) => s.plant).length;
       const radii = {}; nw.forEach((q) => { const r = Math.round(Math.hypot(q.g.position.x, q.g.position.z)); radii[r] = (radii[r] || 0) + 1; });
-      return { round: JGP.garden.round, before: n0, after: pl.length, newPlants: nw.length, newGrown: nw.filter((q) => q.grow >= 1).length, oldChanged: changed, slotsUsed, newRadii: radii, inScene: pl.filter((q) => q.g.parent).length, err: Re.errors };
+      return { round: JGP.garden.round, before: n0, after: pl.length, newPlants: nw.length, newGrown: nw.filter((q) => q.grow >= 1).length, oldChanged: changed, newRadii: radii, inScene: pl.filter((q) => q.g.parent).length, err: Re.errors };
     }, before);
-    log('EVENT ' + ev, JSON.stringify(res), 'max planting at once', maxPlanting);
+    log('EVENT ' + ev, JSON.stringify(res), 'max planting at once', maxPlanting, (ev === 1 ? res.newPlants > 0 : res.newPlants === 0) && !res.oldChanged ? 'ok' : 'FAIL');
   }
-  const same = spotsByRound[2] && spotsByRound[0] && spotsByRound[2].join('|') === spotsByRound[0].join('|');
-  const diff = spotsByRound[1] && spotsByRound[0] && spotsByRound[1].filter((s, i) => s === spotsByRound[0][i]).length;
-  log('event 3 spots = event 1 spots:', same, '| event 2 spots shared with event 1:', diff);
+  const same = (k) => spotsByRound[k] && spotsByRound[0] && spotsByRound[k].join('|') === spotsByRound[0].join('|');
+  log('events 2 and 3 use event 1 spots:', same(1), same(2));
   log('spots 1:', (spotsByRound[0] || []).join(' '));
   log('spots 2:', (spotsByRound[1] || []).join(' '));
   log('err', await p.evaluate(() => Re.errors));

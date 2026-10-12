@@ -1,4 +1,6 @@
-// Render the environment from fixed viewpoints: [name, camPos, lookAt]
+// Renders the town from fixed viewpoints: VIEWS is a JSON list of [name, camPos, lookAt], each rendered at 960×540 to
+// <out>_<name>.png; prints the error count. envsheet.sh runs it and tiles the results into one sheet.
+// Run (from this folder): VIEWS='[["sq",[0,30,40],[0,0,0]]]' NOSHOT=1 node ../../test/shot2.js <url> town.png ./env.js
 module.exports = async (p, out) => {
   await p.mouse.click(640, 360); await p.waitForTimeout(1500);
   const views = JSON.parse(process.env.VIEWS || '[]');

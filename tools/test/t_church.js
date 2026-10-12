@@ -1,7 +1,8 @@
 // The church's secret room: the player walks in through the right-hand Garden window (and only there), no
 // creature ever stays inside, the VR head guard leaves the inside clear but darkens inside a wall, and the
 // slug offers one Talk (no Blossom, even with Blossoms in hand), lifts its head while talking (not turning to the player),
-// keeps breathing and waving its stalks, and never leaves its spot.
+// keeps breathing and waving its stalks, and never leaves its spot; and no Blossom or Flint ever spawns in the room
+// (2,000 spawn spots sampled for each, plus every one in the town now).
 // Walking uses the game's own player collision (F.solid on the player's position), step by step, as every
 // mode does (desktop, mobile and VR all move the same body). Run: NOSHOT=1 node shot2.js <url> x.png ./t_church.js
 module.exports = async (p) => {
@@ -50,11 +51,20 @@ module.exports = async (p) => {
   const idle = [await pose()];
   await p.waitForTimeout(1500), idle.push(await pose());
   await p.evaluate(() => xe.run('interact'));
-  await p.waitForTimeout(2500);
-  const talk = await p.evaluate(() => ({ open: qt.isOpen, name: document.getElementById('dlgName').textContent, hy: +JGP.slug.head.rotation.y.toFixed(2), hx: +JGP.slug.head.rotation.x.toFixed(2), pos: JGP.slug.body.position.toArray().map((v) => +v.toFixed(3)) }));
+  // (wait 2 s of game time, not wall time: headless game time runs about ten times slower)
+  { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 600 && (await p.evaluate(() => Re.t)) - t0 < 2; k++) await p.waitForTimeout(100); }
+  const talk = await p.evaluate(() => ({ mode: JGP.slug.mode(), open: qt.isOpen, name: document.getElementById('dlgName').textContent, hy: +JGP.slug.head.rotation.y.toFixed(2), hx: +JGP.slug.head.rotation.x.toFixed(2), pos: JGP.slug.body.position.toArray().map((v) => +v.toFixed(3)) }));
   log('slug: target', sl.target, '| options', JSON.stringify(sl.actions), sl.target === 'slug' && sl.actions.length === 1 && sl.actions[0] === 'Talk' ? 'ok' : 'FAIL');
   log('slug idle pose', idle.join(' -> '), idle[0] !== idle[1] ? 'animates' : 'FAIL: still');
-  log('slug mode while talking', await p.evaluate(() => JGP.slug.mode()));
-  log('slug talking: open', talk.open, talk.name, '| head yaw (stays at -0.45)', talk.hy, 'lift', talk.hx, '| body at', JSON.stringify(talk.pos), talk.open && talk.hx < -0.1 && Math.abs(talk.hy + 0.45) < 0.05 && talk.pos.every((v) => v === 0) ? 'ok' : 'FAIL');
+  log('slug talking: mode', talk.mode, '| open', talk.open, talk.name, '| head yaw (stays at -0.45)', talk.hy, 'lift', talk.hx, '| body at', JSON.stringify(talk.pos), talk.mode === 'talk' && talk.open && talk.hx < -0.1 && Math.abs(talk.hy + 0.45) < 0.05 && talk.pos.every((v) => v === 0) ? 'ok' : 'FAIL');
+  // no Blossom or Flint spawns in the secret room: sample the spawner and check every pickup now in town
+  const pk = await p.evaluate(() => {
+    const B = F.buildings.find((b) => b.name === 'church'), inside = (q) => q && F.inHull(B, q.x, q.z);
+    let bad = 0, n = 0;
+    for (const L0 of [le.list, ce.list]) for (let k = 0; k < 2000; k++) { const q = go(null, L0); q && (n++, inside(q) && bad++); }
+    const now = [...le.list, ...ce.list].filter((o) => inside(o.position)).length;
+    return { sampled: n, inRoom: bad, pickupsInRoomNow: now };
+  });
+  log('Blossom and Flint spawn spots in the church:', JSON.stringify(pk), !pk.inRoom && !pk.pickupsInRoomNow ? 'ok' : 'FAIL');
   log('err', await p.evaluate(() => Re.errors));
 };

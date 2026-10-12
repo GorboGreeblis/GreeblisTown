@@ -1,3 +1,6 @@
+# Contact sheet of portrait renders: one 300 px column per id, its two angles (<prefix>_<id>_0.png and _1.png) one
+# above the other. Needs Pillow.
+#   python3 grid.py <prefix> <id,id,…> <out.png>
 import sys
 from PIL import Image
 pre, ids, out = sys.argv[1], sys.argv[2].split(','), sys.argv[3]

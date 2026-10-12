@@ -1,4 +1,7 @@
-// Structural (alpha-renamed) match of a game's top-level decls against ours -> name map.
+// Matches a game's top-level declarations to ours by structure with names alpha-renamed (a loose pass, then strict
+// passes using the matches so far), giving a map from its names to ours. Exports match(); run on its own it prints the
+// matches and the unmatched names with their source length.
+//   node alpha.js <game.js> <ours.js>
 const acorn=require('acorn'),fs=require('fs'),es=require('eslint-scope');let GREF=new Set();
 const GLOB=new Set(['THREE','Math','window','document','Array','Object','Map','Set','JSON','Float32Array','Uint8Array','Uint16Array','Uint32Array','Int32Array','Float64Array','console','performance','navigator','setTimeout','clearTimeout','setInterval','clearInterval','requestAnimationFrame','String','Number','Boolean','Date','Promise','Symbol','Error','isFinite','parseInt','parseFloat','location','localStorage','innerWidth','innerHeight','addEventListener','getComputedStyle','XRWebGLLayer','Image','AudioContext','URL','Infinity','NaN','undefined']);
 function ser(n,topNames,map){ // map: game name -> canonical

@@ -1,3 +1,7 @@
+// The whole town from straight above: renders through a camera 120 m up looking down (square aspect, so use a square
+// viewport) instead of the player's view, and prints the stations' positions, the Library worker's position and
+// Fortizmo's home spot. The image is shot2.js's screenshot, so leave NOSHOT unset.
+//   VW=720 VH=720 node shot2.js <url> top.png ./topview.js
 module.exports = async (p, out) => {
   await p.mouse.click(100, 100); await p.waitForTimeout(2500);
   await p.evaluate(() => {

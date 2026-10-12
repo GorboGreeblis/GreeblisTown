@@ -1,3 +1,6 @@
+// One extractor run over a single script with registry `so` (as in Greeblis City), for trying builders: prints the
+// units, renames, roots, undeclared names, warnings and top-level units copied, and writes the module to [out.js].
+//   node try_city.js <script.js> <key,…> [stop,…] [out.js]
 const {load,extract,emit}=require('./ex.js');
 const P=load([process.argv[2]]);
 const keys=process.argv[3].split(',');

@@ -1,3 +1,6 @@
+# Swaps whole builders in index.html for new versions from a file of `//@@ <header>` blocks: each block replaces the
+# old function from its header to its closing `  };`, with the comment lines directly above it. Prints each header.
+#   python3 tools/town/edit/replace.py <blocks.js>   (from the repo root)
 import sys; sys.path.insert(0, sys.argv[0].rsplit('/', 1)[0])
 from lib import *
 s = load()

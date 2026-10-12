@@ -29,7 +29,7 @@ with `decode/`).
 | `integrate.py` | Puts `pulled.js` into `index.html` between the `PULLED-MODELS-BEGIN` and `-END` markers |
 | `specs.py` | Portrait specs for each pulled builder and its original, to render them side by side |
 | `toplevel.js`, `extract.js` | List a script's top-level names, and cut named declarations out of one (`espree`, from the folder passed as an argument): `node toplevel.js <script.js> <dir with node_modules>`; `extract.js` reads `app.js` |
-| `analyze.js`, `harness.js`, `wrapped_check.js` | Build a pulled creature in Node, with three.js and a fake canvas, and compare it with the original (meshes, positions and bounds). `analyze.js` and `harness.js` load a `three_env.js` that exposes the game's three.js bundle as a global; make it from the page's three.js script |
+| `analyze.js`, `harness.js`, `wrapped_check.js` | Build pulled creatures in Node, with three.js and a fake canvas: `analyze.js` builds Park's leech from its original source and prints its meshes before and after Park's polish pass; `harness.js` builds the Woods Gorbo and the Park leech from `engine_part.js` and `gorbo_mama.js`, runs them and prints their height, meshes and calls; `wrapped_check.js` is a saved copy of that pulled module with stubbed engine names. `analyze.js` and `harness.js` load a `three_env.js` that exposes the game's three.js bundle as a global; make it from the page's three.js script |
 | `mont_patch.md` | Worked example: how Mont was pulled from Greeblis Woods and became Montgummery |
 | `oldworld.md` | Analysis of the Greeblis City world-build chain the town replaced |
 
@@ -58,7 +58,7 @@ with `decode/`).
 | `audit_stale.js` | Meshes whose bounds no longer contain their geometry (they vanish at some angles) |
 | `uiaudit.js` | Walks the UI screens and reports canvas text that had to be squeezed or runs past its canvas |
 | `meshcount.js`, `tribreak.js` | Meshes, materials and triangles per creature and per scene part |
-| `sosz.js` | Each builder's code size and whether it is ever called (to find dead builders) |
+| `sosz.js` | Each builder's code size and whether it is called once the page has loaded (to find dead builders) |
 | `solid.js` | Pushes the player and creatures at a building from many spots and counts any that get inside |
 | `rowcheck_all.js` | After a long run (`RUN` ms), lists creatures more than 0.5 m off their `def.at` spot, moving, or facing wrong |
 | `snap.js`, `snapdiff.py` | Dump every creature's final definition before and after a change (such as removing dead code) and diff the two |

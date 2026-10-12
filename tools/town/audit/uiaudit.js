@@ -1,5 +1,7 @@
-// Walk through the game's UI screens in desktop mode and record any canvas text that had to be
-// condensed (or still runs past its canvas). Screenshots of each screen go to out_<name>.png.
+// Walks through the game's UI screens in desktop mode (every station, dialogue with the four longest-named creatures,
+// a long stress line) and records any canvas text that had to be condensed to fit (or still runs past its canvas).
+// Screenshots of each screen go to <out>_<name>.png.
+// Run (from this folder): NOSHOT=1 node ../../test/shot2.js <url> ui.png ./uiaudit.js
 module.exports = async (p, out) => {
   await p.evaluate(() => {
     window.__ui = [];

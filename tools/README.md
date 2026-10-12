@@ -28,7 +28,7 @@ python3 -m http.server 8765      # from the repo root, in another terminal: the 
 
 ## Checking the game
 
-`test/battery.sh > test/battery.log 2>`test/battery.sh > battery.log 2>&1` runs1` runs, one browser at a time: boot on desktop and on mobile (with the GIVE
+`test/battery.sh > test/battery.log 2>&1` runs, one browser at a time: boot on desktop and on mobile (with the GIVE
 button); both ordinal sandboxes; talking to every creature; battles, Artifacts and the Library finale; the Gem
 trade; pizza; vignettes; pickup reachability; the jazz on the floor, pickup respawn and the Blossom option;
 Fortizmo's patrol; the shaders; a walking soak; King Dino's jazz; Somlet asleep; the roamers; the avatar's walk;
@@ -75,7 +75,7 @@ row says otherwise, run it with `shot2.js`.
 | `t_zfight.js` | Z-fighting scan: every depth-written triangle grouped by plane (normals folded by their largest component); overlapping near-coplanar pairs (`TOL` 6 mm, `MINA` 2 cm²) are kept only if a point in the overlap can be seen from where the player's eyes can be (a ray test through a 2 m grid, as the trimmed three.js has no raycaster; `VISALL=1` skips it, `CREATURES=0` leaves creatures out). Each clash is named by its triangles' own vertex colours, plus a 4 m area for unnamed scenery, with points inside it |
 | `t_zcheck.js` | Which scan clashes really flicker: `POINTS` (JSON `[name, x, y, z]`) rendered three times from a player eye with the near plane nudged a fraction of a millimetre. Nothing moves, so changed pixels are surfaces fighting; under ~10 is edge noise. `SHOTS=1` writes the pairs for `tile.py diff` |
 | `t_event3.js` | The whole Garden Event, logged every 5 s of game time. `VW=200 VH=150`, or it takes ages |
-| `t_rounds.js` | Three Garden Events in a row: a batch of plants from each of the first two (the second in fresh rows), none from the third, which replays the first Event's spots. `VW=200 VH=150`, slow |
+| `t_rounds.js` | Three Garden Events in a row: only the first grows flowers (one per planter); the second and third replay the same spots and leave the garden unchanged. `VW=200 VH=150`, slow |
 | `t_stress.js` | Collides systems on purpose (Event during a battle, a pizza at the start, talk, gifts, shop, Library, stone, Event without Seeds, battle spam) and checks everyone ends up home. `VW=200 VH=150` |
 | `t_fixes.js` | The October bug-pass fixes: no battle from a thanks closed far away, talk target after the phone, Mushroom on his desk, Fortizmo holding still, no vignette off the spot. `VW=320 VH=240` |
 | `t_anomalee.js` | Anomalee keeps gazing at the window with the player close and through Talk; turns to the player for her Blossom line and for Talk at the Event |
@@ -180,8 +180,8 @@ swapping the result in:
 6. Run `test/ordtest.js` on the packed `index.html`, desktop and `MOBILE=1`, and keep it under ~400 KB. The full
    push checklist is in [`docs/learnings.md`](docs/learnings.md#checks-before-every-push).
 
-Measured on 11 Oct 2026, the unminified 1,040,924-byte page packed to 251,328 bytes and round-tripped exactly in
-about 13 s, so minifying first only makes it smaller.
+Measured on 11 Oct 2026 with `pack/size.js`: the readable 1,135,495-byte page minified to 782,141 bytes and packed to
+209,133 bytes, round-tripped exactly (minifying first only makes the packed page smaller).
 
 | Pack tool | What it does |
 | --- | --- |

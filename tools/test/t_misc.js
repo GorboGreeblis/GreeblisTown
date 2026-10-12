@@ -1,5 +1,7 @@
-// King Dino's jazz keeps going on the floor while King Dino is talked to and during a battle; pickups respawn
-// elsewhere; the Blossom option needs a Blossom
+// King Dino's jazz keeps going on the floor while King Dino is talked to, given a Blossom and during a Dance battle,
+// and is not heard off the floor (jazz hits heard in 4 s of game time each); flint and Blossom pickups respawn
+// elsewhere; the Blossom menu option needs a Blossom.
+// Run: VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_misc.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
   await p.mouse.click(Math.min(640, (+process.env.VW || 1280) / 2), 60); await W(1500);

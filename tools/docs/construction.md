@@ -226,7 +226,8 @@ Goo that runs down a body and moves like goo, without clipping:
   panel shows only the Dancer's move; the bar shows how it is going. The winner does a victory dance.
 - **The chain:** each Dancer's first win gives one Ancient Artifact (a third of one teal brilliant-cut diamond;
   later wins get a bow). With all three, Sparkakus walks out to the front, gives his long speech under the bulb,
-  shows the pieces floating over his reading table and hands over the Ancient Gem. Gemtoe trades the Summoning
+  and hands over the Ancient Gem (the pieces are not put on show: `ARTS.model` is kept for the animation that will
+  put the diamond back together). Gemtoe trades the Summoning
   Stone for it, and the Stone starts the Garden Event.
 - The pieces keep `userData.gemOffset` (where each sits in the whole diamond) for a future animation that puts it
   back together.
@@ -256,9 +257,9 @@ Goo that runs down a body and moves like goo, without clipping:
   kind picked at random, right where it does its planting: in the soil 0.9 m in front of it, 1.5 s into its first
   dig at its spot (`plantTick`). It stays at that spot for the rest of the planting. The spots (`beginPlanting`)
   put that soil on a row and at least 0.75 m clear of the stepping-stone paths.
-- **Rounds** (`garden.round`): Event 1 plants a batch in the rows at 2.6, 6.6 and 10.6 m; Event 2 a second batch in
-  the rows Event 1 left bare (4.6, 8.6, 12.6 m); from Event 3 on everyone replays their Event 1 spots and nothing
-  more comes up. Plants stay for the session.
+- **Rounds** (`garden.round`): only one batch of flowers ever grows, the first Event's (the owner's rule). Every
+  Event uses the same spots (each planter's soil on the rows at 2.6, 6.6 and 10.6 m), and from the second on
+  everyone plants there again but nothing more comes up. Plants stay for the session.
 - **Growing:** a plant waits in the ground until Backpacka's water reaches it, then comes up over about 11 s; by
   halfway through the spray every plant is watered. Anything still growing when the Event ends finishes at once.
 - Backpacka is built, and his shaders compiled, before the music starts: a compile stall mid-song crackles.
@@ -352,8 +353,9 @@ Goo that runs down a body and moves like goo, without clipping:
   - one book stands face-out on the front-left case's eye-level shelf, facing the front: OVERCOMING SHYNESS, a
     blue hardback with a gold-and-cream cover (`LIB_LAYOUT.feature`); the books beside it stop short to leave its gap;
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
-    `kioskSignTex`), and a small reading table (top 0.82 m) where the Artifacts go on show;
-  - its colliders are the bookcases, posts and table; it is kept explicitly when the engine's scenery is cleared
+    `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
+    Artifacts);
+  - its colliders are the bookcases and posts; it is kept explicitly when the engine's scenery is cleared
     (it is wider than the 12 m that rule spares);
   - a rug (`LIB_LAYOUT.rug`, 11 × 7.8 m) woven from the Buns' clothes in Greeblis Woods: Miss Bun's red floral
     print for the field, edged with her lace and gold-dotted braid; a border, corner pieces and a medallion in
@@ -372,6 +374,8 @@ Goo that runs down a body and moves like goo, without clipping:
     it is not one of the creatures), and its own moves: idle (stalks swaying and pulling in, breathing, looking
     round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
     `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
+  - **No Blossom or Flint ever spawns inside:** every pickup spot comes from `go()`, which turns down anything within
+    0.8 m of a building's hull, and the room lies inside the church's (`test/t_church.js` samples it).
   - **No creature goes inside:** they path round the hull and never pick a spot in it, and `JGP.churchGuard`
     puts any that ends up inside (or heads there) straight back out. No lawn tufts grow inside any building.
   - **Roof:** a `GABLE` prism's slopes rise from its outer edge, so with eaves the base sits lower than the wall

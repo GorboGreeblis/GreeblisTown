@@ -1,3 +1,6 @@
+# Contact sheet with one row per name: its four views <prefix>_<name>_0.png … _3.png side by side at their own size.
+# Needs Pillow.
+#   python3 rowsheet.py <prefix> <out.png> <name…>
 import sys
 from PIL import Image
 prefix, out = sys.argv[1], sys.argv[2]; names = sys.argv[3:]

@@ -1,4 +1,7 @@
-// Analyze a game's scripts: top-level decls, deps, and where builder keys are registered.
+// Analyses a game's scripts: top-level declarations, what each depends on, and where builder keys are registered
+// (assignments to <regName>.KEY). Run on its own, it prints the counts and, for each registration, its file index,
+// the chain of enclosing functions and the top-level statement holding it. Exports analyze().
+//   node an.js <regName> <script.js…>
 const acorn=require('acorn'),es=require('eslint-scope'),fs=require('fs');
 function analyze(files,regName){
   const tops=new Map(); // name -> {file,idx,kind,node,src,deps:Set}

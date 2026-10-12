@@ -15,8 +15,10 @@ module.exports = async (p, out) => {
   const t0 = Date.now(), g0 = await p.evaluate(() => Re.t), slug = new Set();
   for (let k = 0; k < 4000; k++) {
     await W(1000);
-    const r = await p.evaluate(() => [me.active, JGP.slug.mode()]);
+    const r = await p.evaluate(() => [me.active, JGP.slug.mode(), +Re.t.toFixed(1), JGP.garden.plants.length, gcHorn.phase]);
     slug.add(r[1]);
+    // (progress every half minute, so a slow run still shows how far it got)
+    k % 30 || log('  at', Math.round((Date.now() - t0) / 1000), 's: game time', r[2], '| plants', r[3], '| horn', r[4], '| slug', r[1]);
     if (!r[0] && k > 20) break;
   }
   const rate = (await p.evaluate(() => Re.t) - g0) / ((Date.now() - t0) / 1000);

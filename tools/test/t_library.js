@@ -1,17 +1,18 @@
-// SPARKAKUS browsing his Library: the spots he visits, that he never comes within 0.6 m of a bookcase, the
-// table or the banner's posts (in the Library's own frame) nor leaves it, that he stands still while talked
-// to, and that he still walks out for the Garden Event and back. Run with VW=320 VH=240.
+// SPARKAKUS browsing his Library: the spots he visits, that he never comes within 0.6 m of a bookcase or the
+// banner's posts (in the Library's own frame) nor leaves it, that he stands still while talked to, and that he
+// still walks out for the Garden Event and back.
+//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_library.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(1500);
   const waitGame = async (sec) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 4000 && (await p.evaluate(() => Re.t)) - t0 < sec; k++) await W(250); };
   await p.evaluate(() => {
     At.position.set(0, 0, 30);
-    const lib = LIB.home, q = new THREE.Vector3();
+    const lib = F.buildings.find((b) => b.name === 'shop'), q = new THREE.Vector3();
     window.__S = { spots: new Set(), worst: 9, out: 0, moved: 0, last: null, talkMoved: 0 };
     L.push(() => {
       if (!st.group || st.away()) return;
-      st.group.getWorldPosition(q); lib.worldToLocal(q);
+      st.group.getWorldPosition(q); [q.x, q.z] = F.local(lib, q.x, q.z);
       const S = __S; S.spots.add(q.x.toFixed(1) + ',' + q.z.toFixed(1));
       for (const [a, b, c, d] of JGP.libParts) { const dx = Math.max(a - q.x, 0, q.x - c), dz = Math.max(b - q.z, 0, q.z - d); S.worst = Math.min(S.worst, Math.hypot(dx, dz)); }
       (q.x < -5.35 || q.x > 5.35 || q.z < -6.15 || q.z > 1.6) && S.out++;
