@@ -15972,37 +15972,62 @@ const JGP = (() => {
 				// floor (low and oval in section, lying on it), the mantle a smooth hump over its front third, two
 				// long eye-stalks with knobs and two short tentacles below; a wet highlight runs along its back
 				{
-					// (its skin: near-black with a brown cast, fine grooves running along the body, a few pale flecks)
+					// (its skin: near-black with a brown cast, fine grooves running along the body, a few pale flecks; the
+					// tail's tip a shade paler, the keel along its back wet and glossy)
 					const skinTex = b(256, 64, (c) => {
 							(c.fillStyle = "#3a2c22"), c.fillRect(0, 0, 256, 64);
 							for (let k = 0; k < 64; k += 3) (c.fillStyle = k % 6 ? "#241a14" : "#140e0a"), c.fillRect(0, k, 256, 1);
 							for (let k = 0; k < 40; k++) (c.fillStyle = "rgba(200,190,170,0.5)"), c.fillRect(256 * rnd2(), 64 * rnd2(), 1, 1);
 						}),
-						slug = new THREE.Group(), skin = new THREE.MeshPhongMaterial({ map: skinTex, color: 7368816, specular: 9474192, shininess: 90 }),
-						path = [[-0.7, -13.4], [-0.45, -12.7], [-0.05, -12.0], [0.2, -11.2], [0.3, -10.5], [0.55, -9.9]],
+						slug = new THREE.Group(),
+						skin = new THREE.MeshPhongMaterial({ map: skinTex, color: 7368816, specular: 9474192, shininess: 110 }),
+						tipM = new THREE.MeshPhongMaterial({ color: 5263430, specular: 6316128, shininess: 60 }),
+						keelM = new THREE.MeshPhongMaterial({ color: 3813412, specular: 11579568, shininess: 140 }),
+						// (a second look at the owner's photo: the slug 1.15 times bigger about its middle, to carry its details)
+						SC = 1.15,
+						CX = -0.07,
+						CZ = -11.65,
+						P2 = (px, pz) => [CX + SC * (px - CX), CZ + SC * (pz - CZ)],
+						path = [[-0.7, -13.4], [-0.45, -12.7], [-0.05, -12.0], [0.2, -11.2], [0.3, -10.5], [0.55, -9.9]].map(([px, pz]) => P2(px, pz)),
+						rad = [0.03, 0.1, 0.165, 0.23, 0.205, 0.18],
 						pts = path.map(([px, pz]) => [px, 0.15, pz]);
 					inner.add(slug), slug.scale.set(1, 0.62, 1);
-					// (tail to middle, tapering in; middle to head)
-					R(ao(pts.slice(0, 4), 0.03, 0.2, 40, 14), skin, slug);
-					R(ao(pts.slice(3), 0.2, 0.16, 24, 14), skin, slug);
-					R(T.sphere(0.16, 14, 10), skin, slug, [0.55, 0.15, -9.9]);
-					// (the tail: the tube closed off with a small round tip)
-					R(T.sphere(0.032, 8, 6), skin, slug, [-0.7, 0.15, -13.4]);
-					// the mantle: a smooth hump over the front third, a touch wider than the body, lying along it
-					// (and on its right side, towards the back, the breathing pore: a small dark opening)
-					const mantle = new THREE.Group();
-					mantle.position.set(0.26, 0.22, -10.75), mantle.rotation.set(0, 0.25, 0), mantle.scale.set(0.22, 0.13, 0.55), slug.add(mantle);
+					// the body: tail to middle, swelling, and middle to head (low and oval in section, lying on the floor)
+					R(ao(pts.slice(0, 4), rad[0], rad[3], 40, 14), skin, slug);
+					R(ao(pts.slice(3), rad[3], rad[5], 24, 14), skin, slug);
+					// the keel: a thin wet ridge riding the top of the body from tail to head
+					R(ao(path.map(([px, pz], k) => [px, 0.15 + 0.96 * rad[k], pz]), 0.012, 0.022, 40, 6), keelM, slug);
+					// the head, blunt
+					R(T.sphere(0.19, 16, 12), skin, slug, [pts[5][0], 0.15, pts[5][2]]);
+					// the tail's paler tip, in a group of its own pivoting at the first bend so it can curl a little
+					const tail = new THREE.Group(),
+						tdx = pts[0][0] - pts[1][0],
+						tdz = pts[0][2] - pts[1][2];
+					tail.position.set(pts[1][0], 0, pts[1][2]), slug.add(tail);
+					R(ao([[tdx, 0.15, tdz], [0.55 * tdx, 0.15, 0.55 * tdz]], 0.034, 0.075, 10, 10), tipM, tail);
+					R(T.sphere(0.036, 8, 6), tipM, tail, [tdx, 0.15, tdz]);
+					// the mantle: a smooth hump over the front third, a touch wider than the body, lying along it, with a
+					// paler lip round its edge (and on its right side, towards the back, the breathing pore: a small dark opening)
+					const mantle = new THREE.Group(),
+						[mx, mz] = P2(0.26, -10.75);
+					mantle.position.set(mx, 0.25, mz), mantle.rotation.set(0, 0.25, 0), mantle.scale.set(0.253, 0.15, 0.63), slug.add(mantle);
 					R(T.sphere(1, 16, 10), skin, mantle);
+					R(T.torus(0.92, 0.07, 6, 20), tipM, mantle, [0, -0.35, 0], [Math.PI / 2, 0, 0]);
 					const pore = R(T.sphere(0.16, 8, 6), new THREE.MeshPhongMaterial({ color: 1708040, specular: 9474192, shininess: 90 }), mantle, [-0.93, 0.25, -0.22]);
+					// the head's stalks hang from a group set into the top front of the head
 					const head = new THREE.Group();
-					head.position.set(0.62, 0.2, -9.82), (head.rotation.y = -0.45), inner.add(head);
-					const stalks = [];
-					// (the upper pair long and fine with a small knob at the tip, the lower pair short stubs)
-					[[-1, 0.3, 0.55, 0.014], [1, 0.3, 0.55, 0.014], [-1, 0.07, 0.15, 0.012], [1, 0.07, 0.15, 0.012]].forEach(([sx, len, up, r], k) => {
-						const st = new THREE.Group();
-						st.position.set(0.05 * sx, k < 2 ? 0.03 : -0.03, 0.09), st.rotation.set(-up, 0.32 * sx, 0), head.add(st);
-						R(T.cyl(0.55 * r, r, len, 8), skin, st, [0, 0, len / 2], [Math.PI / 2, 0, 0]);
-						k < 2 && R(T.sphere(0.85 * r, 8, 6), skin, st, [0, 0, len]);
+					head.position.set(pts[5][0] + 0.05, 0.62 * 0.15 + 0.09, pts[5][2] + 0.1), (head.rotation.y = -0.45), inner.add(head);
+					const HZ = head.position.z,
+						stalks = [];
+					// (the upper pair long and fine, thicker at the root, bending up a little, each with a small knob at its
+					// tip; the lower pair short stubs. Every stalk starts 7 cm inside the head, so it stays rooted in it
+					// in every pose: the owner asked that they always be connected)
+					[[-1, 0.42, 0.55, 0.03, 0.013], [1, 0.42, 0.55, 0.03, 0.013], [-1, 0.11, 0.15, 0.024, 0.012], [1, 0.11, 0.15, 0.024, 0.012]].forEach(([sx, len, up, r0, r1], k) => {
+						const st = new THREE.Group(),
+							lift = k < 2 ? 1 : 0.25;
+						st.position.set(0.055 * sx, k < 2 ? 0.02 : -0.075, k < 2 ? 0 : 0.03), st.rotation.set(-up, 0.34 * sx, 0), head.add(st);
+						R(ao([[0, 0, -0.07], [0, 0.012 * lift, 0.55 * len], [0, 0.04 * lift, len]], r0, r1, 12, 8), skin, st);
+						k < 2 && R(T.sphere(1.6 * r1, 8, 6), skin, st, [0, 0.04, len]);
 						stalks.push([st, up, k]);
 					});
 					H(inner);
@@ -16015,7 +16040,7 @@ const JGP = (() => {
 					//     the body rocking and squashing with it;
 					//   Planting (while the Event plants): head dipping to the ground and back, stalks pulled short.
 					// Talk comes first (one being talked to stops dancing or planting for it, as the creatures do).
-					[slug, head, mantle, pore, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
+					[slug, head, mantle, pore, tail, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
 					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray(), W = 5.45;
 					let talking = 0, look = 0, kT = 0, kD = 0, kP = 0;
 					const inRoomV = new THREE.Vector3();
@@ -16077,9 +16102,10 @@ const JGP = (() => {
 						(head.rotation.y = -0.45 + look * (1 - kD) + kD * 0.3 * Math.sin(0.5 * W * tt)),
 							(head.rotation.x = -kT * (0.22 + 0.05 * Math.abs(Math.sin(5 * tt))) - kD * (0.1 + 0.18 * bob) + kP * 0.3 * dig);
 						// (the body rocks and squashes on the beat, staying where it lies)
-						(slug.rotation.z = kD * 0.035 * Math.sin(0.5 * W * tt)), (slug.scale.y = 0.62 * (1 + kD * 0.06 * bob));
+						// (at rest the body settles and swells a little, the tail's tip curls slowly and the head creeps forward and back)
+						(slug.rotation.z = kD * 0.035 * Math.sin(0.5 * W * tt)), (slug.scale.y = 0.62 * (1 + kD * 0.06 * bob + 0.012 * Math.sin(0.7 * tt))), (tail.rotation.y = 0.07 * Math.sin(0.35 * tt + 1)), (head.position.z = HZ + 0.025 * Math.sin(0.31 * tt));
 						const br = Math.sin(0.9 * tt) * (1 - kD) + kD * beat;
-						mantle.scale.set(0.22 * (1 + 0.025 * br), 0.13 * (1 + 0.04 * br), 0.55), pore.scale.setScalar(0.6 + 0.4 * Math.max(0, br));
+						mantle.scale.set(0.253 * (1 + 0.03 * br), 0.15 * (1 + 0.06 * br), 0.63), pore.scale.setScalar(0.6 + 0.4 * Math.max(0, br));
 						stalks.forEach(([st, up, k]) => {
 							// (every 11 s or so one upper stalk pulls in for a moment; all pulled short while planting)
 							const ph = (tt + 5.5 * k) % 11, pull = Math.max(k < 2 && ph < 2.2 ? Math.sin((Math.PI * ph) / 2.2) : 0, kP * (0.4 + 0.4 * dig)), sx = k % 2 ? 1 : -1;
