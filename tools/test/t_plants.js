@@ -1,6 +1,6 @@
 // The five plant kinds at the Garden Event: runs an Event from the Summoning Stone to the end and reports how
 // many plants of each kind came up, how many show their full model and how many the light one (full within
-// 7 m of the eye), what the church's Ancient did meanwhile (it plants and dances along, lying where it is), and
+// 7 m of the eye), what the church's Ancient did meanwhile (never a dance or a plant: it stays as it always is, owner's rule), and
 // how fast game time ran against real time (a slow-down means the plants cost too much). Renders the grown
 // garden from its edge and from across the square (<out>_garden_near.png, <out>_garden_far.png).
 //   NOSHOT=1 node shot2.js <url> plants.png ./t_plants.js
@@ -22,7 +22,7 @@ module.exports = async (p, out) => {
     if (!r[0] && k > 20) break;
   }
   const rate = (await p.evaluate(() => Re.t) - g0) / ((Date.now() - t0) / 1000);
-  log('Event done; game time ran at', rate.toFixed(2), 'x real time | the Ancient was:', [...slug].join(', '), slug.has('plant') && slug.has('dance') ? 'ok' : 'FAIL: did not plant and dance');
+  log('Event done; game time ran at', rate.toFixed(2), 'x real time | the Ancient was:', [...slug].join(', '), !slug.has('plant') && !slug.has('dance') ? 'ok' : 'FAIL: the Ancient danced or planted');
   log('Event plants by kind:', await p.evaluate(() => JSON.stringify(JGP.garden.plants.reduce((a, q) => ((a[q.kind + 1] = (a[q.kind + 1] || 0) + 1), a), {}))));
   // stand at the garden's south edge: the near plants full, the far ones light
   await p.evaluate(() => At.position.set(0, 0, 15)); await W(1500);

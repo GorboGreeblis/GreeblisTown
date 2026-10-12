@@ -10,6 +10,9 @@
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(1500);
+  // (ZOLLOD freed by OVERCOMING SHYNESS, as after the sub-quest: his visits are part of the plan and the runs;
+  // the shy gate itself is t_shy.js's)
+  await p.evaluate(() => (Kt.shyFree = !0));
   // (one visitor at a time, timed, so a slow plan shows where)
   const WHO = ['gratelet', 'drifter', 'blinker', 'm_kingdino', 'gorbo', 'cutebex', 'm_somlet', 'frog', 'p_etcher', 'p_gemtoe', 'p_glyph', 'w_mont', 'p_mamagorbo', 'keeper', 'slug'];
   const plan = { n: 0, bad: [], longest: [0, ''] };

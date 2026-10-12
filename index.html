@@ -202,6 +202,8 @@ const t = {
 		done: "Well done, Human!",
 		// (given a Blossom he drops to all fours and runs a lap round the Library first)
 		gift: "…sorry I don’t know what got into me.",
+		// (every other Talk outside the Event and his finale: a word about himself, between his quest lines)
+		flavor: "Twelve generations of librarians in my family.|Not one of us ever dug in the dirt.",
 		event: "Digging in the dirt like an animal? …don’t tell the others at the genealogical society.",
 	},
 	// GEMTOE's trade: the Summoning Stone for the Ancient Gem SPARKAKUS gives you (she spins for joy as you take it)
@@ -770,8 +772,12 @@ const F = {
 		},
 		local: (B, x, z) => [(x - B.x) * B.c - (z - B.z) * B.s, (x - B.x) * B.s + (z - B.z) * B.c],
 		world: (B, lx, lz) => [B.x + lx * B.c + lz * B.s, B.z - lx * B.s + lz * B.c],
+		// (hundreds of calls a frame: the local point is worked out in place, no array made)
 		inHull(B, x, z, m = 0) {
-			const [lx, lz] = this.local(B, x, z),
+			const dx = x - B.x,
+				dz = z - B.z,
+				lx = dx * B.c - dz * B.s,
+				lz = dx * B.s + dz * B.c,
 				h = B.hull;
 			return lx > h[0] - m && lx < h[2] + m && lz > h[1] - m && lz < h[3] + m;
 		},
@@ -1870,6 +1876,8 @@ function it(t, e, o) {
 	const u = Math.hypot(p, f) || 1;
 	return new THREE.Vector3(p / u, 0, f / u);
 }
+// (HENNRICK and the three Dancers, ETCHER, GLYPH and MONTGUMMERY, dance their own built-in dances at the Event)
+const OWN_DANCE = new Set(["gratelet", "p_etcher", "p_glyph", "w_mont"]);
 const bt = { tg: new Map(), live: !1, seeds: !1 },
 	// where the gathering's open side faces (the old concert singer's stage)
 	gcSinger = { angle: Math.PI / 2 },
@@ -2247,6 +2255,9 @@ function Gt(e, o) {
 }
 function Vt(t) {
 	// nothing to choose for FORTIZMO while she plays during the Gardening Event
+	// (SPARKAKUS has no def of his own: at the Event his Talk, from his station or from `xo` in the garden, is
+	// his Event line, so neither is ever silenced here)
+	if (t === xo || (t && "stump" === t.id)) return !1;
 	return !!t && ((me.active && "frog" === t.id) || (me.active && !(t.def && t.def.campfire)));
 }
 function Bt(t, e) {
@@ -2778,12 +2789,14 @@ const uo = {
 	solid: (t) => t.group.visible && (void 0 === t.presence || t.presence >= 0.5),
 	resolve(e, o, a) {
 		let n = !1;
+		// (most pairs are far apart: a squared-distance test first, the square root only for those touching)
 		const r = (t, a, r) => {
 				const s = e.x - t,
 					i = e.z - a,
-					l = Math.hypot(s, i),
-					c = r + o;
-				if (l >= c) return;
+					c = r + o,
+					q = s * s + i * i;
+				if (q >= c * c) return;
+				const l = Math.sqrt(q);
 				if (l < 1e-4) return (e.x += c), void (n = !0);
 				const h = (c - l) / l;
 				(e.x += s * h), (e.z += i * h), (n = !0);
@@ -2836,7 +2849,13 @@ function gFit(e, dt) {
 		});
 		e.restLow = lo < 1e8 ? lo - g.position.y : 0;
 	}
-	const want = (g.position.y > 0.3 ? 0 : JGP.groundAt(g.position.x, g.position.z, 0.55 * (e.bodyR || 1))) + Math.max(0, 0.006 - e.restLow);
+	// (the ground under it, worked out again only when it has moved: the ground never changes, and a ground probe
+	// is seven samples, so a creature standing still costs nothing)
+	const gx = g.position.x,
+		gz = g.position.z,
+		gr = 0.55 * (e.bodyR || 1);
+	g.position.y <= 0.3 && (gx !== e.gfX || gz !== e.gfZ || gr !== e.gfR) && ((e.gfX = gx), (e.gfZ = gz), (e.gfR = gr), (e.gfG = JGP.groundAt(gx, gz, gr)));
+	const want = (g.position.y > 0.3 ? 0 : e.gfG) + Math.max(0, 0.006 - e.restLow);
 	let w = g.userData.gW;
 	if (!w) {
 		if (Math.abs(want) < 1e-3) return;
@@ -3889,7 +3908,7 @@ const ee = (function () {
 					if (!It.take(e, "battle")) return;
 					const d = T[e.id];
 					clearTimeout(e.bdT), (o = { ent: e, def: d, left: d.stamina, over: !1, won: !1, mv: null }), (e.battleDance = !0), (xe.lastTarget = e);
-					_t.open({ kind: "battle", title: d.title, sub: T.sub, bar: bar(), log: "", items: [], done: null, onClose: close });
+					_t.open({ kind: "battle", title: d.title, sub: T.sub, bar: bar(), log: "", items: [], done: { label: "LEAVE" }, onClose: close });
 					next();
 				} catch (t) {
 					vo(t, "battle"), o && (o.over = !0);
@@ -4387,7 +4406,12 @@ const le = (() => {
 					s.forEach((t) => {
 						// (a Dancer still doing a victory dance stops it to come to the garden)
 						// (and any route home it was on is dropped: after the Event a fresh one is planned from the garden)
-						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = 0), (t.vbk = -1), clearTimeout(t.bdT), (t.battleDance = !1), (t.goHome = t.gcNavHome = !1), (t.gcNav = null);
+						// (a worker leaves by its way out only from inside its kiosk or bar: one already out — on a visit,
+						// or stepped out to meet a visitor — goes straight on, never back in to walk the way out again)
+						const via = t.def && t.def.via,
+							p0 = t.group.position,
+							inside = !!via && !!via.length && F.buildings.some((B) => F.inHull(B, via[0][0], via[0][1]) && F.inHull(B, p0.x, p0.z));
+						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = !via || inside ? 0 : via.length), (t.vbk = -1), clearTimeout(t.bdT), (t.battleDance = !1), (t.goHome = t.gcNavHome = !1), (t.gcNav = null);
 					});
 				const o = Gt(s.concat([null]), gcSinger.angle);
 				bt.seeds && st.join(o.larry),
@@ -4509,13 +4533,20 @@ const le = (() => {
 						p = Math.hypot(c, h);
 					// (one being talked to stands still for it, turned to the player)
 					// (and SOMLET, asleep on her side, first gets up)
+					const x0 = l.x,
+						z0 = l.z;
 					if (("dialogue" === jt.top && xe.lastTarget === o) || (o.lieK || 0) > 0.25) o.moving = !1;
 					else if (p > (n ? 0.12 : 0.5)) {
 						const t = Math.min(p, (o.walkSpeed || 2.4) * e);
 						(l.x += (c / p) * t), (l.z += (h / p) * t), co(o.group, Math.atan2(c, h), e, 8), (o.moving = !0);
 					} else
 						(!m || bt.live || (m.a !== o && m.b !== o)) && !("dialogue" === jt.top && xe.lastTarget === o) && co(o.group, Math.atan2(-l.x, -l.z), e, 4), (o.moving = !1);
-					F.resolve(l, 0.8 * o.bodyR), uo.resolve(l, uo.radius(o), o), bt.live && JGP.plantTick(o, t);
+					F.resolve(l, 0.8 * o.bodyR), uo.resolve(l, uo.radius(o), o);
+					// (one held off its garden spot, by a neighbour or the Summoning Stone, as broad HENNRICK can be on
+					// the inner row, takes the spot where it stands once held there a second, within a metre of it: so
+					// it plants, and its flower grows, there)
+					bt.live && o.moving && p < 1.2 && Math.hypot(l.x - x0, l.z - z0) < 0.3 * (o.walkSpeed || 2.4) * e ? (o.heldT = (o.heldT || 0) + e) > 1 && ((o.finaleSlot = { x: l.x, z: l.z }), (o.heldT = 0)) : (o.heldT = 0);
+					bt.live && JGP.plantTick(o, t);
 				});
 				const l = u(i / 90, 0, 1);
 				if (
@@ -4571,7 +4602,7 @@ const le = (() => {
 	},
 	xo = {
 		label: () => "Talk to " + i.name,
-		run: () => qt.open(i.name, M.orange, i.event),
+		run: () => LIB.say(i.event),
 		get x() {
 			return st.pos().x;
 		},
@@ -4840,6 +4871,8 @@ const le = (() => {
 			// (from the first finale page until the Gem speech is done he is busy with it: a second Talk in the
 			// assembly gap would start the whole finale, assembly and reward over again)
 			if (Bulb.hold) return;
+			// (his quest line first, then his flavor line, in turn; never in place of the finale)
+			if ((Kt.rewards.artifacts || Kt.artifacts < 3) && (Kt.talkState.keeper = (Kt.talkState.keeper || 0) + 1) % 2 === 0) return say(i.flavor);
 			if (Kt.rewards.artifacts) return say(i.done);
 			if (Kt.artifacts < 3) return say(Kt.artifacts ? i.progress(Kt.artifacts) : i.ask);
 			// (he speaks where he stands in his open Library, never walking out: the bulb comes on over his head at once)
@@ -6030,10 +6063,9 @@ const xe = (() => {
 										l = Math.min(720, i + 78 * n + (e.done ? 90 : 10));
 									(t.solidH = l),
 										S(o, 6, 6, 1012, l - 12, 26, g, E, 8),
-										A(o, e.title || "", 40, 52, V(o, e.title || "", 820, 50, 30), M.lime),
-										S(o, 924, 20, 70, 64, 14, "x" === t.hover ? M.lime : "#e8364f", E, 4),
-										A(o, "X", 959, 53, 42, "#ffffff", "center"),
-										t.rect("x", 924, 20, 70, 64, () => _t.close()),
+										// (no X in the top right, owner's rule: every panel closes by its own button at the
+										// bottom — LEAVE, DONE, No — or, in the test modes, a tap off it)
+										A(o, e.title || "", 40, 52, V(o, e.title || "", 940, 50, 30), M.lime),
 										e.sub && A(o, e.sub, 40, 100, V(o, e.sub, 940, 32, 26), M.teal, "left");
 									const { rx: c, rw: h } = s;
 									let p = 136;
@@ -7081,48 +7113,48 @@ const JGP = (() => {
 	};
 
 
-	// ---- THE SCRIPT (from the owner): what each creature says, by its id. lines: its three Talk lines, in turn
+	// ---- THE SCRIPT (from the owner): what each creature says, by its id. lines: its Talk lines, in turn
 	// (each "|" starts a new page of the same line); gift: its Blossom line; campfire: what it says when talked to
 	// during the Garden Event (none: it can't be talked to then, as FORTIZMO, who is playing). sad: the Talk line
 	// that plays sad sounds. ZOLLOD's Talk opens the shop (outside the Event); SPARKAKUS's and the ANCIENT's words
 	// are with them (i and the church); GEMTOE's trade is gemTrade.
 	const SCRIPT = {
 		// ANOMALEE, looking up at the church window
-		blinker: { lines: ["BEINGS of CODE.", "ORIGINATOR…", "WAS there WITHIN."], sad: 1, gift: "* Munch *", campfire: "PLANT" },
+		blinker: { lines: ["BEINGS of CODE.", "ORIGINATOR…", "WAS there WITHIN.", "The WINDOW REMEMBERS the TRAVELER."], sad: 1, gift: "* Munch *", campfire: "PLANT" },
 		// MUSHROOM, looking down at the player from the top of his desk
 		drifter: {
-			lines: ["This town is under the protection of the consortium.", "All travel through the Portal is locked down until further notice.", "We’re investigating UFO sightings in this area."],
+			lines: ["This town is under the protection of the consortium.", "All travel through the Portal is locked down until further notice.", "We’re investigating UFO sightings in this area.", "See anything glowing in the sky, you report it to this office.|Directly."],
 			// (and from now on the phone can reach the Portal: see Kt.phone)
 			gift: "A bribe? …Portal is now open to your use.",
 			campfire: "…",
 		},
 		gratelet: {
-			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until he decides to reopen the Portal."],
+			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until he decides to reopen the Portal.", "In my era this whole Park is paved over by Greeblis City.|Do enjoy the grass while it lasts."],
 			gift: "Adding to a collection jar.",
 			campfire: "Sometimes worry that doing these things will alter the timeline…",
 		},
 		frog: {
-			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Fire Blossoms at this establishment."],
+			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Fire Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice."],
 			gift: "Add it to the tip jar.",
 		},
-		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
+		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
 		// (asleep through it all: her eyes open only for her thanks, and she sleeps on at home through the Event)
-		m_somlet: { lines: ["Zzz", "Zzz", "Zzz"], gift: "Thank you", campfire: "Zzz" },
-		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
+		m_somlet: { lines: ["Zzz", "Zzz", "Zzz", "* A letter peeks out from under her cap *|Zzz"], gift: "Thank you", campfire: "Zzz" },
+		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
 		// (with the Ancient Gem in hand, Talk is her trade instead: gemTrade)
 		p_gemtoe: {
-			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?", "I seek the rarest gems."],
+			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?", "I seek the rarest gems.", "My tails never let go of my crystals.|Not even while I sleep."],
 			gift: "This is mine now.",
 			campfire: "Enjoying the SHARED garden… what is this feeling?",
 		},
 		p_mamagorbo: {
-			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for our famous goo burger.|The hubby and I run the local fast food joint.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness."],
+			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for our famous goo burger.|The hubby and I run the local fast food joint.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!"],
 			gift: "Gooooooom!",
 			campfire: "Pretty flowers come to life!",
 		},
 		// (his screen shows a robot for his Blossom line and a shovel for his Event line)
 		w_mont: {
-			lines: ["Hello Human.|Mont will hide you from alien hunting Sheriff.", "Mont knows of humans.|Mont eats many VHS and digests much knowledge of your culture.", "Mont understands the high point of human culture|…|‘Flint Knapping for Beginners’", "We are all digital monsters."],
+			lines: ["Hello Human.|Mont will hide you from alien hunting Sheriff.", "Mont knows of humans.|Mont eats many VHS and digests much knowledge of your culture.", "Mont understands the high point of human culture|…|‘Flint Knapping for Beginners’", "We are all digital monsters.", "Mont always rewinds tape before eating.|Mont is polite monster."],
 			gift: "Let’s dance!",
 			campfire: "Joyful to bring life to our Town.",
 		},
@@ -7131,6 +7163,7 @@ const JGP = (() => {
 				"I work in data preservation.|I like to think the Ancients created us for our purposes.",
 				"As I move my tentacles etch data into everything they touch.|Fortizmo is upset that I do it on her dancefloor.",
 				"The age of the Ancients has been etched.|The age of the Synthetics is being etched.|Soon I will etch the age of the Organics.",
+				"Every scale on my body holds a backup of a backup.|One can never be too careful.",
 			],
 			gift: "Let’s dance!",
 			campfire: "Etching what was is important but living this is what IS.",
@@ -7140,6 +7173,7 @@ const JGP = (() => {
 				"I am the Master of symbols.|Symbols make up everything… don’t you think?",
 				"Etcher would have nothing to reconstruct with without symbols.|Mont would remain motionless without symbols to translate in binary electrical signals.|Even Dino would have no music to play!",
 				"All things come into being from symbols… don’t you think?",
+				"Even a single footprint is a symbol… don’t you think?",
 			],
 			gift: "Let’s dance!",
 			campfire: "Growing flowers, it’s a symbol of life.",
@@ -11817,10 +11851,15 @@ const JGP = (() => {
 		].forEach(([px, pz, c]) => {
 			G.box(c, px, 0.36, pz, 0.5, 0.32, 0.7, 0, 0.2), G.box("#f4ecd8", px, 0.4, pz + 0.36, 0.3, 0.14, 0.01, 0, 0.2);
 		});
-		// a wheelbarrow of flowers out front
+		// a wheelbarrow of flowers out front: the tray rests on its frame, whose two fork rails run down from
+		// under its front edge to the wheel's axle, so the front sits on the wheel (the wheel's top is level
+		// with the tray's bottom) and the back stands on its two legs
 		const wb = (px, pz) => {
 			G.box("#2f6a8a", px, 0.55, pz, 0.7, 0.3, 1.0), G.box("#4a3424", px, 0.7, pz, 0.62, 0.02, 0.9);
-			G.add(T.cyl(0.18, 0.18, 0.08, 12), "#2a2a2e", G.m(px, 0.18, pz + 0.65, 0, 0, Math.PI / 2));
+			G.add(T.cyl(0.2, 0.2, 0.08, 14), "#2a2a2e", G.m(px, 0.2, pz + 0.62, 0, 0, Math.PI / 2));
+			G.add(T.cyl(0.07, 0.07, 0.1, 10), "#7a7a80", G.m(px, 0.2, pz + 0.62, 0, 0, Math.PI / 2));
+			G.add(T.cyl(0.022, 0.022, 0.5, 8), "#5a5a60", G.m(px, 0.2, pz + 0.62, 0, 0, Math.PI / 2));
+			[-1, 1].forEach((sx) => G.box("#6a4a2a", px + 0.24 * sx, 0.31, pz + 0.47, 0.05, 0.05, 0.38, Math.atan2(0.24, 0.3)));
 			[-1, 1].forEach((sx) => {
 				G.box("#6a4a2a", px + 0.28 * sx, 0.5, pz - 0.6, 0.05, 0.05, 0.8, 0.4), G.box("#6a4a2a", px + 0.28 * sx, 0.2, pz - 0.2, 0.05, 0.4, 0.05);
 			});
@@ -13118,6 +13157,8 @@ const JGP = (() => {
 		fz && ((fz.finaleSlot = { x: -(GARDEN_R + 2.3), z: 0 }), (fz.walkSpeed = 1), (fz.watching = !1));
 		list = list.filter((ent) => !noPlant(ent));
 		list.length && garden.round++;
+		// (SPARKAKUS, out for the Event, plants with everyone: one more spot, inside the garden like theirs)
+		const sp = st.away() ? 1 : 0;
 		Kt.rewards.snacks && PIZZA.show();
 		// (the soil 0.9 m in front of each planter falls on rows 2.6, 6.6 and 10.6)
 		const rings = [
@@ -13126,7 +13167,7 @@ const JGP = (() => {
 				[11.5, 99],
 			],
 			spots = [];
-		let left = list.length;
+		let left = list.length + sp;
 		rings.forEach(([r, cap], ri) => {
 			const k = Math.min(cap, left);
 			for (let j = 0; j < k; j++) {
@@ -13142,10 +13183,12 @@ const JGP = (() => {
 		list.forEach((ent, k) => {
 			(ent.finaleSlot = spots[k]), (ent.watching = !1);
 		});
+		const q = sp && spots[list.length];
+		q && st.join({ x: q.x, z: q.z }, Math.atan2(-q.x, -q.z));
 	}
 	// FORTIZMO doesn't plant: she walks to the garden's edge to play. The librarian SPARKAKUS (who leaves
-	// the Library for it) does the planting move with everyone, but he isn't one of the planters, so
-	// nothing comes up where he digs.
+	// the Library for it) plants with everyone, at a spot of his own inside the garden, and grows a flower
+	// like theirs (see beginPlanting, and his dig watched after plantTick).
 	// (BACKPACKA only appears for the event, flying in himself; NEXTESSA is never at it: she only comes
 	// through the portal for the pizza delivery)
 	const NO_PLANT = ["frog"],
@@ -13192,6 +13235,20 @@ const JGP = (() => {
 				: PIZZA.serve(fx, fz, ry + Math.PI);
 		if (garden.round > 1) return;
 		putPlant(fx, fz, rnd() * l, 0, (rnd() * PLANT_KINDS.length) | 0), Ut.at(fx, 1.7, fz, "✿", f(PLANT_COLS));
+	}
+	// SPARKAKUS's flower: he isn't one of the cast the Event steps, so his dig is watched here — at his spot in the
+	// garden, a moment into his planting, one flower in the soil 0.9 m in front of him (first Event only, as theirs)
+	{
+		let spRound = 0, spWait = 0;
+		L.push((tt) => {
+			if (!bt.live || !me.active || !st.away() || !st.there() || spRound === garden.round || garden.round < 1) return void (st.away() || (spWait = 0));
+			if (!spWait) return void (spWait = tt + 1.5);
+			if (tt < spWait) return;
+			(spRound = garden.round), (spWait = 0);
+			if (garden.round > 1 || !st.group) return;
+			const p = st.pos(), ry = st.group.rotation.y, fx = p.x + 0.9 * Math.sin(ry), fz = p.z + 0.9 * Math.cos(ry);
+			putPlant(fx, fz, rnd() * l, 0, (rnd() * PLANT_KINDS.length) | 0), Ut.at(fx, 1.7, fz, "✿", f(PLANT_COLS));
+		});
 	}
 	L.push((tt, dt) => {
 		dt = dt || 0.016;
@@ -13492,7 +13549,7 @@ const JGP = (() => {
 				dlife = new Float32Array(NDROP);
 			dgeo.setAttribute("position", new THREE.BufferAttribute(dpos, 3));
 			const drops = new THREE.Points(dgeo, new THREE.PointsMaterial({ map: dotTex(), color: "#e8f8ff", size: 0.16, transparent: !0, opacity: 0.9, depthWrite: !1 }));
-			(drops.frustumCulled = !1), (drops.userData.keepInFinale = !0), (drops.renderOrder = 4), C.add(drops);
+			(drops.frustumCulled = !1), (drops.userData.keepInFinale = !0), (drops.renderOrder = 4), (drops.visible = !1), C.add(drops);
 			let dnext = 0;
 			const spawn = (px, py, pz, vx, vy, vz, life) => {
 				const k = dnext;
@@ -13552,7 +13609,8 @@ const JGP = (() => {
 		function pose(e, dt) {
 			const P = made,
 				t = e;
-			P.root.visible = !0;
+			// (the droplets are their own object in the scene: shown with him, hidden with him, never left drawing)
+			(P.root.visible = !0), (P.drops.visible = !0);
 			const ds = flags.ds || (flags.ds = drinkSpot(P)),
 				above = V().copy(ds.pos).add(V(0, 1.3, 0)),
 				far = flags.far || (flags.far = V(ds.pond.x + 60, 26, ds.pond.z - 70)),
@@ -13738,7 +13796,7 @@ const JGP = (() => {
 		function hideAll() {
 			if (!made) return;
 			const P = made;
-			(P.root.visible = !1), P.ripples.forEach((m) => (m.visible = !1)), P.jets.forEach((J) => (J.m.visible = !1)), (P.rainbow.visible = !1), P.dlife.fill(0), P.dpos.fill(-200), (P.dgeo.attributes.position.needsUpdate = !0);
+			(P.root.visible = !1), (P.drops.visible = !1), P.ripples.forEach((m) => (m.visible = !1)), P.jets.forEach((J) => (J.m.visible = !1)), (P.rainbow.visible = !1), P.dlife.fill(0), P.dpos.fill(-200), (P.dgeo.attributes.position.needsUpdate = !0);
 		}
 		// build him (and his water) when he sets off, and compile every shader and upload every texture
 		// he will need right away: the jets, drops and rainbow first show mid-song, and a compile stall
@@ -15466,7 +15524,9 @@ const JGP = (() => {
 					L.push((tt, dt) => {
 						dt = Math.min(dt || 0.016, 0.1);
 						talking = (talking && qt.isOpen) || tt < chatTo ? 1 : 0;
-						const ev = talking ? null : JGP.eventMove, e2 = Math.min(1, 3 * dt);
+						// (the ANCIENT never dances or plants, owner's rule: at the Event it stays as it always is, only talking
+						// when talked to; the dance and plant poses below stay at rest)
+						const ev = null, e2 = Math.min(1, 3 * dt);
 						(kT += (talking - kT) * e2), (kD += (("dance" === ev) - kD) * e2), (kP += (("plant" === ev) - kP) * e2);
 						// (a slow look round, held still while talking)
 						look += ((talking ? 0 : 0.25 * Math.sin(0.21 * tt) + 0.1 * Math.sin(0.53 * tt)) - look) * Math.min(1, 2 * dt);
@@ -16587,7 +16647,7 @@ const JGP = (() => {
 						// (the host out to meet it, or back in again)
 						"back" === q.stage ? q.hb && hostBack(q, t2) : hostOut(q, t2);
 						// (the Event, a battle or a meeting takes either away: the visit is off)
-						if (me.active || !It.all.concat([st.ent]).includes(v) || ((v.busy || v.battleDance) && !isSP(v)) || (q.stage !== "back" && !isSP(h) && (h.busy || h.battleDance || h.meeting))) return drop(q);
+						if (me.active || !(v === st.ent || It.all.includes(v)) || ((v.busy || v.battleDance) && !isSP(v)) || (q.stage !== "back" && !isSP(h) && (h.busy || h.battleDance || h.meeting))) return drop(q);
 						if ("out" === q.stage) {
 							if (t2 > q.until) return goBack(q, t2);
 							if (isSP(v)) {
@@ -16642,9 +16702,11 @@ const JGP = (() => {
 								}
 							}
 							// (not side by side, the host having moved on: up to it again, twice at most)
-							if (!q.played && !VIGS.beside(v, h) && !isSP(v) && "slug" !== h.id && t2 - q.meetAt > 2 && (q.re || 0) < 2) {
+							// (a search that finds no spot is tried again a second later, not every frame)
+							if (!q.played && !VIGS.beside(v, h) && !isSP(v) && "slug" !== h.id && t2 - q.meetAt > 2 && (q.re || 0) < 2 && !(t2 < q.reAt)) {
 								const sp = spotFor(v, h);
 								if (sp) return void ((q.re = (q.re || 0) + 1), (q.way = JGP.route(v.group.position.x, v.group.position.z, sp[0], sp[1], v.bodyR || 1)), (q.stage = "out"), (q.until = t2 + 40));
+								q.reAt = t2 + 1;
 							}
 							if (!q.played) return void (VIGS.beside(v, h) && VIGS.play(v, h, q.text) ? ((q.played = t2), "slug" === h.id && JGP.slug.chat(8.5)) : t2 - q.meetAt > 40 && goBack(q, t2));
 							if (q.quiet) return void (t2 - q.played > 9 && goBack(q, t2));
@@ -17967,9 +18029,11 @@ if (
 								},
 								// (out on a visit, or walking home from one, he still answers — his walk waits while his
 								// dialogue is open; only at the Event does `xo` speak for him instead)
-								label: () => (me.active || st.romping() || Bulb.hold ? null : "Talk to " + i.name),
+								// (at the Event his Talk is his Event line, wherever he is: planting in the garden, or at home
+								// in the Library when there were no Seeds)
+								label: () => (st.romping() || Bulb.hold ? null : "Talk to " + i.name),
 								run: () => {
-									me.active || st.romping() || LIB.talk();
+									st.romping() || Bulb.hold || (me.active ? LIB.say(i.event) : LIB.talk());
 								},
 								// (a Blossom for him: off he runs on all fours, then says sorry; called away he skips the lap)
 								gift: () => {
@@ -18137,7 +18201,9 @@ if (
 						st.group && n.push({ key: "keeper", grp: st.group, ent: null, want: st.away() && me.active && bt.seeds ? (music ? "dance" : o ? "plant" : null) : null });
 						for (const o of n) {
 							let n = bt.tg.get(o.grp);
-							n || ((n = { k: 0, lx: o.grp.position.x, lz: o.grp.position.z, mv: 0 }), bt.tg.set(o.grp, n));
+							// (each creature's idle footprint sample is offset by its place in the list, so the samples, every 0.25 s, never all
+							// fall in the same frame)
+							n || ((n = { k: 0, lx: o.grp.position.x, lz: o.grp.position.z, mv: 0, rt: t - 0.25 + (bt.tg.size % 8) * 0.031 }), bt.tg.set(o.grp, n));
 							const r = Math.hypot(o.grp.position.x - n.lx, o.grp.position.z - n.lz) / e;
 							(n.lx = o.grp.position.x),
 								(n.lz = o.grp.position.z),
@@ -18147,7 +18213,7 @@ if (
 							s && n.mode !== s && n.k < 0.02 && (n.mode = s);
 							(n.k += ((s && s === n.mode ? 1 : 0) - n.k) * Math.min(1, 4 * e)), o.ent && ((o.ent.concertDance = "dance" === n.mode && n.k > 0.02), (o.ent.planting = "plant" === n.mode && n.k > 0.3));
 							// (HENNRICK and the three Dancers, ETCHER, GLYPH and MONTGUMMERY, dance their own built-in dances)
-							const i = o.ent && /^(gratelet|p_etcher|p_glyph|w_mont)$/.test(o.ent.id) && "dance" === n.mode;
+							const i = "dance" === n.mode && o.ent && OWN_DANCE.has(o.ent.id);
 							let c = o.grp.userData.gcW;
 							// (a creature without a move wrapper yet gets one, and the footprint that keeps its feet
 							// on the ground, the first time it dances or plants)
