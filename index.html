@@ -4731,7 +4731,17 @@ const le = (() => {
 			// the bottle: a white body with a red label, a shoulder, and an orange nozzle cap (its tip 0.62 above its middle)
 			const white = x.clay("#f4f4ee", { shininess: 60 });
 			R(T.cyl(0.16, 0.18, 0.5, 16), white, bod), R(T.cyl(0.07, 0.16, 0.12, 16), white, bod, [0, 0.31, 0]);
-			R(T.cyl(0.19, 0.19, 0.22, 16), x.clay("#d8352e"), bod, [0, -0.02, 0]);
+			// (its label says GLUE, white on red, on both sides of the bottle)
+			const label =
+				V.glueLbl ||
+				(V.glueLbl = new THREE.MeshLambertMaterial({
+					map: b(256, 64, (c) => {
+						(c.fillStyle = "#d8352e"), c.fillRect(0, 0, 256, 64), (c.fillStyle = "#fbfbf6"), (c.font = "bold 40px Arial, sans-serif"), (c.textAlign = "center"), (c.textBaseline = "middle");
+						[64, 192].forEach((px) => c.fillText("GLUE", px, 34));
+					}),
+				})),
+				red = x.clay("#d8352e");
+			R(new THREE.CylinderGeometry(0.19, 0.19, 0.22, 24), [label, red, red], bod, [0, -0.02, 0]);
 			R(T.cyl(0.075, 0.075, 0.06, 12), x.clay("#ff8a1a"), bod, [0, 0.4, 0]), R(T.cone(0.07, 0.2, 12), x.clay("#ff8a1a"), bod, [0, 0.52, 0]);
 			bottle.position.y = 1.25;
 			parts.forEach((p, k) => g.add(p));
