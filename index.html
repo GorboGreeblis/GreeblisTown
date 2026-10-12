@@ -10613,7 +10613,9 @@ const JGP = (() => {
 		R(T.box(6.4, 0.2, 5.0), deck, o, [0, 0.1, -0.1]), R(T.box(6.5, 0.08, 0.12), white, o, [0, 0.2, 2.42]);
 		// the back wall stops inside the corner posts (flush end faces would flicker against them)
 		R(T.box(5.96, 3.3 + dh, 0.16), wall, o, [0, 1.85 + dh / 2, -2.45]);
-		for (let k = 0; k < 11; k++) R(T.box(0.08, 3.3 + dh, 0.06), wall2, o, [-2.6 + 0.52 * k, 1.85 + dh / 2, -2.35]);
+		// (the SHERIFF'S back wall is plain — its battens sat right in the Wanted posters' plane and cut
+		// across them, so the owner had them taken off; every other kiosk keeps its battens)
+		if (!th.noBattens) for (let k = 0; k < 11; k++) R(T.box(0.08, 3.3 + dh, 0.06), wall2, o, [-2.6 + 0.52 * k, 1.85 + dh / 2, -2.35]);
 		[-1, 1].forEach((sx) => {
 			R(T.box(0.16, 1.0, 4.6), wall, o, [3.0 * sx, 0.7, -0.15]), R(T.box(0.2, 0.08, 4.7), white, o, [3.0 * sx, 1.24, -0.15]);
 			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4 + dh, 0.24), white, o, [3.0 * sx, 1.9 + dh / 2, pz]));
@@ -11379,7 +11381,7 @@ const JGP = (() => {
 	function buildSheriff(o) {
 		// (its roof stands a metre higher than the other kiosks' and its desk is raised, so MUSHROOM, up on
 		// the desk, looks down at whoever comes to talk to him)
-		kioskFrame(o, { sign: "SHERIFF'S", ink: "#6a3a1a", wall: "#8a5a3a", wall2: "#6e4628", tin: [184, 40, 34], spots: !0, dh: SHERIFF_DH, desk: SHERIFF_DESK });
+		kioskFrame(o, { sign: "SHERIFF'S", ink: "#6a3a1a", wall: "#8a5a3a", wall2: "#6e4628", tin: [184, 40, 34], spots: !0, noBattens: !0, dh: SHERIFF_DH, desk: SHERIFF_DESK });
 		const G = goods(),
 			rs = srand(909),
 			CAPS = ["#c82a24", "#d8442a", "#b8862a", "#8a5a3a", "#e8b048"];
@@ -11484,6 +11486,48 @@ const JGP = (() => {
 						(c.strokeStyle = skin), (c.lineWidth = 2), [[18, 60, 4], [112, 52, 3], [104, 40, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py, r, 0, l), c.stroke()));
 						c.restore();
 						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 137);
+					} else if ("rabbit" === kind) {
+						// a rabbit dressed as NAPOLEON BONAPARTE, the bicorne especially: long ears up past the hat's
+						// peak, the dark crescent with its gold trim and tricolour cockade, a navy coat with red collar,
+						// gold epaulettes and buttons over a cream breast panel — and one paw tucked into the coat
+						const ink = "#1d2436";
+						(c.fillStyle = skin), [-1, 1].forEach((sd) => (c.beginPath(), c.ellipse(64 + 12 * sd, 38, 5.5, 16, 0.14 * sd, 0, l), c.fill()));
+						(c.fillStyle = "#f0b8c8"), [-1, 1].forEach((sd) => (c.beginPath(), c.ellipse(64 + 12 * sd, 41, 2.3, 10, 0.14 * sd, 0, l), c.fill()));
+						(c.fillStyle = ink), c.beginPath(), c.moveTo(22, 58), c.quadraticCurveTo(64, 26, 106, 58), c.lineTo(100, 64), c.quadraticCurveTo(64, 72, 28, 64), c.closePath(), c.fill();
+						(c.strokeStyle = "#e8b830"), (c.lineWidth = 2), c.beginPath(), c.moveTo(27, 58), c.quadraticCurveTo(64, 29, 101, 58), c.stroke();
+						[["#c8322a", 6], ["#f2ecd8", 4], ["#2a4a9a", 2]].forEach(([cc, r]) => ((c.fillStyle = cc), c.beginPath(), c.arc(88, 52, r, 0, l), c.fill()));
+						(c.fillStyle = skin), c.beginPath(), c.ellipse(64, 81, 21, 17, 0, 0, l), c.fill();
+						(c.fillStyle = "#f6f2e6"), [-1, 1].forEach((sd) => (c.beginPath(), c.ellipse(64 + 8 * sd, 89, 9, 7, 0, 0, l), c.fill()));
+						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 9 * sd, 78, 3, 0, l), c.fill()));
+						(c.fillStyle = "#e08a9a"), c.beginPath(), c.moveTo(61, 85), c.lineTo(67, 85), c.lineTo(64, 89), c.closePath(), c.fill();
+						(c.strokeStyle = "#b8b4a8"), (c.lineWidth = 1), [-1, 1].forEach((sd) => [0, 1, 2].forEach((k) => (c.beginPath(), c.moveTo(64 + 12 * sd, 86 + k), c.lineTo(64 + 26 * sd, 83 + 3 * k), c.stroke())));
+						(c.fillStyle = ink), c.beginPath(), c.moveTo(32, 126), c.quadraticCurveTo(34, 102, 52, 98), c.lineTo(76, 98), c.quadraticCurveTo(94, 102, 96, 126), c.closePath(), c.fill();
+						(c.fillStyle = "#efe6d2"), c.beginPath(), c.moveTo(56, 100), c.lineTo(72, 100), c.lineTo(70, 126), c.lineTo(58, 126), c.closePath(), c.fill();
+						(c.fillStyle = "#b8352a"), c.fillRect(51, 95, 9, 7), c.fillRect(68, 95, 9, 7);
+						(c.fillStyle = "#e8b830"), c.fillRect(33, 99, 13, 5), c.fillRect(82, 99, 13, 5);
+						(c.strokeStyle = "#e8b830"), [-1, 1].forEach((sd) => [0, 1, 2, 3].forEach((k) => (c.beginPath(), c.moveTo(64 + (25 + 2 * k) * sd, 104), c.lineTo(64 + (25 + 2 * k) * sd, 110), c.stroke())));
+						[-1, 1].forEach((sd) => [0, 1, 2].forEach((k) => (c.beginPath(), c.arc(64 + 13 * sd, 106 + 7 * k, 1.8, 0, l), c.fill())));
+						(c.fillStyle = skin), c.beginPath(), c.moveTo(78, 103), c.quadraticCurveTo(68, 105, 62, 111), c.lineTo(66, 115), c.quadraticCurveTo(73, 110, 80, 108), c.closePath(), c.fill();
+						(c.strokeStyle = "#b8a888"), c.beginPath(), c.moveTo(62, 111), c.lineTo(68, 116), c.stroke();
+					} else if ("visitor" === kind) {
+						// the town's own visitor, as a drawing (the avatar): copper hair with its low ponytail and
+						// navy band, freckles over the cheeks, a small quiet mouth, and the indigo dress with its
+						// little white flower print
+						const hair = "#b84e1e";
+						(c.fillStyle = hair), c.beginPath(), c.ellipse(89, 97, 7, 19, -0.16, 0, l), c.fill();
+						c.beginPath(), c.ellipse(64, 62, 24, 21, 0, Math.PI, 0), c.fill();
+						c.beginPath(), c.moveTo(40, 62), c.quadraticCurveTo(38, 84, 46, 92), c.lineTo(50, 78), c.quadraticCurveTo(46, 72, 46, 62), c.closePath(), c.fill();
+						c.beginPath(), c.moveTo(88, 62), c.quadraticCurveTo(90, 80, 86, 88), c.lineTo(80, 76), c.quadraticCurveTo(82, 72, 82, 62), c.closePath(), c.fill();
+						(c.fillStyle = "#32466e"), c.save(), c.translate(86, 82), c.rotate(-0.16), c.fillRect(-6, -4, 12, 8), c.restore();
+						(c.fillStyle = skin), c.beginPath(), c.ellipse(64, 74, 18, 16, 0, 0, l), c.fill();
+						(c.fillStyle = hair), c.beginPath(), c.ellipse(64, 58, 20, 10, 0, Math.PI, 0, !0), c.fill(), c.beginPath(), c.moveTo(44, 58), c.quadraticCurveTo(54, 50, 64, 50), c.quadraticCurveTo(74, 50, 84, 58), c.quadraticCurveTo(74, 62, 64, 61), c.quadraticCurveTo(54, 62, 44, 58), c.closePath(), c.fill();
+						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 8 * sd, 74, 2.6, 0, l), c.fill()));
+						(c.strokeStyle = "#8a5a3a"), (c.lineWidth = 1.5), c.beginPath(), c.arc(64, 81, 4.5, 0.25 * Math.PI, 0.75 * Math.PI), c.stroke();
+						(c.fillStyle = "#dca47f"), [[54, 79], [58, 81], [62, 78], [66, 81], [70, 78], [74, 80], [50, 77]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 1.1, 0, l), c.fill()));
+						(c.fillStyle = "#4a6fa8"), c.beginPath(), c.moveTo(33, 126), c.quadraticCurveTo(35, 102, 52, 97), c.lineTo(76, 97), c.quadraticCurveTo(93, 102, 95, 126), c.closePath(), c.fill();
+						(c.fillStyle = "#f6f4ee");
+						[[48, 108], [62, 104], [78, 110], [42, 120], [57, 118], [72, 121], [87, 117]].forEach(([px, py]) => { for (let k = 0; k < 6; k++) c.beginPath(), c.arc(px + 2.4 * Math.cos((k / 6) * l), py + 2.4 * Math.sin((k / 6) * l), 1.1, 0, l), c.fill(); c.beginPath(), c.arc(px, py, 1, 0, l), c.fill(); });
+						[[52, 115], [68, 113], [83, 124], [44, 103], [88, 104], [60, 124]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 0.9, 0, l), c.fill()));
 					} else {
 						// the saucer: a glass dome on a grey disc with portholes, and its tractor beam
 						(c.fillStyle = "rgba(255,240,120,.55)"), c.beginPath(), c.moveTo(52, 92), c.lineTo(76, 92), c.lineTo(100, 128), c.lineTo(28, 128), c.fill();
@@ -11501,7 +11545,13 @@ const JGP = (() => {
 			[1.9, 2.8, "ufo", "", -0.06],
 			[1.5, 1.9, "alien", "#9ae8c8", 0.1],
 			[-1.45, 1.85, "goo", "#5ac83a", -0.05],
-		].forEach(([px, py, kind, skin, rz]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35] })));
+			// (owner's requests: a rabbit dressed like NAPOLEON BONAPARTE, the bicorne especially — front and
+			// centre under the star, now that the wall's battens are off — and a drawing of the town's own
+			// visitor, up on the left between the alien and the goo)
+			[0, 1.88, "rabbit", "#e8e4da", 0.04],
+			// (pinned over the goo poster's corner, a few millimetres proud of it so the two never flicker)
+			[-0.86, 2.22, "visitor", "#f4dcc6", -0.07, 0.006],
+		].forEach(([px, py, kind, skin, rz, dz = 0]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35 + dz], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35 + dz] })));
 	}
 
 	// Garden Supplies: sage walls, terracotta roof, and plants everywhere: potted shrubs, flowers,
