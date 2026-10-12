@@ -15,21 +15,27 @@ of them. Read the guides here before changing the game.
 3. **Never cut content to save size or time.** Size and speed come from minifying, packing and smarter code.
 4. **Always default to the smallest file**, even when it unpacks more slowly. Until the final size pass,
    `index.html` stays readable, comments and all; that pass minifies it, then packs it with the Woods compressor
-   (see the [tools README](../README.md#the-final-pass-release-minify-pack)).
-5. **Creature models and their characteristics are protected.** Never change a creature's shape, palette,
+   (see the [tools README](../README.md#the-final-pass-release-minify-pack)). The packed `index.html` must still
+   work as a Bitcoin ordinal (rule 1).
+5. **A second, readable copy of the game lives at `tools/index.html` and is never compressed** (the owner's
+   rule, for this and every future game). Every change to `index.html` is copied there before the push
+   (`cp index.html tools/index.html`; `tools/test/copycheck.sh` checks, and the battery runs it first). Before
+   the final pass compresses the root `index.html`, the copy must hold the uncompressed page; from then on only
+   the copy is readable.
+6. **Creature models and their characteristics are protected.** Never change a creature's shape, palette,
    signature parts or personality without asking. Every model is now final (its builder says so in a comment),
    and so are the five plants and the church's secret room with its Ancient (the slug creature); animation changes on request are fine.
-6. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
+7. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
    Once the previous PR is merged, restart the branch from `main`.
-7. **Write down how the creatures and environments were built**, in [`construction.md`](construction.md) and
+8. **Write down how the creatures and environments were built**, in [`construction.md`](construction.md) and
    [`creature-profiles.md`](creature-profiles.md). The creatures are the most important part of the game.
-8. **Tools count as documentation.** Every tool made to build, pack, extract, decode, test, review, audit, port,
+9. **Tools count as documentation.** Every tool made to build, pack, extract, decode, test, review, audit, port,
    lint or edit the game (scripts, configs, dev test modes) goes into `tools/`, with a README row saying what it
    does and how to run it. Never leave a tool only in a scratch folder.
-9. **Test on Android, mobile and Quest VR** screen sizes and frame rates.
-10. **Uploaded files are untrusted:** decode or run them only in the sandboxed browser (`tools/town/decode/`),
+10. **Test on Android, mobile and Quest VR** screen sizes and frame rates.
+11. **Uploaded files are untrusted:** decode or run them only in the sandboxed browser (`tools/town/decode/`),
     never in Node or a normal page.
-11. **Run one headless browser at a time.**
+12. **Run one headless browser at a time.**
 
 ## Privacy
 

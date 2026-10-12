@@ -83,7 +83,9 @@ The standing rules that came out of these are in [greeblis-rules.md](greeblis-ru
 decisions, with the PR that carried them.
 
 - **The game:** it is called "Greeblis Town USA" (#31). One repo from #51 on; the readable parcels' labels in the
-  mail pile are the one exception to the privacy rule.
+  mail pile are the one exception to the privacy rule. A second, readable copy of the game lives at
+  `tools/index.html` and is never compressed; the root `index.html` is the one that gets packed, and must still
+  work as a Bitcoin ordinal (#77, a rule for every future game too).
 - **Creatures:**
   - Every model is final (#43); Montgummery's screen mouth is a flat line, with a pixel smile only for a while
     after a Blossom (#40).

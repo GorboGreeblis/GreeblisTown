@@ -5,6 +5,7 @@ nothing in `tools/` ships inside it. The rules are in [`docs/greeblis-rules.md`]
 
 | Folder | What is in it |
 | --- | --- |
+| `index.html` | The readable copy of the game, never compressed (the owner's rule): the same bytes as the root `index.html` until the final pass packs the root, and the only readable page after it. Copy every change here before pushing; `test/copycheck.sh` checks |
 | [`docs/`](docs) | The rules, how the game is built, creature profiles, PR history, and the learnings from the earlier games |
 | [`test/`](test) | Playwright checks (`battery.sh` runs the main ones), coverage, pixel-compare and render tools |
 | [`three/`](three) | Trimming the bundled three.js |
@@ -41,6 +42,7 @@ scan. Every line should end with
 | `test/battery.sh` | The battery above (`URL` overrides the page) |
 | `test/shot2.js <url> <out.png> <scene.js>` | Loads the page on desktop (1280×720; `VW`, `VH` change it), waits `WAIT` ms (default 6000), runs the scene script, then screenshots unless `NOSHOT=1` |
 | `test/mob.js <url> <out.png> <scene.js>` | The same as an iPhone 13 (`EXTRA` adds browser flags) |
+| `test/copycheck.sh` | The readable copy: `tools/index.html` must be the root `index.html` byte for byte until the final pass packs the root, and after that the root must be the packed page (exit 1 when the copy is missing or stale). The battery runs it first |
 | `test/ordtest.js <index.html> <out.png>` | The game as an ordinal: served from memory inside `<iframe sandbox="allow-scripts">` with ord's CSP, every other request blocked and listed (`MOBILE=1` for an Android phone). A pass shows every creature, 0 errors and `blocked: []` |
 
 A scene script exports `async (page, outPath) => {}` and drives the game through its globals (below). Unless a
@@ -188,6 +190,9 @@ swapping the result in:
 
 ## The final pass: release, minify, pack
 
+0. The readable page goes to `tools/index.html` first (`cp index.html tools/index.html`; `test/copycheck.sh`
+   says they match). That copy is never minified or packed: once the root is packed it is the only readable
+   page, and every later change starts from it (the owner's rule, for every game).
 1. Nothing to switch off: the game starts with no quest or item progress (the testing head start, `TEST_QUESTS`,
    was removed; the tests give themselves what they need, e.g. `Kt.rewards.stone = Kt.rewards.seeds = !0`).
 2. Cut the game script (the last `<script>` in `index.html`) out to `game.js`.
