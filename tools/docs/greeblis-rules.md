@@ -68,8 +68,9 @@ of them. Read the guides here before changing the game.
 - Every planting creature grows a flower at its spot in the garden (Sparkakus included), in the first Event.
 - No words on windows. Signs may carry names.
 - **The town outside the park** gets time and care: make it as interesting as possible, drawn from the park's
-  lore, style and design (its creatures, the Consortium, the Portal and Greeblis City, the Ancients, goo and
-  VHS; never flint knapping), at no extra performance cost (built into the town's merged meshes and sign atlas,
+  lore, style and design (its creatures, the Consortium, the Portal and Greeblis City, goo and VHS; never flint
+  knapping, and nothing inspired by the church's Ancient: no element of the background outside the park comes
+  from it), at no extra performance cost (built into the town's merged meshes and sign atlas,
   paid for in trees).
 - **Show, don't tell:** lore comes into the environment through visual elements, never through text (words on
   signs don't count as visual). Keep words and signs in the background to a minimum. Only creatures of the town

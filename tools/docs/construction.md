@@ -130,7 +130,9 @@ Whole-body moves layered on top of each creature's own `step`, so they work for 
   ```
 
   - Planting moves: dig (lean in and scoop), pat (rock and press down) and scatter (turn and toss).
-  - Dances: bounce, sway, twirl, twist, shimmy, stomp, groove and jelly (a squash and stretch for goo bodies).
+  - Dances: bounce, sway, twirl, twist, shimmy, stomp, groove, jelly (a squash and stretch for goo bodies) and funk
+    (Sparkakus: a bob per beat, hips over two, a lean, and a full spin with a hop on the last two beats of every eight,
+    while his own model pumps his paws, steps, flops his ears and whips his tail on the same beat and weight).
   - 5.45 rad/s is one bob per beat of King Dino's 104 BPM; 2.7 is half time, for slower, bigger moves.
   - `plantMove(key, t)` and `danceMove(key, t)` return an offset `{x, y, z, rx, ry, rz, sx, sy, sz}`.
   - Hennrick and the three Dancers (Etcher, Glyph, Montgummery) dance their own built-in dances instead.
@@ -446,7 +448,8 @@ Goo that runs down a body and moves like goo, without clipping:
     window, an aerial), MONTGUMMERY (teal, stacks of his pots for porch posts, his tapes by the door, an aerial);
   - **out past them**: the water tower in MAMA GORBO's peach with her goo and her lime tail; her goo burger on a
     pole behind Mistergummery's; ZOLLOD's greenhouse with one of his flowers grown giant through its roof;
-    GEMTOE's amethysts in a fenced lot; the Ancients' ring of standing stones at the end of the road west; and
+    GEMTOE's amethysts in a fenced lot (nothing inspired by the church's ANCIENT: the owner's rule, so the ring of
+    standing stones that stood at the end of the road west is gone); and
     the owner's billboard, on the empty corner lot across the road from the park's north-west corner, turned to
     face the square diagonally (close enough to read from the garden, over the Library's low shelves): a painting of KING DINO as a real dinosaur (a theropod, in
     contrast to his gummy self in the park, but in his own lemon yellow with his turquoise as markings where his
@@ -457,7 +460,7 @@ Goo that runs down a body and moves like goo, without clipping:
   All of it goes into the existing bins and atlas (24 town meshes, no new draw calls). Its triangles are paid for:
   the park fence's pickets are four-sided tubes with no end faces (never seen; a third of the fence's triangles),
   the lamp globes and marquee bulbs are coarser spheres, and the far trees use the one-crown build. The town is
-  99.6k triangles, under the 101.6k it was before any of this. `test/t_townview.js` renders the map, the views
+  99.5k triangles, under the 101.6k it was before any of this. `test/t_townview.js` renders the map, the views
   out of the square, every piece close up and the fence pickets from inside, and prints the counts.
 - **The player** starts at (0, 2), just south of the Summoning Stone, facing the church (`player.spawn` and
   `player.face` in the config `t`; face 0 looks south along +z).
@@ -576,10 +579,12 @@ Goo that runs down a body and moves like goo, without clipping:
   joke): a heightfield of 19 overlapping cones gives a faceted paper heap, not a dome, under about 2,300
   envelopes (some on edge), tied bundles, parcels, leaning stacks and an avalanche round the foot. Five kraft
   parcels spaced out round the heap and half sunk in it like the rest can be read, none of them obvious (the
-  owner's call: never stacked or set out for the player), each label 6 mm proud of its box and facing out of the
-  heap at its spot: "To Clipston" on the open end, "To Ormstown" at the back, "To Montreal" on the far side, "To
-  Cobourg" by the front, "To Bangkok" at the back corner (the owner's words; the name on each is fitted to its
-  label; the list in `buildPostOffice` takes another in one line, placed clear of the buried parcels and stacks).
+  owner's call: never stacked or set out for the player), each label 6 mm proud of its box and always facing
+  straight out of the heap (its turn is worked out from its spot, plus a small offset, and the box is tipped up
+  a little toward the eye): "To Clipston" on the open end, "To Ormstown" at the back, "To Montreal" on the far
+  side, "To Cobourg" by the front, "To Bangkok" at the back corner (the owner's words; the name on each is fitted
+  to its label; the list in `buildPostOffice` takes another in one line, placed clear of the buried parcels and
+  stacks, and `t_parcels.js` renders each label and checks it faces out).
 - **Dance floor:** 1.2 m tiles in front of the Juice Bar's counter, one 10 × 32 rectangle from the bar's north end
   south for twice the bar's length. All tiles the same dark purple in darker grout with a satin sheen; one canvas
   at 32 px per tile with mipmaps, so the grout doesn't shimmer in the distance or in VR. Canvas row 0 is the

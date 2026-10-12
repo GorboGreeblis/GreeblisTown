@@ -12,7 +12,7 @@ Planting and dance speeds are in radians per second of game time; 5.45 is one bo
 
 | Creature | Id | Builder | Where | Planting (speed, size) | Dance (beat, size) |
 | --- | --- | --- | --- | --- | --- |
-| Sparkakus | `keeper` | `BORN.sparkakus`, via the Library's worker `st` | The Library, browsing | pat (1.6, 1) | twist (5.45, 1) |
+| Sparkakus | `keeper` | `BORN.sparkakus`, via the Library's worker `st` | The Library, browsing | pat (1.6, 1) | funk (5.45, 1), with his own moves in his model |
 | Mama Gorbo | `p_mamagorbo` | `born_mamagorbo` | Wanders the park | pat (1.3, 1.2) | jelly (5.45, 1) |
 | Gooward | `gorbo` | `born_gooward` | Wanders the park | pat (1.6, 1.1) | bounce (5.45, 1.1) |
 | Gemtoe | `p_gemtoe` | `born_gemtoe` | Wanders the park | scatter (2.4, 1) | twirl (2.7, 1) |
@@ -47,6 +47,12 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   fading through cyan).
 - **Animation:** his tail sways, he breathes and his arms move slowly; tail and arms swing as he walks; he talks
   while his dialogue is open, and his head turns to greet the player.
+- **Dance (the owner asked for funky):** at the Event his move wrapper plays `funk` (a bob on every beat, hips
+  twisting over two, a lean side to side, and on the last two beats of every eight a full spin with a hop) while
+  his own model, on the same beat and weight (`st.dancing`, passed to his `step` as `e.dance`), pumps his paws up
+  to ear height and back to his chest on alternate beats, out to the sides so they clear his ears and muzzle, steps
+  in place (thigh up, shin folded, foot level, so a foot only ever rises), flops his ears and whips his tail side to
+  side and up. `t_spdance.js` renders a loop of it and checks nothing goes through the ground.
 - **Role:** stands on the Library's rug at local (0, 0, −0.45) and browses the open floor when nobody needs him.
   He gives the Ancient Artifacts quest (his talk follows how many you have); with all three he stays where he
   stands, the light bulb comes on and the town dims, he glues the three pieces back together with a bottle of

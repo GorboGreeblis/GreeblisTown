@@ -77,6 +77,8 @@ row says otherwise, run it with `shot2.js`.
 | `t_phone.js` | The phone is locked (its connection to the Portal is blocked) until Mushroom has a Blossom, then calls Nextessa for the rest of the session |
 | `t_script.js` | The owner's script, the parts that move: Sparkakus's Artifacts talk and the glue bottle putting the Gem together, his Blossom lap on all fours (clear of every bookcase), and renders of the Library's face-out books and Wish Blossom and the Sheriff's posters. `VW=320 VH=240` |
 | `t_spmenu.js` | Sparkakus's menu, as everyone's: Talk and "Give a blossom" offered from the first moment a Blossom is held (no Talk or quest first), the Blossom given before any Talk (his lap and his sorry line), Talk then opening his quest dialogue, and at the Garden Event no creature, Sparkakus included, offering a Blossom option. `VW=320 VH=240` |
+| `t_spdance.js` | Sparkakus's funky dance at the Garden Event: eight frames over one eight-beat loop from his front and two from his side, the lowest point of his model against the ground each frame. `VW=320 VH=240` |
+| `t_parcels.js` | The five readable parcels round the mail heap: each label's facing (the dot with the way out of the heap, and its tip toward the eye), each rendered from in front, and the heap from the walk round it on four sides. `VW=320 VH=240` |
 | `dance-plant.js` | Planting and dancing are animations, not menu options: every menu holds only Talk (and Give a blossom), each creature's moves move it, and at the Event they plant, then dance while Fortizmo plays. Slow |
 | `portraits.js` | Isolated portraits of creatures (`IDS`) on open lawn (`SPAWN=x,z`), two angles each |
 | `topview.js` | The whole town from straight above |
