@@ -194,6 +194,20 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Mama Gorbo and Gooward** meet every 20 to 40 s (`JGP.meetAt(t)` forces it for tests): they walk to a spot
   between them, turn face to face and throw colourful goo balls to each other, a heart over the one who catches
   each, then go back to wandering.
+- **Visits** (owner's rule): rarely (one every three to six minutes, so the player only now and then sees one)
+  one creature leaves its place to call on another, the visits made least often first, in random order, so
+  everyone visits everyone. It walks over (a worker out by its `via`, Mushroom first
+  stepping down off his desk) along `JGP.route` (a 1.2 m grid of open ground, as
+  `roamFree`, pulled taut into clear straight walks: round the garden, the pond, buildings and scenery), stops
+  beside the host on open ground facing it, the two play their pair's vignette with both lines always shown
+  (`VIGS.play`), and it walks home slowly (`walkK` 0.55; a worker back in by its `via`). King Dino (at his
+  drums), Somlet (asleep at the Post Office) and the church's slug never leave: the others come to them, the slug
+  only rarely (in one round in eight), in and out through the wall where the X is, as the player goes (the visitor
+  meets the church's walls, `inside`, and the church guard lets it be), and their exchange is seen only by a player
+  in the church too. Nextessa and Backpacka neither visit nor are visited. One at a time; the Event, a battle or a meeting calls it off (its home is put back at once); the player close by or
+  talking to the visitor holds it up. While in one, `visiting` / `hosting` keep the roams, Fortizmo's patrol, the
+  meetings, random vignettes and Somlet's lying down out of it. `JGP.visitAt(t, v, h)` forces one for tests,
+  `JGP.visits()` and `JGP.visitPlan(v, h)` report; `test/t_visits.js` checks them.
 - **Sparkakus** browses his Library when nobody needs him, keeping 0.8 m clear of every bookcase and the banner's
   posts. Given a Blossom (his stump station's own "Give a blossom", `st.romp`), he drops to all fours, runs a lap
   of an ellipse over the Library floor (clear of every bookcase), comes back to his place, gets up and apologises.
@@ -236,20 +250,19 @@ Goo that runs down a body and moves like goo, without clipping:
 
 ### Vignettes
 
-- Every NPC has a vignette with every other NPC, one each: the sixteen in `NAMES` (two-letter codes) make 120
-  pairs in `PAIRS`, and the church's slug has one with each of them in `SLUG_PAIRS` (136 in all). Each is a short
-  animated exchange: a choreography style, both creatures' signatures from `SIG` (item, colour, gesture, emote)
-  and a seeded twist. Its two-line text shows only rarely (10% of the time, at most once every 4 minutes). The
+- Every creature has a vignette with every other, one each: the fourteen in `NAMES` (two-letter codes) make 91
+  pairs in `PAIRS`, and the church's slug has one with each of them in `SLUG_PAIRS`. Nextessa and Backpacka
+  never have vignettes (owner's rule). Each is a short animated exchange: a choreography style, both creatures'
+  signatures from `SIG` (item, colour, gesture, emote) and a seeded twist, and its two lines always show. The
   lines follow the owner's script: Gooward only says Gomp, Somlet only snores, Glyph asks "don't you think?",
   Mont speaks of himself as Mont. `town/vignettes/pairs.py` checks every pair is there once.
-- Who can take part (`lineUp`): the cast standing at their own spots, not busy; Sparkakus in his Library through
-  his stand-in `st.ent` (a marker kept at his world position whose wrapper wraps his model; he stops browsing for
-  it); Nextessa after the pizza, on her way back to the Portal (she stops walking for it). Backpacka is only in
-  town during the Event, when vignettes don't play, and the slug's are switched off (`SLUG_VIGNETTES`, the
-  owner's script: it never leaves the church).
-- Every 5 to 10 s there is a 15% chance one plays: least-played pairs first, nearer pairs preferred, any two in
-  town (up to 90 m apart, so every pair gets its turn). Talking to either, or the Event, stops it. King Dino never
-  turns or spins in one (his sticks would sweep through the kit).
+- Who can take part (`lineUp`): the cast standing at their own spots, not busy and not in a visit; Sparkakus in
+  his Library through his stand-in `st.ent` (a marker kept at his world position whose wrapper wraps his model; he
+  stops browsing for it). The slug's play only on a visit to it (`JGP.slug.ent`, its stand-in: it talks instead
+  of moving), and are seen only by a player in the church too.
+- One plays every half minute or so (owner's rule: an hour's play shows every pair's animation and words): the
+  least-played pair first, in random order, any two in town (up to 90 m apart). Talking to either, or the Event,
+  stops it. King Dino and the slug never turn or spin in one.
 
 ### The Garden Event
 
@@ -387,8 +400,8 @@ Goo that runs down a body and moves like goo, without clipping:
     through it. Inside, floor, walls and ceiling are one gritty olive-grey ground texture (lit best at the floor,
     least at the ceiling), with pebbles, big flat dark stones, shell flakes, cracks and dry grass on the floor.
     `test/t_church.js` checks the way in, the walls and the head guard; `test/churchshots.js` renders it.
-  - **The slug** lies across the middle of the floor and never moves from there. It has one Talk (no Blossom;
-    it is not one of the creatures), and its own moves: idle (stalks swaying and pulling in, breathing, looking
+  - **The slug** lies across the middle of the floor and never moves from there. It has a Talk and, with one in
+    hand, a Blossom (it takes one and answers "..."); it never visits nor is visited, and its vignettes are off, and its own moves: idle (stalks swaying and pulling in, breathing, looking
     round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
     `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
   - **No Blossom or Flint ever spawns inside:** every pickup spot comes from `go()`, which turns down anything within

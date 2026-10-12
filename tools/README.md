@@ -53,6 +53,7 @@ row says otherwise, run it with `shot2.js`.
 | `t_blog2.js` | Dance battle text, an Artifact from first wins only, a bow on repeat wins, the Library finale |
 | `t_gem.js`, `t_pizza.js`, `vigrun.js` | The Ancient Gem trade, the pizza courier, many creature vignettes |
 | `t_vigall.js` | Every NPC has a vignette with every other: drives the vignettes in game time and reports which of the 136 pairs played (and why any did not), wrappers back at rest, errors |
+| `t_visits.js` | Creatures visiting each other: a spot and a clear way for every visitor and host (169 pairs), then five visits played out (getting there, the exchange with its lines, slowly home). `VW=320 VH=240` |
 | `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
 | `t_misc.js` | King Dino's jazz on the floor (also while he is talked to, given a Blossom, in a battle), pickup respawn, the Blossom menu option |
 | `t_fz.js` | Fortizmo's walk behind the bar (it pushes her timer, as headless game time is slow) |
