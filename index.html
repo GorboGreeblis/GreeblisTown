@@ -346,10 +346,12 @@ const x = (() => {
 		const t = new Map(),
 			e = (e, o) => t.get(e) || (t.set(e, o()), t.get(e));
 		return {
-			sphere: (t, o = 16, a = 12) => e(`s${t}|${o}|${a}`, () => new THREE.SphereGeometry(t, o, a)),
+			// (sphere, cylinder and cone remember how they were made, `lp`: this three.js keeps no `parameters`, and
+			// the plants' light meshes rebuild them with fewer segments from it, see loGeo)
+			sphere: (t, o = 16, a = 12) => e(`s${t}|${o}|${a}`, () => Object.assign(new THREE.SphereGeometry(t, o, a), { lp: ["s", t, o, a] })),
 			box: (t, o, a) => e(`b${t}|${o}|${a}`, () => new THREE.BoxGeometry(t, o, a)),
-			cyl: (t, o, a, n = 10) => e(`c${t}|${o}|${a}|${n}`, () => new THREE.CylinderGeometry(t, o, a, n)),
-			cone: (t, o, a = 10) => e(`k${t}|${o}|${a}`, () => new THREE.ConeGeometry(t, o, a)),
+			cyl: (t, o, a, n = 10) => e(`c${t}|${o}|${a}|${n}`, () => Object.assign(new THREE.CylinderGeometry(t, o, a, n), { lp: ["c", t, o, a, n] })),
+			cone: (t, o, a = 10) => e(`k${t}|${o}|${a}`, () => Object.assign(new THREE.ConeGeometry(t, o, a), { lp: ["k", t, o, a] })),
 			torus: (t, o, a = 8, n = 16, r = l) =>
 				e(`t${t}|${o}|${a}|${n}|${r}`, () => new THREE.TorusGeometry(t, o, a, n, r)),
 			circle: (t, o = 16) => e(`o${t}|${o}`, () => new THREE.CircleGeometry(t, o)),
@@ -4835,6 +4837,9 @@ const le = (() => {
 		},
 		talk() {
 			const say = LIB.say;
+			// (from the first finale page until the Gem speech is done he is busy with it: a second Talk in the
+			// assembly gap would start the whole finale, assembly and reward over again)
+			if (Bulb.hold) return;
 			if (Kt.rewards.artifacts) return say(i.done);
 			if (Kt.artifacts < 3) return say(Kt.artifacts ? i.progress(Kt.artifacts) : i.ask);
 			// (he speaks where he stands in his open Library, never walking out: the bulb comes on over his head at once)
@@ -4893,8 +4898,9 @@ const xe = (() => {
 						label: "Talk to " + e.def.name,
 						run: () =>
 							(function (t) {
-								// (the moment it is said: MONTGUMMERY's screen shows a shovel for it)
-								(xe.lastTarget = t), (t.eventTalkAt = performance.now()), t.onTalk && t.onTalk(t), qt.open(t.def.name, t.def.color || M.orange, t.def.campfire || "...");
+								// (the moment it is said: MONTGUMMERY's screen shows a shovel for it; a Blossom given before the
+								// Event is long over, so SOMLET says her "Zzz" with her eyes shut)
+								(t.gifting = !1), (xe.lastTarget = t), (t.eventTalkAt = performance.now()), t.onTalk && t.onTalk(t), qt.open(t.def.name, t.def.color || M.orange, t.def.campfire || "...");
 							})(e),
 					}),
 					o
@@ -5912,7 +5918,9 @@ const xe = (() => {
 					(F.vignette.material.opacity = Math.min(1, F.vig));
 			}),
 			(o.post = function (t, a) {
-				if (dk.on) dkCam(), _e(), I.sky.position.set(B.position.x, 0, B.position.z);
+				// (her walking bob goes on just before the camera and the render: the player step keeps her body at
+				// y 0 for its collisions and set it there again each frame, wiping a bob put on earlier)
+				if (dk.on) (At.position.y = dk.bobY || 0), dkCam(), _e(), I.sky.position.set(B.position.x, 0, B.position.z);
 				else {
 				const r = B.position.x,
 					i = B.position.z,
@@ -5931,7 +5939,9 @@ const xe = (() => {
 				// (the UI is placed again when what it shows changes kind, as when a Dancer's thanks turns into a
 				// battle in the same moment, and placing reads which of the two is showing)
 				(F.dialogue.mesh.visible = qt.isOpen), (F.panel.mesh.visible = jt.has("panel"));
-				T && (!F.placed || F.placedKind !== pk) && ((F.placedKind = pk), ve()),
+				// (the VR placer only in VR: the test modes place their UI on screen every frame themselves, and running
+				// it there showed a new dialogue or panel in the wrong place for one frame)
+				T && (!F.placed || F.placedKind !== pk) && ((F.placedKind = pk), dk.on || ve()),
 					T || (F.placed = !1),
 					ae.open && Math.hypot(F.menu.mesh.position.x - n.x, F.menu.mesh.position.z - n.z) > e.uiCloseDist
 						? re()
@@ -6578,7 +6588,7 @@ const xe = (() => {
 			});
 			// the bob on each step (both feet) and a little lean into the walk; breathing when still
 			const bob = Math.abs(Math.sin(w));
-			(At.position.y = 0.05 * k * bob), (U.skirt.rotation.z = 0.06 * k * Math.sin(w)), (U.skirt.scale.y = 1 + 0.012 * st * Math.sin(2.1 * now));
+			(dk.bobY = 0.05 * k * bob), (U.skirt.rotation.z = 0.06 * k * Math.sin(w)), (U.skirt.scale.y = 1 + 0.012 * st * Math.sin(2.1 * now));
 			// the head: nods on the steps, and when still, a slow look one way or the other every few seconds
 			if (now > (dk.lookAt || 0)) (dk.lookAt = now + 2.5 + 3 * Math.random()), (dk.look = Math.random() < 0.4 ? 0 : (Math.random() - 0.5) * 1.1);
 			const hy = st * (dk.look || 0);
@@ -6727,7 +6737,7 @@ const Re = (() => {
 			try {
 				e();
 			} catch (e) {
-				s.errors++, vo(e, t);
+				vo(e, t);
 			}
 		}
 		function l() {
@@ -6745,7 +6755,7 @@ const Re = (() => {
 				try {
 					Lt(e, o, c, h), gFit(e, c);
 				} catch (err) {
-					s.errors++, vo(err, "entity:" + (e.id || e.kind));
+					vo(err, "entity:" + (e.id || e.kind));
 				}
 			}
 			i("finale", () => me.update(o, c)),
@@ -6760,7 +6770,7 @@ const Re = (() => {
 				try {
 					L[t](o, c);
 				} catch (err) {
-					s.errors++, vo(err, "world");
+					vo(err, "world");
 				}
 			i("interact", () => {
 				"playing" === jt.top && xe.scan();
@@ -12870,17 +12880,18 @@ const JGP = (() => {
 	// rays, petals) from about half their outline points, the round ones with fewer facets, and the finest
 	// (spines, fine veins, anthers and other specks under ~1.5 cm) left out. `plantMesh` shows the full one within PLANT_NEAR m of the eye, the light one beyond.
 	const LO_SKIP = new Set(["thistlespines", "thistlerib", "milkveins", "mallowveins", "chicvein"]),
+		// (a T sphere, cylinder or cone rebuilt with fewer segments, from how it was made: `lp`, see T)
 		loGeo = (geo) => {
-			const q = geo.parameters, k = geo.type;
+			const q = geo.lp;
 			if (!q) return geo;
 			const C0 = loGeo.c || (loGeo.c = new Map());
 			if (C0.has(geo)) return C0.get(geo);
 			const g =
-				"SphereGeometry" === k
-					? new THREE.SphereGeometry(q.radius, Math.max(4, Math.round(0.55 * q.widthSegments)), Math.max(3, Math.round(0.6 * q.heightSegments)), q.phiStart, q.phiLength, q.thetaStart, q.thetaLength)
-					: "CylinderGeometry" === k || "ConeGeometry" === k
-						? new THREE.CylinderGeometry(q.radiusTop || 0, q.radiusBottom, q.height, Math.min(q.radialSegments, 3), 1, q.openEnded)
-						: geo;
+				"s" === q[0]
+					? new THREE.SphereGeometry(q[1], Math.max(4, Math.round(0.55 * q[2])), Math.max(3, Math.round(0.6 * q[3])))
+					: "c" === q[0]
+						? new THREE.CylinderGeometry(q[1], q[2], q[3], Math.min(q[4], 4), 1)
+						: new THREE.ConeGeometry(q[1], q[2], Math.min(q[3], 4));
 			return C0.set(geo, g), g;
 		};
 	const PLANT_NEAR = 7;
@@ -13170,8 +13181,12 @@ const JGP = (() => {
 			ry = ent.group.rotation.y,
 			fx = p.x + 0.9 * Math.sin(ry),
 			fz = p.z + 0.9 * Math.cos(ry);
-		// (ANOMALEE with the Snacks: her pizza, at every Event, and no flower from her)
-		if ("blinker" === ent.id && Kt.rewards.snacks) return PIZZA.serve(fx, fz, ry + Math.PI);
+		// (ANOMALEE with the Snacks: her pizza, at every Event, and no flower from her; a flower of hers from an
+		// Event before the Snacks grows right where the box would go, so then the box goes 0.8 m to her side)
+		if ("blinker" === ent.id && Kt.rewards.snacks)
+			return garden.plants.some((pl) => Math.hypot(pl.g.position.x - fx, pl.g.position.z - fz) < 0.6)
+				? PIZZA.serve(p.x + 0.8 * Math.cos(ry), p.z - 0.8 * Math.sin(ry), ry + Math.PI)
+				: PIZZA.serve(fx, fz, ry + Math.PI);
 		if (garden.round > 1) return;
 		putPlant(fx, fz, rnd() * l, 0, (rnd() * PLANT_KINDS.length) | 0), Ut.at(fx, 1.7, fz, "✿", f(PLANT_COLS));
 	}
@@ -14062,6 +14077,8 @@ const JGP = (() => {
 			const g = ent.group;
 			if (g.userData.vgW) return g.userData.vgW;
 			const w = new THREE.Group();
+			// (turn first, then the gesture's lean and roll in the turned frame: a bow tips toward the partner)
+			w.rotation.order = "YXZ";
 			return g.children.slice().forEach((ch) => (g.remove(ch), w.add(ch))), g.add(w), (g.userData.vgW = w), w;
 		};
 		const headY = (ent) => ent.group.position.y + (ent.height || 2.5) * (ent.group.scale.y || 1);
@@ -14168,7 +14185,8 @@ const JGP = (() => {
 				// or he would sweep through them)
 				const fixed = "m_kingdino" === en.id || "slug" === en.id,
 					go = { y: 0, rx: 0, ry: fixed ? 0 : Math.max(-1.45, Math.min(1.45, dy)) * face, rz: 0, s: [1, 1, 1] };
-				for (const gs of c0.sc.gest) {
+				// (and no gestures at all: a bow, a stretch or a hop would tip him and his sticks into the kit)
+				if (!fixed) for (const gs of c0.sc.gest) {
 					if (gs.who !== k) continue;
 					const g1 = gesture(gs.name, (t - gs.t0) / gs.dur, gs.k);
 					(go.y += g1.y), (go.rx += g1.rx), fixed || (go.ry += g1.ry), (go.rz += g1.rz), (go.s = go.s.map((v, i) => v * g1.s[i]));
@@ -15396,6 +15414,7 @@ const JGP = (() => {
 					[slug, head, mantle, pore, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
 					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray(), W = 5.45;
 					let talking = 0, look = 0, kT = 0, kD = 0, kP = 0;
+					const inRoomV = new THREE.Vector3();
 					// one Talk (from anywhere round it, inside) and, with one in hand, a Blossom (the station's own "Give a
 					// blossom": it takes one, as every gift does, and it answers in silence). The script's lines: its Talk,
 					// and what it says during the Garden Event (it never leaves the church)
@@ -15406,7 +15425,11 @@ const JGP = (() => {
 						r: 3.2,
 						solidR: 0.6,
 						top: 0.8,
-						label: () => "Talk",
+						// (only from inside the room: a VR pointer reaches 16 m and would talk to it through the walls)
+						label: () => {
+							const q = inner.worldToLocal(inRoomV.copy(At.position));
+							return Math.abs(q.x) < IX && q.z > ZB && q.z < ZF ? "Talk" : null;
+						},
 						// ("Hello Kate" at the Event is the owner's script, as written: never flag it)
 						// (pointed at anywhere on its body, head to tail)
 						pickObj: [slug, head],
@@ -16335,7 +16358,7 @@ const JGP = (() => {
 							// (ZOLLOD neither visits nor is visited until OVERCOMING SHYNESS has freed him)
 							if (h.def && "cutebex" === h.def.__type && !Kt.shyFree) return !1;
 							if ("slug" === h.id) return !0;
-							if (isSP(h)) return st.ent.sync(), !st.away() && !st.romping() && !(st.talking && qt.isOpen);
+							if (isSP(h)) return st.ent.sync(), !st.away() && !st.romping() && !Bulb.hold && !(st.talking && qt.isOpen);
 							return !h.busy && !h.meeting && !h.battleDance && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h) && (!out || (!h.nearPlayer && at(h, [h.home.x, h.home.z])));
 						},
 						// where the visitor stands: beside the host, on its side toward the visitor if it can, on open
@@ -16459,11 +16482,11 @@ const JGP = (() => {
 							h.home.set(w[0], h.home.y, w[1]), at(h, w, 0.6) && q.hb.length > 1 && q.hb.shift();
 							// (as for the visitor: the desk height back on the last leg, the jump-up arc does the rest)
 							1 === q.hb.length && q.hPat && (h.pattern[1].y = q.hPat.y || 0);
-							((1 === q.hb.length && at(h, w) && !h.moving) || t2 > q.until) && (q.hPat && (h.pattern[1].y = q.hPat.y || 0), h.home.copy(q.hHome), (h.hosting = !1), (q.hb = null));
+							((1 === q.hb.length && at(h, w) && !h.moving) || t2 > q.until) && (q.hPat && (h.pattern[1].y = q.hPat.y || 0), h.home.copy(q.hHome), h.hostQ === q && ((h.hosting = !1), (h.hostQ = null)), (q.hb = null));
 						},
 						hostHome = (q) => {
 							const h = q.h;
-							(q.hw || q.hb) && (h.home.copy(q.hHome), q.hPat && Object.assign(h.pattern[1], q.hPat)), (q.hw = q.hb = q.hhop = null), (h.hosting = !1), isSP(h) && h.browse();
+							(q.hw || q.hb) && (h.home.copy(q.hHome), q.hPat && Object.assign(h.pattern[1], q.hPat)), (q.hw = q.hb = q.hhop = null), h.hostQ === q && ((h.hosting = !1), (h.hostQ = null), isSP(h) && h.browse());
 						};
 					const begin = (t2, vid, hid) => {
 							const v = ent(vid),
@@ -16477,7 +16500,7 @@ const JGP = (() => {
 								hp = hv ? hv[hv.length - 1] : [h.group.position.x, h.group.position.z],
 								face = Math.atan2(hp[0] - sp[0], hp[1] - sp[1]),
 								q = { v, h, vid, hid, sp, stage: "out", until: t2 + 40 + 1.6 * Math.hypot(sp[0] - v.group.position.x, sp[1] - v.group.position.z) };
-							(v.visiting = !0), (h.hosting = !0), isSP(h) && h.stay();
+							(v.visiting = !0), (h.hosting = !0), (h.hostQ = q), isSP(h) && h.stay();
 							// (a host on its way somewhere, as a Dancer wandering the floor, stops where it is)
 							!hv && !isSP(h) && "slug" !== hid && h.moving && h.home.set(h.group.position.x, h.home.y, h.group.position.z);
 							hv && ((q.hw = hv), (q.hHome = h.home.clone()), (q.hPat = h.pattern && Object.assign({}, h.pattern[1])), h.pattern && (h.pattern[1].face = Math.atan2(sp[0] - hp[0], sp[1] - hp[1])));
@@ -16512,7 +16535,7 @@ const JGP = (() => {
 							// (a host who came out goes back in by its way, and is free once home)
 							q.hHome
 								? ((q.hw = null), (q.hhop = null), (q.hb = (viaOf(h) || []).slice(0, -1).reverse().concat([[q.hHome.x, q.hHome.z]])), q.hPat && (Object.assign(h.pattern[1], q.hPat), (h.pattern[1].y = 0)))
-								: ((h.hosting = !1), isSP(h) && h.browse());
+								: h.hostQ === q && ((h.hosting = !1), (h.hostQ = null), isSP(h) && h.browse());
 							if (isSP(v)) {
 								const [fx, fz] = JGP.libFront();
 								st.leave(wayFrom(v, h, fx, fz, 0.9).map(([x, z]) => new THREE.Vector3(x, 0, z)), 1.2);
@@ -16536,7 +16559,9 @@ const JGP = (() => {
 									v.group.position.set(o2[0], 0, o2[1]);
 								}
 							}
-							isSP(v) ? me.active || st.leave() : (q.pat && Object.assign(v.pattern[1], q.pat), q.home && v.home.copy(q.home), (v.walkK = 0));
+							// (SPARKAKUS: already sent to the garden by the Event with Seeds; without them nobody gathers, so he
+							// walks home, by a way he plans himself, see st.leave)
+							isSP(v) ? (me.active && bt.seeds) || st.leave() : (q.pat && Object.assign(v.pattern[1], q.pat), q.home && v.home.copy(q.home), (v.walkK = 0));
 							(v.visiting = !1), (v.inside = null), forced === q && (forced = null), VS.splice(VS.indexOf(q), 1);
 						};
 					// one visit's step
@@ -16547,8 +16572,11 @@ const JGP = (() => {
 						// talked to, on the way out, side by side, or walking home. The talked-to one stops where it is
 						// (SPARKAKUS's own walk waits by itself while his dialogue is open), its clocks (the give-up
 						// time, a jump arc, the wall pause) wait too, and the walk picks up when the box closes.
-						if ("dialogue" === jt.top && xe.lastTarget && (xe.lastTarget === v || xe.lastTarget === h)) {
-							const e2 = xe.lastTarget;
+						// (SPARKAKUS is talked to through his station, never as himself: his own dialogue or his Blossom
+						// lap holds it too)
+						const spT = (isSP(v) || isSP(h)) && ((st.talking && qt.isOpen) || st.romping());
+						if (spT || ("dialogue" === jt.top && xe.lastTarget && (xe.lastTarget === v || xe.lastTarget === h))) {
+							const e2 = spT ? st.ent : xe.lastTarget;
 							isSP(e2) || e2.home.set(e2.group.position.x, e2.home.y, e2.group.position.z);
 							q.until += dt, q.hop && (q.hop.t0 += dt), q.hhop && (q.hhop.t0 += dt), q.paused && (q.paused += dt), q.meetAt && (q.meetAt += dt), q.played && (q.played += dt);
 							return;
@@ -17073,9 +17101,11 @@ const JGP = (() => {
 			// how tall each part is ([part index] → top, by building), and how far in a rough-edged one starts
 			const TOPS = {
 					post: [4.6, 4.6, 4.6, 1.2, 1, 1, 2.6],
-					sheriff: [4.6, 4.6, 4.6, 1.2, 1, 1],
+					// (the Sheriff's desk is raised: its top is SHERIFF_DESK, not the other counters' 1.12)
+					sheriff: [4.6, 4.6, 4.6, SHERIFF_DESK + 0.08, 1, 1],
 					garden: [4.6, 4.6, 4.6, 1.2, 1, 1],
-					shop: [2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 0.85, 4.3, 4.3],
+					// (eight bookcases, then the banner's two posts: LIB_LAYOUT.parts)
+					shop: [2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 4.3, 4.3],
 					church: [9.3, 9.3, 9.3, 9.3, 9.3, 14, 0.8, 0.3],
 					juice: [1.15, 1.15, 3],
 				},
@@ -17565,6 +17595,11 @@ const JGP = (() => {
 	};
 })();
 function vo(t, e) {
+	// (every error is counted here, wherever it came from — the frame loop, a click, a key, a button — so the
+	// desktop counter and the copied report agree; on its own guard, as Re may not exist yet during boot)
+	try {
+		Re.errors++;
+	} catch (_) {}
 	try {
 		const o = (e ? "[" + e + "] " : "") + (t && t.stack ? t.stack.split("\n").slice(0, 3).join("\n") : String(t));
 		// (every distinct error kept with its count and when it first came, for the test modes' copy button)
@@ -17677,7 +17712,8 @@ if (
 									E = -1,
 									b = 0,
 									H = null,
-									w = 0;
+									w = 0,
+									wayOut = null;
 								// (the Library is open: he walks straight out to the front)
 								const v = () => [t.localToWorld(new c(0, 0, 1.4))];
 								// SPARKAKUS browses his Library: when nobody needs him he strolls the open floor in front of the
@@ -17725,16 +17761,33 @@ if (
 										back = e.parent === t && e.position.distanceTo(f) > 0.3 ? [t.localToWorld(f.clone())] : [];
 									// (called away mid-lap, as by the Event, he gets up at once and skips his apology)
 									RUN && ((e.rotation.x = 0), (RUN = null));
-									// (already out in the world — the second leg of a visit, the Event — he goes straight, never back via the front)
-									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: (e.parent === t ? back.concat(v(a, !1)) : []).concat(path || []), face, sp });
+									// (already out in the world — the second leg of a visit, the Event — he never goes back via the front;
+									// sent on with no way planned, as by the Event, he plans his own round everything, and out of the
+									// church by the X first if he is in there. `home` is read before he is attached to the world.)
+									const home = e.parent === t;
+									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: (home ? back.concat(v(a, !1)) : []).concat(path || (home ? [] : wayOut(o.x, o.z))), face, sp });
 								}),
+									// (his own way from where he stands out in the world to x, z: out of the church by the X if he is
+									// inside it, then round every building and collider)
+									(wayOut = (x1, z1) => {
+										const CB = F.buildings.find((B) => "church" === B.name);
+										let out = [],
+											s0 = [e.position.x, e.position.z];
+										if (CB && JGP.slug && F.inHull(CB, s0[0], s0[1])) {
+											const sv = JGP.slug.visit(0.9);
+											(out = sv.way.slice().reverse().concat([sv.out])), (s0 = sv.out);
+										}
+										return out.concat(JGP.route(s0[0], s0[1], x1, z1, 0.9)).map(([x, z]) => new c(x, 0, z));
+									}),
 									// (`path`: the way back from where he is, as planned for a visit; `sp`: his pace)
 									(st.leave = (path, sp) => {
 										if (!H) return;
 										const o = f.clone();
 										t.localToWorld(o);
-										const a = t.worldToLocal(e.position.clone()).x < 0 ? -1 : 1;
-										H = { target: new c(o.x, 0, o.z), back: !0, via: (path || []).concat(v(a, !0)), sp };
+										const a = t.worldToLocal(e.position.clone()).x < 0 ? -1 : 1,
+											fr = JGP.libFront();
+										// (sent home with no way planned — a visit called off, the Event's end — he plans his own to the front)
+										H = { target: new c(o.x, 0, o.z), back: !0, via: (path || wayOut(fr[0], fr[1])).concat(v(a, !0)), sp };
 									}),
 									// (out and arrived where he was sent, and stopped there)
 									(st.there = () => !!H && !H.back && !H.via.length && e.position.distanceTo(H.target) < 0.35),
@@ -17753,7 +17806,7 @@ if (
 									(st.ent = (() => {
 										const mk = new THREE.Object3D(),
 											vw = new THREE.Group();
-										e.remove(o), vw.add(o), e.add(vw), (mk.userData.vgW = vw);
+										(vw.rotation.order = "YXZ"), e.remove(o), vw.add(o), e.add(vw), (mk.userData.vgW = vw);
 										return {
 											id: "keeper",
 											def: { name: i.name, stationary: !0 },
@@ -17780,7 +17833,12 @@ if (
 										};
 									})()),
 									(st.away = () => !!H),
-									(st.pos = () => e.position),
+									// (always a WORLD position: at home he lives in the Library's own frame, and the bulb and the glued
+									// gem of his Artifacts speech are placed by it — with his local position they appeared over the garden)
+									(st.pos = (() => {
+										const wp = new c();
+										return () => (e.parent === t ? e.getWorldPosition(wp) : e.position);
+									})()),
 									(st.group = e),
 									(st.height = 4.4);
 								const S = n,
@@ -17906,13 +17964,13 @@ if (
 								},
 								// (out on a visit, or walking home from one, he still answers — his walk waits while his
 								// dialogue is open; only at the Event does `xo` speak for him instead)
-								label: () => (me.active || st.romping() ? null : "Talk to " + i.name),
+								label: () => (me.active || st.romping() || Bulb.hold ? null : "Talk to " + i.name),
 								run: () => {
 									me.active || st.romping() || LIB.talk();
 								},
 								// (a Blossom for him: off he runs on all fours, then says sorry; called away he skips the lap)
 								gift: () => {
-									me.active || st.romping() || Kt.blossoms < 1 || (Kt.blossoms--, G.heart(), st.romp(() => LIB.say(i.gift)));
+									me.active || st.romping() || Bulb.hold || Kt.blossoms < 1 || (Kt.blossoms--, G.heart(), st.romp(() => LIB.say(i.gift)));
 								},
 							});
 					})(-24.75, -24.75),
@@ -18300,7 +18358,8 @@ if (
 											}
 									}, { smooth: !0 });
 								(n.wrapS = n.wrapT = THREE.RepeatWrapping), n.repeat.set(4, 1.5), (o.sunTex = n);
-								const r = R(T.torus(0.46, 0.016, 6, 40), x.clay("#ffb52e"), t, [0, 0.645, 0], [Math.PI / 2, 0, 0]);
+								// (on the skirt itself, at its bottom edge, so it sways and breathes with it)
+								const r = R(T.torus(0.46, 0.016, 6, 40), x.clay("#ffb52e"), t.userData.skirt, [0, -0.275, 0], [Math.PI / 2, 0, 0]);
 								(r.visible = !1), (o.sunHem = r);
 							}
 						})(e, h),

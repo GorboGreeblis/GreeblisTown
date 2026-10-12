@@ -226,11 +226,17 @@ Goo that runs down a body and moves like goo, without clipping:
     rule): the talked-to one stops where it stands, the visit's clocks (give-up time, jump arcs, the wall pause)
     wait with it, and the walk picks up when the box closes. SPARKAKUS answers out in the world too — his `stump`
     station follows him and only the Event hides it (then `xo` speaks for him instead), and his worker walk waits
-    while `st.talking && qt.isOpen`. An exchange
+    while `st.talking && qt.isOpen`. He is talked to through his station, never as himself, so the visit's hold
+    reads his own state (his dialogue open, or his Blossom lap) when he is one of the pair. An exchange
     with the ANCIENT kept quiet (the player outside) still counts as the pair's turn, or the order would only
     send everyone back to it. A visitor never stops farther than a vignette reaches (`spotBy`'s rings stay inside
-    `VIGS.beside`), and SPARKAKUS already out in the world walks straight to a join target, never back via his
-    Library's front first. While in one,
+    `VIGS.beside`), and SPARKAKUS already out in the world never goes back via his Library's front first (whether
+    he is at home is read before `st.join` attaches him to the world). Sent somewhere out there with no way planned
+    — the Event calling him from a visit, a visit called off, the Event's end — he plans his own (`wayOut`): out of
+    the church by the X if he is in it, then `JGP.route` round everything; called off by an Event without Seeds,
+    he walks home rather than standing at the visit's spot. A host is released only by the visit that took it
+    (`h.hostQ`), so a visit still walking home can't free a host already met by a newer one. He is never sent
+    visiting during his Artifacts finale (`Bulb.hold`). While in one,
     `visiting` / `hosting` keep the roams, Fortizmo's patrol, the meetings, other vignettes and Somlet's lying down
     out of it. `JGP.visitAt(t, v, h)` begins the named visit at once (past the pacing and the two-at-once cap; `forced` keeps it
     first in `JGP.visits().now` while it lives); called with no pair, t is the next natural visit's time, so a time
@@ -255,7 +261,10 @@ Goo that runs down a body and moves like goo, without clipping:
   gift then).
 - **The light bulb** (from Greeblis City): `Bulb.start(getPos, height)` fades a bulb in over a speaker, lights them
   with a cone and dims the town toward night until the dialogue closes. It is built and compiled at load, so
-  turning it on never stalls.
+  turning it on never stalls. `getPos` must give a WORLD position: `st.pos()` does, also at home in his Library's
+  own frame (it used to give his local one there, and the bulb and the glued gem appeared over the garden).
+  From the first finale page until the Gem speech is done (`Bulb.hold`) SPARKAKUS offers no Talk or Blossom, or a
+  second Talk in the gluing gap would play the whole finale, assembly and reward again.
 - Anomalee keeps gazing at the church window through her Talk lines; she turns to the player only for her Blossom
   line, or for any line during the Event. Any creature talked to during the Event stands still for it.
 
@@ -308,7 +317,9 @@ Goo that runs down a body and moves like goo, without clipping:
   floor) play there, fair among the pairs standing together just then (none plays again before each of those has
   had its turn); every other pair meets by a visit (see the visits), so every pair's two come round in about
   three hours. Talking to either, or the Event,
-  stops one. King Dino and the Ancient never turn or spin in one.
+  stops one. King Dino and the Ancient never turn or spin in one, and take no gestures at all (a bow or a hop
+  would tip King Dino's sticks into his kit). Wrappers turn in `YXZ` order: the turn to the partner first, then a
+  gesture's lean and roll in the turned frame, so a bow tips toward the partner.
 - The thrown things are tidy: the gem's octahedron and the halo sprite's material (one per colour) are cached and
   reused across flights, and a lines vignette's bubble canvas AND material are both disposed at its end. Style 4
   (the gift-swap juggle) flies both messengers for real — each arcs over, circles above its receiver and arcs
@@ -413,7 +424,11 @@ Goo that runs down a body and moves like goo, without clipping:
 
 - **Garden:** tilled rings every 2 m from 2.6 m (13 cm ridges), four stepping-stone paths, and a border of stones
   that creatures step over (`JGP.groundAt`). Plants are merged meshes that grow from scale 0.01; each has a full
-  and a light mesh (`plantMesh`), the full one shown within `PLANT_NEAR` (7 m) of the eye.
+  and a light mesh (`plantMesh`), the full one shown within `PLANT_NEAR` (7 m) of the eye. The light one drops
+  small parts and rebuilds the `T` spheres, cylinders and cones with fewer segments (`loGeo`, from the `lp` each
+  of those remembers: this three.js keeps no geometry `parameters`, so the light meshes used to be just as heavy).
+  With the Snacks done, Anomalee's pizza box goes 0.8 m to her side if a flower of hers from an earlier Event
+  stands where it would.
 - **The plants** (final; each built only from the owner's photos of it): five kinds in `PLANT_KINDS`, each
   `[name, flower, talk colour, builder]`: a creeping thistle, a scentless mayweed, a chicory, a common milkweed and
   a zebra mallow. One merged vertex-coloured mesh per kind, drawn at `PLANT_SIZE` 2.4; leaves stay 0.11 model units
@@ -514,7 +529,11 @@ Goo that runs down a body and moves like goo, without clipping:
   navy tie and a small navy bow riding it; pale warm skin with seven flat freckle dots over her nose and cheeks;
   an indigo dress wearing its own print of small white batik flowers (`userData.baseTex`, drawn like the Sun
   Dress's suns and tiled the same); navy belt; dark trainers. Taking the Sun Dress off goes back to her own print,
-  never to a bare colour.
+  never to a bare colour. The Sun Dress's gold hem rides on the skirt itself, so it sways with it. Her walking bob
+  (`dk.bobY`) goes on just before the camera and render: the player step keeps her body at y 0 for collisions.
+- **The test modes' error tools** count every error in one place, `vo()` (the frame loop, a click, a key, a
+  button), so the desktop counter and the copied report agree; and the VR placer never runs there (a new dialogue
+  or panel used to show in the wrong place for one frame).
 
 ## Performance
 
@@ -564,6 +583,9 @@ plane.
   from 20 cm off any solid structure (building parts at their real heights, and round colliders only where the
   player meets them) to fully black at 8 cm (the near plane is at 15 cm), and clears as the head comes out. The
   player walks right through the Summoning Stone and the portal's pillars, so they never darken it (owner's rule).
+  Its `TOPS` table lists each building's parts in order: the Library's are its eight bookcases then the banner's
+  two posts; the Sheriff's desk top is `SHERIFF_DESK` (raised), not the other counters' 1.12. The ANCIENT is
+  talked to only from inside its room (a VR pointer reaches 16 m and would talk to it through the walls).
 - **The sky dome fits inside the far plane** (`0.85 · t.far`; far is 310 m, 260 m on mobile), or its middle is
   cut away and a pale disc turns with the view.
 
