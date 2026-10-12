@@ -5327,7 +5327,8 @@ const xe = (() => {
 								const a = t.target;
 								if ((Y(o, 0.3, 30), t.blossom)) return le.take(a);
 								if (t.acorn) return ce.take(a);
-								if (!a.kind) return (xe.lastTarget = a), a.run();
+								// (a station with a Blossom option, SPARKAKUS at his Library, gets the menu like any creature)
+								if (!a.kind && !a.gift) return (xe.lastTarget = a), a.run();
 								const s = xe.actionsFor(a);
 								if (1 === s.length) return (xe.lastTarget = a), s[0].run();
 								!(function (t) {
@@ -5342,12 +5343,15 @@ const xe = (() => {
 										(ae.target = t),
 										(ae.open = !0),
 										(F.menu.sig = null);
-									const a = F.menu.mesh;
-									t ? i.set(t.group.position.x - n.x, 0, t.group.position.z - n.z) : i.set(r.x, 0, r.z),
+									const a = F.menu.mesh,
+										// (a station, SPARKAKUS's, has no group: the menu goes by its spot and its top)
+										pt = t && !t.group ? { x: t.x, z: t.z, top: t.top || 2.2 } : t,
+										pp = pt && (pt.group ? pt.group.position : pt);
+									pt ? i.set(pp.x - n.x, 0, pp.z - n.z) : i.set(r.x, 0, r.z),
 										i.lengthSq() < 1e-6 && i.set(r.x, 0, r.z),
 										a.position.copy(n).addScaledVector(i.normalize(), e.uiDist),
 										a.scale.setScalar((e.uiDist / e.uiRefDist) * e.menuScale),
-										(ae.lift = t ? ye(0, e.uiDist, t) : -0.05),
+										(ae.lift = pt ? ye(0, e.uiDist, pt) : -0.05),
 										(ae.baseY = n.y + Math.tan(ae.lift) * e.uiDist),
 										a.rotation.set(0, Math.atan2(n.x - a.position.x, n.z - a.position.z), 0),
 										(a.visible = !0);
@@ -6166,7 +6170,8 @@ const xe = (() => {
 							n = (F.anchor.position.x, F.anchor.position.z, 0.5);
 						a.min.y < n && ((Pe.position.y += (n - a.min.y) / F.anchor.scale.y), F.anchor.updateMatrixWorld(!0));
 					})(),
-					ae.open && ("playing" !== jt.top || (ae.target && !It.all.includes(ae.target))) && re(),
+					// (a creature gone from the scene closes its menu; a station, SPARKAKUS's, is never in It.all and stays)
+					ae.open && ("playing" !== jt.top || (ae.target && ae.target.kind && !It.all.includes(ae.target))) && re(),
 					ae.open &&
 						(function () {
 							const t = F.menu,
@@ -19431,6 +19436,10 @@ if (
 								r: 3.4,
 								solidR: 0.9,
 								waypointR: 3.8,
+								// (the top of his head, for the VR menu's height)
+								get top() {
+									return st.pos().y + st.height;
+								},
 								get pickObj() {
 									return st.group ? [st.group] : null;
 								},
