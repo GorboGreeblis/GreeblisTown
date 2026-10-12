@@ -160,6 +160,9 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 ## Hennrick (`gratelet`)
 
 - **Build:** pulled unchanged from Greeblis City (`modelScale` 0.88), 3.15 m.
+- **Lore:** he comes from the far past, from Greeblis City; paradoxically, here and now the park looks like
+  small-town America in the far future. His lines speak of this era as his future ("In my era, the towers of
+  Greeblis City reach the clouds."). He is not from the town and gives it nothing of his design.
 - **Role:** strolls from spot to spot round the Portal and stops to look at it. He keeps his own built-in Greeblis
   City dance, which rolls him side to side about his feet; he is lifted by the roll so the outer foot never dips
   into the ground.
