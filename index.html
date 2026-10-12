@@ -4289,6 +4289,8 @@ const le = (() => {
 					"speaking" === r
 						? ((n.moving = !1), a && i.set(a.x, i.y, a.z), co(n.group, Math.atan2(l.x - i.x, l.z - i.z), e, 8))
 						: "leaving" === r &&
+							// (she stops on her way for a vignette with someone, see the vignettes' lineUp)
+							!n.vig &&
 							(p.lengthSq() < 0.5 && p.set(-i.x, 0, -i.z).normalize(),
 							p.lerp(it(i, null, !0), Math.min(1, 2.5 * e)).normalize(),
 							(i.x += p.x * o.exitSpeed * e),
@@ -13531,6 +13533,8 @@ const JGP = (() => {
 	})();
 
 	// ---- creature-to-creature vignettes ----------------------------------------------------------
+	// (VIGS: what tests read: how often each pair has played, every pair, and who can take part now)
+	const VIGS = {};
 	// Every pair of creatures in the line-up has its own little vignette. They stay on their spots
 	// (the line-up stands still), turn to each other and trade their signature messengers through
 	// the air, each in its own way: a choreography style per pair, both creatures' own messengers,
@@ -13540,7 +13544,7 @@ const JGP = (() => {
 	// styles: 0 swap, 1 volley, 2 boomerang, 3 parade, 4 juggle, 5 orbit dance, 6 bounce, 7 bubble,
 	// 8 zip, 9 confetti, 10 serenade, 11 tag
 	(() => {
-		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY" },
+		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY", MA: "MAMA GORBO", SP: "SPARKAKUS", NX: "NEXTESSA", BP: "BACKPACKA" },
 			PAIRS = [
 			["HN", "MU", 7, "Sheriff, when may I return to my own era?", "When the consortium says so. Not before."],
 			["HN", "AN", 1, "May I record what you see in that window?", "It is NOT for jars. It is for REMEMBERING."],
@@ -13608,6 +13612,60 @@ const JGP = (() => {
 			["ET", "MG", 4, "Your binary, Mont. May I etch it?", "Etch gently. Mont is ticklish in binary."],
 			["GT", "MG", 9, "What will you take for that screen?", "Mont's screen is not for trade. Mont needs face."],
 			["GL", "MG", 11, "My symbols move you, Mont... don't you think?", "Mont thinks. Mont thinks yes."],
+			["MA", "HN", 9, "Hennrick, dear! A coupon for a goo burger?", "A burger from this era! For the collection jar."],
+			["MA", "MU", 3, "Sheriff, you look peaky. Have a goo burger.", "A bribe? ...Make it a double."],
+			["MA", "AN", 7, "Always staring up there, sweetie.", "The WINDOW remembers. As do YOU, Mama."],
+			["MA", "KD", 5, "Play us something romantic, King Dino!", "For you and the hubby, baby? Slow and smooth."],
+			["MA", "GW", 10, "There's my handsome hubby!", "Gomp gomp... gooomp!"],
+			["MA", "ZL", 6, "Zollod, dear! Which seeds for a beginner?", "Start small. Love them daily. They'll grow."],
+			["MA", "SM", 2, "Look at her. Sleeping like a baby.", "Zzz..."],
+			["MA", "FZ", 9, "Two carrot juices! For me and the hubby.", "Blossoms first, Mama. House rules."],
+			["MA", "ET", 4, "Etch our burger menu, would you, dear?", "Every topping. For the age of Organics."],
+			["MA", "GT", 1, "A burger coupon for you too, Gemtoe!", "...Is it worth anything? Then it's mine."],
+			["MA", "GL", 11, "What does that symbol mean, dear?", "Family. The warmest symbol... don't you think?"],
+			["MA", "MG", 8, "Mont, you're too thin! Have a goo burger.", "Mont cannot eat burger. Mont eats VHS."],
+			["SP", "HN", 0, "Hennrick! Any news of the Ancients' era?", "Much research is still needed, colleague."],
+			["SP", "MU", 3, "Sheriff, may the Library stay open?", "For now. The consortium is watching your books."],
+			["SP", "AN", 7, "The Ancient texts speak of an ORIGINATOR...", "YES. Read them to me. SLOWLY."],
+			["SP", "KD", 2, "Is drumming in the Ancient texts?", "Not yet, baby. Write me in!"],
+			["SP", "GW", 6, "Please, no goo near the first editions.", "Gomp... gomp."],
+			["SP", "ZL", 10, "I've a book on Ancient gardens for you.", "Read me the part about seeds. Twice."],
+			["SP", "SM", 2, "Shh. Even asleep, she's a patron of the Library.", "Zzz..."],
+			["SP", "FZ", 5, "A quiet juice, please. I've a reputation.", "One quiet juice, librarian. Blossoms only."],
+			["SP", "ET", 4, "Your etchings would fill my Library twice.", "And your Library would fill my tentacles."],
+			["SP", "GT", 9, "I collect books and call it a job, yes.", "And I collect gems and call it Avarice."],
+			["SP", "GL", 11, "Your symbols would make a fine index.", "An index is a symbol of symbols... don't you think?"],
+			["SP", "MG", 8, "Mont, return the VHS tapes you borrowed.", "Mont ate the VHS tapes. Mont is sorry."],
+			["SP", "MA", 1, "Mrs Gorbo, no burgers in the Library.", "Just a little one, dear? For your research."],
+			["NX", "HN", 3, "Pizza from your own era, Hennrick?", "Remarkable. Still warm after all those years."],
+			["NX", "MU", 9, "Delivery for the Sheriff! Extra cheese.", "Leave it on the desk. The Portal stays open."],
+			["NX", "AN", 7, "One slice, Anomalee? On the house!", "* Munch * ...the ORIGINATOR liked PIZZA."],
+			["NX", "KD", 5, "Pizza for the King of Jazz!", "Put it on my tab, baby."],
+			["NX", "GW", 6, "Goo topping? Coming right up!", "Gomp gomp! GOMP!"],
+			["NX", "ZL", 10, "Your basil's in every pie I make!", "Then my basil travels through time. Good."],
+			["NX", "SM", 2, "Delivery for... oh. She's asleep.", "Zzz..."],
+			["NX", "FZ", 5, "Pizza and juice? We should team up!", "Blossoms only, darling. Business is business."],
+			["NX", "ET", 4, "Etch my order number, quick! I'm on the clock.", "Order one. Etched forever."],
+			["NX", "GT", 9, "Tip for the delivery girl?", "A tip?! ...Here. A pebble. Very rare."],
+			["NX", "GL", 11, "What's the symbol for 'extra hot'?", "This one. Pizza is a symbol of joy... don't you think?"],
+			["NX", "MG", 8, "Hot pizza for Mont!", "Mont cannot eat pizza. Mont will hold it. Warm."],
+			["NX", "MA", 1, "A rival in the food business, Mama?", "Never, dear. Goo burgers and pizza go together."],
+			["NX", "SP", 0, "Library delivery! Careful, it's hot.", "Not near the books! ...But thank you."],
+			["BP", "HN", 7, "Glug! The pond tastes like history, Hennrick.", "Then I must sample it. For the jar."],
+			["BP", "MU", 3, "Permission to land, Sheriff?", "Landing permitted. Watch for UFOs."],
+			["BP", "AN", 8, "*splash* Sorry, Anomalee! Your screen's wet.", "WATER... is also a kind of CODE."],
+			["BP", "KD", 5, "Glug glug! Can I drink to the beat?", "Every gulp's a downbeat, baby!"],
+			["BP", "GW", 6, "Glug? Glug glug!", "Gomp! Gomp gomp!"],
+			["BP", "ZL", 10, "Where should I spray next, gardener?", "The thirsty row. Gently, please."],
+			["BP", "SM", 2, "Shh. I'll spray quietly round her.", "Zzz..."],
+			["BP", "FZ", 5, "Play me in, Fortizmo! The rain strut!", "Fly low, big fella. Spray on the two and four."],
+			["BP", "ET", 4, "Can water be etched?", "Ripples are etchings that don't last. I try anyway."],
+			["BP", "GT", 9, "Your gems sparkle when they're wet!", "Don't you dare spray my gems."],
+			["BP", "GL", 11, "My spray makes shapes in the air!", "Every splash is a symbol... don't you think?"],
+			["BP", "MG", 8, "Mont, do you like a good soaking?", "Mont is not waterproof. Mont says no."],
+			["BP", "MA", 1, "Shall I water your burger garden, Mama?", "Oh, you dear! Just the lettuce, please."],
+			["BP", "SP", 0, "Glug! Want a ride on my back, Sparkakus?", "No, thank you. The books would get wet."],
+			["BP", "NX", 7, "Can you deliver pond water, Nextessa?", "Only pizza, big guy. But I'll ask the boss."],
 			],
 			// THE CHURCH'S SLUG has an exchange with each of the cast too, but they are switched off for now (the
 			// owner's script: it never leaves the church, and its vignettes are gated off). [code, slug's line, reply]
@@ -13625,6 +13683,10 @@ const JGP = (() => {
 				["GT", "What you hoard, you will lose.", "...Who told you about my gems?"],
 				["GL", "I was the first symbol.", "...Don't you think? ...Yes. I think so."],
 				["MG", "Mont. You were made to learn.", "Mont learns. Mont is learning now."],
+				["MA", "Mother of goo. You carry so much love.", "Oh! Aren't you a sweet one, dear."],
+				["SP", "Librarian. Your texts are missing a page.", "...Which page? I must know."],
+				["NX", "You deliver across time. As I once did.", "...Did you work for the pizza shop too?"],
+				["BP", "The rain remembers me.", "Glug... it remembers you too."],
 			],
 			// what each creature sends, how it moves and what it says without words
 			SIG = {
@@ -13640,10 +13702,15 @@ const JGP = (() => {
 				GT: { item: "gem", col: "#2ae070", gest: "twirl", emote: "✦" },
 				GL: { item: "tile", col: "#f2c84a", gest: "giggle", emote: "?" },
 				MG: { item: "coin", col: "#3db2d6", gest: "nod", emote: "!" },
+				MA: { item: "goo", col: "#e8409e", gest: "bow", emote: "♥" },
+				SP: { item: "card", col: "#2a50c8", gest: "nod", emote: "?" },
+				NX: { item: "slice", col: "#f0b848", gest: "hop", emote: "!" },
+				BP: { item: "goo", col: "#7ad8ff", gest: "stretch", emote: "~" },
+				SL: { item: "spore", col: "#c8b890", gest: "doze", emote: "…" },
 			},
 			V = (a = 0, b2 = 0, c = 0) => new THREE.Vector3(a, b2, c),
 			sm = (q) => (q <= 0 ? 0 : q >= 1 ? 1 : q * q * (3 - 2 * q));
-		const plays = {},
+		const plays = (VIGS.plays = {}),
 			fx = [];
 		let cur = null,
 			nextAt = 0,
@@ -13680,6 +13747,8 @@ const JGP = (() => {
 			else if ("gem" === kind) R(new THREE.OctahedronGeometry(0.17, 0), x.clay(col, { shininess: 140, specular: 16777215, emissive: new THREE.Color(col).multiplyScalar(0.3).getStyle() }), g).scale.set(1, 1.3, 1);
 			else if ("tile" === kind) m(T.box(0.26, 0.26, 0.05), col), m(T.box(0.16, 0.03, 0.055), "#5a3a10");
 			else if ("coin" === kind) m(T.cyl(0.14, 0.14, 0.03, 16), col).rotation.set(Math.PI / 2, 0, 0);
+			// (NEXTESSA's: a slice of pizza with two pepperoni)
+			else if ("slice" === kind) m(new THREE.CylinderGeometry(0.26, 0.26, 0.04, 3, 1, !1, -Math.PI / 7, (2 * Math.PI) / 7), col), [0.1, 0.18].forEach((r, k) => (m(T.cyl(0.03, 0.03, 0.05, 8), "#a8281e").position.set(0.03 * (k ? -1 : 1), 0, r)));
 			const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow(), color: col, transparent: !0, opacity: 0.55, depthWrite: !1, blending: THREE.AdditiveBlending }));
 			halo.scale.setScalar(0.95), g.add(halo), g.scale.setScalar(sc);
 			return (g.userData.keepInFinale = !0), C.add(g), g;
@@ -13832,7 +13901,7 @@ const JGP = (() => {
 		}
 		function start(pk, A, B, opt = {}) {
 			const id = pk[0] + pk[1],
-				rs = srand(1 + PAIRS.indexOf(pk) * 7919),
+				rs = srand(1 + ALL_PAIRS.indexOf(pk) * 7919),
 				sc = script(pk, A, B, pk[2], rs),
 				text = !!opt.text;
 			(plays[id] = (plays[id] || 0) + 1), wrap(A), wrap(B), (A.vig = B.vig = !0);
@@ -13943,20 +14012,28 @@ const JGP = (() => {
 			}
 			t > c0.end && finish();
 		}
-		const lineUp = () => {
+		// (the slug's rows in the same form as the rest, made once)
+		const ALL_PAIRS = (VIGS.all = PAIRS.concat(SLUG_PAIRS.map(([k, x, y]) => ["SL", k, 7, x, y])));
+		// who is in town to take part: the cast at their spots, SPARKAKUS in his Library (his stand-in, st.ent) and
+		// NEXTESSA once she has handed over the pizza and is on her way back to the Portal (she stops for it).
+		// BACKPACKA is only in town for the Event, when there are none; the slug's are switched off.
+		const lineUp = (VIGS.lineUp = () => {
 			const m = {};
 			for (const en of It.all) for (const k in NAMES) en.def && en.def.name === NAMES[k] && en.def.stationary && (m[k] = en);
+			st.ent && (st.ent.sync(), (m.SP = st.ent));
+			ue.courier && "leaving" === ue.state && ((ue.courier.vigFree = () => ue.courier && "leaving" === ue.state), (m.NX = ue.courier));
 			return m;
-		};
+		});
 		const VIG_CHANCE = 0.15,
 			// a creature can take part only standing at its own spot (not busy, nor on its way home)
-			atSpot = (en) => !en.busy && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4,
+			atSpot = (en) => (en.vigFree ? en.vigFree() : !en.busy && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4),
 			talkedTo = (en) => "dialogue" === jt.top && xe.lastTarget === en;
 		function pick(now) {
 			const m = lineUp(),
-				// (only a pair within 25 m of each other: the roamers can be far apart)
+				// (any two in town, however far apart: every pair gets its turn, the least played first and the
+				// nearer preferred)
 				// (the slug's exchanges, when switched on, would need it to come out of the church to play)
-				ok = (SLUG_VIGNETTES ? PAIRS.concat(SLUG_PAIRS.map(([k, x, y]) => ["SL", k, 7, x, y])) : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && m[pk[0]].group.position.distanceTo(m[pk[1]].group.position) < 25);
+				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && m[pk[0]].group.position.distanceTo(m[pk[1]].group.position) < 90);
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
@@ -13973,7 +14050,8 @@ const JGP = (() => {
 			dt = Math.min(0.1, dt || 0.016);
 			if (cur) {
 				// (it stops if the Event starts, either creature is wanted for something else or talked to)
-				if (me.active || cur.A.busy || cur.B.busy || talkedTo(cur.A) || talkedTo(cur.B)) return finish();
+				st.ent && st.ent.sync();
+				if (me.active || cur.A.busy || cur.B.busy || talkedTo(cur.A) || talkedTo(cur.B) || [cur.A, cur.B].some((en) => en.vigFree && !en.vigFree())) return finish();
 				return tick(dt);
 			}
 			if (me.active || "playing" !== jt.top) return void (nextAt = Math.max(nextAt, tt + 4));
@@ -16517,6 +16595,7 @@ const JGP = (() => {
 		plantTick,
 		plantShow,
 		noPlant,
+		vigs: VIGS,
 		plantMove,
 		danceMove,
 		buildLibrary,
@@ -16835,6 +16914,31 @@ if (
 										(wT = null), (RUN = { k: 0, t: 0, lean: 0, done });
 									}),
 									(st.romping = () => !!RUN),
+									// his stand-in for the vignettes (they work in world space, he lives in the Library's frame): a
+									// marker kept at his world position and heading, whose wrapper is one round his model, so their
+									// gestures and turns move him. He takes part only standing still, not called away or talked to,
+									// and stops browsing while it plays.
+									(st.ent = (() => {
+										const mk = new THREE.Object3D(),
+											vw = new THREE.Group();
+										e.remove(o), vw.add(o), e.add(vw), (mk.userData.vgW = vw);
+										return {
+											id: "keeper",
+											def: { name: i.name, stationary: !0 },
+											group: mk,
+											height: 3.1,
+											vig: !1,
+											get busy() {
+												return !!(H || RUN || wT || (st.talking && qt.isOpen));
+											},
+											get home() {
+												return mk.position;
+											},
+											sync() {
+												e.getWorldPosition(mk.position), (mk.rotation.y = (e.parent === t ? l : 0) + e.rotation.y);
+											},
+										};
+									})()),
 									(st.away = () => !!H),
 									(st.pos = () => e.position),
 									(st.group = e),
@@ -16899,7 +17003,7 @@ if (
 														? go(f, 4.2) && ((RUN.k = 4), (RUN.t = 0))
 														: ((RUN.lean = Math.max(0, 1 - RUN.t / 0.6)), (e.rotation.y += m(e.rotation.y, 0) * Math.min(1, 6 * c)), RUN.t >= 0.6 && ((e.rotation.x = 0), (r.moving = !1), (RUN = (RUN.done && RUN.done(), null))));
 										RUN && ((e.rotation.x = 1.15 * Wt(RUN.lean)), 0 < RUN.k && RUN.k < 4 && (r.moving = !0));
-									} else if (e.parent === t && !me.active && !(st.talking && qt.isOpen)) {
+									} else if (e.parent === t && !me.active && !(st.talking && qt.isOpen) && !st.ent.vig) {
 										const q = e.position;
 										if (wT) {
 											const dx = wT.x - q.x,

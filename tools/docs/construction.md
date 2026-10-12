@@ -236,16 +236,20 @@ Goo that runs down a body and moves like goo, without clipping:
 
 ### Vignettes
 
-- Every pair of the twelve vignette creatures (`PAIRS`, two-letter codes) has its own short animated exchange:
-  a choreography style, both creatures' signatures from `SIG` (item, colour, gesture, emote) and a seeded twist.
-  Its two-line text shows only rarely (10% of the time, at most once every 4 minutes). The lines follow the
-  owner's script: Gooward only says Gomp, Somlet only snores, Glyph asks "don't you think?", Mont speaks of himself
-  as Mont. `town/vignettes/pairs.py` checks every pair is there once.
-- The church's slug has a line with each of the twelve too (`SLUG_PAIRS`), switched off (`SLUG_VIGNETTES`) as the
-  script asks: it never leaves the church.
-- Every 5 to 10 s there is a 15% chance one plays, least-played pairs first, nearby pairs preferred, only for two
-  creatures within 25 m of each other, both at their own spots and not busy. Talking to either, or the Event,
-  stops it. King Dino never turns or spins in one (his sticks would sweep through the kit).
+- Every NPC has a vignette with every other NPC, one each: the sixteen in `NAMES` (two-letter codes) make 120
+  pairs in `PAIRS`, and the church's slug has one with each of them in `SLUG_PAIRS` (136 in all). Each is a short
+  animated exchange: a choreography style, both creatures' signatures from `SIG` (item, colour, gesture, emote)
+  and a seeded twist. Its two-line text shows only rarely (10% of the time, at most once every 4 minutes). The
+  lines follow the owner's script: Gooward only says Gomp, Somlet only snores, Glyph asks "don't you think?",
+  Mont speaks of himself as Mont. `town/vignettes/pairs.py` checks every pair is there once.
+- Who can take part (`lineUp`): the cast standing at their own spots, not busy; Sparkakus in his Library through
+  his stand-in `st.ent` (a marker kept at his world position whose wrapper wraps his model; he stops browsing for
+  it); Nextessa after the pizza, on her way back to the Portal (she stops walking for it). Backpacka is only in
+  town during the Event, when vignettes don't play, and the slug's are switched off (`SLUG_VIGNETTES`, the
+  owner's script: it never leaves the church).
+- Every 5 to 10 s there is a 15% chance one plays: least-played pairs first, nearer pairs preferred, any two in
+  town (up to 90 m apart, so every pair gets its turn). Talking to either, or the Event, stops it. King Dino never
+  turns or spins in one (his sticks would sweep through the kit).
 
 ### The Garden Event
 
