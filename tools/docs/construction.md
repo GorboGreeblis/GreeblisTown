@@ -218,8 +218,19 @@ Goo that runs down a body and moves like goo, without clipping:
     player in the church too. On the way in, at the open ground outside the X, every visitor stops for a
     moment, puzzled — its own "?", in its own colour, over its head (Sparkakus too, between his two legs of the
     walk) — and then goes on in: the way through the wall, played out as a hint.
-  - Home again slowly (`walkK` 0.55; a worker back in by its `via`). The Event, a battle or a meeting calls a visit
-    off (homes put back at once); the player close by or talking to the visitor holds it up. While in one,
+  - Home again slowly (`walkK` 0.55; a worker back in by its `via`; one whose place is up on a desk walks the
+    corners of the way flat on the ground — pattern height 0 — and gets its height back only on the last leg,
+    so the walk's own jump-up arc carries it onto the desk and nowhere else). The Event, a
+    battle or a meeting calls a visit off (homes put back at once; one called off inside the church slips out by
+    the X first, never through a wall). ANYONE CAN ALWAYS BE TALKED TO, mid-visit or on the way home (the owner's
+    rule): the talked-to one stops where it stands, the visit's clocks (give-up time, jump arcs, the wall pause)
+    wait with it, and the walk picks up when the box closes. SPARKAKUS answers out in the world too — his `stump`
+    station follows him and only the Event hides it (then `xo` speaks for him instead), and his worker walk waits
+    while `st.talking && qt.isOpen`. An exchange
+    with the ANCIENT kept quiet (the player outside) still counts as the pair's turn, or the order would only
+    send everyone back to it. A visitor never stops farther than a vignette reaches (`spotBy`'s rings stay inside
+    `VIGS.beside`), and SPARKAKUS already out in the world walks straight to a join target, never back via his
+    Library's front first. While in one,
     `visiting` / `hosting` keep the roams, Fortizmo's patrol, the meetings, other vignettes and Somlet's lying down
     out of it. `JGP.visitAt(t, v, h)` begins the named visit at once (past the pacing and the two-at-once cap; `forced` keeps it
     first in `JGP.visits().now` while it lives); called with no pair, t is the next natural visit's time, so a time
@@ -267,8 +278,11 @@ Goo that runs down a body and moves like goo, without clipping:
   the Gem flies to the player ("Ancient Gem collected!"). Gemtoe trades the Summoning Stone for it (with a happy
   spin), and the Stone starts the Garden Event.
 - **The shyness sub-quest:** ZOLLOD starts too shy to keep shop: one Talk ("…|…|I'm shy…"), no Blossom option, no
-  shop, and he neither visits nor is visited (`Kt.shyFree` false). OVERCOMING SHYNESS stands face-out on a Library
-  shelf and is taken by pointing at it and selecting (a mouse click, a tap on a phone, the caster in VR — the same
+  shop, and he neither visits nor is visited (`Kt.shyFree` false). The Garden Supplies counter's own Shop prompt
+  (`gshop`) is hidden too until he is freed — it would open the shop straight past him (the owner hit exactly
+  that with the book in hand). OVERCOMING SHYNESS stands alone at eye level in the middle of a side case on the
+  left, half as big again as the other hardbacks (0.32 × 0.42 m, its title large), and is taken by pointing at it
+  and selecting (a mouse click, a tap on a phone, the caster in VR — the same
   pointer pick as everything else; `Kt.shyBook`): it leaves the shelf, "Overcoming Shyness book obtained", and its
   station stops offering it. The first Talk with the book in hand frees him ("…|That book…|Let me see..|Wow I'm
   free from shyness!"): from then on talking to him opens the shop as before, and his pairs count half in the
@@ -285,7 +299,8 @@ Goo that runs down a body and moves like goo, without clipping:
   (`plays[AB]` and `plays[ABt]` count them). The
   lines follow the owner's script: Gooward only says Gomp, Somlet only snores, Glyph asks "don't you think?",
   Mont speaks of himself as Mont. `town/vignettes/pairs.py` checks every pair is there once.
-- Who can take part (`lineUp`): the cast standing at their own spots, not busy and not in a visit; Sparkakus in
+- Who can take part (`lineUp`): the cast standing at their own spots, not busy, not in a visit, a meeting or a
+  victory dance; Sparkakus in
   his Library through his stand-in `st.ent` (a marker kept at his world position whose wrapper wraps his model; he
   stops browsing for it). The Ancient's play only on a visit to it (`JGP.slug.ent`, its stand-in: it talks instead
   of moving), and are seen only by a player in the church too.
@@ -294,6 +309,10 @@ Goo that runs down a body and moves like goo, without clipping:
   had its turn); every other pair meets by a visit (see the visits), so every pair's two come round in about
   three hours. Talking to either, or the Event,
   stops one. King Dino and the Ancient never turn or spin in one.
+- The thrown things are tidy: the gem's octahedron and the halo sprite's material (one per colour) are cached and
+  reused across flights, and a lines vignette's bubble canvas AND material are both disposed at its end. Style 4
+  (the gift-swap juggle) flies both messengers for real — each arcs over, circles above its receiver and arcs
+  back on matching clocks — where the second used to pop in and out on 0.01 s legs.
 
 ### The Garden Event
 
@@ -439,7 +458,9 @@ Goo that runs down a body and moves like goo, without clipping:
     flat slate-dark chips beside its head; four bigger stones half sunk in their own shadowed pits; six more
     strands of dry grass, two crossed by a second straw; little white curls of shell; a long shallow crack along
     the front corner; and a faint glossy ribbon of damp trailing from its tail toward the back wall (its own
-    thin transparent mesh, never under the body).
+    thin transparent mesh, never under the body). The room's panels run a few centimetres into one another at
+    every corner — walls into walls, ceiling into the wall tops — each overlap offset so no two faces share a
+    plane: no slit of dark gap shows in a corner, and nothing z-fights.
     `test/t_church.js` checks the way in, the walls and the head guard; `test/churchshots.js` renders it.
   - **The Ancient** (the slug creature; its name on screen is ANCIENT, its id in code stays `slug`) lies across the middle of the floor and never moves from there. It has a Talk and, with one in
     hand, a Blossom (it takes one and answers "..."); it never leaves its place (others rarely come to it, see the visits), and its own moves: idle (stalks swaying and pulling in, breathing, looking
