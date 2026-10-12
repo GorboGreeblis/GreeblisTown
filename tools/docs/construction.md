@@ -571,6 +571,11 @@ Goo that runs down a body and moves like goo, without clipping:
     thin transparent mesh, never under the body). The room's panels run a few centimetres into one another at
     every corner — walls into walls, ceiling into the wall tops — each overlap offset so no two faces share a
     plane: no slit of dark gap shows in a corner, and nothing z-fights.
+    A third look at the photo (the owner asked for more of it; additions only): bigger rounded stones with pale
+    grey faces half sunk in the ground, a cluster of rust-orange stones toward one corner and blue-grey ones here
+    and there, two dozen more small white shell fragments, low humps in the ground's own colour, a longer, wider
+    crack across the lower corner with a lighter rim, and (one thin translucent mesh) a band of shadow along the
+    back wall's foot and three damp stains.
     `test/t_church.js` checks the way in, the walls and the head guard; `test/churchshots.js` renders it.
   - **The Ancient** (the slug creature; its name on screen is ANCIENT, its id in code stays `slug`) lies across the middle of the floor and never moves from there. It has a Talk and, with one in
     hand, a Blossom (it takes one and answers "..."); it never leaves its place (others rarely come to it, see the visits), and its own moves: idle (stalks swaying and pulling in, breathing, looking
