@@ -56,7 +56,9 @@ module.exports = async (p) => {
   const talk = await p.evaluate(() => ({ mode: JGP.slug.mode(), open: qt.isOpen, name: document.getElementById('dlgName').textContent, hy: +JGP.slug.head.rotation.y.toFixed(2), hx: +JGP.slug.head.rotation.x.toFixed(2), pos: JGP.slug.body.position.toArray().map((v) => +v.toFixed(3)) }));
   log('slug: target', sl.target, '| options', JSON.stringify(sl.actions), sl.target === 'slug' && sl.actions.length === 2 && sl.actions[0] === 'Talk' && /blossom/i.test(sl.actions[1]) ? 'ok' : 'FAIL');
   // its Blossom: one taken from the hand, and its answer
-  const gift = await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} const b0 = Kt.blossoms; xe.scan(); xe.run('give'); try { qt.skipAll(); } catch (e) {} return { took: b0 - Kt.blossoms, says: qt.isOpen ? document.getElementById('dlgText').textContent : null }; });
+  const gift = await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} const b0 = Kt.blossoms; xe.scan(); xe.run('give'); return { took: b0 - Kt.blossoms, open: qt.isOpen }; });
+  // (its words once typed out)
+  await p.waitForTimeout(1500), (gift.says = await p.evaluate(() => (qt.isOpen ? document.getElementById('dlgText').textContent : null)));
   await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });
   log('slug Blossom: took', gift.took, '| says', JSON.stringify(gift.says), gift.took === 1 && gift.says === '...' ? 'ok' : 'FAIL');
   log('slug idle pose', idle.join(' -> '), idle[0] !== idle[1] ? 'animates' : 'FAIL: still');
