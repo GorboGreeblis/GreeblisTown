@@ -10591,14 +10591,17 @@ const JGP = (() => {
 			rug: [-5.5, -6.8, 5.5, 1.0],
 			rugTop: 0.03,
 			// the things that stand face-out on a shelf, one to a shelf, in a gap in its row: [case, side (1 = its +z
-			// face), shelf, x along the case, what]: four books, each with its own cover, and a Wish Blossom from
-			// Greeblis Park in a little pot (the side cases' +z face looks into the room on the left, -z on the right)
+			// face), shelf, x along the case, what]: four books, each with its own cover, a Wish Blossom from
+			// Greeblis Park in a little pot, an Electric Blossom from Greeblis City and an Acorn from Greeblis Woods
+			// (the side cases' +z face looks into the room on the left, -z on the right)
 			features: [
 				[0, 1, 2, 0.46, "patchoolee"],
 				[1, 1, 1, -0.4, "appterix"],
 				[4, 1, 2, 0.3, "orson"],
 				[6, -1, 1, -0.5, "staplers"],
 				[7, -1, 2, 0.35, "wish"],
+				[5, 1, 1, 0.4, "electric"],
+				[2, 1, 2, -0.3, "acorn"],
 			],
 		};
 	})();
@@ -10644,7 +10647,7 @@ const JGP = (() => {
 					// (a featured thing's shelf leaves it a gap: the books to its left stop short, as the last of a
 					// row can reach 7 cm past where it stops)
 					const f = mine.find((f) => f[1] === sd && f[2] === j),
-						hw = f && ("wish" === f[4] ? 0.16 : 0.11);
+						hw = f && ({ wish: 0.16, electric: 0.14, acorn: 0.12 }[f[4]] || 0.11);
 					f ? (row(Q, -1.02, f[3] - hw - 0.13, y, 0.13 * sd, 0.42, sd < 0), row(Q, f[3] + hw + 0.04, 1.02, y, 0.13 * sd, 0.42, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0);
 				}),
 			);
@@ -10656,7 +10659,11 @@ const JGP = (() => {
 			mine.forEach(([, fs, fsh, fx, what]) => {
 				const [bx, bz] = at(fx, 0.13 * fs),
 					face = ry + (fs < 0 ? Math.PI : 0);
+				// (where each is, in the Library's frame, and the way it faces: for the tests' renders)
+				(LIB_LAYOUT.shown = LIB_LAYOUT.shown || []).push({ what, obj: o, at: [bx, SH[fsh] + 0.15, bz], face });
 				if ("wish" === what) return wishBlossom(bx, SH[fsh], bz, face);
+				if ("electric" === what) return electricBlossom(bx, SH[fsh], bz, face);
+				if ("acorn" === what) return acorn(bx, SH[fsh], bz, face);
 				// a cloth hardback standing face-out in its gap, leaning back a little
 				const bk = new THREE.Group(),
 					C = COVERS[what];
@@ -10681,6 +10688,48 @@ const JGP = (() => {
 			const head = R(T.ico(0.34, 0), new THREE.MeshLambertMaterial({ color: "#35d0c5", emissive: "#0e5a55" }), f, [0, 1.05, 0]),
 				halo = R(T.torus(0.5, 0.035, 8, 20), x.basic("#9df3ec", { transparent: !0, opacity: 0.8 }), f, [0, 1.05, 0], [Math.PI / 2, 0, 0]);
 			L.push((tt) => ((head.rotation.y = 1.4 * tt), (halo.position.y = 1.05 + 0.08 * Math.sin(2 * tt))));
+		};
+		// AN ELECTRIC BLOSSOM from Greeblis City, as its pickups were, at 30%: a dark base and a silver stem with a
+		// leaf, six yellow lightning petals round a pale cyan core with a yellow ring (turning slowly, as they did),
+		// and a yellow halo that rises and falls (33 cm tall in all)
+		const electricBlossom = (bx, by, bz, face) => {
+			const g = new THREE.Group(),
+				f = new THREE.Group(),
+				hd = new THREE.Group();
+			g.position.set(bx, by, bz), (g.rotation.y = face), o.add(g), f.scale.setScalar(0.3), g.add(f);
+			R(
+				v([
+					{ geo: T.cyl(0.1, 0.12, 0.05, 10), matrix: S(0, 0.025, 0), color: "#3a3e4c" },
+					{ geo: T.cyl(0.022, 0.028, 0.7, 6), matrix: S(0, 0.37, 0), color: "#b8c0cc" },
+					{ geo: T.box(0.16, 0.02, 0.06), matrix: S(0.07, 0.32, 0, 0, 0, 0.5), color: "#b8c0cc" },
+				]),
+				new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 90, specular: 13421772 }),
+				f,
+			);
+			(hd.position.y = 0.75), f.add(hd);
+			const pe = [];
+			for (let k = 0; k < 6; k++) {
+				const a = (k / 6) * l;
+				pe.push({ geo: T.ico(0.13, 0), matrix: S(0.15 * Math.cos(a), 0, 0.15 * Math.sin(a), 0, -a, 0, 1.25, 0.22, 0.5), color: "#ffe23a" });
+			}
+			pe.push({ geo: T.sphere(0.065, 10, 8), matrix: S(0, 0.03, 0), color: "#bff6ff" }, { geo: T.torus(0.07, 0.012, 4, 16), matrix: S(0, 0.04, 0, Math.PI / 2), color: "#ffe23a" });
+			R(v(pe), new THREE.MeshBasicMaterial({ vertexColors: !0 }), hd);
+			const halo = R(T.torus(0.3, 0.015, 4, 20), x.basic("#ffe23a", { transparent: !0, opacity: 0.7 }), f, [0, 1.05, 0], [Math.PI / 2, 0, 0]);
+			L.push((tt) => ((hd.rotation.y = 1.4 * tt + 1), (halo.position.y = 1.05 + 0.06 * Math.sin(2 * tt + 1))));
+		};
+		// AN ACORN from Greeblis Woods, as its pickups were, at 1.1x: a tan nut under a dark brown cap with a little
+		// stem, tipped a little to the side, with its glint (it stands on the shelf, 32 cm tall)
+		const acorn = (bx, by, bz, face) => {
+			const g = new THREE.Group(),
+				r = new THREE.Group(),
+				nut = x.clay("#b8742e", { shininess: 40, specular: 6702114 }),
+				cap = x.clay("#6a4a26", { shininess: 40, specular: 6702114 });
+			g.position.set(bx, by, bz), (g.rotation.y = face), o.add(g);
+			r.position.set(0.03, 0.148, 0.01), (r.rotation.z = 0.35), r.scale.setScalar(1.1), g.add(r);
+			R(T.sphere(1, 12, 10), nut, r, [0, -0.02, 0], null, [0.09, 0.12, 0.09]);
+			R(new THREE.SphereGeometry(0.105, 12, 6, 0, l, 0, Math.PI / 2), cap, r, [0, 0.05, 0], null, [1, 0.7, 1]);
+			R(T.cyl(0.012, 0.016, 0.07, 5), cap, r, [0, 0.12, 0]);
+			R(T.sphere(0.022, 6, 5), x.basic("#fff4c8", { transparent: !0, opacity: 0.8 }), r, [0.05, 0.03, 0.06]);
 		};
 		// a cover: the cloth, a double frame in the ink, the title (each line shrunk to fit), a little emblem under
 		// it, and the author at the foot when there is one
@@ -11280,15 +11329,18 @@ const JGP = (() => {
 						(c.strokeStyle = "#2a3a1a"), (c.lineWidth = 2), c.beginPath(), c.moveTo(58, 100), c.lineTo(70, 100), c.stroke();
 					} else if ("goo" === kind) {
 						// GLOOPERNAUGHT: a big green goo creature, a slumped dome running with drips, little arms of goo,
-						// two wide-set eyes, bubbles rising off it, and its name under the picture
+						// two wide-set eyes, bubbles rising off it, and its name under the picture (the picture drawn a
+						// little smaller, so its drips stop clear of the name)
+						c.save(), c.translate(64, 72), c.scale(0.86, 0.86), c.translate(-64, -80);
 						(c.fillStyle = skin), c.beginPath(), c.moveTo(22, 118), c.bezierCurveTo(18, 70, 40, 42, 64, 42), c.bezierCurveTo(88, 42, 110, 70, 106, 118), c.closePath(), c.fill();
 						[[30, 118, 8], [46, 118, 12], [70, 118, 7], [90, 118, 11]].forEach(([px, py, d]) => (c.beginPath(), c.moveTo(px - 5, py - 2), c.quadraticCurveTo(px, py + d, px + 5, py - 2), c.fill(), c.beginPath(), c.arc(px, py + d, 3, 0, l), c.fill()));
 						[-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 38 * sd, 86), c.quadraticCurveTo(64 + 54 * sd, 80, 64 + 52 * sd, 64), c.lineTo(64 + 46 * sd, 66), c.quadraticCurveTo(64 + 46 * sd, 80, 64 + 36 * sd, 96), c.fill()));
 						(c.fillStyle = "rgba(255,255,255,.35)"), c.beginPath(), c.ellipse(48, 62, 9, 5, -0.6, 0, l), c.fill();
 						(c.fillStyle = "#f6f2e0"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 14 * sd, 76, 8, 0, l), c.fill()));
 						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 14 * sd + 2, 77, 4, 0, l), c.fill()));
-						(c.strokeStyle = skin), (c.lineWidth = 2), [[40, 36, 4], [86, 30, 3], [74, 22, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py + 6, r, 0, l), c.stroke()));
-						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 136);
+						(c.strokeStyle = skin), (c.lineWidth = 2), [[18, 60, 4], [112, 52, 3], [104, 40, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py, r, 0, l), c.stroke()));
+						c.restore();
+						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 137);
 					} else {
 						// the saucer: a glass dome on a grey disc with portholes, and its tractor beam
 						(c.fillStyle = "rgba(255,240,120,.55)"), c.beginPath(), c.moveTo(52, 92), c.lineTo(76, 92), c.lineTo(100, 128), c.lineTo(28, 128), c.fill();
@@ -11306,7 +11358,7 @@ const JGP = (() => {
 			[1.9, 2.8, "ufo", "", -0.06],
 			[1.5, 1.9, "alien", "#9ae8c8", 0.1],
 			[-1.45, 1.85, "goo", "#5ac83a", -0.05],
-		].forEach(([px, py, kind, skin, rz]) => R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]));
+		].forEach(([px, py, kind, skin, rz]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35] })));
 	}
 
 	// Garden Supplies: sage walls, terracotta roof, and plants everywhere: potted shrubs, flowers,
@@ -17042,6 +17094,8 @@ const JGP = (() => {
 			return best;
 		},
 		libParts: LIB_LAYOUT.parts,
+		// (for the tests: where the Library's shelf things and the Sheriff's posters are)
+		libLayout: LIB_LAYOUT,
 		buildPond,
 		blossomPickup,
 		backpacka: BP,
@@ -17376,13 +17430,22 @@ if (
 									}
 								});
 							})(o),
+							// SPARKAKUS's Talk and Blossom, as everyone's: wherever he is in his Library (the station goes with him)
+							// and pointed at anywhere on him
 							z.add({
 								id: "stump",
-								x: t,
-								z: e,
+								get x() {
+									return st.ent ? (st.ent.sync(), st.ent.group.position.x) : t;
+								},
+								get z() {
+									return st.ent ? (st.ent.sync(), st.ent.group.position.z) : e;
+								},
 								r: 3.4,
-								solidR: 1.9,
+								solidR: 0.9,
 								waypointR: 3.8,
+								get pickObj() {
+									return st.group ? [st.group] : null;
+								},
 								label: () => (st.away() || st.romping() ? null : "Talk to " + i.name),
 								run: () => {
 									st.away() || st.romping() || LIB.talk();

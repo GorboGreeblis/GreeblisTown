@@ -1,39 +1,31 @@
 // The owner's script, the parts that move: SPARKAKUS's Artifacts talk (none, some, all three: the glue bottle puts
 // the pieces back together into the Ancient Gem, then his speech and the Gem collected), his Blossom (a lap of the
 // Library floor on all fours, clear of every bookcase, then back to his place and his apology), and renders of the
-// Library's face-out books and Wish Blossom and the Sheriff's GLOOPERNAUGHT poster (<out>_*.png).
+// Library's face-out books, Wish Blossom, Electric Blossom and Acorn and the Sheriff's GLOOPERNAUGHT poster (<out>_*.png).
 //   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_script.js
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(1500);
   const waitGame = async (sec) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 4000 && (await p.evaluate(() => Re.t)) - t0 < sec; k++) await W(200); };
-  const said = () => p.evaluate(() => { const t = qt.isOpen ? document.getElementById('dlgText').textContent : null; try { qt.skipAll(); } catch (e) {} return t; });
-  const next = () => p.evaluate(() => { try { qt.skipAll(); qt.advance(); } catch (e) {} });
+  // (a page's words once they have all been typed out: the text stops changing)
+  const said = async () => { let a = null; for (let k = 0; k < 60; k++) { const b = await p.evaluate(() => (qt.isOpen ? document.getElementById('dlgText').textContent : null)); if (b === null || b === a) return b; a = b; await W(250); } return a; };
+  const next = () => p.evaluate(() => { try { qt.advance(); } catch (e) {} });
   const shot = (name, cam, look) => p.evaluate(([cam, look]) => {
     const c = new THREE.PerspectiveCamera(50, 4 / 3, 0.05, 300); c.position.set(...cam); c.lookAt(...look);
     O.setSize(800, 600, !1); O.render(C, c); const d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); return d;
   }, [cam, look]).then((d) => fs.writeFileSync(out.replace('.png', '_' + name + '.png'), Buffer.from(d.split(',')[1], 'base64')));
   // ---- the shelf things and the poster: found by their meshes, each shot from 0.9 m in front
   const things = await p.evaluate(() => {
-    const r = [], v = new THREE.Vector3(), n = new THREE.Vector3();
-    C.traverse((m) => {
-      if (!m.isMesh || !m.geometry || !m.geometry.parameters) return;
-      const q = m.geometry.parameters, book = m.geometry.type === 'PlaneGeometry' && Math.abs(q.width - 0.2) < 1e-6 && Math.abs(q.height - 0.28) < 1e-6,
-        wish = m.geometry.type === 'IcosahedronGeometry' && Math.abs(q.radius - 0.34) < 1e-6 && m.material.color && m.material.color.getHexString() === '35d0c5',
-        poster = m.geometry.type === 'PlaneGeometry' && Math.abs(q.width - 0.62) < 1e-6 && Math.abs(q.height - 0.78) < 1e-6;
-      if (!book && !wish && !poster) return;
-      m.getWorldPosition(v), m.getWorldDirection(n);
-      // (the Blossom's crystal has no face: its pot faces the way its shelf does, as the group it sits in)
-      wish && m.parent.parent.getWorldDirection(n);
-      r.push({ kind: book ? 'book' : wish ? 'wish' : 'poster', at: [v.x, v.y, v.z], n: [n.x, n.y, n.z] });
-    });
+    const L0 = JGP.libLayout, r = [], v = new THREE.Vector3();
+    (L0.shown || []).forEach((q) => { q.obj.updateMatrixWorld(!0), v.set(...q.at), q.obj.localToWorld(v); const f = q.face + q.obj.rotation.y; r.push({ kind: /^(wish|electric|acorn)$/.test(q.what) ? q.what : 'book', name: q.what, at: [v.x, v.y, v.z], n: [Math.sin(f), 0, Math.cos(f)] }); });
+    (L0.posters || []).forEach((q) => { q.obj.updateMatrixWorld(!0), v.set(...q.at), q.obj.localToWorld(v); const f = q.obj.rotation.y; r.push({ kind: 'poster', name: q.kind, at: [v.x, v.y, v.z], n: [Math.sin(f), 0, Math.cos(f)] }); });
     return r;
   });
-  log('found', things.filter((t) => t.kind === 'book').length, 'books,', things.filter((t) => t.kind === 'wish').length, 'Wish Blossom,', things.filter((t) => t.kind === 'poster').length, 'posters');
+  log('found', ['book', 'wish', 'electric', 'acorn', 'poster'].map((k) => k + ' ' + things.filter((t) => t.kind === k).length).join(', '));
   let k = 0;
   for (const t of things) {
-    const d = t.kind === 'poster' ? 2.2 : t.kind === 'wish' ? 1.1 : 0.9, y = t.kind === 'wish' ? t.at[1] - 0.15 : t.at[1];
-    await shot(t.kind + (k++), [t.at[0] + d * t.n[0], y + 0.1, t.at[2] + d * t.n[2]], [t.at[0], y, t.at[2]]);
+    const d = t.kind === 'poster' ? 2.2 : t.kind === 'book' ? 0.9 : 1.1, y = t.at[1];
+    await shot((t.name || t.kind) + (k++), [t.at[0] + d * t.n[0], y + 0.1, t.at[2] + d * t.n[2]], [t.at[0], y, t.at[2]]);
   }
   // ---- SPARKAKUS: the Artifacts talk
   const stump = () => p.evaluate(() => { const s = z.list.find((q) => q.id === 'stump'); At.position.set(s.x, 0, s.z + 3.2); xe.scan(); return xe.current === s ? xe.actions.map((a) => a.label).join(' / ') : 'not the target'; });
@@ -56,7 +48,7 @@ module.exports = async (p, out) => {
   let a0 = null;
   for (let i = 0; i < 40; i++) {
     const r = await asm(); r && (a0 = a0 || r.at); seen.push(r ? r.spread + (r.dialogue ? '*' : '') : '-');
-    if (i === 6 && a0) { const st0 = await p.evaluate(() => [st.pos().x, st.pos().y, st.pos().z]); await shot('glue', [a0[0] + 2.6 * Math.sign(At.position.x - st0[0] || 1), a0[1] + 0.4, a0[2] + 2.6], a0); }
+    if (i === 6 && a0) { const st0 = await p.evaluate(() => [st.pos().x, At.position.x]); await shot('glue', [a0[0] + 2.6 * Math.sign(st0[1] - st0[0] || 1), a0[1] + 0.4, a0[2] + 2.6], a0); }
     if (r && r.dialogue) break;
     await waitGame(0.25);
   }

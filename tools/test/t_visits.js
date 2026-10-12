@@ -10,22 +10,30 @@
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(1500);
-  const plan = await p.evaluate(() => {
-    const WHO = ['gratelet', 'drifter', 'blinker', 'm_kingdino', 'gorbo', 'cutebex', 'm_somlet', 'frog', 'p_etcher', 'p_gemtoe', 'p_glyph', 'w_mont', 'p_mamagorbo', 'keeper', 'slug'];
-    const bad = [], longest = [0, ''];
-    let n = 0;
-    for (const v of WHO) if (v !== 'm_kingdino' && v !== 'slug' && v !== 'm_somlet') for (const h of WHO) if (v !== h) {
-      n++;
-      const q = JGP.visitPlan(v, h);
-      if (!q) { bad.push(v + '>' + h + ': no spot'); continue; }
-      // every leg a clear straight walk (the first from where it comes out)
-      let a = { x: q.from[0], z: q.from[1] }, len = 0, ok = !0;
-      q.way.forEach((w, k) => { ok = ok && (k >= q.way.length - q.inside || JGP.roamWalk(a, w[0], w[1], q.r)); len += Math.hypot(w[0] - a.x, w[1] - a.z); a = { x: w[0], z: w[1] }; });
-      ok || bad.push(v + '>' + h + ': a leg not clear');
-      len > longest[0] && (longest[0] = len, longest[1] = v + '>' + h);
-    }
-    return { n, bad, longest: Math.round(longest[0]) + ' m ' + longest[1] };
-  });
+  // (one visitor at a time, timed, so a slow plan shows where)
+  const WHO = ['gratelet', 'drifter', 'blinker', 'm_kingdino', 'gorbo', 'cutebex', 'm_somlet', 'frog', 'p_etcher', 'p_gemtoe', 'p_glyph', 'w_mont', 'p_mamagorbo', 'keeper', 'slug'];
+  const plan = { n: 0, bad: [], longest: [0, ''] };
+  for (const v of WHO) {
+    if (v === 'm_kingdino' || v === 'slug' || v === 'm_somlet') continue;
+    const r = await p.evaluate(([v, WHO]) => {
+      const t0 = performance.now(), bad = [];
+      let n = 0, longest = [0, ''];
+      for (const h of WHO) if (v !== h) {
+        n++;
+        const q = JGP.visitPlan(v, h);
+        if (!q) { bad.push(v + '>' + h + ': no spot'); continue; }
+        // every leg a clear straight walk (the first from where it comes out; not the last steps into the church)
+        let a = { x: q.from[0], z: q.from[1] }, len = 0, ok = !0;
+        q.way.forEach((w, k) => { ok = ok && (k >= q.way.length - q.inside || JGP.roamWalk(a, w[0], w[1], q.r)); len += Math.hypot(w[0] - a.x, w[1] - a.z); a = { x: w[0], z: w[1] }; });
+        ok || bad.push(v + '>' + h + ': a leg not clear');
+        len > longest[0] && (longest = [len, v + '>' + h]);
+      }
+      return { n, bad, longest, ms: Math.round(performance.now() - t0) };
+    }, [v, WHO]);
+    log('  plans for', v, r.n, 'hosts in', r.ms, 'ms', r.bad.length ? '| ' + r.bad.join('; ') : '');
+    plan.n += r.n, plan.bad.push(...r.bad), r.longest[0] > plan.longest[0] && (plan.longest = r.longest);
+  }
+  plan.longest = Math.round(plan.longest[0]) + ' m ' + plan.longest[1];
   log('visit plans:', plan.n, 'pairs | problems:', plan.bad.length ? plan.bad.join('; ') : 'none', '| longest way', plan.longest);
   const waitGame = async (sec, until) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 20000 && (await p.evaluate(() => Re.t)) - t0 < sec; k++) { if (until && (await p.evaluate(until))) return !0; await W(250); } return !1; };
   await p.evaluate(() => At.position.set(0, 0, 3));

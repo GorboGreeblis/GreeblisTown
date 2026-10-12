@@ -382,9 +382,11 @@ Goo that runs down a body and moves like goo, without clipping:
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
     `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
     Artifacts);
-  - one thing stands face-out in a gap on each of five shelves (`LIB_LAYOUT.features`): four cloth hardbacks with
+  - one thing stands face-out in a gap on each of seven shelves (`LIB_LAYOUT.features`): four cloth hardbacks with
     their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby) and a
-    Wish Blossom from Greeblis Park in a little pot (its pickups' model at 22%, crystal turning, halo bobbing);
+    Wish Blossom from Greeblis Park in a little pot (its pickups' model at 22%, crystal turning, halo bobbing),
+    an Electric Blossom from Greeblis City (its pickups' model at 30%, head turning, halo bobbing) and an Acorn
+    from Greeblis Woods (its pickups' model at 1.1x, standing tipped on the shelf);
   - its colliders are the bookcases and posts; it is kept explicitly when the engine's scenery is cleared
     (it is wider than the 12 m that rule spares);
   - a rug (`LIB_LAYOUT.rug`, 11 × 7.8 m) woven from the Buns' clothes in Greeblis Woods: Miss Bun's red floral
