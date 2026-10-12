@@ -81,7 +81,7 @@ module.exports = async (p) => {
       return { at: +Math.hypot(q.x - home0[0], q.z - home0[1]).toFixed(2), y: +q.y.toFixed(2), homeKept: Math.hypot(e.home.x - home0[0], e.home.z - home0[1]) < 0.01, visiting: !!e.visiting, walkK: e.walkK || 0, py: e.pattern ? e.pattern[1].y || 0 : 0 };
     }, [v, home0]);
     const dt = (await p.evaluate(() => Re.t)) - t0, cl = await p.evaluate(() => [+__CL.worst.toFixed(2), __CL.what]);
-    log(v, '>', h, '| stages', stages.join(' > '), '| played', played, '(lines shown', !!text + ') | gap at the meeting', meetGap, '| took', dt.toFixed(0), 'game s | nearest anything', cl[0], cl[1], '| after:', JSON.stringify(end), stages.join() === 'out,meet,back' && played && meetGap < 6 && cl[0] > -0.05 ? 'ok' : 'FAIL');
+    log(v, '>', h, '| stages', stages.join(' > '), '| played', played, '(lines shown', !!text + ') | gap at the meeting', meetGap, '| took', dt.toFixed(0), 'game s | nearest anything', cl[0], cl[1], '| after:', JSON.stringify(end), /^out,meet(,out,meet)*,back$/.test(stages.join()) && played && meetGap < 6 && cl[0] > -0.05 ? 'ok' : 'FAIL');
   }
   log('err', await p.evaluate(() => Re.errors));
 };

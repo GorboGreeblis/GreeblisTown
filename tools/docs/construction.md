@@ -196,7 +196,8 @@ Goo that runs down a body and moves like goo, without clipping:
   each, then go back to wandering.
 - **Visits** (owner's rules): about once a minute (45 to 65 s apart, two at most on their way out or meeting at
   once) one creature leaves its place to call on another, so that every pair's two vignettes play in about three
-  hours (about 200 meetings). The pair is the one whose vignette is owed most (the least played, in random order),
+  hours (about 200 meetings). The pair is the one that has met least (its animation and lines counted together, in random order, so no
+  pair meets a second time before every pair has met once),
   and the meeting plays whichever of its two vignettes, the animation or the lines, has played less: never both.
   Everyone visits everyone, kiosk workers included; King Dino (at his drums), Somlet (asleep at the Post Office)
   and the church's slug never leave, the others come to them (two of those three never meet, as intended).
@@ -206,7 +207,8 @@ Goo that runs down a body and moves like goo, without clipping:
     clear straight walks round the garden, the pond, buildings and scenery; a start off open ground, as at a door,
     first steps to its nearest open cell, and the last cell gives way to the goal only when the line there is
     clear; full-precision costs and bounded loops, so a plan never hangs a frame).
-  - The meeting: the visitor stops beside the host, facing it, and they play only side by side (`VIGS.beside`).
+  - The meeting: the visitor stops beside the host, facing it (a host wandering somewhere stops where it is; one
+    that has moved on is walked up to again, twice at most), and they play only side by side (`VIGS.beside`).
     A host who works in a kiosk or behind the bar (Zollod, Mushroom, Fortizmo) comes out by its way out to meet it
     and goes back in after (Mushroom jumping back up onto his desk: the last 1.3 m of his walk home is an arc clear
     of its front edge). Sparkakus stops where he is in his open Library and the visitor comes in across its open

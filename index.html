@@ -14156,16 +14156,16 @@ const JGP = (() => {
 		VIGS.n = nPl;
 		VIGS.can = can;
 		function pick() {
-			const low = Math.min(...can.map((pk) => Math.min(nPl(pk), nPl(pk, 1)))),
+			const low = Math.min(...can.map((pk) => nPl(pk) + nPl(pk, 1))),
 				m = lineUp(),
 				// (only two standing side by side where they are, as the Dancers on the floor: every other pair meets by
 				// a visit first, see the visits, which give every pair its turn, the least played first)
-				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && VIGS.beside(m[pk[0]], m[pk[1]]) && Math.min(nPl(pk), nPl(pk, 1)) <= low);
+				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && VIGS.beside(m[pk[0]], m[pk[1]]) && nPl(pk) + nPl(pk, 1) <= low);
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
 			for (const pk of ok) {
-				const sc = 100 * Math.min(nPl(pk), nPl(pk, 1)) + 50 * Math.random();
+				const sc = 100 * (nPl(pk) + nPl(pk, 1)) + 50 * Math.random();
 				sc < bs && ((bs = sc), (best = pk));
 			}
 			// (whichever of its two, the animation or the lines, has played less)
@@ -16302,6 +16302,8 @@ const JGP = (() => {
 								face = Math.atan2(hp[0] - sp[0], hp[1] - sp[1]),
 								q = { v, h, vid, hid, sp, stage: "out", until: t2 + 40 + 1.6 * Math.hypot(sp[0] - v.group.position.x, sp[1] - v.group.position.z) };
 							(v.visiting = !0), (h.hosting = !0), isSP(h) && h.stay();
+							// (a host on its way somewhere, as a Dancer wandering the floor, stops where it is)
+							!hv && !isSP(h) && "slug" !== hid && h.moving && h.home.set(h.group.position.x, h.home.y, h.group.position.z);
 							hv && ((q.hw = hv), (q.hHome = h.home.clone()), (q.hPat = h.pattern && Object.assign({}, h.pattern[1])), h.pattern && (h.pattern[1].face = Math.atan2(sp[0] - hp[0], sp[1] - hp[1])));
 							if (isSP(v)) {
 								// (SPARKAKUS from his Library's front)
@@ -16377,6 +16379,11 @@ const JGP = (() => {
 								const CB = F.buildings.find((B) => "church" === B.name);
 								if (!(CB && F.inHull(CB, At.position.x, At.position.z))) return void ((q.played = t2), (q.quiet = !0));
 							}
+							// (not side by side, the host having moved on: up to it again, twice at most)
+							if (!q.played && !VIGS.beside(v, h) && !isSP(v) && "slug" !== h.id && t2 - q.meetAt > 2 && (q.re || 0) < 2) {
+								const sp = spotFor(v, h);
+								if (sp) return void ((q.re = (q.re || 0) + 1), (q.way = JGP.route(v.group.position.x, v.group.position.z, sp[0], sp[1], v.bodyR || 1)), (q.stage = "out"), (q.until = t2 + 40));
+							}
 							if (!q.played) return void (VIGS.beside(v, h) && VIGS.play(v, h, q.text) ? ((q.played = t2), "slug" === h.id && JGP.slug.chat(8.5)) : t2 - q.meetAt > 40 && goBack(q, t2));
 							if (q.quiet) return void (t2 - q.played > 9 && goBack(q, t2));
 							return void (!VIGS.playing() && t2 - q.played > 1.5 && goBack(q, t2));
@@ -16406,7 +16413,8 @@ const JGP = (() => {
 							if (w.slug && !slugToo) continue;
 							const ok = w.ways.filter(([a, b]) => free(ent(a), !0) && free(ent(b), !!(ent(b) && viaOf(ent(b)))) && (want || !VIGS.beside(ent(a), ent(b))));
 							if (!ok.length) continue;
-							const n2 = Math.min(VIGS.plays[w.key] || 0, VIGS.plays[w.key + "t"] || 0) + Math.random() * 0.5;
+							// (by the pair's two together: no pair meets again before every pair has met once)
+							const n2 = (VIGS.plays[w.key] || 0) + (VIGS.plays[w.key + "t"] || 0) + Math.random() * 0.5;
 							n2 < bn && ((bn = n2), (best = ok[(Math.random() * ok.length) | 0]), (kind = (VIGS.plays[w.key + "t"] || 0) < (VIGS.plays[w.key] || 0) || ((VIGS.plays[w.key + "t"] || 0) === (VIGS.plays[w.key] || 0) && Math.random() < 0.5)));
 						}
 						if (!best) return;
