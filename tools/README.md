@@ -65,13 +65,14 @@ row says otherwise, run it with `shot2.js`.
 | `t_church.js` | The church's secret room: in through the wall under the right-hand Garden window (the little X) and nowhere else, the head guard, no creature inside, and the slug: one Talk (no Blossom), its idle and Talk moves, never leaving its spot |
 | `churchshots.js` | Renders the way in from outside and the secret room (down the nave, the slug, the ceiling) |
 | `t_battlecost.js` | A Dance battle costs a Blossom: no Blossom option (and no battle from a gift) with none in hand; with one, giving it empties the hand and opens the battle |
-| `t_phone.js` | The phone is locked (it rings, no one answers) until Mushroom has a Blossom, then calls Nextessa for the rest of the session |
+| `t_phone.js` | The phone is locked (its connection to the Portal is blocked) until Mushroom has a Blossom, then calls Nextessa for the rest of the session |
+| `t_script.js` | The owner's script, the parts that move: Sparkakus's Artifacts talk and the glue bottle putting the Gem together, his Blossom lap on all fours (clear of every bookcase), and renders of the Library's face-out books and Wish Blossom and the Sheriff's posters. `VW=320 VH=240` |
 | `dance-plant.js` | Planting and dancing are animations, not menu options: every menu holds only Talk (and Give a blossom), each creature's moves move it, and at the Event they plant, then dance while Fortizmo plays. Slow |
 | `portraits.js` | Isolated portraits of creatures (`IDS`) on open lawn (`SPAWN=x,z`), two angles each |
 | `topview.js` | The whole town from straight above |
 | `t_avatar.js` | The avatar's walk and idle in the test modes: side renders mid-stride and standing, feet above the ground, hands clear of the skirt |
 | `t_headguard.js` | The VR head guard: distance to the nearest solid at known spots and how dark the view goes (through its test probe, as VR can't run headless). `VW=320 VH=240` |
-| `t_library.js` | Sparkakus browsing his Library: the spots he visits, never within 0.6 m of a bookcase, the table or the posts, still when talked to, out to the Garden Event and back. `VW=320 VH=240` |
+| `t_library.js` | Sparkakus browsing his Library: the spots he visits, never within 0.6 m of a bookcase or the posts, still when talked to, out to the Garden Event and back. `VW=320 VH=240` |
 | `t_zfight.js` | Z-fighting scan: every depth-written triangle grouped by plane (normals folded by their largest component); overlapping near-coplanar pairs (`TOL` 6 mm, `MINA` 2 cm²) are kept only if a point in the overlap can be seen from where the player's eyes can be (a ray test through a 2 m grid, as the trimmed three.js has no raycaster; `VISALL=1` skips it, `CREATURES=0` leaves creatures out). Each clash is named by its triangles' own vertex colours, plus a 4 m area for unnamed scenery, with points inside it |
 | `t_zcheck.js` | Which scan clashes really flicker: `POINTS` (JSON `[name, x, y, z]`) rendered three times from a player eye with the near plane nudged a fraction of a millimetre. Nothing moves, so changed pixels are surfaces fighting; under ~10 is edge noise. `SHOTS=1` writes the pairs for `tile.py diff` |
 | `t_event3.js` | The whole Garden Event, logged every 5 s of game time. `VW=200 VH=150`, or it takes ages |

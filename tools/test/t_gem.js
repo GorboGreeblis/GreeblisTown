@@ -8,7 +8,8 @@ module.exports = async (p) => { await p.mouse.click(640, 360); await p.waitForTi
   log.push('gemtoe before: ' + (await p.evaluate(() => { te(It.byId.p_gemtoe); return Kt.rewards.stone; })));
   await adv(3);
   await p.evaluate(() => { Kt.artifacts = 3; LIB.talk(); });
-  await adv(14);
+  // (his lines, the glue bottle putting the Gem together, his speech and the Gem collected)
+  for (let i = 0; i < 90 && !(await p.evaluate(() => Kt.gem && !qt.isOpen)); i++) await adv(1);
   log.push('after sparkakus ' + (await p.evaluate(() => JSON.stringify({ arts: Kt.rewards.artifacts, gem: Kt.gem, stone: Kt.rewards.stone }))));
   await p.evaluate(() => te(It.byId.p_gemtoe));
   await adv(4);

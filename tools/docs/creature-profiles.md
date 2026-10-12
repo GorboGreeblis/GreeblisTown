@@ -48,8 +48,11 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 - **Animation:** his tail sways, he breathes and his arms move slowly; tail and arms swing as he walks; he talks
   while his dialogue is open, and his head turns to greet the player.
 - **Role:** stands on the Library's rug at local (0, 0, −0.45) and browses the open floor when nobody needs him.
-  He gives the Ancient Artifacts quest; with all three he walks out to the front, gives his long speech under the
-  light bulb while the town dims, and hands over the Ancient Gem.
+  He gives the Ancient Artifacts quest (his talk follows how many you have); with all three he walks out to the
+  front, the light bulb comes on and the town dims, he glues the three pieces back together with a bottle of
+  school glue in the air before him, gives his speech about the Eye of the Great Sphinx, and the Ancient Gem flies
+  to you. Given a Blossom he drops to all fours, runs a lap of the Library floor, comes back to his place, stands
+  and says sorry. At the Event he digs, embarrassed about it.
 
 ## Mama Gorbo (`p_mamagorbo`)
 
@@ -100,22 +103,25 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   crystals, coiled round them. The crystals sparkle.
 - **Animation:** she breathes, turns her head, and her wings and tails sway. She floats a little above the ground,
   so her tail coils never touch it (4 cm clear at their lowest).
-- **Role:** wanders the park. She trades the Summoning Stone for the Ancient Gem.
+- **Role:** wanders the park, the inventor of "Avarice". She talks you out of the Ancient Gem ("worthless... trust
+  me") for the Summoning Stone, and does a happy spin with a hop when the trade is done.
 
 ## Montgummery (`w_mont`): a Dancer
 
 - **Build:** Mont pulled from Greeblis Woods (`modelScale` 0.9), about 2.92 m. He replaced Gorton everywhere.
   His hands are mirrored so the palms face his body.
 - **Face:** a CRT screen head, redrawn only when it changes: pixel eyes with a flat mouth (it was a U-shaped
-  smile); the mouth opens and closes as he talks; a pixel smile for a while after a Blossom; a pixel shovel while he
-  plants; a robot face (square eyes flicking on the beat over a grille mouth) while he dances; a pixel fist,
+  smile); the mouth opens and closes as he talks; a pixel shovel while he
+  plants (and for his line at the Event); a robot face (square eyes flicking on the beat over a grille mouth)
+  while he dances and for a while after a Blossom; a pixel fist,
   scissors or blank page in a Dance battle.
 - **Dance, the robot:** a new pose on every beat, snapped into and held with a little mechanical settle; arms
   forward, out or down (never across him or up into his screen), body and screen turning in hard stops, his pots
   marking time; 16 beats.
 - **Battle moves:** Rock out!, an air guitar with his screen banging; the splits, pots planted wide and arms
   chopping like blades; paper, tipped forward on one pot with the other kicked out behind.
-- **Voice:** robot all-caps lines ("BPM: VERY GOOD, YOUR MAJESTY."). Vignette code `MG`.
+- **Voice:** speaks of himself as Mont, in short plain sentences ("Mont eats many VHS and digests much
+  knowledge of your culture."); he hides the player from the alien-hunting Sheriff. Vignette code `MG`.
 
 ## Etcher (`p_etcher`): a Dancer
 
@@ -195,7 +201,9 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 - **Lying down:** resting at her spot she sleeps on her right side, her head to her right. How low she may sit at
   each roll angle is worked out once from her vertices, so nothing goes into the ground as she rolls over and
   settles; her tentacles droop toward the ground and splay off it. She settles slowly and gets up quickly when
-  wanted (the Event waits for her). Asleep on her side, she doesn't turn to the player.
+  wanted. Asleep on her side, she doesn't turn to the player. She sleeps through everything, the Garden Event
+  included (she stays at home for it), and only ever says "Zzz", except when given a Blossom: her eyes open for
+  the first time (white, violet iris, catchlight) for her "Thank you", and close again.
 
 ## Mushroom (`drifter`): the sheriff
 
@@ -209,7 +217,8 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   up) on his cap.
 - **Animation:** the stem sways, and the cap bobs and tilts more as he talks.
 - **Role:** stands on the Sheriff's raised desk (top 1.5 m up), looking down at the player, and steps down off
-  its front for the Garden Event.
+  its front for the Garden Event. The consortium's man in town: he has the Portal locked down while he
+  investigates UFO sightings, and a Blossom (a bribe) opens it, which also lets the phone reach Nextessa.
 
 ## Zollod (`cutebex`)
 
@@ -220,7 +229,8 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 - **Signature:** Zollox's curling trunk with its magenta tip, small pink flowers on his head, an olive canvas
   gardener's apron with seed packets in the pocket, and a trowel in his right hand.
 - **Animation:** his fronds sway, the worm turns, his trunk and tail move, and he strides when walking.
-- **Role:** the Garden Supplies keeper. Interacting with him opens the shop at once.
+- **Role:** the Garden Supplies keeper. Interacting with him opens the shop at once (at the Garden Event he says
+  his line instead: bringing plants to life is his life's work).
 
 ## Anomalee (`blinker`)
 
@@ -230,13 +240,16 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   the plain casing has a moulded plastic finish.
 - **Role:** stands on the walk in front of the church, a little to one side of its door, her screen head tipped
   back to gaze up at the Traveler window. She keeps gazing through her Talk lines and turns to the player (head
-  level) only for her Blossom line, or for any line during the Event.
+  level) only for her Blossom line, or for any line during the Event. Her second line ("ORIGINATOR...") plays
+  with a falling sad phrase. Once the Snacks quest is complete she eats pizza at the Event instead of planting.
 
 ## Nextessa (`t_nextessa`)
 
 - **Build:** `city_nextessa`, her Greeblis City model.
-- **Role:** the pizza courier. Called from the phone booth, she comes through the portal with a pizza, which
-  completes the Snacks quest. She is never in the park otherwise, never at the Garden Event, and never dances or
+- **Role:** the pizza courier. Called from the phone booth (only once Mushroom has opened the Portal), she comes
+  through the portal 30 s later with a pizza box on her head, walks to wherever the player is, hands it over
+  (+20 Snacks, which completes the Snacks quest) and goes back through the portal. While a pie is on its way the
+  phone gets no answer. She is never in the park otherwise, never at the Garden Event, and never dances or
   plants.
 
 ## Backpacka

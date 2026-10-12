@@ -1,134 +1,17 @@
-# How the creature-pair vignette lines were written: a table of pairs (two creature codes, a gesture style, two lines).
-# Running it prints the number of pairs, any pair of the codes in K missing or duplicated, the longest line's length
-# and how often each gesture style is used. Some codes belong to creatures since replaced; the game's PAIRS is current.
-#   python3 pairs.py
-P = [
-("HN","MT",8,"SCAN COMPLETE. You are 41% mushroom.","And 100% the law. Mind the sidewalk!"),
-("HN","MU",7,"Your spore count is... adorable.","P-please don't put me in a spreadsheet."),
-("HN","AN",1,"Your signal is buffering again.","I'm not buffering! I'm thinking. Loudly."),
-("HN","KD",3,"Crown detected. Cooling fans engaged.","We permit you to admire us at 60fps."),
-("HN","GW",6,"Goo viscosity: exceptional.","Thanks! It's a family recipe. Blorp."),
-("HN","SS",0,"Your tail emits 2.4 gigahertz.","That's my happy frequency! Wanna fetch?"),
-("HN","ZL",10,"Uploading one (1) gentle compliment.","Received. Your wires grow like vines."),
-("HN","SM",2,"Packet loss detected on your mail route.","Mm... the packets wanted a nap too."),
-("HN","FZ",5,"Your horn exceeds the safe groove limit.","Then crank the limit, big fella."),
-("HN","ET",4,"Requesting a backup of your etchings.","Already carved one onto your left tusk."),
-("HN","GT",9,"Gem clarity: 99.8%. Remarkable.","Only 99.8?! Polish me, polish me!"),
-("HN","GL",11,"Your glyphs fail all my decoders.","Hee hee. They're upside-down on purpose."),
-("HN","LA",3,"Price check on one (1) happiness.","For you, free today. Tomorrow, two coins."),
-("HN","NX",8,"Delivery ETA: calculating...","Already here! The pizza's on your screen."),
-("HN","BP",7,"Water content: rising rapidly.","Glug! Want a sip? I've got plenty."),
-("MT","MU",6,"Sheriff's orders: stand up straight!","I... I'm a mushroom. This IS straight."),
-("MT","AN",1,"Is that leg street-legal, ma'am?","It's peg-legal! Arr... *static*"),
-("MT","KD",2,"This town has one law, and it's me.","And we are the crown. Call it a tie."),
-("MT","GW",6,"No splashing on the square!","It's not splashing if I'm on a float!"),
-("MT","SS",8,"That tail's broadcasting without a license.","Woof! It's licensed for joy, Sheriff!"),
-("MT","ZL",10,"Your back's got more mushrooms than mine.","We could start a very slow posse."),
-("MT","SM",4,"Wake up, mail carrier! Rounds are due!","Mmh... ten more letters... minutes."),
-("MT","FZ",5,"Turn it down! ...Actually, turn it up.","That's what I call keeping the peace."),
-("MT","ET",3,"I need that wanted poster engraved.","Done. WANTED: more snacks for the Sheriff."),
-("MT","GT",9,"Those toes are evidence. Shiny evidence.","Arrest me, Sheriff! But spin me first!"),
-("MT","GL",11,"What's that writing say? A confession?","It says 'the Sheriff is ticklish.' Hee!"),
-("MT","LA",0,"Checking your scales, shopkeep.","Honest scales, honest Larry. Mostly."),
-("MT","NX",8,"Slow down! Speed limit's one wing-beat!","Can't! The pizza gets cold at two!"),
-("MT","BP",7,"You drank the duck pond, didn't you?","Borrowed it! I give it all back. Squirt!"),
-("MU","AN",7,"Um... your screen is very bright.","Sorry! Dimming to 'cozy cave' mode."),
-("MU","KD",3,"Y-your majesty...","Rise, small fungus. You may hold our cape."),
-("MU","GW",6,"C-can I sit on your float?","Hop on! It's a mushroom-and-goo cruise!"),
-("MU","SS",0,"Your stars are so sparkly...","Your spots are so spotty! Best friends!"),
-("MU","ZL",10,"Your back looks... like home.","There's always room for one more cap."),
-("MU","SM",2,"(whisper) are you asleep?","(whisper) yes... but say hi anyway."),
-("MU","FZ",5,"I like music... if it's quiet music.","Then here's a lullaby on a tiny horn."),
-("MU","ET",4,"Could you carve my name? Small, please.","In the smallest letters ever etched."),
-("MU","GT",9,"Your gems make me feel underdressed.","Wear a spore! Spores are the new gems!"),
-("MU","GL",11,"What do your tiles mean?","This one means 'shy friend'. Hee hee."),
-("MU","LA",3,"Do you sell... courage?","Aisle three, between the seeds and soup."),
-("MU","NX",1,"Did I order a pizza? I don't remember.","Mushroom topping! Wait... that's awkward."),
-("MU","BP",7,"Please don't water me too hard.","Just a sprinkle for my favorite cap!"),
-("AN","KD",8,"Now broadcasting: KING DINO TONIGHT.","We approve this programming. Repeat it."),
-("AN","GW",1,"Error: goo on my screen.","That's a kiss! Goo kisses don't count."),
-("AN","SS",0,"Your wifi is stronger than mine!","Wanna share bars? I've got three!"),
-("AN","ZL",6,"Why's your garden walking?","Gardens walk slowly. You never waited."),
-("AN","SM",2,"Channel 3: a cloud, snoring.","...that's... my favorite show... zzz."),
-("AN","FZ",5,"Can I sync my screen to your horn?","Flash on the two and four, baby."),
-("AN","ET",4,"Can you etch me a new leg?","One peg leg, engraved 'still walking'."),
-("AN","GT",9,"Your gems are glitching my colors!","That's not a glitch, that's sparkle!"),
-("AN","GL",11,"Your glyphs read as static to me.","Static is a glyph too. Hee hee!"),
-("AN","LA",3,"Do you stock replacement pixels?","Gently used. Some still blink."),
-("AN","NX",8,"Live footage of a pizza in motion!","Get my good side! Both sides are crust!"),
-("AN","BP",7,"Keep that water AWAY from my screen.","Just a mist! Electronics love mist?"),
-("KD","GW",2,"Kneel before the crown!","I'm goo, I'm always kneeling. Blorp."),
-("KD","SS",3,"Fetch our royal stick, star-dog!","Fetching! Royally! Here it is!"),
-("KD","ZL",10,"Your garden shall be the royal garden.","It was always yours. Gardens are for all."),
-("KD","SM",4,"Deliver our decree at once!","Mmh... at once... after one more nap."),
-("KD","FZ",5,"Play our royal anthem!","One anthem, extra swing, your highness."),
-("KD","ET",4,"Engrave our face on everything.","Started with the moon. It's a big job."),
-("KD","GT",9,"Those gems belong in our crown.","Your crown belongs on my toes, then!"),
-("KD","GL",11,"Translate our glory into your tiles.","Done. It reads 'big egg'. Hee!"),
-("KD","LA",0,"Put it on the royal tab.","The royal tab is now a royal scroll."),
-("KD","NX",8,"We ordered a pizza in 1402.","And here it is, still warm, your majesty!"),
-("KD","BP",7,"Water our royal feet, flying thing.","Sprinkle for the king! Mind the cape!"),
-("GW","SS",6,"Jump in the pool, starpup!","Cannonball! Wait, I'm a dog. PADDLE!"),
-("GW","ZL",10,"Can your mushrooms swim?","They float. With a little help."),
-("GW","SM",7,"You look like a cloud! Clouds are goo!","...and goo is a cloud that fell asleep."),
-("GW","FZ",5,"Play a pool party song!","Splash on the downbeat, sweetheart."),
-("GW","ET",1,"Etch me! I'll just drip it off. Hee.","Then I'll etch faster than you drip."),
-("GW","GT",9,"Can gems go in goo?","Only if you keep them shiny, squishy!"),
-("GW","GL",11,"Your teeth are so square!","Your eyes are so plus! We match. Hee!"),
-("GW","LA",3,"One inflatable, please!","You're already floating, Goward."),
-("GW","NX",0,"Goo-za! A goo pizza!","Hold the goo. HOLD THE GOO."),
-("GW","BP",7,"You and me: the water gang!","Glug! Best gang! Splash formation!"),
-("SS","ZL",6,"Can I dig in your back garden?","Only if you plant something nice."),
-("SS","SM",4,"Wake up! Wake up! Walkies!","Mmm... carry me, star puppy..."),
-("SS","FZ",5,"Howl along? AWOOOO!","That's a blue note, pup. Keep it."),
-("SS","ET",3,"Etch a star on me!","You're already covered in stars!"),
-("SS","GT",9,"Your toes sparkle like my tail!","Sparkle-off! On three! Twirl!"),
-("SS","GL",11,"What does that tile say?","'Good dog.' They all say 'good dog.'"),
-("SS","LA",0,"Do you have treats?","Biscuits, bones, and one star-shaped thing."),
-("SS","NX",8,"Race you to the gate!","I deliver faster than I race. Gone!"),
-("SS","BP",1,"Spray me! Spray me!","Here comes the sprinkle! Shake it off!"),
-("ZL","SM",7,"You may nap in my garden.","Mmm... smells like moss and pillows."),
-("ZL","FZ",10,"Your music makes my sprouts grow.","Then let's grow a forest, slow tempo."),
-("ZL","ET",4,"Etch the names of my mushrooms?","All forty-two. Starting with 'Tiny'."),
-("ZL","GT",6,"Plant one gem; grow a gem tree.","A gem tree?! Water it! WATER IT!"),
-("ZL","GL",11,"Your glyphs look like roots.","They are! Roots of words. Hee hee."),
-("ZL","LA",3,"Fertilizer, please. Slowly.","Slowly packed, slowly paid. Lovely."),
-("ZL","NX",8,"No rush, little courier.","Rush is my middle name! First: Pizza."),
-("ZL","BP",7,"My garden thanks you, sky sprinkler.","Glug! Your mushrooms said thanks too!"),
-("SM","FZ",10,"Play something sleepy...","Moonlight in C minor, coming right up."),
-("SM","ET",4,"I lost a letter... do you remember it?","'Dear Somlet, wake up.' Signed: me."),
-("SM","GT",2,"You twirl so much... I'm dizzy... zzz.","Twirl naps! The best naps!"),
-("SM","GL",11,"Is that mail? It looks like mail.","A postcard from the year 3000. Hee!"),
-("SM","LA",3,"Postage, please... the soft kind.","Pillow stamps. Very popular."),
-("SM","NX",0,"Who delivers to the deliverers?","Me! Pizza for the mail carrier!"),
-("SM","BP",7,"Your feet are like hoses... cozy.","Want a warm sprinkle bath? Glug glug."),
-("FZ","ET",5,"Carve my latest solo on a plate.","Every note. Even the wrong ones."),
-("FZ","GT",9,"You twirl on the one, gem-girl!","And you toot on the two! Encore!"),
-("FZ","GL",11,"Your grin's got rhythm.","Hee! My teeth are a xylophone."),
-("FZ","LA",0,"Got any reeds in stock?","Fresh reeds! And one slightly chewed."),
-("FZ","NX",8,"A pizza for the band!","Extra cheese for the horn section!"),
-("FZ","BP",10,"Ready, Backpacka? Here's your theme!","Glug! I'll spray right on the beat!"),
-("ET","GT",4,"Hold still, I'll etch your portrait.","Hold still?! I've never held still!"),
-("ET","GL",11,"Your tiles have no punctuation.","Punctuation is for quitters. Hee!"),
-("ET","LA",3,"I'd like a receipt. Engraved.","One stone receipt. Heavy, but final."),
-("ET","NX",8,"Signature on delivery, please.","Scribble! Zoom! Already gone!"),
-("ET","BP",7,"May I record your flight path?","Record the splashes too! Every drop!"),
-("GT","GL",11,"Do glyphs sparkle?","Only when they laugh. HEE HEE."),
-("GT","LA",0,"Do you buy gems?","Buy gems, sell gems, trade toe-gems."),
-("GT","NX",8,"A pizza with gem sprinkles?!","Crunchy! But sure, for you!"),
-("GT","BP",9,"Spray my gems till they shine!","Sparkle shower! Hold still! ...Never mind!"),
-("GL","LA",3,"I'll pay in glyphs.","Glyphs accepted. Giggles cost extra."),
-("GL","NX",8,"Your stripes spell 'zoom'.","That's literally my job description."),
-("GL","BP",11,"Your patches look like glyphs too!","They spell 'thirsty'. Always thirsty!"),
-("LA","NX",0,"Delivery for the shop? I didn't order.","Larry, you ordered last Tuesday. Twice."),
-("LA","BP",3,"I sell watering cans. You ARE one.","Free samples! Psssshh!"),
-("NX","BP",8,"Pizza for the sprinkler!","Glug! Pizza... soup! Even better!"),
-]
-K = ["HN","MT","MU","AN","KD","GW","SS","ZL","SM","FZ","ET","GT","GL","LA","NX","BP"]
-import itertools, collections
-seen = collections.Counter(frozenset((a,b)) for a,b,*_ in P)
-missing = [p for p in itertools.combinations(K,2) if frozenset(p) not in seen]
-dups = [k for k,v in seen.items() if v>1]
-print(len(P), "missing", missing, "dups", dups)
-print("max len", max(max(len(a),len(b)) for *_,a,b in P))
-print("styles", collections.Counter(s for _,_,s,_,_ in P))
+# Checks the creature-pair vignette lines: reads the game's PAIRS table (two creature codes, a gesture style, two
+# lines) and its NAMES out of index.html and prints the number of pairs, any pair of the cast missing or
+# duplicated, the longest line's length and how often each gesture style is used.
+#   python3 pairs.py [path/to/index.html]   (default: the index.html two folders up)
+import itertools, collections, json, os, re, sys
+src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "..", "..", "..", "index.html")
+txt = open(src, encoding="utf-8").read()
+names = re.search(r"const NAMES = \{([^}]*)\}", txt).group(1)
+K = re.findall(r"(\w\w): \"", names)
+body = txt[txt.index("PAIRS = [") + 9 : txt.index("// what each creature sends")]
+P = [json.loads(m) for m in re.findall(r"^\s*(\[\"\w\w\", \"\w\w\", \d+, \".*\"\]),$", body, re.M)]
+seen = collections.Counter(frozenset((a, b)) for a, b, *_ in P)
+missing = [p for p in itertools.combinations(K, 2) if frozenset(p) not in seen]
+dups = [k for k, v in seen.items() if v > 1]
+print(len(P), "pairs of", len(K), "creatures; missing", missing, "dups", dups)
+print("max len", max(max(len(a), len(b)) for *_, a, b in P))
+print("styles", collections.Counter(s for _, _, s, _, _ in P))
