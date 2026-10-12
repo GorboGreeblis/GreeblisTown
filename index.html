@@ -11620,6 +11620,26 @@ const JGP = (() => {
 						[-1, 1].forEach((sd) => [0, 1, 2].forEach((k) => (c.beginPath(), c.arc(64 + 13 * sd, 106 + 7 * k, 1.8, 0, l), c.fill())));
 						(c.fillStyle = skin), c.beginPath(), c.moveTo(78, 103), c.quadraticCurveTo(68, 105, 62, 111), c.lineTo(66, 115), c.quadraticCurveTo(73, 110, 80, 108), c.closePath(), c.fill();
 						(c.strokeStyle = "#5a3a22"), c.beginPath(), c.moveTo(62, 111), c.lineTo(68, 116), c.stroke();
+					} else if ("stranger" === kind) {
+						// a stranger drawn from the owner's photo, as cartoony as the visitor and never a likeness: shaggy
+						// pale-blond hair with darker roots falling over the brow, dark brows, two dark eyes, a small
+						// quiet smile, a little gold earring, and a brown leather jacket with a wide collar over a cream
+						// shirt collar and a sage knit sweater
+						const hair = "#e9d58c", roots = "#b89a52";
+						(c.fillStyle = roots), c.beginPath(), c.ellipse(64, 60, 25, 19, 0, Math.PI, 0), c.fill();
+						(c.fillStyle = hair), c.beginPath(), c.moveTo(39, 64), c.quadraticCurveTo(40, 40, 64, 40), c.quadraticCurveTo(88, 40, 89, 64), c.lineTo(92, 84), c.lineTo(84, 80), c.lineTo(86, 66), c.quadraticCurveTo(70, 56, 56, 68), c.lineTo(48, 72), c.lineTo(44, 84), c.lineTo(36, 86), c.closePath(), c.fill();
+						(c.fillStyle = skin), c.beginPath(), c.ellipse(64, 78, 17, 17, 0, 0, l), c.fill();
+						// (the fringe: three uneven locks down over the brow)
+						(c.fillStyle = hair), [[50, 62, 60, 71], [59, 60, 68, 70], [68, 60, 80, 70]].forEach(([x0, y0, x1, y1]) => (c.beginPath(), c.moveTo(x0, y0), c.quadraticCurveTo((x0 + x1) / 2 + 2, y0 + 2, x1, y1), c.lineTo(x0 + 3, y1 - 2), c.closePath(), c.fill()));
+						(c.strokeStyle = "#3a2a1a"), (c.lineWidth = 2), [-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 4 * sd, 72), c.quadraticCurveTo(64 + 9 * sd, 70, 64 + 13 * sd, 72), c.stroke()));
+						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 8 * sd, 78, 2.6, 0, l), c.fill()));
+						(c.strokeStyle = "#8a5a3a"), (c.lineWidth = 1.5), c.beginPath(), c.arc(64, 85, 4.5, 0.2 * Math.PI, 0.8 * Math.PI), c.stroke();
+						(c.fillStyle = "#e8b830"), c.beginPath(), c.arc(82, 86, 1.6, 0, l), c.fill();
+						// (the jacket, its collar, the shirt collar and the sweater's V)
+						(c.fillStyle = "#4a3426"), c.beginPath(), c.moveTo(30, 126), c.quadraticCurveTo(32, 102, 50, 97), c.lineTo(78, 97), c.quadraticCurveTo(96, 102, 98, 126), c.closePath(), c.fill();
+						(c.fillStyle = "#3a281c"), c.beginPath(), c.moveTo(50, 97), c.lineTo(58, 97), c.lineTo(54, 114), c.closePath(), c.fill(), c.beginPath(), c.moveTo(78, 97), c.lineTo(70, 97), c.lineTo(74, 114), c.closePath(), c.fill();
+						(c.fillStyle = "#9eb0a0"), c.beginPath(), c.moveTo(56, 100), c.lineTo(72, 100), c.lineTo(72, 126), c.lineTo(56, 126), c.closePath(), c.fill();
+						(c.fillStyle = "#f1e8d2"), c.beginPath(), c.moveTo(57, 97), c.lineTo(64, 106), c.lineTo(71, 97), c.lineTo(68, 95), c.lineTo(64, 100), c.lineTo(60, 95), c.closePath(), c.fill();
 					} else if ("visitor" === kind) {
 						// the town's own visitor, as a drawing (the avatar): copper hair with its low ponytail and
 						// navy band, freckles over the cheeks, a small quiet mouth, and her yellow sun dress with its
@@ -11662,6 +11682,8 @@ const JGP = (() => {
 			[0, 1.88, "rabbit", "#8a5a36", 0.04],
 			// (pinned over the goo poster's corner, a few millimetres proud of it so the two never flicker)
 			[-0.86, 2.22, "visitor", "#f4dcc6", -0.07, 0.006],
+			// (and, on the right, a stranger drawn from a photo the owner sent, between the alien and the rabbit)
+			[0.92, 2.2, "stranger", "#f1d7c2", 0.06],
 		].forEach(([px, py, kind, skin, rz, dz = 0]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35 + dz], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35 + dz] })));
 	}
 
