@@ -191,10 +191,12 @@ Goo that runs down a body and moves like goo, without clipping:
   gazebo are `E` zones, not colliders) and `JGP.roamWalk` passes for a straight walk there.
 - A roamer with no headway for 2.5 s, or not there in good time, settles where it is and picks again; one boxed in
   heads back to its starting spot. None moves while busy (talking, a vignette, the Event) or with the player close.
-- **Mama Gorbo and Gooward** meet every minute or two (`JGP.meetAt(t)` forces it for tests): they walk to a spot
-  between them, turn face to face and show two hearts each, then go back to wandering.
-- **Sparkakus** browses his Library when nobody needs him, keeping 0.8 m clear of every bookcase, the table and
-  the banner's posts.
+- **Mama Gorbo and Gooward** meet every 20 to 40 s (`JGP.meetAt(t)` forces it for tests): they walk to a spot
+  between them, turn face to face and throw colourful goo balls to each other, a heart over the one who catches
+  each, then go back to wandering.
+- **Sparkakus** browses his Library when nobody needs him, keeping 0.8 m clear of every bookcase and the banner's
+  posts. Given a Blossom (his stump station's own "Give a blossom", `st.romp`), he drops to all fours, runs a lap
+  of an ellipse over the Library floor (clear of every bookcase), comes back to his place, gets up and apologises.
 
 ### Talking, menus, gifts
 
@@ -225,21 +227,29 @@ Goo that runs down a body and moves like goo, without clipping:
   going horizontal beats Rock out!. Each round won teaches one of the Dancer's steps; learn them all to win. The
   panel shows only the Dancer's move; the bar shows how it is going. The winner does a victory dance.
 - **The chain:** each Dancer's first win gives one Ancient Artifact (a third of one teal brilliant-cut diamond;
-  later wins get a bow). With all three, Sparkakus walks out to the front, gives his long speech under the bulb,
-  and hands over the Ancient Gem (the pieces are not put on show: `ARTS.model` is kept for the animation that will
-  put the diamond back together). Gemtoe trades the Summoning
-  Stone for it, and the Stone starts the Garden Event.
-- The pieces keep `userData.gemOffset` (where each sits in the whole diamond) for a future animation that puts it
-  back together.
+  later wins get a bow). Sparkakus's talk follows the count (none, one or two, all three). With all three he walks
+  out to the front and the bulb comes on; after his first lines `ARTS.assemble` puts the diamond back together in
+  the air between him and the player: a school-glue bottle appears over the three pieces, turns upside down, glue
+  drips onto them, and each piece moves to its `userData.gemOffset` with a flash (about 5 s). Then his speech, and
+  the Gem flies to the player ("Ancient Gem collected!"). Gemtoe trades the Summoning Stone for it (with a happy
+  spin), and the Stone starts the Garden Event.
 
 ### Vignettes
 
-- Every pair of the twelve vignette creatures (`PAIRS`, two-letter codes) has its own short animated exchange:
-  a choreography style, both creatures' signatures from `SIG` (item, colour, gesture, emote) and a seeded twist.
-  Its two-line text shows only rarely (10% of the time, at most once every 4 minutes).
-- Every 5 to 10 s there is a 15% chance one plays, least-played pairs first, nearby pairs preferred, only for two
-  creatures within 25 m of each other, both at their own spots and not busy. Talking to either, or the Event,
-  stops it. King Dino never turns or spins in one (his sticks would sweep through the kit).
+- Every NPC has a vignette with every other NPC, one each: the sixteen in `NAMES` (two-letter codes) make 120
+  pairs in `PAIRS`, and the church's slug has one with each of them in `SLUG_PAIRS` (136 in all). Each is a short
+  animated exchange: a choreography style, both creatures' signatures from `SIG` (item, colour, gesture, emote)
+  and a seeded twist. Its two-line text shows only rarely (10% of the time, at most once every 4 minutes). The
+  lines follow the owner's script: Gooward only says Gomp, Somlet only snores, Glyph asks "don't you think?",
+  Mont speaks of himself as Mont. `town/vignettes/pairs.py` checks every pair is there once.
+- Who can take part (`lineUp`): the cast standing at their own spots, not busy; Sparkakus in his Library through
+  his stand-in `st.ent` (a marker kept at his world position whose wrapper wraps his model; he stops browsing for
+  it); Nextessa after the pizza, on her way back to the Portal (she stops walking for it). Backpacka is only in
+  town during the Event, when vignettes don't play, and the slug's are switched off (`SLUG_VIGNETTES`, the
+  owner's script: it never leaves the church).
+- Every 5 to 10 s there is a 15% chance one plays: least-played pairs first, nearer pairs preferred, any two in
+  town (up to 90 m apart, so every pair gets its turn). Talking to either, or the Event, stops it. King Dino never
+  turns or spins in one (his sticks would sweep through the kit).
 
 ### The Garden Event
 
@@ -252,6 +262,10 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Roles:** `NO_PLANT` (Fortizmo) comes but doesn't plant; `AT_POST` (King Dino) keeps drumming; Nextessa is
   never there; Backpacka only appears for it. Sparkakus leaves the Library to plant and dance with everyone (only
   when Seeds are in), but nothing comes up where he digs.
+- **Pizza** (only once the Snacks quest is complete: `Kt.rewards.snacks`, Nextessa has delivered): stacks of pizza
+  boxes stand outside the garden's stone ring beside the seed sacks for as long as the Event runs (fixed bodies in
+  `uo.fixed`, so everyone keeps clear of them), and Anomalee doesn't plant: she gets an open box at her spot and
+  eats it a slice every 5 s (`PIZZA`), and no flower comes up from her.
 - **Seeds decide it** (`bt.seeds`, fixed for the whole Event). Without them nobody comes, there is no music, and
   Backpacka sprays a garden that doesn't grow. With them each planter puts in exactly one flower per Event, of a
   kind picked at random, right where it does its planting: in the soil 0.9 m in front of it, 1.5 s into its first
@@ -312,7 +326,9 @@ Goo that runs down a body and moves like goo, without clipping:
   walls, posts, tin roof, counter at 1.12 m). Each kiosk adds its goods through `goods()`, which merges every small
   item into one vertex-coloured mesh. `KIOSK_AT` holds each kiosk's position and its `front`, `spot`, `desk`,
   `exit` and `at(name, lx, lz)` points. The Post Office and the Sheriff's share the north-east corner, Garden
-  Supplies has the south-east and the Library the north-west.
+  Supplies has the south-east and the Library the north-west. The Sheriff's back wall carries wanted posters on
+  parchment: two little green aliens, their UFO, and GLOOPERNAUGHT (a big green goo creature, named under its
+  picture).
 - **Solid ground and clear ground:**
   - `F.add(x, z, r)` makes round colliders. `F.addBuilding(x, z, ry, hull, parts, name)` makes an oriented
     building: creatures path round the hull; the player and workers meet its parts (walls, counters).
@@ -350,11 +366,12 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Library:** open ground with no walls, roof or raised floor (`LIB_LAYOUT`):
   - eight freestanding double-sided bookcases (2.2 m long, 2.1 m tall), two rows behind Sparkakus and one down
     each side, with open aisles;
-  - one book stands face-out on the front-left case's eye-level shelf, facing the front: OVERCOMING SHYNESS, a
-    blue hardback with a gold-and-cream cover (`LIB_LAYOUT.feature`); the books beside it stop short to leave its gap;
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
     `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
     Artifacts);
+  - one thing stands face-out in a gap on each of five shelves (`LIB_LAYOUT.features`): four cloth hardbacks with
+    their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby) and a
+    Wish Blossom from Greeblis Park in a little pot (its pickups' model at 22%, crystal turning, halo bobbing);
   - its colliders are the bookcases and posts; it is kept explicitly when the engine's scenery is cleared
     (it is wider than the 12 m that rule spares);
   - a rug (`LIB_LAYOUT.rug`, 11 × 7.8 m) woven from the Buns' clothes in Greeblis Woods: Miss Bun's red floral

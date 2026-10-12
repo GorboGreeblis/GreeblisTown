@@ -1,5 +1,5 @@
-// The phone booth (and so NEXTESSA's pizza) is locked until MUSHROOM has been given a Blossom: before, it rings
-// and no one answers and no courier is called; after, it calls her, and it stays unlocked for the session.
+// The phone booth (and so NEXTESSA's pizza) is locked until MUSHROOM has been given a Blossom: before, its
+// connection to the Portal is blocked and no courier is called; after, it calls her, and it stays unlocked for the session.
 // Run: NOSHOT=1 node shot2.js <url> x.png ./t_phone.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
@@ -17,14 +17,14 @@ module.exports = async (p) => {
   const b1 = await said();
   await W(1500);
   const c1 = await p.evaluate(() => ue.state + (ue.courier ? ' courier' : ''));
-  log('before MUSHROOM has a Blossom:', JSON.stringify(before), '| says', JSON.stringify(b1), '| pizza', c1, !before.unlocked && /no one answers/.test(b1) ? 'locked ok' : 'FAIL');
+  log('before MUSHROOM has a Blossom:', JSON.stringify(before), '| says', JSON.stringify(b1), '| pizza', c1, !before.unlocked && /blocked/.test(b1) ? 'locked ok' : 'FAIL');
   // give MUSHROOM a Blossom, as the player does
   await p.evaluate(() => { const m = It.byId.drifter; Kt.blossoms = 1; At.position.set(m.group.position.x + 1.5, 0, m.group.position.z + 1.5); xe.scan(); const give = xe.actions.find((a) => a.verb === 'give'); give ? xe.run('give') : te(m, !0); });
   await W(2500); await said();
   await p.evaluate(() => { t.pizza.callDelayMs = 300; });
   const after = await usePhone(); await W(2500);
   const a1 = await said();
-  log('after:', JSON.stringify(after), '| says', JSON.stringify(a1), after.unlocked && !/no one answers/.test(a1) ? 'unlocked ok' : 'FAIL');
+  log('after:', JSON.stringify(after), '| says', JSON.stringify(a1), after.unlocked && /pizza shop/.test(a1) ? 'unlocked ok' : 'FAIL');
   // and it stays unlocked (nothing in the session locks it again)
   await W(3000);
   log('still unlocked later:', await p.evaluate(() => Kt.phone));

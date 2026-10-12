@@ -175,30 +175,39 @@ const t = {
 		bodyR: 0.92,
 		modelScale: 1,
 		phoneLabel: "Call for pizza",
-		call: "This is Nextessa’s Inter-temporal Pizza Place!|If it’s not there yesterday, it’s free!",
-		busy: "* The phone rings, but no one answers. *",
-		arrive: "Enjoy your pie!|I love my job!|(...but no one here can eat this.\n+ 0 Snacks)",
+		// (before MUSHROOM has had a Blossom the Portal is shut and the call can't get through)
+		blocked: "*connection to the Portal seems blocked*",
+		call: "*Ring Ring* This is Nextessa’s inter-temporal pizza shop!|One pie on your way.",
+		// (while a pizza is on its way and not yet collected)
+		busy: "*no answer*",
+		// (she hands the pie over as she says the first page: the box leaves her head)
+		arrive: "One hot and ready pie!|* +20 Snacks *|I love my job!",
+		snacks: 20,
 	},
 	// the Library's librarian: SPARKAKUS (he hands out the Ancient Artifacts quest)
 	i = {
 		name: "SPARKAKUS",
 		greetR: 6,
-		ask: "Placeholder: win the 3 Ancient Artifacts from the Dancers.",
-		progress: (n) => "Placeholder: " + n + " of 3 Ancient Artifacts.",
-		// the long speech when all three are brought in (the light bulb goes on over him)
-		finale:
-			"Placeholder: all three Ancient Artifacts!|Placeholder line 2|Placeholder line 3|Placeholder line 4|Placeholder line 5",
-		reward: "ANCIENT ARTIFACTS quest complete!",
-		// then he hands over the Ancient Gem (GEMTOE trades it for the Summoning Stone)
-		gem: "These Artifacts were guarding something. Here: the Ancient Gem. It hums like GEMTOE's crystals... perhaps she knows what it is for.",
-		gemGot: "You received the ANCIENT GEM!",
-		done: "Placeholder: thank you again for the Ancient Artifacts.",
-		event: "Placeholder: off to the garden!",
+		// (with none of the Ancient Artifacts yet)
+		ask: "For my research: I seek Artifacts left by the Ancients.|Three exist in this region.",
+		// (with one or two)
+		progress: () => "I require more Artifacts to complete my research.",
+		// with all three: the light bulb comes on over him and the town dims for this, then he glues the three
+		// pieces back together into the Ancient Gem (see LIB.talk), then the rest of his speech
+		finale: "You’ve found all three Artifacts!|Amazing!|Let me see those…|Ah…",
+		speech:
+			"This is the missing Eye of the Great Sphinx of The Computer Core!|According to the Ancient texts:|The Sphinx guarded the Computer Core.|Asking Synthetics riddles before allowing them in.|This relic has been missing for ages!",
+		gemGot: "Ancient Gem collected!",
+		// (once the Ancient Gem is yours)
+		done: "Well done, Human!",
+		// (given a Blossom he drops to all fours and runs a lap round the Library first)
+		gift: "…sorry I don’t know what got into me.",
+		event: "Digging in the dirt like an animal? …don’t tell the others at the genealogical society.",
 	},
-	// GEMTOE's trade: the Summoning Stone for the Ancient Gem SPARKAKUS gives you
+	// GEMTOE's trade: the Summoning Stone for the Ancient Gem SPARKAKUS gives you (she spins for joy as you take it)
 	gemTrade = {
-		say: "That glow... the Ancient Gem! It sings the same note as my crystals. Let me keep it safe, and you take this: the Summoning Stone. Place your hand on the great stone at the heart of the garden and the whole town will come to plant.",
-		got: "You traded the Ancient Gem for the SUMMONING STONE!",
+		say: "That Gem you have… It’s worthless… trust me.|I’ll trade this rock I found for it. You’re better off!",
+		got: "Summoning Stone obtained!",
 	},
 	// the one shop in town: Garden Supplies, paid for in flint
 	shopText = {
@@ -1636,7 +1645,8 @@ function gcBeatHz() {
 }
 const ot = { state: "idle", open: 0 };
 function at() {
-	t.pizza.callDelayMs = 2e4;
+	// (NEXTESSA comes through the Portal 30 s after the call)
+	t.pizza.callDelayMs = 3e4;
 	const e = ot,
 		[o, a] = (function (e, o, a, n = 8) {
 			for (let r = 0; r <= n; r += 0.8)
@@ -2254,7 +2264,7 @@ function Dt(t) {
 function Xt(t) {
 	return t.def && "cutebex" === t.def.__type ? t.def.__type : t.id;
 }
-const st = { join() {}, leave() {}, away: () => !1, pos: () => ({ x: 0, z: 0 }), talking: !1 };
+const st = { join() {}, leave() {}, romp(d) { d && d(); }, romping: () => !1, away: () => !1, pos: () => ({ x: 0, z: 0 }), talking: !1 };
 function to(
 	t,
 	{ y: e, z: o, sep: a, r: n = 0.09, pupil: r = 0.56, white: s = !0, color: i = M.nearblack, spread: l = 0.22 },
@@ -2786,7 +2796,9 @@ const uo = {
 function tkAnim(h, g, on, t, dt) {
 	const k0 = h.tkK || 0,
 		k = (h.tkK = k0 + ((on ? 1 : 0) - k0) * Math.min(1, 6 * (dt || 0.016)));
-	if (k < 0.002 && !g.userData.tkW) return void (h.tkS = 0);
+	// (a happy spin: one full turn with a hop, 1.4 s from h.spinAt, as GEMTOE's when the trade is done)
+	const sp = h.spinAt ? (performance.now() - h.spinAt) / 1400 : 2;
+	if (k < 0.002 && !g.userData.tkW && sp >= 1) return void (h.tkS = 0);
 	let w = g.userData.tkW;
 	w || ((w = g.userData.tkW = new THREE.Group()), g.children.slice().forEach((ch) => (g.remove(ch), w.add(ch))), g.add(w));
 	const s = Math.max(0, Math.sin(11 * t)) * (0.55 + 0.45 * Math.sin(2.7 * t)) * (Math.sin(1.3 * t) > -0.5 ? 1 : 0.25);
@@ -2794,6 +2806,7 @@ function tkAnim(h, g, on, t, dt) {
 	// (the nod tips the model about its feet, lowering the front edge of its footprint: lifted by as much)
 	(w.rotation.x = 0.06 * h.tkS), (w.rotation.z = 0.025 * k * Math.sin(1.7 * t)), w.scale.set(1 - 0.015 * h.tkS, 1 + 0.035 * h.tkS, 1 - 0.015 * h.tkS);
 	w.position.y = 0.045 * h.tkS + 0.8 * (h.bodyR || 0.6) * (Math.abs(Math.sin(w.rotation.x)) + Math.abs(Math.sin(w.rotation.z)));
+	sp < 1 ? ((w.rotation.y = 2 * Math.PI * sp * sp * (3 - 2 * sp)), (w.position.y += 0.3 * Math.sin(Math.PI * sp))) : (w.rotation.y = 0);
 }
 // every creature stands on what is under it (JGP.groundAt: the dance floor, a walk, the garden's soil and
 // rows, a kiosk's deck, the bar's boards, the drum rug), raised besides by however far its model reaches
@@ -3270,6 +3283,8 @@ const Ut = (() => {
 		rewards: { seeds: !1, artifacts: !1, stone: !1, snacks: !1 },
 		gem: !1,
 		artifacts: 0,
+		// (Snacks from NEXTESSA's pizzas)
+		snacks: 0,
 		blossoms: 0,
 		// the phone (and so NEXTESSA's pizza) works only once MUSHROOM has been given a Blossom, and from then
 		// on for the rest of the session (even in testing)
@@ -3296,13 +3311,15 @@ function te(t, e) {
 			(Kt.rewards.stone = !0),
 			t.onTalk && t.onTalk(t),
 			void qt.open(o.name, o.color, gemTrade.say, () => {
-				G.jingle(), qt.open(o.name, o.color, "* " + gemTrade.got + " *");
+				G.jingle(), (t.spinAt = performance.now()), qt.open(o.name, o.color, "* " + gemTrade.got + " *");
 			})
 		);
 	else {
 		const t = a || o.__type || o.name,
 			e = Kt.talkState[t] || 0;
 		(n = o.lines[e % o.lines.length]), (Kt.talkState[t] = e + 1);
+		// (the script's sad line comes with sad sounds: a slow falling minor phrase over a low hum)
+		o.sad === e % o.lines.length && [392, 349, 311, 262].forEach((f, k) => G.note(f, 0.55, "triangle", 0.045, 0.32 * k)), o.sad === e % o.lines.length && G.note(131, 1.8, "sine", 0.03, 0.1);
 	}
 	// giving one of the three Dancers a Blossom starts a Dance battle with them, once their thanks is said
 	// (not if the player has walked away from the line, which closes it, or the Event has begun meanwhile)
@@ -4255,8 +4272,9 @@ const le = (() => {
 								? ((r = "speaking"),
 									(a = i.clone()),
 									Ut.above(n, "!", M.yellow),
-									// her pizza completes the SNACKS quest
+									// her pizza completes the SNACKS quest (+20 Snacks)
 									(Kt.rewards.snacks = !0),
+									(Kt.snacks = (Kt.snacks || 0) + s.snacks),
 									qt.open(s.name, s.color, s.arrive, () => {
 										(r = "leaving"), (f = u);
 										const t = 0.75 * -(Math.sign(p.x * (0 - i.z) - p.z * (0 - i.x)) || 1),
@@ -4271,6 +4289,8 @@ const le = (() => {
 					"speaking" === r
 						? ((n.moving = !1), a && i.set(a.x, i.y, a.z), co(n.group, Math.atan2(l.x - i.x, l.z - i.z), e, 8))
 						: "leaving" === r &&
+							// (she stops on her way for a vignette with someone, see the vignettes' lineUp)
+							!n.vig &&
 							(p.lengthSq() < 0.5 && p.set(-i.x, 0, -i.z).normalize(),
 							p.lerp(it(i, null, !0), Math.min(1, 2.5 * e)).normalize(),
 							(i.x += p.x * o.exitSpeed * e),
@@ -4633,9 +4653,9 @@ const le = (() => {
 	// pavilion down to a point) split from top to bottom into three equal wedges: each piece has its
 	// faceted outside and two flat, softly glowing break faces where it meets the other two.
 	// (Each of the three Dancers gives one piece the first time you win a Dance battle with them, and
-	// SPARKAKUS needs all three. Nothing is hidden around town any more. The pieces are kept as they are for a
-	// future animation that puts the diamond back together: each piece's group is centred on the
-	// piece, and userData.gemOffset is where its centre sits in the whole diamond.)
+	// SPARKAKUS needs all three. Nothing is hidden around town any more. He glues them back together with
+	// ARTS.assemble: each piece's group is centred on the piece, and userData.gemOffset is where its centre
+	// sits in the whole diamond.)
 	ARTS = (() => {
 		// the diamond's profile [radius, height] from the middle of its top facet (the "table") down to the point
 		const GEM = [
@@ -4691,25 +4711,108 @@ const le = (() => {
 				geo = piece(k);
 			return R(geo, gemMat(), g), (g.userData.gemPiece = k), (g.userData.gemOffset = geo.userData.gemOffset.clone()), g;
 		}
+		// PUTTING THE DIAMOND BACK TOGETHER (SPARKAKUS, with all three): at `at` (a world point, the diamond's
+		// middle) a bottle of school glue appears over the three pieces, which turn slowly a little apart under
+		// it; the bottle turns upside down and the glue drips out onto them; the pieces come together into the
+		// whole Ancient Gem with a flash, and the bottle goes. `done` then; the Gem floats there, turning, till
+		// collect() flies it to the player. Times in seconds from the start.
+		let asm = null;
+		const drop = () => V.glueM || (V.glueM = new THREE.MeshPhongMaterial({ color: "#fbfbf6", shininess: 120, specular: 16777215 }));
+		function assemble(at, done) {
+			asm && asm.g.parent && asm.g.parent.remove(asm.g);
+			const g = new THREE.Group(),
+				bottle = new THREE.Group(),
+				bod = new THREE.Group(),
+				parts = [0, 1, 2].map(model),
+				drips = [];
+			g.position.copy(at), g.scale.setScalar(0.8), C.add(g), g.add(bottle), bottle.add(bod);
+			// the bottle: a white body with a red label, a shoulder, and an orange nozzle cap (its tip 0.62 above its middle)
+			const white = x.clay("#f4f4ee", { shininess: 60 });
+			R(T.cyl(0.16, 0.18, 0.5, 16), white, bod), R(T.cyl(0.07, 0.16, 0.12, 16), white, bod, [0, 0.31, 0]);
+			R(T.cyl(0.19, 0.19, 0.22, 16), x.clay("#d8352e"), bod, [0, -0.02, 0]);
+			R(T.cyl(0.075, 0.075, 0.06, 12), x.clay("#ff8a1a"), bod, [0, 0.4, 0]), R(T.cone(0.07, 0.2, 12), x.clay("#ff8a1a"), bod, [0, 0.52, 0]);
+			bottle.position.y = 1.25;
+			parts.forEach((p, k) => g.add(p));
+			for (let k = 0; k < 6; k++) {
+				const d = R(T.sphere(0.045, 8, 6), drop(), g, null, null, [1, 1.5, 1]);
+				(d.visible = !1), drips.push({ m: d, t: -1 });
+			}
+			let t = 0,
+				nextDrip = 1.6,
+				flashed = !1,
+				fly = null;
+			const ease = (v) => Wt(Math.max(0, Math.min(1, v))),
+				step = (dt) => {
+					t += dt;
+					const grow = ease(t / 0.6),
+						flip = ease((t - 0.6) / 1),
+						join = ease((t - 3.2) / 1.6),
+						gone = ease((t - 4.9) / 0.5);
+					// the bottle grows in, turns over (cap down, about its middle) and later shrinks away
+					bottle.scale.setScalar(Math.max(0.001, grow * (1 - gone))), (bottle.visible = gone < 1), (bod.rotation.z = Math.PI * flip);
+					bottle.position.y = 1.25 - 0.15 * flip;
+					// the pieces: a little apart, each turning, then each into its place in the diamond
+					parts.forEach((p, k) => {
+						const o = p.userData.gemOffset,
+							a = (k / 3) * Math.PI * 2 + 0.6 * t,
+							spread = 1 - join;
+						p.position.set(o.x + 0.45 * spread * Math.cos(a), o.y + 0.08 * spread * Math.sin(2 * t + k), o.z + 0.45 * spread * Math.sin(a));
+						p.rotation.set(0.3 * spread * Math.sin(1.3 * t + k), 1.5 * spread * Math.sin(0.8 * t + 2 * k), 0);
+						p.scale.setScalar(Math.max(0.001, grow));
+					});
+					// the glue: drops from the nozzle's tip (now pointing down) fall onto the pieces and soak in
+					const tip = bottle.position.y - 0.62 * flip;
+					if (t >= nextDrip && t < 3.6) {
+						const d = drips.find((d) => d.t < 0);
+						d && ((d.t = 0), (d.x = 0.12 * (Math.random() - 0.5)), (d.z = 0.12 * (Math.random() - 0.5))), (nextDrip += 0.22);
+					}
+					drips.forEach((d) => {
+						if (d.t < 0) return;
+						d.t += dt;
+						const f = Math.min(1, d.t / 0.4);
+						d.m.visible = !0;
+						d.m.position.set(d.x, tip - (tip - 0.2) * f * f, d.z);
+						d.m.scale.set(1, 1.5 - 0.5 * f, 1).multiplyScalar(f < 1 ? 1 : Math.max(0.001, 1 - (d.t - 0.4) / 0.25));
+						f >= 1 && d.t > 0.65 && ((d.t = -1), (d.m.visible = !1), G.blorp && G.blorp());
+					});
+					// together: a flash and a jingle, and it is done
+					!flashed && t >= 4.8 && ((flashed = !0), Ut.at(g.position.x, g.position.y + 0.6, g.position.z, "✦", "#62d6c8"), G.jingle(), done && done());
+					flashed && !fly && (g.rotation.y += 0.8 * dt);
+					if (fly) {
+						const k = Math.min(1, (fly.t += dt) / 0.6),
+							to = new THREE.Vector3(At.position.x, At.position.y + 1.3, At.position.z);
+						g.position.lerpVectors(fly.from, to, Wt(k)), g.scale.setScalar(0.8 * (1 - 0.85 * k));
+						k >= 1 && (C.remove(g), (asm = null));
+					}
+				};
+			return (asm = {
+				g,
+				step,
+				collect() {
+					fly || (fly = { t: 0, from: g.position.clone() });
+				},
+			});
+		}
 		return {
 			build() {
-				L.push((t2, dt) => Bulb.update(dt || 0.016));
+				L.push((t2, dt) => (Bulb.update(dt || 0.016), asm && asm.step(Math.min(dt || 0.016, 0.1))));
 			},
-			// (the Library never shows them: in the final game it doesn't hold the Artifacts. A piece's model,
-			// for the animation that will put the diamond back together)
+			assemble,
+			// (a piece's model; the Library never shows them, in the final game it doesn't hold the Artifacts)
 			model,
 		};
 	})(),
 	// the librarian's talk: the Ancient Artifacts quest. With all three, SPARKAKUS steps out in
 	// front of the Library and the light bulb comes on over his head for his long speech.
 	LIB = {
+		say(txt, cb) {
+			(st.talking = !0),
+				qt.open(i.name, M.orange, txt, () => {
+					(st.talking = !1), cb && cb();
+				});
+		},
 		talk() {
-			const say = (txt, cb) => {
-				(st.talking = !0),
-					qt.open(i.name, M.orange, txt, () => {
-						(st.talking = !1), cb && cb();
-					});
-			};
+			const say = LIB.say;
 			if (Kt.rewards.artifacts) return say(i.done);
 			if (Kt.artifacts < 3) return say(Kt.artifacts ? i.progress(Kt.artifacts) : i.ask);
 			// (the bulb comes on once he is out from under the roof, or after a few seconds whatever happens)
@@ -4722,18 +4825,22 @@ const le = (() => {
 			st.join({ x: fx, z: fz }, !0), (Bulb.hold = !0);
 			say(i.finale, () => {
 				clearInterval(lit), Bulb.level || Bulb.start(() => st.pos(), st.height);
-				(Bulb.hold = !1), (Kt.rewards.artifacts = !0);
-				setTimeout(() => {
-					try {
-						G.jingle();
-					} catch (e) {}
-				}, 300),
-					say("* " + i.reward + " *", () => {
-						Bulb.stop(),
-							say(i.gem, () => {
-								(Kt.gem = !0), G.pickup(), say("* " + i.gemGot + " *", () => st.leave());
-							});
-					});
+				// he glues the three pieces back together in the air between you (the bulb stays on through it)
+				const q = st.pos(),
+					dx = At.position.x - q.x,
+					dz = At.position.z - q.z,
+					d = Math.hypot(dx, dz) || 1,
+					k = Math.min(1.4, 0.55 * d),
+					gem = ARTS.assemble(new THREE.Vector3(q.x + (dx / d) * k, q.y + 2, q.z + (dz / d) * k), () =>
+						setTimeout(
+							() =>
+								say(i.speech, () => {
+									(Bulb.hold = !1), (Kt.rewards.artifacts = !0), (Kt.gem = !0), gem.collect(), G.pickup();
+									say("* " + i.gemGot + " *", () => st.leave());
+								}),
+							700,
+						),
+					);
 			});
 		},
 	},
@@ -4744,8 +4851,8 @@ const xe = (() => {
 		function a(e) {
 			const o = [];
 			if (e && Vt(e)) return o;
-			// ZOLLOD keeps Garden Supplies: he only opens the shop
-			if (e && e.kind && "cutebex" === Xt(e)) return o.push({ verb: "interact", label: shopText.label, run: () => ne.open() }), o;
+			// ZOLLOD keeps Garden Supplies: outside the Event talking to him opens the shop (at the Event he says his line)
+			if (e && e.kind && "cutebex" === Xt(e) && !me.active) return o.push({ verb: "interact", label: shopText.label, run: () => ne.open() }), o;
 			if (e && e.kind && me.active)
 				return (
 					o.push({
@@ -4753,7 +4860,8 @@ const xe = (() => {
 						label: "Talk to " + e.def.name,
 						run: () =>
 							(function (t) {
-								(xe.lastTarget = t), t.onTalk && t.onTalk(t), qt.open(t.def.name, t.def.color || M.orange, t.def.campfire || "...");
+								// (the moment it is said: MONTGUMMERY's screen shows a shovel for it)
+								(xe.lastTarget = t), (t.eventTalkAt = performance.now()), t.onTalk && t.onTalk(t), qt.open(t.def.name, t.def.color || M.orange, t.def.campfire || "...");
 							})(e),
 					}),
 					o
@@ -4763,7 +4871,7 @@ const xe = (() => {
 				o.push({ verb: "interact", label: "Talk to " + a, run: () => te(e) }),
 					Kt.blossoms > 0 &&
 						o.push({ verb: "give", label: "Give a blossom", run: () => te(e, !0) });
-			} else e && o.push({ verb: "interact", label: e.label(), run: e.run });
+			} else e && (o.push({ verb: "interact", label: e.label(), run: e.run }), e.gift && Kt.blossoms > 0 && o.push({ verb: "give", label: "Give a blossom", run: e.gift }));
 			return o;
 		}
 		return {
@@ -6728,6 +6836,7 @@ THREE.OctahedronGeometry||(THREE.OctahedronGeometry=function(t=1){const n=[1,0,0
  * come from the top-level names captured as $x aliases (locals in the original code shadow the one-letter engine names). */
 const JGP_WOODS=(()=>{const $R=R,$S=S,$T=T,$ao=ao,$b=b,$c=c,$l=l,$u=u,$v=v,$x=x;
 // (MONTGUMMERY's model, woods_mont, with its flat screen mouth, is final: keep it as it is.)
+// (His screen shows the script's emotes: a robot face for his Blossom line, a shovel for his Event line.)
 return{mont:function(e,t){const o="#1d2a23",a="#3db2d6",n="#e2521f",r=(e,t,o,a,n,r,s,i,l)=>{let c=l;const h=()=>(c=16807*c%2147483647)/2147483647;e.font="bold "+r+"px 'Courier New', monospace",e.textBaseline="top";for(let l=o;l<o+n;l+=1.05*r){let o="";const n=Math.floor(a/(.6*r));for(let e=0;e<n;e++)o+=h()<.12?" ":"{}[]()<>;:'\"=,._/\\|abcdeforstuvgxinpl0123456789"[Math.floor(47*h())];e.globalAlpha=i*(.6+.4*h()),e.fillStyle=s[Math.floor(h()*s.length)],e.fillText(o,t,l)}e.globalAlpha=1},s=$b(512,512,(e=>{r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.9,7)}));s.wrapS=s.wrapT=THREE.RepeatWrapping,s.repeat.set(2.5,1.6);const i=$b(512,512,(e=>{e.fillStyle=o,e.fillRect(0,0,512,512),r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.85,11)}));i.wrapS=i.wrapT=THREE.RepeatWrapping,i.repeat.set(1.5,1.5);const l=new THREE.MeshPhongMaterial({color:o,specular:3355443,shininess:40}),c=new THREE.MeshPhongMaterial({map:i,specular:2763306,shininess:36}),h=new THREE.MeshPhongMaterial({map:s,transparent:!0,depthWrite:!1,specular:0,shininess:1}),p=new THREE.SphereGeometry(1,40,30);{const e=p.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=t.y,n=Math.hypot(t.x,t.z),r=a>0?6:2.4,s=Math.pow(Math.max(0,1-Math.pow(Math.abs(a),r)),1/r),i=n>1e-6?s/n:0;e.setXYZ(o,t.x*i,a,t.z*i)}p.computeVertexNormals()}const u=(()=>{const e=p.attributes.position,t=p.attributes.uv;let o=-1,a=-9;for(let t=0;t<e.count;t++){const n=e.getY(t),r=e.getZ(t);Math.abs(n+.25)<.08&&r>a&&(a=r,o=t)}return{u:t.getX(o),v:t.getY(o)}})(),f=$b(512,256,(e=>{e.fillStyle=o,e.fillRect(0,0,512,256);const t=512*u.u,a=256*(1-u.v);e.fillStyle="#4cb6e0",e.beginPath(),e.ellipse(t,a,52,50,0,0,$l),e.fill()})),d=new THREE.Group;e.add(d);const m=$R(p,new THREE.MeshPhongMaterial({map:f,specular:3355443,shininess:40}),d,[0,1.5,0],null,[.7,.8,.54]);$R(p.clone().scale(1.012,1.012,1.012),h,m).renderOrder=1;const g=[-1,1].map((e=>{const t=new THREE.Group;t.position.set(.29*e,.86,.02),t.scale.setScalar(1.15),d.add(t),$R($T.cyl(.1,.1,.28,12),c,t,[0,-.1,0]);const o=[],r=(e,t,a)=>o.push({geo:e,matrix:t,color:a});r(new THREE.CylinderGeometry(.162,.15,.42,16),$S(0,-.42,0),a),r(new THREE.TorusGeometry(.158,.018,6,18),$S(0,-.21,0,Math.PI/2,0,0),"#46bede"),r($T.sphere(1,16,12),$S(0,-.62,.07,0,0,0,.16,.11,.25),a),r($T.sphere(1,14,10),$S(0,-.63,.24,0,0,0,.15,.1,.12),n),r($T.sphere(1,14,10),$S(0,-.72,.07,0,0,0,.175,.035,.3),"#c9441a"),r($T.sphere(1,12,8),$S(0,-.7,-.12,0,0,0,.15,.055,.11),n),[-1,1].forEach((e=>r($T.box(.016,.36,.012),$S(.04*e,-.42,.163),"#f0c23a")));for(let e=0;e<7;e++)r($T.box(.08,.014,.012),$S(0,-.27-.05*e,.165),"#f0c23a");return[-1,1].forEach((e=>r($T.box(.014,.012,.16),$S(.04*e,-.585,.2,-.75,0,0),"#f0c23a"))),$R($v(o),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),t),t})),y=new THREE.Group;y.position.set(-.22,1,-.36),d.add(y),$R($ao([[0,0,0],[-.25,-.25,-.12],[-.6,-.6,-.05],[-.92,-.84,.12],[-1.15,-.92,.3]],.085,.006,40,10),c,y);const b=$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),M=(e,t,o,a,n,r)=>{const s=(new $c).subVectors(o,t),i=s.length(),l=(new $c).addVectors(t,o).multiplyScalar(.5),c=(new THREE.Quaternion).setFromUnitVectors(new $c(0,1,0),s.clone().normalize());e.push({geo:new THREE.CylinderGeometry(n,a,i,10),matrix:(new THREE.Matrix4).compose(l,c,new $c(1,1,1)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(t,c,new $c(a,a,a)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(o,c,new $c(n,n,n)),color:r})},w=(e,t)=>{const o=new THREE.Group;o.position.copy(t),d.add(o);const a=new $c(.12*e,-.34,.03),n=new $c(.14*e,-.66,.09);return $R($ao([[0,0,0],[.08*e,-.18,0],[a.x,a.y,a.z],[.14*e,-.5,.06],[n.x,n.y,n.z]],.13,.085,20,10),c,o),$R((e=>{const t=[],o="#7cc6ea",a="#6db8dc";t.push({geo:$T.box(.034,.1,.1),matrix:$S(0,-.08,0),color:o}),t.push({geo:$T.sphere(1,14,10),matrix:$S(0,-.08,0,0,0,0,.022,.055,.055),color:o}),[[-1,-1],[-1,1],[1,-1],[1,1]].forEach((([e,a])=>t.push({geo:$T.sphere(1,8,6),matrix:$S(0,.045*e-.08,.045*a,0,0,0,.017,.012,.012),color:o}))),t.push({geo:$T.sphere(1,12,10),matrix:$S(0,-.015,0,0,0,0,.022,.03,.04),color:o}),[[.036,.078,.0125],[.012,.088,.013],[-.012,.083,.0125],[-.035,.066,.0112]].forEach((([n,r,s],i)=>{const l=new $c(0,-.13-(3===i?-.006:0),n),c=l.clone().add(new $c(.012*e,.5*-r,.006+.001*i)),h=c.clone().add(new $c(.03*e,.45*-r,.004));M(t,l,c,s,.92*s,o),M(t,c,h,.92*s,.8*s,a)}));const n=new $c(.006*e,-.06,.05),r=n.clone().add(new $c(.012*e,-.04,.028)),s=r.clone().add(new $c(.016*e,-.036,.01));return M(t,n,r,.017,.015,o),M(t,r,s,.015,.012,a),$v(t)})(-e),b,o,[n.x,n.y+.03,n.z],[.1,.25*e,-.08*e],[2.1,2.1,2.1]),o},E=w(-1,new $c(-.64,1.9,.02)),x=w(1,new $c(.66,1.9,.02)),T=new THREE.Group;T.position.set(0,2.62,.3),T.scale.setScalar(1.32),d.add(T);const R=(e,t,o,a,n=0)=>(a.moveTo(-e/2+o,n-t/2),a.lineTo(e/2-o,n-t/2),a.quadraticCurveTo(e/2,n-t/2,e/2,n-t/2+o),a.lineTo(e/2,n+t/2-o),a.quadraticCurveTo(e/2,n+t/2,e/2-o,n+t/2),a.lineTo(-e/2+o,n+t/2),a.quadraticCurveTo(-e/2,n+t/2,-e/2,n+t/2-o),a.lineTo(-e/2,n-t/2+o),a.quadraticCurveTo(-e/2,n-t/2,-e/2+o,n-t/2),a),A=new THREE.ExtrudeGeometry(R(1,.78,.12,new THREE.Shape),{depth:.52,bevelEnabled:!0,bevelThickness:.08,bevelSize:.06,bevelSegments:5,curveSegments:10,steps:6});A.translate(0,0,-.6);{const e=A.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=$u(-t.z/.68,0,1),n=1-.42*Math.pow(a,1.3),r=Math.max(0,1-(t.x*t.x/.3+t.y*t.y/.2));e.setXYZ(o,t.x*n,t.y*n+.04*a,t.z-.26*a*a*r)}A.computeVertexNormals()}$R(A,l,T,[0,0,.2]),$R(new THREE.TorusGeometry(.035,.012,6,12),l,T,[0,.42,-.25]);const H=R(1.12,.9,.12,new THREE.Shape);H.holes.push(R(.9,.58,.06,new THREE.Path,.07)),$R(new THREE.ExtrudeGeometry(H,{depth:.05,bevelEnabled:!0,bevelThickness:.025,bevelSize:.012,bevelSegments:3,curveSegments:8}),new THREE.MeshPhongMaterial({color:"#55b8c6",specular:3355443,shininess:40}),T,[0,0,.2]);const zB=document.createElement("canvas");zB.width=zB.height=512;{const e=zB.getContext("2d"),t=e.createRadialGradient(256,240,40,256,256,360);t.addColorStop(0,"#7f52c8"),t.addColorStop(1,"#5a33a0"),e.fillStyle=t,e.fillRect(0,0,512,512),e.save(),e.scale(.66,1),e.font="500 86px 'Segoe UI', Calibri, Arial, sans-serif",e.fillStyle="#f29043",e.textBaseline="top",e.fillText("gfxinfo gfxinfo",60,22),e.restore(),e.save(),e.scale(.66,1),r(e,50,130,330,290,17,["#c6d2ff","#e6ecff","#9fb4f0"],.85,3),r(e,50,425,690,70,17,["#c6d2ff","#e6ecff"],.85,5),e.restore()}
 // (MONTGUMMERY's screen face, redrawn only when it changes: his pixel eyes with a flat mouth; the mouth
 // opening and closing while he talks; a pixel smile for a while after he is given a Blossom; and a
@@ -6745,7 +6854,7 @@ e.restore()}else if("robot"===md){[290,398].forEach((t=>{e.fillRect(o(t)-6,138,3
 // time; the phrase is 16 beats. [right arm forward, right arm out, left arm forward, left arm out,
 // body turn, screen turn, screen tilt, step]
 const RB=[[-1.35,0,0,0,0,0,0,1],[-1.35,0,-1.35,0,0,0,0,-1],[0,1.35,-1.35,0,0,0,.18,1],[0,1.35,0,1.35,0,0,-.18,-1],[0,.6,0,1.35,.5,.3,0,1],[-1.35,0,-1.35,0,.5,.3,.18,-1],[-1.35,0,-1.35,0,0,0,-.18,1],[0,0,0,0,-.5,-.3,0,-1],[-1.35,0,0,0,-.5,-.3,.18,1],[0,0,-1.35,0,-.5,-.3,-.18,-1],[-1.35,0,0,0,0,0,.18,1],[0,0,-1.35,0,0,0,-.18,-1],[0,1.35,0,1.35,0,0,0,1],[0,1.35,0,0,.25,.2,.18,-1],[0,0,0,1.35,-.25,-.2,-.18,1],[0,0,0,0,0,0,0,0]];
-return{height:3.3,onTalk(){I=0},anim(e,t,o){s.offset.y+=.05*t,i.offset.y+=.04*t;{const md=o&&o.planting?"shovel":o&&o.gcDw>.05&&mW>.5&&mV?mV:o&&o.gcDw>.05?"robot":o&&o.giftAt&&performance.now()-o.giftAt<5e3?"smile":"idle",op="robot"===md?Math.floor(dB)%2:"idle"===md&&o&&o.tkK>.05?o.tkS>.55?2:o.tkS>.2?1:0:0,k=md+op;// (each face is drawn once into its own texture and then just swapped in: no redraw or re-upload each time it changes)
+return{height:3.3,onTalk(){I=0},anim(e,t,o){s.offset.y+=.05*t,i.offset.y+=.04*t;{const md=o&&(o.planting||o.eventTalkAt&&performance.now()-o.eventTalkAt<5e3)?"shovel":o&&o.gcDw>.05&&mW>.5&&mV?mV:o&&o.gcDw>.05?"robot":o&&o.giftAt&&performance.now()-o.giftAt<5e3?"robot":"idle",op="robot"===md?Math.floor(dB)%2:"idle"===md&&o&&o.tkK>.05?o.tkS>.55?2:o.tkS>.2?1:0:0,k=md+op;// (each face is drawn once into its own texture and then just swapped in: no redraw or re-upload each time it changes)
 k!==zK&&((zK=k),(zS.material.map=zT[k]||(zT[k]=$b(512,512,(e=>zF(e,md,op))))))}const a=o&&o.moving;P+=t*(a?7:0);const n=a?Math.sin(P):0;g[0].rotation.x=.45*n,g[1].rotation.x=-.45*n,d.position.y=a?.07*Math.abs(Math.sin(P)):0,m.scale.y=.8*(1+.01*Math.sin(1.7*e+G)),y.rotation.y=.18*Math.sin(1.1*e+G)+.1*n,y.rotation.z=.05*Math.sin(.8*e+G),x.rotation.x=.04*Math.sin(1.2*e+G)-.1*n,E.rotation.x=.1*n;let r=.03*Math.sin(.9*e+G),l=.04*Math.sin(.7*e+G);I>=0&&(I+=t,r+=.18*Math.sin(Math.min(1,I/.9)*Math.PI*2)*(1-I/.9),I>=.9&&(I=-1));
 // (in a Dance battle he shows each move with its own animation, blended over the robot by mW)
 const dw=o?Bt(o,t):0,want=o&&o.battleMove||null;want!==mL&&((mL=want),(mT=0)),want&&(mV=want),(mW+=((want?1:0)-mW)*Math.min(1,5*t)),(mT+=t);
@@ -6857,6 +6966,72 @@ const JGP = (() => {
 		},
 	};
 
+
+	// ---- THE SCRIPT (from the owner): what each creature says, by its id. lines: its three Talk lines, in turn
+	// (each "|" starts a new page of the same line); gift: its Blossom line; campfire: what it says when talked to
+	// during the Garden Event (none: it can't be talked to then, as FORTIZMO, who is playing). sad: the Talk line
+	// that plays sad sounds. ZOLLOD's Talk opens the shop (outside the Event); SPARKAKUS's and the slug's words
+	// are with them (i and the church); GEMTOE's trade is gemTrade.
+	const SCRIPT = {
+		// ANOMALEE, looking up at the church window
+		blinker: { lines: ["BEINGS of CODE.", "ORIGINATOR…", "WAS there WITHIN."], sad: 1, gift: "* Munch *", campfire: "PLANT" },
+		// MUSHROOM, looking down at the player from the top of his desk
+		drifter: {
+			lines: ["This town is under the protection of the consortium.", "All travel through the Portal is locked down until further notice.", "We’re investigating UFO sightings in this area."],
+			// (and from now on the phone can reach the Portal: see Kt.phone)
+			gift: "A bribe? …Portal is now open to your use.",
+			campfire: "…",
+		},
+		gratelet: {
+			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until he decides to reopen the Portal."],
+			gift: "Adding to a collection jar.",
+			campfire: "Sometimes worry that doing these things will alter the timeline…",
+		},
+		frog: {
+			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Fire Blossoms at this establishment."],
+			gift: "Add it to the tip jar.",
+		},
+		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
+		// (asleep through it all: her eyes open only for her thanks, and she sleeps on at home through the Event)
+		m_somlet: { lines: ["Zzz", "Zzz", "Zzz"], gift: "Thank you", campfire: "Zzz" },
+		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
+		// (with the Ancient Gem in hand, Talk is her trade instead: gemTrade)
+		p_gemtoe: {
+			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?"],
+			gift: "This is mine now.",
+			campfire: "Enjoying the SHARED garden… what is this feeling?",
+		},
+		p_mamagorbo: {
+			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for our famous goo burger.|The hubby and I run the local fast food joint.", "What a beautiful day in Greeblis Park!"],
+			gift: "Gooooooom!",
+			campfire: "Pretty flowers come to life!",
+		},
+		// (his screen shows a robot for his Blossom line and a shovel for his Event line)
+		w_mont: {
+			lines: ["Hello Human.|Mont will hide you from alien hunting Sheriff.", "Mont knows of humans.|Mont eats many VHS and digests much knowledge of your culture.", "Mont understands the high point of human culture|…|‘Flint Knapping for Beginners’"],
+			gift: "Let’s dance!",
+			campfire: "Joyful to bring life to our Town.",
+		},
+		p_etcher: {
+			lines: [
+				"I work in data preservation.|I like to think the Ancients created us for our purposes.",
+				"As I move my tentacles etch data into everything they touch.|Fortizmo is upset that I do it on her dancefloor.",
+				"The age of the Ancients has been etched.|The age of the Synthetics is being etched.|Soon I will etch the age of the Organics.",
+			],
+			gift: "Let’s dance!",
+			campfire: "Etching what was is important but living this is what IS.",
+		},
+		p_glyph: {
+			lines: [
+				"I am the Master of symbols.|Symbols make up everything… don’t you think?",
+				"Etcher would have nothing to reconstruct with without symbols.|Mont would remain motionless without symbols to translate in binary electrical signals.|Even Dino would have no music to play!",
+				"All things come into being from symbols… don’t you think?",
+			],
+			gift: "Let’s dance!",
+			campfire: "Growing flowers, it’s a symbol of life.",
+		},
+		cutebex: { campfire: "Bringing plants to life is MY life’s work." },
+	};
 
 
 	// ---- model detail toolkit ---------------------------------------------------
@@ -8163,7 +8338,14 @@ const JGP = (() => {
 		// curving down, a soft fold above it and a little puffiness below
 		const lidM = KIT.surf("felt", "#e2cc94", { rep: 1, bump: 0.015, shine: 18 }),
 			lashM = x.clay("#3a2a30", { shininess: 30 }),
-			foldM = x.clay("#c8b07a", { shininess: 10 });
+			foldM = x.clay("#c8b07a", { shininess: 10 }),
+			// (and under each lid the open eye, shown only while she says her thanks for a Blossom: a glossy
+			// white with a deep violet iris, a dark pupil and a catchlight; the lash lines hide while it shows)
+			eyeW = x.clay("#fbf7ee", { shininess: 60 }),
+			irisM = x.clay("#4a3c7a", { shininess: 70 }),
+			pupM = x.clay("#141018", { shininess: 90 }),
+			opens = [],
+			shut = [];
 		[-1, 1].forEach((sx) => {
 			const e = new THREE.Group();
 			e.position.set(0.28 * sx, 0.05, 0.65), (e.rotation.y = 0.2 * sx), puff.add(e);
@@ -8182,12 +8364,18 @@ const JGP = (() => {
 				const u = -0.86 + 1.72 * (k / 10);
 				lash.push(on(u, -0.012 - 0.03 * (1 - u * u))), fold.push(on(0.8 * u, 0.055 - 0.012 * u * u, 0.002));
 			}
-			R(ao(lash, 0.011, 0.011, 20, 5), lashM, e);
-			R(ao(fold, 0.007, 0.007, 16, 4), foldM, e);
+			shut.push(R(ao(lash, 0.011, 0.011, 20, 5), lashM, e));
+			shut.push(R(ao(fold, 0.007, 0.007, 16, 4), foldM, e));
 			[-0.5, -0.2, 0.1, 0.4].forEach((u) => {
 				const [lx, ly, lz] = on(u * sx, -0.012 - 0.03 * (1 - u * u));
-				R(T.cone(0.007, 0.04, 4), lashM, e, [lx, ly - 0.016, lz + 0.006], [Math.PI - 0.5, 0, 0.35 * u * sx]);
+				shut.push(R(T.cone(0.007, 0.04, 4), lashM, e, [lx, ly - 0.016, lz + 0.006], [Math.PI - 0.5, 0, 0.35 * u * sx]));
 			});
+			const op = new THREE.Group();
+			op.position.set(0, -0.005, 0.045), (op.visible = !1), e.add(op), opens.push(op);
+			R(T.sphere(1, 16, 12), eyeW, op, [0, 0, 0], null, [0.145, 0.12, 0.075]);
+			R(T.sphere(1, 14, 10), irisM, op, [0, -0.01, 0.06], null, [0.07, 0.075, 0.045]);
+			R(T.sphere(1, 12, 8), pupM, op, [0, -0.01, 0.084], null, [0.036, 0.04, 0.03]);
+			R(T.sphere(0.013, 8, 6), eyeW, op, [0.022, 0.018, 0.112]);
 			R(T.sphere(1, 12, 8), cream2, e, [0.01 * sx, -0.115, -0.02], null, [0.13, 0.05, 0.06]);
 			// a soft brow, relaxed and sloping down to the outside
 			R(ao([[-0.15 * sx, 0.14, 0.055], [0, 0.165, 0.07], [0.16 * sx, 0.125, 0.05]], 0.026, 0.016, 12, 6), cream2, e);
@@ -8287,7 +8475,7 @@ const JGP = (() => {
 			te = new THREE.Euler(),
 			tv = new c0();
 		// LYING DOWN: resting at her own spot she sleeps on her side (rolled onto her right, her head to her
-		// right), and floats back up to go anywhere (the Garden Event, a vignette). How low she can sit at
+		// right), and floats back up to go anywhere (a vignette; she sleeps on at home through the Garden Event). How low she can sit at
 		// each angle of the roll is worked out once from the model itself (every part but the tentacles and
 		// the Zs), so as she rolls over and settles nothing ever goes into the ground; the tentacles droop
 		// toward the ground as she lies and splay off it, as they do when she floats low.
@@ -8327,14 +8515,20 @@ const JGP = (() => {
 			// (the lower of the two angles either side, with a little room for her breathing and rocking)
 			return Math.min(tab[j], tab[j + 1]) - 0.05;
 		};
-		let lie = 0;
+		let lie = 0,
+			eyeK = 0;
 		return born(g, {
 			height: 3.0,
 			step(t, dt, tk, wk, ent) {
 				const br = Math.sin(1.6 * t);
+				// (her eyes open, for the first time, only while she thanks the player for a Blossom, then close)
+				const wake = !!ent && ent.gifting && qt.isOpen && xe.lastTarget === ent;
+				eyeK += ((wake ? 1 : 0) - eyeK) * Math.min(1, (wake ? 5 : 7) * (dt || 0.016));
+				opens.forEach((op) => ((op.visible = eyeK > 0.02), op.scale.set(1, Math.max(0.02, eyeK), 1)));
+				shut.forEach((m) => (m.visible = eyeK < 0.5));
 				// lying (0 standing to 1 on her side): only resting at her own spot
 				const rest =
-					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && !me.active && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
+					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
 				// (settling slowly, getting up quickly when she is wanted: the Event waits till she is up, see ent.lieK)
 				lie += ((rest ? 1 : 0) - lie) * Math.min(1, (rest ? 1.3 : 4) * (dt || 0.016));
 				// (she rolls over while still floating, then settles down onto her side, so her tentacles are
@@ -10256,18 +10450,13 @@ const JGP = (() => {
 					at: at.slice(),
 					pattern: ["post", { face: "center" === row.face ? Math.atan2(-at[0], -at[1]) : "function" == typeof row.face ? row.face(at) : row.face, y: (extra && extra.standY) || 0 }],
 					stationary: !0,
-					// every creature has the same options
-					lines: ["Placeholder 1", "Placeholder 2", "Placeholder 3"],
-					campfire: "Placeholder 1",
-				});
+				}, SCRIPT[id] || {});
 				"string" == typeof d.via && /^kiosk:/.test(d.via) && (d.via = KIOSK_AT.exit(d.via.slice(6)));
 				"string" == typeof d.via && /^kiosk-front:/.test(d.via) && (d.via = KIOSK_AT.front(d.via.slice(12)));
 				"function" == typeof d.via && (d.via = d.via());
 				// no Flint or Blossoms under a creature: its spot is kept clear (not for the roamers, who leave
 				// their first spots: the Dancers' floor and HENNRICK's Portal are kept clear as a whole)
 				/^(gratelet|p_gemtoe|p_mamagorbo|gorbo|p_etcher|p_glyph|w_mont)$/.test(id) || E.add(at[0], at[1], 2.4, "still");
-				// one Blossom option for everyone (no quest items for now)
-				d.gift = "Placeholder 1";
 			});
 		}
 	}
@@ -10388,9 +10577,16 @@ const JGP = (() => {
 			// the rug over the reading ground (its fringe reaches 0.2 m past each end) and the height of its top
 			rug: [-5.5, -6.8, 5.5, 1.0],
 			rugTop: 0.03,
-			// one book stands face-out, its cover showing, OVERCOMING SHYNESS: [case, side (1 = its +z face), shelf,
-			// x along the case]: the front-left case, on the face towards the front, on the shelf at eye level
-			feature: [0, 1, 2, 0.46],
+			// the things that stand face-out on a shelf, one to a shelf, in a gap in its row: [case, side (1 = its +z
+			// face), shelf, x along the case, what]: four books, each with its own cover, and a Wish Blossom from
+			// Greeblis Park in a little pot (the side cases' +z face looks into the room on the left, -z on the right)
+			features: [
+				[0, 1, 2, 0.46, "patchoolee"],
+				[1, 1, 1, -0.4, "appterix"],
+				[4, 1, 2, 0.3, "orson"],
+				[6, -1, 1, -0.5, "staplers"],
+				[7, -1, 2, 0.35, "wish"],
+			],
 		};
 	})();
 	function buildLibrary(o) {
@@ -10429,34 +10625,121 @@ const JGP = (() => {
 			[-1.07, 1.07].forEach((px) => Q.box(wood, px, HH / 2, 0, 0.06, HH, 0.56));
 			Q.box(wood, 0, HH + 0.03, 0, 2.24, 0.06, 0.6), Q.box(dark, 0, 0.05, 0, 2.06, 0.1, 0.5), Q.box(dark, 0, HH / 2 + 0.05, 0, 2.06, HH - 0.1, 0.03);
 			SH.forEach((y) => Q.box(wood, 0, y - 0.02, 0, 2.08, 0.04, 0.52));
-			const [fk, fs, fsh, fx] = LIB_LAYOUT.feature, ft = fk === ci;
+			const mine = LIB_LAYOUT.features.filter((f) => f[0] === ci);
 			[-1, 1].forEach((sd) =>
-				SH.forEach((y, j) =>
-					// (the featured book's shelf leaves it a gap: the books to its left stop short, as the last of a
+				SH.forEach((y, j) => {
+					// (a featured thing's shelf leaves it a gap: the books to its left stop short, as the last of a
 					// row can reach 7 cm past where it stops)
-					ft && sd === fs && j === fsh ? (row(Q, -1.02, fx - 0.24, y, 0.13 * sd, 0.42, sd < 0), row(Q, fx + 0.15, 1.02, y, 0.13 * sd, 0.42, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0),
-				),
+					const f = mine.find((f) => f[1] === sd && f[2] === j),
+						hw = f && ("wish" === f[4] ? 0.16 : 0.11);
+					f ? (row(Q, -1.02, f[3] - hw - 0.13, y, 0.13 * sd, 0.42, sd < 0), row(Q, f[3] + hw + 0.04, 1.02, y, 0.13 * sd, 0.42, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0);
+				}),
 			);
 			const ry = al ? Math.PI / 2 : 0,
 				cs = Math.cos(ry),
 				sn = Math.sin(ry),
 				at = (px, pz) => [cx + px * cs + pz * sn, cz - px * sn + pz * cs];
 			list.forEach(([color, px, py, pz, w, h, d, rx, ry2, rz]) => G.box(color, at(px, pz)[0], py, at(px, pz)[1], w, h, d, rx, ry + ry2, rz));
-			if (!ft) return;
-			// OVERCOMING SHYNESS: a blue cloth hardback standing face-out in its gap, leaning back a little, its
-			// cover printed in gold and cream
-			const [bx, bz] = at(fx, 0.13 * fs), bk = new THREE.Group();
-			bk.position.set(bx, SH[fsh] + 0.152, bz), bk.rotation.set(-0.08 * fs, ry + (fs < 0 ? Math.PI : 0), 0, "YXZ"), o.add(bk);
-			R(T.box(0.22, 0.3, 0.035), x.clay("#24466e"), bk);
-			const cover = b(256, 352, (c) => {
-				(c.fillStyle = "#24466e"), c.fillRect(0, 0, 256, 352);
-				(c.strokeStyle = "#d8b860"), (c.lineWidth = 5), c.strokeRect(14, 14, 228, 324), (c.lineWidth = 2), c.strokeRect(24, 24, 208, 304);
-				(c.fillStyle = "#f2e8cc"), (c.textAlign = "center"), (c.font = "bold 34px Georgia, serif"), c.fillText("OVERCOMING", 128, 136), (c.font = "bold 46px Georgia, serif"), c.fillText("SHYNESS", 128, 190);
-				// (a little sprout under the title)
-				(c.strokeStyle = "#d8b860"), (c.lineWidth = 4), c.beginPath(), c.moveTo(128, 290), c.lineTo(128, 236), c.stroke();
-				(c.fillStyle = "#d8b860"), c.beginPath(), c.ellipse(114, 246, 14, 7, -0.5, 0, l), c.ellipse(142, 252, 14, 7, 0.5, 0, l), c.fill();
-			}, { smooth: !0 });
-			R(new THREE.PlaneGeometry(0.2, 0.28), new THREE.MeshLambertMaterial({ map: cover }), bk, [0, 0, 0.0215]);
+			mine.forEach(([, fs, fsh, fx, what]) => {
+				const [bx, bz] = at(fx, 0.13 * fs),
+					face = ry + (fs < 0 ? Math.PI : 0);
+				if ("wish" === what) return wishBlossom(bx, SH[fsh], bz, face);
+				// a cloth hardback standing face-out in its gap, leaning back a little
+				const bk = new THREE.Group(),
+					C = COVERS[what];
+				bk.position.set(bx, SH[fsh] + 0.152, bz), bk.rotation.set(-0.08, face, 0, "YXZ"), o.add(bk);
+				R(T.box(0.22, 0.3, 0.035), x.clay(C.cloth), bk);
+				R(new THREE.PlaneGeometry(0.2, 0.28), new THREE.MeshLambertMaterial({ map: cover(C) }), bk, [0, 0, 0.0215]);
+			});
+		};
+		// A WISH BLOSSOM from Greeblis Park, as its pickups were, at 22% in a little terracotta pot: a green stem
+		// and leaf, a glowing teal crystal for a head (turning slowly, as they did) and a pale halo that rises and
+		// falls around it (40 cm tall in all, clear of the shelf above)
+		const wishBlossom = (bx, by, bz, face) => {
+			const g = new THREE.Group(),
+				f = new THREE.Group();
+			g.position.set(bx, by, bz), (g.rotation.y = face), o.add(g);
+			R(T.cyl(0.07, 0.055, 0.08, 12), x.clay("#b0603a"), g, [0, 0.04, 0.01]);
+			R(T.cyl(0.062, 0.062, 0.01, 12), x.clay("#4a3020"), g, [0, 0.076, 0.01]);
+			(f.position.set(0, 0.08, 0.01), f.scale.setScalar(0.22)), g.add(f);
+			const stem = new THREE.MeshLambertMaterial({ color: "#5fae4a" });
+			R(T.cyl(0.05, 0.07, 0.9, 6), stem, f, [0, 0.45, 0]);
+			R(T.sphere(0.12, 8, 6), stem, f, [0.12, 0.42, 0], [0, 0, -0.6], [1.6, 0.4, 0.8]);
+			const head = R(T.ico(0.34, 0), new THREE.MeshLambertMaterial({ color: "#35d0c5", emissive: "#0e5a55" }), f, [0, 1.05, 0]),
+				halo = R(T.torus(0.5, 0.035, 8, 20), x.basic("#9df3ec", { transparent: !0, opacity: 0.8 }), f, [0, 1.05, 0], [Math.PI / 2, 0, 0]);
+			L.push((tt) => ((head.rotation.y = 1.4 * tt), (halo.position.y = 1.05 + 0.08 * Math.sin(2 * tt))));
+		};
+		// a cover: the cloth, a double frame in the ink, the title (each line shrunk to fit), a little emblem under
+		// it, and the author at the foot when there is one
+		const cover = (C) =>
+			b(
+				256,
+				352,
+				(c) => {
+					(c.fillStyle = C.cloth), c.fillRect(0, 0, 256, 352);
+					(c.strokeStyle = C.ink), (c.lineWidth = 5), c.strokeRect(14, 14, 228, 324), (c.lineWidth = 2), c.strokeRect(24, 24, 208, 304);
+					(c.fillStyle = C.text), (c.textAlign = "center"), (c.textBaseline = "alphabetic");
+					C.title.forEach(([t, size], k) => {
+						let fs = size;
+						for (; fs > 14 && ((c.font = "bold " + fs + "px Georgia, serif"), c.measureText(t).width > 196); fs -= 2);
+						c.fillText(t, 128, 86 + 50 * k);
+					});
+					C.by && ((c.font = "italic 20px Georgia, serif"), c.fillText(C.by, 128, 312));
+					(c.fillStyle = c.strokeStyle = C.ink), (c.lineWidth = 4), (c.lineCap = c.lineJoin = "round"), C.emblem(c);
+				},
+				{ smooth: !0 },
+			);
+		const COVERS = {
+			// the repair doctor of Greeblis City's clinic: his monitor head with its pixel face, and a wrench
+			patchoolee: {
+				cloth: "#2f5a2a",
+				ink: "#c8e070",
+				text: "#f2ecd0",
+				title: [["WORKS OF", 30], ["PATCHOOLEE", 40]],
+				emblem: (c) => {
+					c.strokeRect(96, 196, 64, 50), c.beginPath(), c.moveTo(118, 246), c.lineTo(114, 262), c.lineTo(142, 262), c.lineTo(138, 246), c.stroke();
+					[[112, 212], [136, 212], [112, 230], [120, 234], [128, 234], [136, 230]].forEach(([px, py]) => c.fillRect(px, py, 8, 6));
+					c.beginPath(), c.moveTo(172, 286), c.lineTo(200, 258), c.stroke(), c.beginPath(), c.arc(204, 254, 8, 0.6, 5.2), c.stroke();
+				},
+			},
+			// the archaeologist: his fedora and a curl of bullwhip
+			appterix: {
+				cloth: "#8a1e1a",
+				ink: "#e0b050",
+				text: "#f6e8c8",
+				title: [["ADVENTURES", 34], ["OF APPTERIX", 34]],
+				emblem: (c) => {
+					c.beginPath(), c.ellipse(128, 248, 54, 10, 0, 0, l), c.fill();
+					c.beginPath(), c.moveTo(96, 246), c.quadraticCurveTo(98, 206, 128, 204), c.quadraticCurveTo(158, 206, 160, 246), c.fill();
+					(c.strokeStyle = "#8a1e1a"), c.beginPath(), c.moveTo(100, 236), c.lineTo(156, 236), c.stroke(), (c.strokeStyle = "#e0b050");
+					c.beginPath(), c.moveTo(70, 290), c.bezierCurveTo(110, 300, 140, 270, 170, 286), c.bezierCurveTo(196, 300, 196, 270, 178, 272), c.stroke();
+				},
+			},
+			// the cleaner bot's songbook: notes over the solar panel on his back
+			orson: {
+				cloth: "#1e2e5a",
+				ink: "#d8b860",
+				text: "#f2e8cc",
+				title: [["SONGS", 46], ["OF ORSON", 36]],
+				emblem: (c) => {
+					c.strokeRect(84, 250, 88, 34), c.beginPath(), [106, 128, 150].forEach((px) => (c.moveTo(px, 250), c.lineTo(px, 284))), c.moveTo(84, 267), c.lineTo(172, 267), c.stroke();
+					[[104, 230], [148, 218]].forEach(([px, py]) => (c.beginPath(), c.ellipse(px, py, 8, 6, -0.4, 0, l), c.fill(), c.beginPath(), c.moveTo(px + 7, py - 2), c.lineTo(px + 7, py - 34), c.stroke()));
+					c.beginPath(), c.moveTo(111, 196), c.lineTo(155, 184), c.stroke();
+				},
+			},
+			// a very dry office manual, with a diagram of its subject
+			staplers: {
+				cloth: "#8e8a7e",
+				ink: "#3a3a40",
+				text: "#22222a",
+				title: [["STAPLERS", 44]],
+				by: "by Walter Bigsby",
+				emblem: (c) => {
+					c.beginPath(), c.moveTo(70, 236), c.lineTo(186, 222), c.quadraticCurveTo(196, 222, 194, 232), c.lineTo(76, 248), c.closePath(), c.stroke();
+					c.strokeRect(66, 252, 132, 14), c.beginPath(), c.arc(186, 244, 6, 0, l), c.stroke();
+					c.setLineDash([4, 6]), c.beginPath(), c.moveTo(60, 282), c.lineTo(200, 282), c.stroke(), c.setLineDash([]);
+				},
+			},
 		};
 		LIB_LAYOUT.cases.forEach(bookcase);
 		// THE RUG over the reading ground, under the bookcases and the table, woven from the Buns' clothes in
@@ -10886,8 +11169,8 @@ const JGP = (() => {
 	const SHERIFF_DH = 1,
 		SHERIFF_DESK = 1.5;
 	// The Sheriff's, in a mushroom theme (the mushrooms are on the sheriff's side): toadstool-red tin
-	// roof with white spots, mushroom-brown walls, a gold star, wanted posters of space aliens and
-	// their UFO, toadstool stools, mushrooms sprouting round the posts, and a cowboy hat on the counter.
+	// roof with white spots, mushroom-brown walls, a gold star, wanted posters of space aliens,
+	// their UFO and GLOOPERNAUGHT, toadstool stools, mushrooms sprouting round the posts, and a cowboy hat on the counter.
 	function buildSheriff(o) {
 		// (its roof stands a metre higher than the other kiosks' and its desk is raised, so MUSHROOM, up on
 		// the desk, looks down at whoever comes to talk to him)
@@ -10963,7 +11246,7 @@ const JGP = (() => {
 		// small caps topping the sign posts on the ridge
 		[-1.6, 1.6].forEach((px) => G.add(capGeo, "#c82a24", G.m(px, 6.08 + SHERIFF_DH, -0.12, 0, 0, 0, 0.2, 0.12, 0.2)));
 		G.done(o);
-		// wanted posters on parchment: a little green alien, or the UFO it flies
+		// wanted posters on parchment: a little green alien, the UFO it flies, or GLOOPERNAUGHT, a goo creature
 		const poster = (kind, skin) =>
 			b(
 				128,
@@ -10982,6 +11265,17 @@ const JGP = (() => {
 						c.fillStyle = "#14141a";
 						[-1, 1].forEach((sd) => (c.save(), c.translate(64 + 13 * sd, 78), c.rotate(0.45 * sd), c.beginPath(), c.ellipse(0, 0, 11, 6, 0, 0, l), c.fill(), c.restore()));
 						(c.strokeStyle = "#2a3a1a"), (c.lineWidth = 2), c.beginPath(), c.moveTo(58, 100), c.lineTo(70, 100), c.stroke();
+					} else if ("goo" === kind) {
+						// GLOOPERNAUGHT: a big green goo creature, a slumped dome running with drips, little arms of goo,
+						// two wide-set eyes, bubbles rising off it, and its name under the picture
+						(c.fillStyle = skin), c.beginPath(), c.moveTo(22, 118), c.bezierCurveTo(18, 70, 40, 42, 64, 42), c.bezierCurveTo(88, 42, 110, 70, 106, 118), c.closePath(), c.fill();
+						[[30, 118, 8], [46, 118, 12], [70, 118, 7], [90, 118, 11]].forEach(([px, py, d]) => (c.beginPath(), c.moveTo(px - 5, py - 2), c.quadraticCurveTo(px, py + d, px + 5, py - 2), c.fill(), c.beginPath(), c.arc(px, py + d, 3, 0, l), c.fill()));
+						[-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 38 * sd, 86), c.quadraticCurveTo(64 + 54 * sd, 80, 64 + 52 * sd, 64), c.lineTo(64 + 46 * sd, 66), c.quadraticCurveTo(64 + 46 * sd, 80, 64 + 36 * sd, 96), c.fill()));
+						(c.fillStyle = "rgba(255,255,255,.35)"), c.beginPath(), c.ellipse(48, 62, 9, 5, -0.6, 0, l), c.fill();
+						(c.fillStyle = "#f6f2e0"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 14 * sd, 76, 8, 0, l), c.fill()));
+						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 14 * sd + 2, 77, 4, 0, l), c.fill()));
+						(c.strokeStyle = skin), (c.lineWidth = 2), [[40, 36, 4], [86, 30, 3], [74, 22, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py + 6, r, 0, l), c.stroke()));
+						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 136);
 					} else {
 						// the saucer: a glass dome on a grey disc with portholes, and its tractor beam
 						(c.fillStyle = "rgba(255,240,120,.55)"), c.beginPath(), c.moveTo(52, 92), c.lineTo(76, 92), c.lineTo(100, 128), c.lineTo(28, 128), c.fill();
@@ -10990,7 +11284,7 @@ const JGP = (() => {
 						(c.fillStyle = "#5a5e66"), c.fillRect(20, 78, 88, 3);
 						for (let k = 0; k < 5; k++) (c.fillStyle = k % 2 ? "#ffe04a" : "#7ae8ff"), c.beginPath(), c.arc(34 + 15 * k, 75, 3.5, 0, l), c.fill();
 					}
-					(c.fillStyle = "#3a2414"), (c.font = "bold 16px Georgia, serif"), c.fillText("REWARD", 64, 146);
+					(c.fillStyle = "#3a2414"), (c.font = "bold 16px Georgia, serif"), c.fillText("REWARD", 64, "goo" === kind ? 154 : 146);
 				},
 				{ smooth: !0 },
 			);
@@ -10998,6 +11292,7 @@ const JGP = (() => {
 			[-1.9, 2.75, "alien", "#7ad84a", 0.08],
 			[1.9, 2.8, "ufo", "", -0.06],
 			[1.5, 1.9, "alien", "#9ae8c8", 0.1],
+			[-1.45, 1.85, "goo", "#5ac83a", -0.05],
 		].forEach(([px, py, kind, skin, rz]) => R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]));
 	}
 
@@ -12440,7 +12735,8 @@ const JGP = (() => {
 		}
 	}
 	function plantMove(key, t) {
-		const [type, w, a, extra = 0] = MOVES[key] || ["dig", 1.8, 1],
+		// (ANOMALEE, once the Snacks quest is complete (NEXTESSA has delivered), eats pizza at the Event instead of planting)
+		const [type, w, a, extra = 0] = "blinker" === key && Kt.rewards.snacks ? ["eat", 2.6, 1] : MOVES[key] || ["dig", 1.8, 1],
 			s = Math.sin(w * t),
 			up = Math.max(0, s);
 		switch (type) {
@@ -12450,8 +12746,96 @@ const JGP = (() => {
 				return { ry: 0.55 * a * s, y: 0.06 * a * Math.abs(Math.sin(2 * w * t)), z: extra * s };
 			case "pat":
 				return { rz: 0.14 * a * s, rx: 0.15 * a * (0.5 + 0.5 * Math.sin(2 * w * t)), y: 0.03 * Math.abs(Math.sin(2 * w * t)) };
+			case "eat":
+				// bent over the box, she dips for a bite every couple of seconds and chews it upright
+				return { rx: 0.22 * a + 0.16 * a * Math.pow(Math.max(0, Math.sin(0.5 * w * t)), 6), y: 0.015 * Math.abs(Math.sin(2.5 * w * t)), rz: 0.04 * a * Math.sin(0.25 * w * t) };
 		}
 	}
+	// PIZZA AT THE EVENT (only once the Snacks quest is complete: NEXTESSA has brought you a pie). Stacks of pizza boxes stand
+	// round the outside of the garden's stone ring, beside the seed sacks, for as long as the Event runs (kept
+	// clear by everyone, as fixed bodies), and ANOMALEE gets an open box of her own at her spot instead of
+	// planting: she eats it a slice at a time.
+	const PIZZA = (() => {
+		let stacks = null,
+			pie = null;
+		const card = "#d9b884",
+			mats = () =>
+				V.pzM ||
+				(V.pzM = (() => {
+					const side = new THREE.MeshLambertMaterial({ color: card }),
+						// the lid: a red ring with a slice in it, the shop's mark
+						top = new THREE.MeshLambertMaterial({
+							map: b(128, 128, (c) => {
+								(c.fillStyle = card), c.fillRect(0, 0, 128, 128), (c.strokeStyle = "#b8955e"), (c.lineWidth = 3), c.strokeRect(6, 6, 116, 116);
+								(c.strokeStyle = "#c8322a"), (c.lineWidth = 8), c.beginPath(), c.arc(64, 64, 38, 0, l), c.stroke();
+								(c.fillStyle = "#e8a838"), c.beginPath(), c.moveTo(64, 92), c.lineTo(44, 44), c.quadraticCurveTo(64, 34, 84, 44), c.closePath(), c.fill();
+								(c.fillStyle = "#c8322a"), [[58, 54], [70, 52], [64, 70]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 5, 0, l), c.fill()));
+							}),
+						});
+					return { box: [side, side, top, side, side, side], plain: side, cheese: new THREE.MeshLambertMaterial({ color: "#f0b848" }), crust: new THREE.MeshLambertMaterial({ color: "#c88a3a" }), pep: new THREE.MeshLambertMaterial({ color: "#a8281e" }) };
+				})());
+		function show() {
+			if (stacks) return;
+			const M2 = mats(),
+				geo = cachedGeo("pzbox", () => new THREE.BoxGeometry(0.44, 0.07, 0.44)),
+				rs = srand(77);
+			stacks = new THREE.Group();
+			for (let k = 0; k < 8; k++) {
+				const a = (k / 8) * l + l / 16 + 0.13,
+					X = (GARDEN_R + 0.95) * Math.cos(a),
+					Z = (GARDEN_R + 0.95) * Math.sin(a),
+					Y = JGP.groundAt ? JGP.groundAt(X, Z, 0.3) : 0,
+					n = 1 + ((rs() * 3) | 0);
+				for (let j = 0; j < n; j++) R(geo, M2.box, stacks, [X + 0.03 * (rs() - 0.5), Y + 0.035 + 0.072 * j, Z + 0.03 * (rs() - 0.5)], [0, -a + 0.4 * (rs() - 0.5), 0]);
+				stacks.userData[k] = { x: X, z: Z, r: 0.35 };
+				uo.fixed.push(stacks.userData[k]);
+			}
+			C.add(stacks);
+		}
+		// ANOMALEE's open box at (x, z), turned to face her (ry: the way she faces)
+		function serve(x0, z0, ry) {
+			if (pie) return;
+			const M2 = mats(),
+				g = new THREE.Group();
+			g.position.set(x0, JGP.groundAt ? JGP.groundAt(x0, z0, 0.3) : 0, z0), (g.rotation.y = ry), C.add(g);
+			R(cachedGeo("pzbox", () => new THREE.BoxGeometry(0.44, 0.07, 0.44)), M2.plain, g, [0, 0.035, 0]);
+			// (the lid stands open, hinged along the box's far edge, leaning away from her)
+			const hinge = new THREE.Group();
+			hinge.position.set(0, 0.07, -0.22), (hinge.rotation.x = -0.25), g.add(hinge);
+			R(cachedGeo("pzlid", () => new THREE.BoxGeometry(0.44, 0.44, 0.015)), M2.plain, hinge, [0, 0.22, -0.0075]);
+			const slice = cachedGeo("pzslice", () => new THREE.CylinderGeometry(0.19, 0.19, 0.024, 4, 1, !1, 0, l / 8)),
+				// (the crust along the slice's rim: the arc laid flat and turned onto the slice's eighth)
+				crust = cachedGeo("pzcrust", () => new THREE.TorusGeometry(0.19, 0.018, 5, 4, l / 8).rotateX(Math.PI / 2).rotateY(-Math.PI / 4)),
+				pep = cachedGeo("pzpep", () => new THREE.CylinderGeometry(0.024, 0.024, 0.01, 10)),
+				slices = [];
+			for (let k = 0; k < 8; k++) {
+				const sg = new THREE.Group(),
+					a = (k / 8) * l;
+				(sg.rotation.y = a), g.add(sg);
+				R(slice, M2.cheese, sg, [0, 0.084, 0]), R(crust, M2.crust, sg, [0, 0.09, 0]);
+				[[0.09, l / 32], [0.14, (3 * l) / 32]].forEach(([r, b2]) => R(pep, M2.pep, sg, [r * Math.sin(b2), 0.096, r * Math.cos(b2)]));
+				slices.push(sg);
+			}
+			pie = { g, slices, eaten: 0, t: 0 };
+		}
+		function clear() {
+			stacks && (C.remove(stacks), Object.values(stacks.userData).forEach((q) => uo.fixed.includes(q) && uo.fixed.splice(uo.fixed.indexOf(q), 1)), (stacks = null));
+			pie && (C.remove(pie.g), (pie = null));
+		}
+		L.push((tt, dt) => {
+			if (!stacks && !pie) return;
+			if (!me.active) return clear();
+			// a slice every 5 s while she is at it, with a crunch if you're near
+			const an = It.byId.blinker;
+			if (!pie || !an || !an.planting || pie.eaten >= 8) return;
+			(pie.t += dt || 0.016) > 5 &&
+				((pie.t = 0),
+				(pie.slices[pie.eaten++].visible = !1),
+				Math.hypot(At.position.x - pie.g.position.x, At.position.z - pie.g.position.z) < 14 && (G.note(160, 0.07, "square", 0.025), G.note(120, 0.09, "square", 0.025, 0.12)),
+				Ut.above(an, "♥", "#e8a838"));
+		});
+		return { show, serve, clear };
+	})();
 	// called by the event when planting begins: everyone walks to a spot inside the garden, except
 	// FORTIZMO, who walks slowly from her bar to the garden's edge on the bar's side to play from there.
 	// The spots put each planter's soil on the rows at 2.6, 6.6 and 10.6 m. Every Event uses the same spots;
@@ -12461,6 +12845,7 @@ const JGP = (() => {
 		fz && ((fz.finaleSlot = { x: -(GARDEN_R + 2.3), z: 0 }), (fz.walkSpeed = 1), (fz.watching = !1));
 		list = list.filter((ent) => !noPlant(ent));
 		list.length && garden.round++;
+		Kt.rewards.snacks && PIZZA.show();
 		// (the soil 0.9 m in front of each planter falls on rows 2.6, 6.6 and 10.6)
 		const rings = [
 				[3.5, 4],
@@ -12491,8 +12876,9 @@ const JGP = (() => {
 	// (BACKPACKA only appears for the event, flying in himself; NEXTESSA is never at it: she only comes
 	// through the portal for the pizza delivery)
 	const NO_PLANT = ["frog"],
-		// KING DINO stays at his drum set at the Juice Bar and keeps playing all through the event
-		AT_POST = ["m_kingdino"],
+		// KING DINO stays at his drum set at the Juice Bar and keeps playing all through the event, and SOMLET
+		// sleeps on at home through it (the script)
+		AT_POST = ["m_kingdino", "m_somlet"],
 		noPlant = (ent) => !!ent && NO_PLANT.includes(ent.id),
 		// everyone steps out to the walk round the garden in their order round it, leaving FORTIZMO's
 		// spot on the bar's side free
@@ -12520,11 +12906,14 @@ const JGP = (() => {
 		const w = ent.plantWait;
 		if (!w || w[0] !== garden.round) return void (ent.plantWait = [garden.round, now + 1.5]);
 		if (now < w[1]) return;
-		if (((ent.plantRound = garden.round), garden.round > 1)) return;
+		ent.plantRound = garden.round;
 		const p = ent.group.position,
 			ry = ent.group.rotation.y,
 			fx = p.x + 0.9 * Math.sin(ry),
 			fz = p.z + 0.9 * Math.cos(ry);
+		// (ANOMALEE with the Snacks: her pizza, at every Event, and no flower from her)
+		if ("blinker" === ent.id && Kt.rewards.snacks) return PIZZA.serve(fx, fz, ry + Math.PI);
+		if (garden.round > 1) return;
 		putPlant(fx, fz, rnd() * l, 0, (rnd() * PLANT_KINDS.length) | 0), Ut.at(fx, 1.7, fz, "✿", f(PLANT_COLS));
 	}
 	L.push((tt, dt) => {
@@ -13144,6 +13533,8 @@ const JGP = (() => {
 	})();
 
 	// ---- creature-to-creature vignettes ----------------------------------------------------------
+	// (VIGS: what tests read: how often each pair has played, every pair, and who can take part now)
+	const VIGS = {};
 	// Every pair of creatures in the line-up has its own little vignette. They stay on their spots
 	// (the line-up stands still), turn to each other and trade their signature messengers through
 	// the air, each in its own way: a choreography style per pair, both creatures' own messengers,
@@ -13153,79 +13544,154 @@ const JGP = (() => {
 	// styles: 0 swap, 1 volley, 2 boomerang, 3 parade, 4 juggle, 5 orbit dance, 6 bounce, 7 bubble,
 	// 8 zip, 9 confetti, 10 serenade, 11 tag
 	(() => {
-		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY" },
+		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY", MA: "MAMA GORBO", SP: "SPARKAKUS", NX: "NEXTESSA", BP: "BACKPACKA" },
 			PAIRS = [
-			["HN", "MU", 7, "Your spore count is... adorable.", "P-please don't put me in a spreadsheet."],
-			["HN", "AN", 1, "Your signal is buffering again.", "I'm not buffering! I'm thinking. Loudly."],
-			["HN", "KD", 3, "Crown detected. Cooling fans engaged.", "We permit you to admire us at 60fps."],
-			["HN", "GW", 6, "Goo viscosity: exceptional.", "Thanks! It's a family recipe. Blorp."],
-			["HN", "ZL", 10, "Uploading one (1) gentle compliment.", "Received. Your wires grow like vines."],
-			["HN", "SM", 2, "Packet loss detected on your mail route.", "Mm... the packets wanted a nap too."],
-			["HN", "FZ", 5, "Your horn exceeds the safe groove limit.", "Then crank the limit, big fella."],
-			["HN", "ET", 4, "Requesting a backup of your etchings.", "Already carved one onto your left tusk."],
-			["HN", "GT", 9, "Gem clarity: 99.8%. Remarkable.", "Only 99.8?! Polish me, polish me!"],
-			["HN", "GL", 11, "Your glyphs fail all my decoders.", "Hee hee. They're upside-down on purpose."],
-			["MU", "AN", 7, "Um... your screen is very bright.", "Sorry! Dimming to 'cozy cave' mode."],
-			["MU", "KD", 3, "Y-your majesty...", "Rise, small fungus. You may hold our cape."],
-			["MU", "GW", 6, "C-can I sit on your float?", "Hop on! It's a mushroom-and-goo cruise!"],
-			["MU", "ZL", 10, "Your back looks... like home.", "There's always room for one more cap."],
-			["MU", "SM", 2, "(whisper) are you asleep?", "(whisper) yes... but say hi anyway."],
-			["MU", "FZ", 5, "I like music... if it's quiet music.", "Then here's a lullaby on a tiny horn."],
-			["MU", "ET", 4, "Could you carve my name? Small, please.", "In the smallest letters ever etched."],
-			["MU", "GT", 9, "Your gems make me feel underdressed.", "Wear a spore! Spores are the new gems!"],
-			["MU", "GL", 11, "What do your tiles mean?", "This one means 'shy friend'. Hee hee."],
-			["AN", "KD", 8, "Now broadcasting: KING DINO TONIGHT.", "We approve this programming. Repeat it."],
-			["AN", "GW", 1, "Error: goo on my screen.", "That's a kiss! Goo kisses don't count."],
-			["AN", "ZL", 6, "Why's your garden walking?", "Gardens walk slowly. You never waited."],
-			["AN", "SM", 2, "Channel 3: a cloud, snoring.", "...that's... my favorite show... zzz."],
-			["AN", "FZ", 5, "Can I sync my screen to your horn?", "Flash on the two and four, baby."],
-			["AN", "ET", 4, "Can you etch me a new leg?", "One peg leg, engraved 'still walking'."],
-			["AN", "GT", 9, "Your gems are glitching my colors!", "That's not a glitch, that's sparkle!"],
-			["AN", "GL", 11, "Your glyphs read as static to me.", "Static is a glyph too. Hee hee!"],
-			["KD", "GW", 2, "Kneel before the crown!", "I'm goo, I'm always kneeling. Blorp."],
-			["KD", "ZL", 10, "Your garden shall be the royal garden.", "It was always yours. Gardens are for all."],
-			["KD", "SM", 4, "Deliver our decree at once!", "Mmh... at once... after one more nap."],
-			["KD", "FZ", 5, "Play our royal anthem!", "One anthem, extra swing, your highness."],
-			["KD", "ET", 4, "Engrave our face on everything.", "Started with the moon. It's a big job."],
-			["KD", "GT", 9, "Those gems belong in our crown.", "Your crown belongs on my toes, then!"],
-			["KD", "GL", 11, "Translate our glory into your tiles.", "Done. It reads 'big egg'. Hee!"],
-			["GW", "ZL", 10, "Can your flowers swim?", "They float. With a little help."],
-			["GW", "SM", 7, "You look like a cloud! Clouds are goo!", "...and goo is a cloud that fell asleep."],
-			["GW", "FZ", 5, "Play a pool party song!", "Splash on the downbeat, sweetheart."],
-			["GW", "ET", 1, "Etch me! I'll just drip it off. Hee.", "Then I'll etch faster than you drip."],
-			["GW", "GT", 9, "Can gems go in goo?", "Only if you keep them shiny, squishy!"],
-			["GW", "GL", 11, "Your teeth are so square!", "Your eyes are so plus! We match. Hee!"],
-			["ZL", "SM", 7, "You may nap in my garden.", "Mmm... smells like moss and pillows."],
-			["ZL", "FZ", 10, "Your music makes my sprouts grow.", "Then let's grow a forest, slow tempo."],
-			["ZL", "ET", 4, "Etch the names of my flowers?", "All forty-two. Starting with 'Tiny'."],
-			["ZL", "GT", 6, "Plant one gem; grow a gem tree.", "A gem tree?! Water it! WATER IT!"],
-			["ZL", "GL", 11, "Your glyphs look like roots.", "They are! Roots of words. Hee hee."],
-			["SM", "FZ", 10, "Play something sleepy...", "Moonlight in C minor, coming right up."],
-			["SM", "ET", 4, "I lost a letter... do you remember it?", "'Dear Somlet, wake up.' Signed: me."],
-			["SM", "GT", 2, "You twirl so much... I'm dizzy... zzz.", "Twirl naps! The best naps!"],
-			["SM", "GL", 11, "Is that mail? It looks like mail.", "A postcard from the year 3000. Hee!"],
-			["FZ", "ET", 5, "Carve my latest solo on a plate.", "Every note. Even the wrong ones."],
-			["FZ", "GT", 9, "You twirl on the one, gem-girl!", "And you toot on the two! Encore!"],
-			["FZ", "GL", 11, "Your grin's got rhythm.", "Hee! My teeth are a xylophone."],
-			["ET", "GT", 4, "Hold still, I'll etch your portrait.", "Hold still?! I've never held still!"],
-			["ET", "GL", 11, "Your tiles have no punctuation.", "Punctuation is for quitters. Hee!"],
-			["GT", "GL", 11, "Do glyphs sparkle?", "Only when they laugh. HEE HEE."],
-			["HN", "MG", 0, "Your fans are humming in C major.", "FANS NOMINAL. HUMMING: OPTIONAL."],
-			["MU", "MG", 7, "Are you... a very tidy robot?", "TIDY: 98%. SPORES DETECTED: 1."],
-			["AN", "MG", 8, "Your screen and my screen! Twins!", "TWINS CONFIRMED. HELLO, SIBLING."],
-			["KD", "MG", 2, "Keep time for our royal march!", "BPM: VERY GOOD, YOUR MAJESTY."],
-			["GW", "MG", 6, "Want a goo hug, Montgummery?", "WARNING: GOO IN JOINTS. ...OK. ONE HUG."],
-			["ZL", "MG", 10, "Can you water my seedlings?", "WATERING. 2.4 LITRES. GROW WELL."],
-			["SM", "MG", 4, "Mm... are you... a lullaby machine?", "LULLABY MODE: ON. BEEP. BOOP. ZZZ."],
-			["FZ", "MG", 5, "Give me a beat, metal man.", "BEAT GENERATED. TOOT RESPONSIBLY."],
-			["ET", "MG", 4, "May I etch your serial number?", "SERIAL: MONT-G. ETCH GENTLY."],
-			["GT", "MG", 9, "Your lights twinkle like my gems!", "TWINKLE PROTOCOL ENGAGED."],
-			["GL", "MG", 11, "Can you read my glyphs?", "DECODING... RESULT: HEE HEE."],
+			["HN", "MU", 7, "Sheriff, when may I return to my own era?", "When the consortium says so. Not before."],
+			["HN", "AN", 1, "May I record what you see in that window?", "It is NOT for jars. It is for REMEMBERING."],
+			["HN", "KD", 3, "Remarkable. Percussion predates the wheel?", "Baby, the beat predates everything!"],
+			["HN", "GW", 6, "A goo sample, for science? Only a small one.", "Gomp gomp... GOMP!"],
+			["HN", "ZL", 10, "This flora is extinct in my era, you know.", "Then I'll keep it alive in this one."],
+			["HN", "SM", 2, "Subject remains asleep. Observation day 41.", "Zzz..."],
+			["HN", "FZ", 5, "I'm told the house currency is Blossoms?", "Blossoms only, sugar. Tip jar's on your left."],
+			["HN", "ET", 4, "You etch history and I jar it. Colleagues!", "Then I will etch you into the age of Organics."],
+			["HN", "GT", 9, "That gem would suit my collection jar.", "Your jar can't afford it. Nobody can."],
+			["HN", "GL", 11, "Your symbols resemble my era's alphabet.", "Every era borrows from symbols... don't you think?"],
+			["MU", "AN", 7, "State your business at that window.", "The ORIGINATOR'S business. Not YOURS."],
+			["MU", "KD", 3, "Those coins of yours are not legal tender.", "Stamped by the King, baby. Legal enough."],
+			["MU", "GW", 6, "You are leaving goo on public property.", "Gomp? ...gomp."],
+			["MU", "ZL", 10, "Report any UFOs over your seedlings.", "Only bees up there. My seedlings are thriving."],
+			["MU", "SM", 2, "Have you seen anything suspicious tonight?", "Zzz... zzz..."],
+			["MU", "FZ", 5, "The consortium will be inspecting your bar.", "Inspect away. Blossoms up front, honey."],
+			["MU", "ET", 4, "Have you been etching the town records?", "I etch everything. Including your citations."],
+			["MU", "GT", 9, "And where did all those gems come from?", "Found them. Fairly. Mostly. Don't write that down."],
+			["MU", "GL", 11, "Is that symbol a coded alien message?", "Every symbol is a message... don't you think?"],
+			["AN", "KD", 8, "Your RHYTHM... the ORIGINATOR had it TOO.", "Then the Originator could swing, baby!"],
+			["AN", "GW", 1, "GOO... is also a kind of CODE.", "Gomp gomp! Gooomp!"],
+			["AN", "ZL", 6, "ROOTS run like CODE beneath the soil.", "And I tend every line of it."],
+			["AN", "SM", 2, "You DREAM. We were MADE to dream.", "Zzz... mm... zzz."],
+			["AN", "FZ", 5, "Do you ACCEPT pizza here? One SLICE?", "Blossoms only. But I won't tell if you share."],
+			["AN", "ET", 4, "ETCH this: the ORIGINATOR was HERE.", "Already etched, Anomalee. Deep enough to last."],
+			["AN", "GT", 9, "Your gems GLOW like the WINDOW.", "Mine glow brighter. And they're not for sale."],
+			["AN", "GL", 11, "Your symbols... I KNOW them. From WITHIN.", "Then we have read the same page... don't you think?"],
+			["KD", "GW", 2, "Gimme a goo-bop on the backbeat!", "Gomp! Gomp-gomp! GOMP!"],
+			["KD", "ZL", 10, "Any carrots back there for my juice, baby?", "Grown with care. Not for your bar tab."],
+			["KD", "SM", 4, "Even asleep, this cat keeps time!", "Zzz... zzz... zzz..."],
+			["KD", "FZ", 5, "Put one more carrot juice on my tab?", "Play off the last forty first, lounge lizard."],
+			["KD", "ET", 4, "Etch my solos, baby! For history!", "I etch them as you play. Your hi-hat too."],
+			["KD", "GT", 9, "I'll trade you a royal coin for that gem.", "You stamp those yourself. Nice try."],
+			["KD", "GL", 11, "What's the symbol for 'more cowbell'?", "This one. Joy, rhythm and cowbell, all in one."],
+			["GW", "ZL", 10, "Gomp? Gomp gomp?", "Yes, Gooward. A little goo is good for the soil."],
+			["GW", "SM", 7, "(softly) gomp... gomp...", "Zzz..."],
+			["GW", "FZ", 5, "Gomp gomp gomp!", "Goo is not currency, sweetie. Nice try."],
+			["GW", "ET", 1, "Gooomp?", "Yes, I etched your goo too. It's archived."],
+			["GW", "GT", 9, "Gomp! (a goo ball for you)", "Goo isn't gems. ...Fine. I'll keep it anyway."],
+			["GW", "GL", 11, "Gomp?", "'Gomp' is a fine symbol... don't you think?"],
+			["ZL", "SM", 7, "Shh. My seedlings are napping too.", "Zzz..."],
+			["ZL", "FZ", 10, "Fresh mint for your bar, cut this morning.", "Mint like that, I'd almost take flint for it."],
+			["ZL", "ET", 4, "Etch my seed catalogue. Every variety.", "Each one a word in the age of Organics."],
+			["ZL", "GT", 6, "Gems don't grow, Gemtoe. Plants do.", "Then I'll plant gems and grow MORE gems."],
+			["ZL", "GL", 11, "Is there a symbol for a seed?", "A dot. Everything starts as a dot... don't you think?"],
+			["SM", "FZ", 10, "Zzz...", "Somebody play that sleeper a lullaby. On me."],
+			["SM", "ET", 4, "Zzz... zzz...", "Even her snores I will etch. Softly."],
+			["SM", "GT", 2, "Zzz...", "Asleep on a pile of mail. What a waste of a pile."],
+			["SM", "GL", 11, "Zzz...", "'Zzz' is the oldest symbol of all... don't you think?"],
+			["FZ", "ET", 5, "Quit etching my dancefloor, tentacles!", "It's data. Your floor remembers every step."],
+			["FZ", "GT", 9, "Settle up in Blossoms, honey. Not gems.", "Gems are worth countless flint! Your loss."],
+			["FZ", "GL", 11, "What's that symbol on my menu mean?", "'Fresh'. Juice is symbols too... don't you think?"],
+			["ET", "GT", 4, "I am etching the age of your Avarice.", "Etch it bigger. Avarice deserves big letters."],
+			["ET", "GL", 11, "Without your symbols I'd have nothing to etch.", "And without your etching, they'd blow away."],
+			["GT", "GL", 11, "Is there a symbol for 'all mine'?", "There's one for 'shared'... try that one."],
+			["HN", "MG", 0, "I hear you've studied my species' films.", "Mont eats many VHS. Mont knows much of humans."],
+			["MU", "MG", 7, "Have you seen a human in this town?", "Mont has seen no human. Mont is very busy."],
+			["AN", "MG", 8, "Your SCREEN shows faces. Mine shows the PAST.", "Mont's screen shows robot. Robot is happy."],
+			["KD", "MG", 2, "Can you dance to my beat, robot?", "Mont dances to all beats. Mont dances best."],
+			["GW", "MG", 6, "Gomp gomp!", "Mont understands Gomp. Gomp means friend."],
+			["ZL", "MG", 10, "Mind my seedlings when you dance, Mont.", "Mont will dance around them. Mont is careful."],
+			["SM", "MG", 4, "Zzz...", "Mont will dance quietly. Small robot dance."],
+			["FZ", "MG", 5, "You've got rhythm, Mont. Ever played horn?", "Mont watched VHS of horn. Mont is ready."],
+			["ET", "MG", 4, "Your binary, Mont. May I etch it?", "Etch gently. Mont is ticklish in binary."],
+			["GT", "MG", 9, "What will you take for that screen?", "Mont's screen is not for trade. Mont needs face."],
+			["GL", "MG", 11, "My symbols move you, Mont... don't you think?", "Mont thinks. Mont thinks yes."],
+			["MA", "HN", 9, "Hennrick, dear! A coupon for a goo burger?", "A burger from this era! For the collection jar."],
+			["MA", "MU", 3, "Sheriff, you look peaky. Have a goo burger.", "A bribe? ...Make it a double."],
+			["MA", "AN", 7, "Always staring up there, sweetie.", "The WINDOW remembers. As do YOU, Mama."],
+			["MA", "KD", 5, "Play us something romantic, King Dino!", "For you and the hubby, baby? Slow and smooth."],
+			["MA", "GW", 10, "There's my handsome hubby!", "Gomp gomp... gooomp!"],
+			["MA", "ZL", 6, "Zollod, dear! Which seeds for a beginner?", "Start small. Love them daily. They'll grow."],
+			["MA", "SM", 2, "Look at her. Sleeping like a baby.", "Zzz..."],
+			["MA", "FZ", 9, "Two carrot juices! For me and the hubby.", "Blossoms first, Mama. House rules."],
+			["MA", "ET", 4, "Etch our burger menu, would you, dear?", "Every topping. For the age of Organics."],
+			["MA", "GT", 1, "A burger coupon for you too, Gemtoe!", "...Is it worth anything? Then it's mine."],
+			["MA", "GL", 11, "What does that symbol mean, dear?", "Family. The warmest symbol... don't you think?"],
+			["MA", "MG", 8, "Mont, you're too thin! Have a goo burger.", "Mont cannot eat burger. Mont eats VHS."],
+			["SP", "HN", 0, "Hennrick! Any news of the Ancients' era?", "Much research is still needed, colleague."],
+			["SP", "MU", 3, "Sheriff, may the Library stay open?", "For now. The consortium is watching your books."],
+			["SP", "AN", 7, "The Ancient texts speak of an ORIGINATOR...", "YES. Read them to me. SLOWLY."],
+			["SP", "KD", 2, "Is drumming in the Ancient texts?", "Not yet, baby. Write me in!"],
+			["SP", "GW", 6, "Please, no goo near the first editions.", "Gomp... gomp."],
+			["SP", "ZL", 10, "I've a book on Ancient gardens for you.", "Read me the part about seeds. Twice."],
+			["SP", "SM", 2, "Shh. Even asleep, she's a patron of the Library.", "Zzz..."],
+			["SP", "FZ", 5, "A quiet juice, please. I've a reputation.", "One quiet juice, librarian. Blossoms only."],
+			["SP", "ET", 4, "Your etchings would fill my Library twice.", "And your Library would fill my tentacles."],
+			["SP", "GT", 9, "I collect books and call it a job, yes.", "And I collect gems and call it Avarice."],
+			["SP", "GL", 11, "Your symbols would make a fine index.", "An index is a symbol of symbols... don't you think?"],
+			["SP", "MG", 8, "Mont, return the VHS tapes you borrowed.", "Mont ate the VHS tapes. Mont is sorry."],
+			["SP", "MA", 1, "Mrs Gorbo, no burgers in the Library.", "Just a little one, dear? For your research."],
+			["NX", "HN", 3, "Pizza from your own era, Hennrick?", "Remarkable. Still warm after all those years."],
+			["NX", "MU", 9, "Delivery for the Sheriff! Extra cheese.", "Leave it on the desk. The Portal stays open."],
+			["NX", "AN", 7, "One slice, Anomalee? On the house!", "* Munch * ...the ORIGINATOR liked PIZZA."],
+			["NX", "KD", 5, "Pizza for the King of Jazz!", "Put it on my tab, baby."],
+			["NX", "GW", 6, "Goo topping? Coming right up!", "Gomp gomp! GOMP!"],
+			["NX", "ZL", 10, "Your basil's in every pie I make!", "Then my basil travels through time. Good."],
+			["NX", "SM", 2, "Delivery for... oh. She's asleep.", "Zzz..."],
+			["NX", "FZ", 5, "Pizza and juice? We should team up!", "Blossoms only, darling. Business is business."],
+			["NX", "ET", 4, "Etch my order number, quick! I'm on the clock.", "Order one. Etched forever."],
+			["NX", "GT", 9, "Tip for the delivery girl?", "A tip?! ...Here. A pebble. Very rare."],
+			["NX", "GL", 11, "What's the symbol for 'extra hot'?", "This one. Pizza is a symbol of joy... don't you think?"],
+			["NX", "MG", 8, "Hot pizza for Mont!", "Mont cannot eat pizza. Mont will hold it. Warm."],
+			["NX", "MA", 1, "A rival in the food business, Mama?", "Never, dear. Goo burgers and pizza go together."],
+			["NX", "SP", 0, "Library delivery! Careful, it's hot.", "Not near the books! ...But thank you."],
+			["BP", "HN", 7, "Glug! The pond tastes like history, Hennrick.", "Then I must sample it. For the jar."],
+			["BP", "MU", 3, "Permission to land, Sheriff?", "Landing permitted. Watch for UFOs."],
+			["BP", "AN", 8, "*splash* Sorry, Anomalee! Your screen's wet.", "WATER... is also a kind of CODE."],
+			["BP", "KD", 5, "Glug glug! Can I drink to the beat?", "Every gulp's a downbeat, baby!"],
+			["BP", "GW", 6, "Glug? Glug glug!", "Gomp! Gomp gomp!"],
+			["BP", "ZL", 10, "Where should I spray next, gardener?", "The thirsty row. Gently, please."],
+			["BP", "SM", 2, "Shh. I'll spray quietly round her.", "Zzz..."],
+			["BP", "FZ", 5, "Play me in, Fortizmo! The rain strut!", "Fly low, big fella. Spray on the two and four."],
+			["BP", "ET", 4, "Can water be etched?", "Ripples are etchings that don't last. I try anyway."],
+			["BP", "GT", 9, "Your gems sparkle when they're wet!", "Don't you dare spray my gems."],
+			["BP", "GL", 11, "My spray makes shapes in the air!", "Every splash is a symbol... don't you think?"],
+			["BP", "MG", 8, "Mont, do you like a good soaking?", "Mont is not waterproof. Mont says no."],
+			["BP", "MA", 1, "Shall I water your burger garden, Mama?", "Oh, you dear! Just the lettuce, please."],
+			["BP", "SP", 0, "Glug! Want a ride on my back, Sparkakus?", "No, thank you. The books would get wet."],
+			["BP", "NX", 7, "Can you deliver pond water, Nextessa?", "Only pizza, big guy. But I'll ask the boss."],
+			],
+			// THE CHURCH'S SLUG has an exchange with each of the cast too, but they are switched off for now (the
+			// owner's script: it never leaves the church, and its vignettes are gated off). [code, slug's line, reply]
+			SLUG_VIGNETTES = !1,
+			SLUG_PAIRS = [
+				["HN", "Your era and mine are one, traveller.", "Fascinating. Which era would that be?"],
+				["MU", "No Portal can hold the one reborn.", "Th-the consortium will be informed."],
+				["AN", "Anomalee. You still look for me in the glass.", "ORIGINATOR...? You WERE... WITHIN?"],
+				["KD", "Even the reborn feel the beat.", "That's right, baby. Everybody feels it."],
+				["GW", "Little goo. You were made with love.", "Gomp... gomp."],
+				["ZL", "All that grows, grows again.", "Then my work is never done. Good."],
+				["SM", "Sleep. I will keep watch.", "Zzz..."],
+				["FZ", "Play the old song. The first one.", "For you, slug? On the house."],
+				["ET", "Etch this: I have returned.", "...My tentacles are shaking. Etching."],
+				["GT", "What you hoard, you will lose.", "...Who told you about my gems?"],
+				["GL", "I was the first symbol.", "...Don't you think? ...Yes. I think so."],
+				["MG", "Mont. You were made to learn.", "Mont learns. Mont is learning now."],
+				["MA", "Mother of goo. You carry so much love.", "Oh! Aren't you a sweet one, dear."],
+				["SP", "Librarian. Your texts are missing a page.", "...Which page? I must know."],
+				["NX", "You deliver across time. As I once did.", "...Did you work for the pizza shop too?"],
+				["BP", "The rain remembers me.", "Glug... it remembers you too."],
 			],
 			// what each creature sends, how it moves and what it says without words
 			SIG = {
 				HN: { item: "cube", col: "#4af0a0", gest: "nod", emote: "!" },
-				MU: { item: "spore", col: "#fffaf0", gest: "shy", emote: "…" },
+				MU: { item: "spore", col: "#fffaf0", gest: "puff", emote: "!" },
 				AN: { item: "pixel", col: "#e030e0", gest: "glitch", emote: "?" },
 				KD: { item: "crown", col: "#ffc81e", gest: "puff", emote: "★" },
 				GW: { item: "goo", col: "#4ac8f0", gest: "wobble", emote: "~" },
@@ -13236,10 +13702,15 @@ const JGP = (() => {
 				GT: { item: "gem", col: "#2ae070", gest: "twirl", emote: "✦" },
 				GL: { item: "tile", col: "#f2c84a", gest: "giggle", emote: "?" },
 				MG: { item: "coin", col: "#3db2d6", gest: "nod", emote: "!" },
+				MA: { item: "goo", col: "#e8409e", gest: "bow", emote: "♥" },
+				SP: { item: "card", col: "#2a50c8", gest: "nod", emote: "?" },
+				NX: { item: "slice", col: "#f0b848", gest: "hop", emote: "!" },
+				BP: { item: "goo", col: "#7ad8ff", gest: "stretch", emote: "~" },
+				SL: { item: "spore", col: "#c8b890", gest: "doze", emote: "…" },
 			},
 			V = (a = 0, b2 = 0, c = 0) => new THREE.Vector3(a, b2, c),
 			sm = (q) => (q <= 0 ? 0 : q >= 1 ? 1 : q * q * (3 - 2 * q));
-		const plays = {},
+		const plays = (VIGS.plays = {}),
 			fx = [];
 		let cur = null,
 			nextAt = 0,
@@ -13276,6 +13747,8 @@ const JGP = (() => {
 			else if ("gem" === kind) R(new THREE.OctahedronGeometry(0.17, 0), x.clay(col, { shininess: 140, specular: 16777215, emissive: new THREE.Color(col).multiplyScalar(0.3).getStyle() }), g).scale.set(1, 1.3, 1);
 			else if ("tile" === kind) m(T.box(0.26, 0.26, 0.05), col), m(T.box(0.16, 0.03, 0.055), "#5a3a10");
 			else if ("coin" === kind) m(T.cyl(0.14, 0.14, 0.03, 16), col).rotation.set(Math.PI / 2, 0, 0);
+			// (NEXTESSA's: a slice of pizza with two pepperoni)
+			else if ("slice" === kind) m(new THREE.CylinderGeometry(0.26, 0.26, 0.04, 3, 1, !1, -Math.PI / 7, (2 * Math.PI) / 7), col), [0.1, 0.18].forEach((r, k) => (m(T.cyl(0.03, 0.03, 0.05, 8), "#a8281e").position.set(0.03 * (k ? -1 : 1), 0, r)));
 			const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow(), color: col, transparent: !0, opacity: 0.55, depthWrite: !1, blending: THREE.AdditiveBlending }));
 			halo.scale.setScalar(0.95), g.add(halo), g.scale.setScalar(sc);
 			return (g.userData.keepInFinale = !0), C.add(g), g;
@@ -13428,7 +13901,7 @@ const JGP = (() => {
 		}
 		function start(pk, A, B, opt = {}) {
 			const id = pk[0] + pk[1],
-				rs = srand(1 + PAIRS.indexOf(pk) * 7919),
+				rs = srand(1 + ALL_PAIRS.indexOf(pk) * 7919),
 				sc = script(pk, A, B, pk[2], rs),
 				text = !!opt.text;
 			(plays[id] = (plays[id] || 0) + 1), wrap(A), wrap(B), (A.vig = B.vig = !0);
@@ -13539,19 +14012,28 @@ const JGP = (() => {
 			}
 			t > c0.end && finish();
 		}
-		const lineUp = () => {
+		// (the slug's rows in the same form as the rest, made once)
+		const ALL_PAIRS = (VIGS.all = PAIRS.concat(SLUG_PAIRS.map(([k, x, y]) => ["SL", k, 7, x, y])));
+		// who is in town to take part: the cast at their spots, SPARKAKUS in his Library (his stand-in, st.ent) and
+		// NEXTESSA once she has handed over the pizza and is on her way back to the Portal (she stops for it).
+		// BACKPACKA is only in town for the Event, when there are none; the slug's are switched off.
+		const lineUp = (VIGS.lineUp = () => {
 			const m = {};
 			for (const en of It.all) for (const k in NAMES) en.def && en.def.name === NAMES[k] && en.def.stationary && (m[k] = en);
+			st.ent && (st.ent.sync(), (m.SP = st.ent));
+			ue.courier && "leaving" === ue.state && ((ue.courier.vigFree = () => ue.courier && "leaving" === ue.state), (m.NX = ue.courier));
 			return m;
-		};
+		});
 		const VIG_CHANCE = 0.15,
 			// a creature can take part only standing at its own spot (not busy, nor on its way home)
-			atSpot = (en) => !en.busy && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4,
+			atSpot = (en) => (en.vigFree ? en.vigFree() : !en.busy && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4),
 			talkedTo = (en) => "dialogue" === jt.top && xe.lastTarget === en;
 		function pick(now) {
 			const m = lineUp(),
-				// (only a pair within 25 m of each other: the roamers can be far apart)
-				ok = PAIRS.filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && m[pk[0]].group.position.distanceTo(m[pk[1]].group.position) < 25);
+				// (any two in town, however far apart: every pair gets its turn, the least played first and the
+				// nearer preferred)
+				// (the slug's exchanges, when switched on, would need it to come out of the church to play)
+				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && m[pk[0]].group.position.distanceTo(m[pk[1]].group.position) < 90);
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
@@ -13568,7 +14050,8 @@ const JGP = (() => {
 			dt = Math.min(0.1, dt || 0.016);
 			if (cur) {
 				// (it stops if the Event starts, either creature is wanted for something else or talked to)
-				if (me.active || cur.A.busy || cur.B.busy || talkedTo(cur.A) || talkedTo(cur.B)) return finish();
+				st.ent && st.ent.sync();
+				if (me.active || cur.A.busy || cur.B.busy || talkedTo(cur.A) || talkedTo(cur.B) || [cur.A, cur.B].some((en) => en.vigFree && !en.vigFree())) return finish();
 				return tick(dt);
 			}
 			if (me.active || "playing" !== jt.top) return void (nextAt = Math.max(nextAt, tt + 4));
@@ -14619,8 +15102,9 @@ const JGP = (() => {
 					[slug, head, mantle, pore, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
 					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray(), W = 5.45;
 					let talking = 0, look = 0, kT = 0, kD = 0, kP = 0;
-					// one Talk, and no Blossom: it is not one of the town's creatures (from anywhere round it, inside)
-					z.add({ id: "slug", x: wx, z: wz, r: 3.2, solidR: 0.6, top: 0.8, label: () => "Talk", run: () => ((talking = 1), qt.open("SLUG", "#9a7a5a", "Shhh... You found the secret room. Mind the pebbles, and mind me.")) });
+					// one Talk, and no Blossom: it is not one of the town's creatures (from anywhere round it, inside). The
+					// script's lines: its Talk, and what it says during the Garden Event (it never leaves the church)
+					z.add({ id: "slug", x: wx, z: wz, r: 3.2, solidR: 0.6, top: 0.8, label: () => "Talk", run: () => ((talking = 1), qt.open("SLUG", "#9a7a5a", me.active ? "Hello Kate" : "I am the one reborn.")) });
 					JGP.slug = { body: slug, head, mantle, stalks: stalks.map(([st]) => st), mode: () => (kT > 0.5 ? "talk" : kD > 0.5 ? "dance" : kP > 0.5 ? "plant" : "idle") };
 					L.push((tt, dt) => {
 						dt = Math.min(dt || 0.016, 0.1);
@@ -15417,12 +15901,13 @@ const JGP = (() => {
 				};
 				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.parkRoam, 3, 5);
 				FLOOR_ROAMERS.forEach((id) => roam(id, JGP.floorRoam, 3, 4));
-				// MAMA GORBO and GOOWARD wander the park, and every minute or two they find each other: each
-				// walks to a meeting spot between them (clear ground both can walk straight to), they turn
-				// face to face and show hearts, and after a few seconds go back to wandering. Anything that
-				// takes either of them away (talking, a vignette, the Garden Event) calls it off till later.
+				// MAMA GORBO and GOOWARD wander the park, and every half minute or so they find each other: each
+				// walks to a meeting spot between them (clear ground both can walk straight to), they turn face
+				// to face and lob colourful goo balls back and forth, a heart over each as a ball lands, then go
+				// back to wandering. Anything that takes either of them away (talking, a vignette, the Garden
+				// Event) calls it off till later.
 				{
-					let next = 60 + 60 * Math.random(),
+					let next = 20 + 20 * Math.random(),
 						st = 0, // 0: apart, 1: on the way, 2: together
 						until = 0;
 					let tryAt = 0;
@@ -15473,10 +15958,21 @@ const JGP = (() => {
 							if (at(A) && at(B)) (st = 2), (until = t2 + 1), (A.hearts = B.hearts = 0);
 							return;
 						}
-						// together: a heart each, then another, then back to wandering
+						// together: four goo balls each way, turn about (each thrown from the thrower's middle in its own
+						// colours, splatting at the other's feet), a heart over the catcher as each lands, then off again
 						if (t2 > until) {
-							if (A.hearts < 2) return void ([A, B].forEach((h) => (h.hearts++, Ut.above(h, "♥", "#ff5fb0"))), (until = t2 + 1.8));
-							off(t2, 60 + 60 * Math.random());
+							const k = A.hearts;
+							if (k < 8) {
+								const th = (k >> 1) % 2 ? B : A,
+									ca = th === A ? B : A,
+									p0 = th.group.position,
+									p1 = ca.group.position;
+								return void (k % 2
+									? (Ut.above(ca, "♥", "#ff5fb0"), (until = t2 + 0.6))
+									: (Nt.gooArc(new THREE.Vector3(p0.x, p0.y + 0.55 * (th.height || 2), p0.z), new THREE.Vector3(p1.x, p1.y + 0.45 * (ca.height || 2), p1.z), 3, th.def.goo || ["#36d0e8", "#e8409e", "#9a52e0", "#a8e830"]), G.near(p0.x, p0.z, 14, "blorp"), (until = t2 + 0.9)),
+									(A.hearts = k + 1));
+							}
+							off(t2, 20 + 20 * Math.random());
 						}
 					});
 				}
@@ -16099,6 +16595,7 @@ const JGP = (() => {
 		plantTick,
 		plantShow,
 		noPlant,
+		vigs: VIGS,
 		plantMove,
 		danceMove,
 		buildLibrary,
@@ -16314,8 +16811,9 @@ if (
 								z: JGP.shopAt()[1],
 								r: 2.8,
 								solidR: 0.8,
-								label: () => shopText.label,
-								run: () => ne.open(),
+								// (shut while ZOLLOD is out at the Garden Event)
+								label: () => (me.active ? null : shopText.label),
+								run: () => me.active || ne.open(),
 							}),
 							ARTS.build();
 					})(),
@@ -16384,12 +16882,21 @@ if (
 									};
 								let wT = null,
 									wAt = 3 + 4 * Math.random(),
-									wFace = 0;
+									wFace = 0,
+									// (given a Blossom: down on all fours for a lap of the Library floor, see st.romp)
+									RUN = null;
+								const RX = 4.4,
+									RZ = 1.0,
+									RC = -0.78,
+									rAt = (a) => new c(RX * Math.cos(a), 0, RC + RZ * Math.sin(a));
+								e.rotation.order = "YXZ";
 								// (`face`: once there he turns to the player, as for his Ancient Artifacts speech)
 								(st.join = (o, face) => {
 									const a = t.worldToLocal(new c(o.x, 0, o.z)).x < 0 ? -1 : 1,
 										// (browsing the shelves, he first goes back to his place)
 										back = e.parent === t && e.position.distanceTo(f) > 0.3 ? [t.localToWorld(f.clone())] : [];
+									// (called away mid-lap, as by the Event, he gets up at once and skips his apology)
+									RUN && ((e.rotation.x = 0), (RUN = null));
 									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: back.concat(v(a, !1)), face });
 								}),
 									(st.leave = () => {
@@ -16399,6 +16906,39 @@ if (
 										const a = t.worldToLocal(e.position.clone()).x < 0 ? -1 : 1;
 										H = { target: new c(o.x, 0, o.z), back: !0, via: v(a, !0) };
 									}),
+									// SPARKAKUS given a Blossom: he drops to all fours, runs a lap round the Library floor (an
+									// ellipse in front of the shelves, clear of every bookcase), comes back to his place, gets up
+									// on two feet again and then `done` (his apology). Only from his place in the Library.
+									(st.romp = (done) => {
+										if (H || RUN || e.parent !== t) return done && done();
+										(wT = null), (RUN = { k: 0, t: 0, lean: 0, done });
+									}),
+									(st.romping = () => !!RUN),
+									// his stand-in for the vignettes (they work in world space, he lives in the Library's frame): a
+									// marker kept at his world position and heading, whose wrapper is one round his model, so their
+									// gestures and turns move him. He takes part only standing still, not called away or talked to,
+									// and stops browsing while it plays.
+									(st.ent = (() => {
+										const mk = new THREE.Object3D(),
+											vw = new THREE.Group();
+										e.remove(o), vw.add(o), e.add(vw), (mk.userData.vgW = vw);
+										return {
+											id: "keeper",
+											def: { name: i.name, stationary: !0 },
+											group: mk,
+											height: 3.1,
+											vig: !1,
+											get busy() {
+												return !!(H || RUN || wT || (st.talking && qt.isOpen));
+											},
+											get home() {
+												return mk.position;
+											},
+											sync() {
+												e.getWorldPosition(mk.position), (mk.rotation.y = (e.parent === t ? l : 0) + e.rotation.y);
+											},
+										};
+									})()),
 									(st.away = () => !!H),
 									(st.pos = () => e.position),
 									(st.group = e),
@@ -16441,7 +16981,29 @@ if (
 										}
 										(w = 0), e.getWorldPosition(h), (p.x = h.x), (p.z = h.z);
 									}
-									if (e.parent === t && !me.active && !(st.talking && qt.isOpen)) {
+									if (RUN) {
+										const q = e.position,
+											go = (to, sp) => {
+												const dx = to.x - q.x,
+													dz = to.z - q.z,
+													dd = Math.hypot(dx, dz);
+												if (dd < 0.05) return !0;
+												const k = Math.min(dd, sp * c);
+												return (q.x += (dx / dd) * k), (q.z += (dz / dd) * k), e.rotation.y += m(e.rotation.y, Math.atan2(dx, dz)) * Math.min(1, 10 * c), (r.moving = !0), !1;
+											};
+										RUN.t += c;
+										// down (0.6 s), to the lap's start, once round, back to his place, and up again (0.6 s)
+										0 === RUN.k
+											? ((RUN.lean = Math.min(1, RUN.t / 0.6)), RUN.t >= 0.6 && ((RUN.a = Math.atan2((q.z - RC) / RZ, q.x / RX)), (RUN.k = 1)))
+											: 1 === RUN.k
+												? go(rAt(RUN.a), 4.2) && ((RUN.k = 2), (RUN.swept = 0))
+												: 2 === RUN.k
+													? ((RUN.swept += (4.2 * c) / Math.max(0.5, Math.hypot(RX * Math.sin(RUN.a + RUN.swept), RZ * Math.cos(RUN.a + RUN.swept)))), go(rAt(RUN.a + RUN.swept), 9), RUN.swept >= 2 * Math.PI && (RUN.k = 3))
+													: 3 === RUN.k
+														? go(f, 4.2) && ((RUN.k = 4), (RUN.t = 0))
+														: ((RUN.lean = Math.max(0, 1 - RUN.t / 0.6)), (e.rotation.y += m(e.rotation.y, 0) * Math.min(1, 6 * c)), RUN.t >= 0.6 && ((e.rotation.x = 0), (r.moving = !1), (RUN = (RUN.done && RUN.done(), null))));
+										RUN && ((e.rotation.x = 1.15 * Wt(RUN.lean)), 0 < RUN.k && RUN.k < 4 && (r.moving = !0));
+									} else if (e.parent === t && !me.active && !(st.talking && qt.isOpen) && !st.ent.vig) {
 										const q = e.position;
 										if (wT) {
 											const dx = wT.x - q.x,
@@ -16459,6 +17021,8 @@ if (
 									}
 									// (standing on whatever is under him: the rug, a walk or the lawn)
 									e.getWorldPosition(h), (p.x = h.x), (p.z = h.z), (e.position.y = Math.max(0, JGP.groundAt(h.x, h.z, 0.3)));
+									// (a gallop's bounce while he runs on all fours)
+									RUN && RUN.k > 0 && RUN.k < 4 && (e.position.y += 0.14 * Math.abs(Math.sin(9 * s)));
 									const T = At.position.x - h.x,
 										R = At.position.z - h.z,
 										v = Math.hypot(T, R),
@@ -16488,9 +17052,13 @@ if (
 								r: 3.4,
 								solidR: 1.9,
 								waypointR: 3.8,
-								label: () => (st.away() ? null : "Talk to " + i.name),
+								label: () => (st.away() || st.romping() ? null : "Talk to " + i.name),
 								run: () => {
-									st.away() || LIB.talk();
+									st.away() || st.romping() || LIB.talk();
+								},
+								// (a Blossom for him: off he runs on all fours, then says sorry)
+								gift: () => {
+									st.away() || st.romping() || Kt.blossoms < 1 || (Kt.blossoms--, G.heart(), st.romp(() => LIB.say(i.gift)));
 								},
 							});
 					})(-24.75, -24.75),
@@ -16606,9 +17174,9 @@ if (
 								solidR: 0.3,
 								waypointR: 2.2,
 								label: () => (me.active ? null : s.phoneLabel),
-								// (until MUSHROOM has had a Blossom, it rings and no one answers)
+								// (until MUSHROOM has had a Blossom the call can't get through the Portal)
 								run: () => {
-									me.active || (Kt.phone ? ((h = 0), G.textTick && G.textTick(), ue.call()) : qt.open("PHONE", "#d8352e", s.busy));
+									me.active || (Kt.phone ? ((h = 0), G.textTick && G.textTick(), ue.call()) : qt.open("PHONE", "#d8352e", s.blocked));
 								},
 							});
 					})(-7.2, 23.9),

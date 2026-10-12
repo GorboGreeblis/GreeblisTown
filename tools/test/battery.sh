@@ -26,5 +26,7 @@ echo "== the phone lock"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_phone.
 echo "== the avatar's walk (test modes)"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_avatar.js 2>&1 | grep -v "^$" | tail -2
 echo "== VR head guard"; VW=320 VH=240 NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_headguard.js 2>&1 | grep -v "^$" | tail -10
 echo "== Sparkakus browsing"; VW=320 VH=240 NOSHOT=1 timeout 900 node shot2.js $U x.png ./t_library.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-300
+echo "== the script (Sparkakus, shelves, posters)"; VW=320 VH=240 NOSHOT=1 timeout 900 node shot2.js $U x.png ./t_script.js 2>&1 | grep -v "^$" | tail -12 | cut -c1-300
+echo "== every pair's vignette"; NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_vigall.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-400
 echo "== z-fighting (visible clashes; check any with t_zcheck.js)"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_zfight.js 2>&1 | grep -v "^$" | sed -n "1p;\$p"
 echo "== DONE"
