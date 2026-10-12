@@ -350,8 +350,6 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Library:** open ground with no walls, roof or raised floor (`LIB_LAYOUT`):
   - eight freestanding double-sided bookcases (2.2 m long, 2.1 m tall), two rows behind Sparkakus and one down
     each side, with open aisles;
-  - one book stands face-out on the front-left case's eye-level shelf, facing the front: OVERCOMING SHYNESS, a
-    blue hardback with a gold-and-cream cover (`LIB_LAYOUT.feature`); the books beside it stop short to leave its gap;
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
     `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
     Artifacts);

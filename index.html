@@ -10388,9 +10388,6 @@ const JGP = (() => {
 			// the rug over the reading ground (its fringe reaches 0.2 m past each end) and the height of its top
 			rug: [-5.5, -6.8, 5.5, 1.0],
 			rugTop: 0.03,
-			// one book stands face-out, its cover showing, OVERCOMING SHYNESS: [case, side (1 = its +z face), shelf,
-			// x along the case]: the front-left case, on the face towards the front, on the shelf at eye level
-			feature: [0, 1, 2, 0.46],
 		};
 	})();
 	function buildLibrary(o) {
@@ -10420,7 +10417,7 @@ const JGP = (() => {
 			}
 		};
 		// one freestanding double-sided bookcase, 2.2 m long, built in its own frame and placed
-		const bookcase = ([cx, cz, al], ci) => {
+		const bookcase = ([cx, cz, al]) => {
 			const list = [],
 				Q = {
 					box: (color, px, py, pz, w, h, d, rx = 0, ry = 0, rz = 0) => list.push([color, px, py, pz, w, h, d, rx, ry, rz]),
@@ -10429,34 +10426,12 @@ const JGP = (() => {
 			[-1.07, 1.07].forEach((px) => Q.box(wood, px, HH / 2, 0, 0.06, HH, 0.56));
 			Q.box(wood, 0, HH + 0.03, 0, 2.24, 0.06, 0.6), Q.box(dark, 0, 0.05, 0, 2.06, 0.1, 0.5), Q.box(dark, 0, HH / 2 + 0.05, 0, 2.06, HH - 0.1, 0.03);
 			SH.forEach((y) => Q.box(wood, 0, y - 0.02, 0, 2.08, 0.04, 0.52));
-			const [fk, fs, fsh, fx] = LIB_LAYOUT.feature, ft = fk === ci;
-			[-1, 1].forEach((sd) =>
-				SH.forEach((y, j) =>
-					// (the featured book's shelf leaves it a gap: the books to its left stop short, as the last of a
-					// row can reach 7 cm past where it stops)
-					ft && sd === fs && j === fsh ? (row(Q, -1.02, fx - 0.24, y, 0.13 * sd, 0.42, sd < 0), row(Q, fx + 0.15, 1.02, y, 0.13 * sd, 0.42, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0),
-				),
-			);
+			[-1, 1].forEach((sd) => SH.forEach((y) => row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0)));
 			const ry = al ? Math.PI / 2 : 0,
 				cs = Math.cos(ry),
 				sn = Math.sin(ry),
 				at = (px, pz) => [cx + px * cs + pz * sn, cz - px * sn + pz * cs];
 			list.forEach(([color, px, py, pz, w, h, d, rx, ry2, rz]) => G.box(color, at(px, pz)[0], py, at(px, pz)[1], w, h, d, rx, ry + ry2, rz));
-			if (!ft) return;
-			// OVERCOMING SHYNESS: a blue cloth hardback standing face-out in its gap, leaning back a little, its
-			// cover printed in gold and cream
-			const [bx, bz] = at(fx, 0.13 * fs), bk = new THREE.Group();
-			bk.position.set(bx, SH[fsh] + 0.152, bz), bk.rotation.set(-0.08 * fs, ry + (fs < 0 ? Math.PI : 0), 0, "YXZ"), o.add(bk);
-			R(T.box(0.22, 0.3, 0.035), x.clay("#24466e"), bk);
-			const cover = b(256, 352, (c) => {
-				(c.fillStyle = "#24466e"), c.fillRect(0, 0, 256, 352);
-				(c.strokeStyle = "#d8b860"), (c.lineWidth = 5), c.strokeRect(14, 14, 228, 324), (c.lineWidth = 2), c.strokeRect(24, 24, 208, 304);
-				(c.fillStyle = "#f2e8cc"), (c.textAlign = "center"), (c.font = "bold 34px Georgia, serif"), c.fillText("OVERCOMING", 128, 136), (c.font = "bold 46px Georgia, serif"), c.fillText("SHYNESS", 128, 190);
-				// (a little sprout under the title)
-				(c.strokeStyle = "#d8b860"), (c.lineWidth = 4), c.beginPath(), c.moveTo(128, 290), c.lineTo(128, 236), c.stroke();
-				(c.fillStyle = "#d8b860"), c.beginPath(), c.ellipse(114, 246, 14, 7, -0.5, 0, l), c.ellipse(142, 252, 14, 7, 0.5, 0, l), c.fill();
-			}, { smooth: !0 });
-			R(new THREE.PlaneGeometry(0.2, 0.28), new THREE.MeshLambertMaterial({ map: cover }), bk, [0, 0, 0.0215]);
 		};
 		LIB_LAYOUT.cases.forEach(bookcase);
 		// THE RUG over the reading ground, under the bookcases and the table, woven from the Buns' clothes in
