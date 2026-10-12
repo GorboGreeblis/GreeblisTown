@@ -202,8 +202,6 @@ const t = {
 		done: "Well done, Human!",
 		// (given a Blossom he drops to all fours and runs a lap round the Library first)
 		gift: "…sorry I don’t know what got into me.",
-		// (every other Talk outside the Event and his finale: a word about himself, between his quest lines)
-		flavor: "Twelve generations of librarians in my family.|Not one of us ever dug in the dirt.",
 		event: "Digging in the dirt like an animal? …don’t tell the others at the genealogical society.",
 	},
 	// GEMTOE's trade: the Summoning Stone for the Ancient Gem SPARKAKUS gives you (she spins for joy as you take it)
@@ -4871,8 +4869,6 @@ const le = (() => {
 			// (from the first finale page until the Gem speech is done he is busy with it: a second Talk in the
 			// assembly gap would start the whole finale, assembly and reward over again)
 			if (Bulb.hold) return;
-			// (his quest line first, then his flavor line, in turn; never in place of the finale)
-			if ((Kt.rewards.artifacts || Kt.artifacts < 3) && (Kt.talkState.keeper = (Kt.talkState.keeper || 0) + 1) % 2 === 0) return say(i.flavor);
 			if (Kt.rewards.artifacts) return say(i.done);
 			if (Kt.artifacts < 3) return say(Kt.artifacts ? i.progress(Kt.artifacts) : i.ask);
 			// (he speaks where he stands in his open Library, never walking out: the bulb comes on over his head at once)

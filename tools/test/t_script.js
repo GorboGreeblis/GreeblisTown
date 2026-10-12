@@ -31,8 +31,8 @@ module.exports = async (p, out) => {
   const stump = () => p.evaluate(() => { const s = z.list.find((q) => q.id === 'stump'); At.position.set(s.x, 0, s.z + 3.2); xe.scan(); return xe.current === s ? xe.actions.map((a) => a.label).join(' / ') : 'not the target'; });
   await p.evaluate(() => { Kt.artifacts = 0; Kt.blossoms = 0; });
   log('options, no Blossom:', await stump());
-  await p.evaluate(() => { Kt.talkState.keeper = 0; LIB.talk(); }); await W(400); log('0 Artifacts:', JSON.stringify(await said())); await next();
-  await p.evaluate(() => { Kt.artifacts = 2; Kt.talkState.keeper = 0; LIB.talk(); }); await W(400); log('2 Artifacts:', JSON.stringify(await said())); await next();
+  await p.evaluate(() => { LIB.talk(); }); await W(400); log('0 Artifacts:', JSON.stringify(await said())); await next();
+  await p.evaluate(() => { Kt.artifacts = 2; LIB.talk(); }); await W(400); log('2 Artifacts:', JSON.stringify(await said())); await next();
   await p.evaluate(() => { Kt.artifacts = 3; LIB.talk(); }); await W(400);
   const fin = [];
   for (let i = 0; i < 6 && (await p.evaluate(() => qt.isOpen)); i++) fin.push(await said()), await next(), await W(300);
@@ -59,7 +59,7 @@ module.exports = async (p, out) => {
   await waitGame(2);
   log('after:', await p.evaluate(() => JSON.stringify({ gem: Kt.gem, artifacts: Kt.rewards.artifacts, gemLeftInScene: !!C.children.find((c) => c.children.some((q) => q.userData && q.userData.gemPiece !== undefined)) })));
   await waitGame(15);
-  await p.evaluate(() => { Kt.talkState.keeper = 0; LIB.talk(); }); await W(400); log('talk after the Gem:', JSON.stringify(await said())); await next();
+  await p.evaluate(() => { LIB.talk(); }); await W(400); log('talk after the Gem:', JSON.stringify(await said())); await next();
   // ---- SPARKAKUS given a Blossom
   await waitGame(8);
   await p.evaluate(() => (Kt.blossoms = 1));
