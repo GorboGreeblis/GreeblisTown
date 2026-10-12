@@ -846,7 +846,8 @@ const F = {
 				now = performance.now() / 1e3;
 			let hit = !1;
 			for (const B of this.buildings) {
-				const worker = ent && ent.home && this.inHull(B, ent.home.x, ent.home.z),
+				// (one on its way in or out of a building, as a creature calling on the church's slug, meets its walls too)
+				const worker = ent && ((ent.home && this.inHull(B, ent.home.x, ent.home.z)) || ent.inside === B.name),
 					hl = worker && this.local(B, ent.home.x, ent.home.z);
 				for (const R of pl || worker ? B.parts : [B.hull]) {
 					// (a worker whose place is on a part, as the sheriff on his desk, is not pushed off it)
@@ -2585,9 +2586,12 @@ const It = {
 	lo = {
 		post: function (t, e, o, a) {
 			const n = t.group.position,
-				via = t.def && t.def.via;
-			// a worker coming back to its place inside a kiosk or behind a bar comes in by its way in
-			if (via && via.length) {
+				via = t.def && t.def.via,
+				// (its pace: a visitor walks home slowly, see the visits)
+				wk = t.walkK || 1;
+			// a worker coming back to its place inside a kiosk or behind a bar comes in by its way in (on a visit
+			// the visit walks it out and back in its own way)
+			if (via && via.length && !t.visiting) {
 				const dh = Math.hypot(n.x - t.home.x, n.z - t.home.z);
 				// (picked up once per return: resetting it while still far would pull it back to the first point;
 				// and not when it is already in there with its home, as FORTIZMO walking along behind her bar)
@@ -2598,7 +2602,7 @@ const It = {
 						dx = w[0] - n.x,
 						dz = w[1] - n.z,
 						d = Math.hypot(dx, dz) || 1,
-						st = Math.min(d, 1.4 * o);
+						st = Math.min(d, 1.4 * wk * o);
 					return { x: n.x + (dx / d) * st, z: n.z + (dz / d) * st, y: 0, face: Math.atan2(dx, dz) };
 				}
 				t.vbk = -1;
@@ -2609,7 +2613,7 @@ const It = {
 				l = Math.hypot(s, i),
 				c = a.y || 0;
 			if (l > 0.05) {
-				const t = Math.min(l, 1.4 * o);
+				const t = Math.min(l, 1.4 * wk * o);
 				return {
 					x: n.x + (s / l) * t,
 					z: n.z + (i / l) * t,
@@ -3723,21 +3727,18 @@ const ee = (function () {
 		return y;
 	})(),
 	oe = {
+		// THE GARDEN EVENT menu, at the Summoning Stone (owner's layout): the three quests with their boxes, and
+		// whether to start. It starts only with the Summoning Stone quest complete (owner's rule): without it Yes
+		// only says the runes stay dark.
 		open() {
 			const t = (t) => (t ? "☑" : "☐"),
 				e = Kt.rewards;
 			// (the runes first light up now, under the hand of a player holding the Summoning Stone)
-			JGP.garden.stoneAwake || (JGP.garden.stoneAwake = performance.now());
+			e.stone && !JGP.garden.stoneAwake && (JGP.garden.stoneAwake = performance.now());
 			_t.open({
 				kind: "campfire",
-				title: "THE SUMMONING STONE",
-				log:
-					"Seeds " +
-					t(e.seeds) +
-					"\nAncient Artifacts " +
-					(e.artifacts ? "☑" : Kt.artifacts + "/3") +
-					(e.seeds ? "" : "\nWithout Seeds nothing will grow.") +
-					"\nThe runes glow under your hand.\nStart the Garden Event?",
+				title: "GARDEN EVENT",
+				log: "Summoning Stone " + t(e.stone) + "\nSeeds " + t(e.seeds) + "\nSnacks " + t(e.snacks) + "\nStart gardening event?",
 				items: [
 					{ label: "Yes", onClick: () => this.yes() },
 					{ label: "No", onClick: () => _t.close() },
@@ -3746,7 +3747,8 @@ const ee = (function () {
 			});
 		},
 		yes() {
-			_t.close(), me.tryStart();
+			// (never without the Summoning Stone)
+			_t.close(), Kt.rewards.stone ? me.tryStart() : qt.open("SUMMONING STONE", "#7a6a5a", "The runes stay dark.|Only the Summoning Stone can wake them and start the gardening event.");
 		},
 	},
 	Eo = {
@@ -4289,8 +4291,6 @@ const le = (() => {
 					"speaking" === r
 						? ((n.moving = !1), a && i.set(a.x, i.y, a.z), co(n.group, Math.atan2(l.x - i.x, l.z - i.z), e, 8))
 						: "leaving" === r &&
-							// (she stops on her way for a vignette with someone, see the vignettes' lineUp)
-							!n.vig &&
 							(p.lengthSq() < 0.5 && p.set(-i.x, 0, -i.z).normalize(),
 							p.lerp(it(i, null, !0), Math.min(1, 2.5 * e)).normalize(),
 							(i.x += p.x * o.exitSpeed * e),
@@ -4729,7 +4729,17 @@ const le = (() => {
 			// the bottle: a white body with a red label, a shoulder, and an orange nozzle cap (its tip 0.62 above its middle)
 			const white = x.clay("#f4f4ee", { shininess: 60 });
 			R(T.cyl(0.16, 0.18, 0.5, 16), white, bod), R(T.cyl(0.07, 0.16, 0.12, 16), white, bod, [0, 0.31, 0]);
-			R(T.cyl(0.19, 0.19, 0.22, 16), x.clay("#d8352e"), bod, [0, -0.02, 0]);
+			// (its label says GLUE, white on red, on both sides of the bottle)
+			const label =
+				V.glueLbl ||
+				(V.glueLbl = new THREE.MeshLambertMaterial({
+					map: b(256, 64, (c) => {
+						(c.fillStyle = "#d8352e"), c.fillRect(0, 0, 256, 64), (c.fillStyle = "#fbfbf6"), (c.font = "bold 40px Arial, sans-serif"), (c.textAlign = "center"), (c.textBaseline = "middle");
+						[64, 192].forEach((px) => c.fillText("GLUE", px, 34));
+					}),
+				})),
+				red = x.clay("#d8352e");
+			R(new THREE.CylinderGeometry(0.19, 0.19, 0.22, 24), [label, red, red], bod, [0, -0.02, 0]);
 			R(T.cyl(0.075, 0.075, 0.06, 12), x.clay("#ff8a1a"), bod, [0, 0.4, 0]), R(T.cone(0.07, 0.2, 12), x.clay("#ff8a1a"), bod, [0, 0.52, 0]);
 			bottle.position.y = 1.25;
 			parts.forEach((p, k) => g.add(p));
@@ -5186,6 +5196,14 @@ const xe = (() => {
 						break;
 					}
 			}
+			// (a station with a body of its own, as the church's slug, is hit anywhere on that body)
+			for (const t of z.list)
+				if (t.pickObj && t.label() && Math.hypot(t.x - o.x, t.z - o.z) < e.pickRange + 3)
+					for (const h of j.intersectObjects(t.pickObj, !0))
+						if (h.object.isMesh && h.object.visible) {
+							h.distance < r && ((r = h.distance), (n = t));
+							break;
+						}
 			if (me.active && st.away() && st.group)
 				for (const t of j.intersectObject(st.group, !0))
 					if (t.object.isMesh && t.object.visible) {
@@ -8345,7 +8363,9 @@ const JGP = (() => {
 			irisM = x.clay("#4a3c7a", { shininess: 70 }),
 			pupM = x.clay("#141018", { shininess: 90 }),
 			opens = [],
-			shut = [];
+			shut = [],
+			// (the big closed lids: as her eyes open they squash flat to nothing, so none of them shows round the open eyes)
+			lidMs = [];
 		[-1, 1].forEach((sx) => {
 			const e = new THREE.Group();
 			e.position.set(0.28 * sx, 0.05, 0.65), (e.rotation.y = 0.2 * sx), puff.add(e);
@@ -8357,7 +8377,7 @@ const JGP = (() => {
 						q = 1 - (X / (ER * ES[0])) ** 2 - (Y / (ER * ES[1])) ** 2;
 					return [X, Y, ER * ES[2] * Math.sqrt(Math.max(0, q)) + out];
 				};
-			R(T.sphere(ER, 20, 14), lidM, e, [0, 0, 0], null, ES);
+			lidMs.push(R(T.sphere(ER, 20, 14), lidM, e, [0, 0, 0], null, ES));
 			const lash = [],
 				fold = [];
 			for (let k = 0; k <= 10; k++) {
@@ -8526,9 +8546,10 @@ const JGP = (() => {
 				eyeK += ((wake ? 1 : 0) - eyeK) * Math.min(1, (wake ? 5 : 7) * (dt || 0.016));
 				opens.forEach((op) => ((op.visible = eyeK > 0.02), op.scale.set(1, Math.max(0.02, eyeK), 1)));
 				shut.forEach((m) => (m.visible = eyeK < 0.5));
+				lidMs.forEach((m) => ((m.visible = eyeK < 0.98), (m.scale.y = 0.78 * Math.max(0.02, 1 - eyeK))));
 				// lying (0 standing to 1 on her side): only resting at her own spot
 				const rest =
-					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.moving && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
+					!!ent && !!ent.home && !ent.busy && !ent.goHome && !ent.gcNavHome && !ent.vig && !ent.visiting && !ent.moving && Math.hypot(ent.group.position.x - ent.home.x, ent.group.position.z - ent.home.z) < 0.6;
 				// (settling slowly, getting up quickly when she is wanted: the Event waits till she is up, see ent.lieK)
 				lie += ((rest ? 1 : 0) - lie) * Math.min(1, (rest ? 1.3 : 4) * (dt || 0.016));
 				// (she rolls over while still floating, then settles down onto her side, so her tentacles are
@@ -10578,14 +10599,17 @@ const JGP = (() => {
 			rug: [-5.5, -6.8, 5.5, 1.0],
 			rugTop: 0.03,
 			// the things that stand face-out on a shelf, one to a shelf, in a gap in its row: [case, side (1 = its +z
-			// face), shelf, x along the case, what]: four books, each with its own cover, and a Wish Blossom from
-			// Greeblis Park in a little pot (the side cases' +z face looks into the room on the left, -z on the right)
+			// face), shelf, x along the case, what]: four books, each with its own cover, a Wish Blossom from
+			// Greeblis Park in a little pot, an Electric Blossom from Greeblis City and an Acorn from Greeblis Woods
+			// (the side cases' +z face looks into the room on the left, -z on the right)
 			features: [
 				[0, 1, 2, 0.46, "patchoolee"],
 				[1, 1, 1, -0.4, "appterix"],
 				[4, 1, 2, 0.3, "orson"],
 				[6, -1, 1, -0.5, "staplers"],
 				[7, -1, 2, 0.35, "wish"],
+				[5, 1, 1, 0.4, "electric"],
+				[2, 1, 2, -0.3, "acorn"],
 			],
 		};
 	})();
@@ -10631,7 +10655,7 @@ const JGP = (() => {
 					// (a featured thing's shelf leaves it a gap: the books to its left stop short, as the last of a
 					// row can reach 7 cm past where it stops)
 					const f = mine.find((f) => f[1] === sd && f[2] === j),
-						hw = f && ("wish" === f[4] ? 0.16 : 0.11);
+						hw = f && ({ wish: 0.16, electric: 0.14, acorn: 0.12 }[f[4]] || 0.11);
 					f ? (row(Q, -1.02, f[3] - hw - 0.13, y, 0.13 * sd, 0.42, sd < 0), row(Q, f[3] + hw + 0.04, 1.02, y, 0.13 * sd, 0.42, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0);
 				}),
 			);
@@ -10643,7 +10667,11 @@ const JGP = (() => {
 			mine.forEach(([, fs, fsh, fx, what]) => {
 				const [bx, bz] = at(fx, 0.13 * fs),
 					face = ry + (fs < 0 ? Math.PI : 0);
+				// (where each is, in the Library's frame, and the way it faces: for the tests' renders)
+				(LIB_LAYOUT.shown = LIB_LAYOUT.shown || []).push({ what, obj: o, at: [bx, SH[fsh] + 0.15, bz], face });
 				if ("wish" === what) return wishBlossom(bx, SH[fsh], bz, face);
+				if ("electric" === what) return electricBlossom(bx, SH[fsh], bz, face);
+				if ("acorn" === what) return acorn(bx, SH[fsh], bz, face);
 				// a cloth hardback standing face-out in its gap, leaning back a little
 				const bk = new THREE.Group(),
 					C = COVERS[what];
@@ -10668,6 +10696,48 @@ const JGP = (() => {
 			const head = R(T.ico(0.34, 0), new THREE.MeshLambertMaterial({ color: "#35d0c5", emissive: "#0e5a55" }), f, [0, 1.05, 0]),
 				halo = R(T.torus(0.5, 0.035, 8, 20), x.basic("#9df3ec", { transparent: !0, opacity: 0.8 }), f, [0, 1.05, 0], [Math.PI / 2, 0, 0]);
 			L.push((tt) => ((head.rotation.y = 1.4 * tt), (halo.position.y = 1.05 + 0.08 * Math.sin(2 * tt))));
+		};
+		// AN ELECTRIC BLOSSOM from Greeblis City, as its pickups were, at 30%: a dark base and a silver stem with a
+		// leaf, six yellow lightning petals round a pale cyan core with a yellow ring (turning slowly, as they did),
+		// and a yellow halo that rises and falls (33 cm tall in all)
+		const electricBlossom = (bx, by, bz, face) => {
+			const g = new THREE.Group(),
+				f = new THREE.Group(),
+				hd = new THREE.Group();
+			g.position.set(bx, by, bz), (g.rotation.y = face), o.add(g), f.scale.setScalar(0.3), g.add(f);
+			R(
+				v([
+					{ geo: T.cyl(0.1, 0.12, 0.05, 10), matrix: S(0, 0.025, 0), color: "#3a3e4c" },
+					{ geo: T.cyl(0.022, 0.028, 0.7, 6), matrix: S(0, 0.37, 0), color: "#b8c0cc" },
+					{ geo: T.box(0.16, 0.02, 0.06), matrix: S(0.07, 0.32, 0, 0, 0, 0.5), color: "#b8c0cc" },
+				]),
+				new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 90, specular: 13421772 }),
+				f,
+			);
+			(hd.position.y = 0.75), f.add(hd);
+			const pe = [];
+			for (let k = 0; k < 6; k++) {
+				const a = (k / 6) * l;
+				pe.push({ geo: T.ico(0.13, 0), matrix: S(0.15 * Math.cos(a), 0, 0.15 * Math.sin(a), 0, -a, 0, 1.25, 0.22, 0.5), color: "#ffe23a" });
+			}
+			pe.push({ geo: T.sphere(0.065, 10, 8), matrix: S(0, 0.03, 0), color: "#bff6ff" }, { geo: T.torus(0.07, 0.012, 4, 16), matrix: S(0, 0.04, 0, Math.PI / 2), color: "#ffe23a" });
+			R(v(pe), new THREE.MeshBasicMaterial({ vertexColors: !0 }), hd);
+			const halo = R(T.torus(0.3, 0.015, 4, 20), x.basic("#ffe23a", { transparent: !0, opacity: 0.7 }), f, [0, 1.05, 0], [Math.PI / 2, 0, 0]);
+			L.push((tt) => ((hd.rotation.y = 1.4 * tt + 1), (halo.position.y = 1.05 + 0.06 * Math.sin(2 * tt + 1))));
+		};
+		// AN ACORN from Greeblis Woods, as its pickups were, at 1.1x: a tan nut under a dark brown cap with a little
+		// stem, tipped a little to the side, with its glint (it stands on the shelf, 32 cm tall)
+		const acorn = (bx, by, bz, face) => {
+			const g = new THREE.Group(),
+				r = new THREE.Group(),
+				nut = x.clay("#b8742e", { shininess: 40, specular: 6702114 }),
+				cap = x.clay("#6a4a26", { shininess: 40, specular: 6702114 });
+			g.position.set(bx, by, bz), (g.rotation.y = face), o.add(g);
+			r.position.set(0.03, 0.148, 0.01), (r.rotation.z = 0.35), r.scale.setScalar(1.1), g.add(r);
+			R(T.sphere(1, 12, 10), nut, r, [0, -0.02, 0], null, [0.09, 0.12, 0.09]);
+			R(new THREE.SphereGeometry(0.105, 12, 6, 0, l, 0, Math.PI / 2), cap, r, [0, 0.05, 0], null, [1, 0.7, 1]);
+			R(T.cyl(0.012, 0.016, 0.07, 5), cap, r, [0, 0.12, 0]);
+			R(T.sphere(0.022, 6, 5), x.basic("#fff4c8", { transparent: !0, opacity: 0.8 }), r, [0.05, 0.03, 0.06]);
 		};
 		// a cover: the cloth, a double frame in the ink, the title (each line shrunk to fit), a little emblem under
 		// it, and the author at the foot when there is one
@@ -11267,15 +11337,18 @@ const JGP = (() => {
 						(c.strokeStyle = "#2a3a1a"), (c.lineWidth = 2), c.beginPath(), c.moveTo(58, 100), c.lineTo(70, 100), c.stroke();
 					} else if ("goo" === kind) {
 						// GLOOPERNAUGHT: a big green goo creature, a slumped dome running with drips, little arms of goo,
-						// two wide-set eyes, bubbles rising off it, and its name under the picture
+						// two wide-set eyes, bubbles rising off it, and its name under the picture (the picture drawn a
+						// little smaller, so its drips stop clear of the name)
+						c.save(), c.translate(64, 72), c.scale(0.86, 0.86), c.translate(-64, -80);
 						(c.fillStyle = skin), c.beginPath(), c.moveTo(22, 118), c.bezierCurveTo(18, 70, 40, 42, 64, 42), c.bezierCurveTo(88, 42, 110, 70, 106, 118), c.closePath(), c.fill();
 						[[30, 118, 8], [46, 118, 12], [70, 118, 7], [90, 118, 11]].forEach(([px, py, d]) => (c.beginPath(), c.moveTo(px - 5, py - 2), c.quadraticCurveTo(px, py + d, px + 5, py - 2), c.fill(), c.beginPath(), c.arc(px, py + d, 3, 0, l), c.fill()));
 						[-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 38 * sd, 86), c.quadraticCurveTo(64 + 54 * sd, 80, 64 + 52 * sd, 64), c.lineTo(64 + 46 * sd, 66), c.quadraticCurveTo(64 + 46 * sd, 80, 64 + 36 * sd, 96), c.fill()));
 						(c.fillStyle = "rgba(255,255,255,.35)"), c.beginPath(), c.ellipse(48, 62, 9, 5, -0.6, 0, l), c.fill();
 						(c.fillStyle = "#f6f2e0"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 14 * sd, 76, 8, 0, l), c.fill()));
 						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 14 * sd + 2, 77, 4, 0, l), c.fill()));
-						(c.strokeStyle = skin), (c.lineWidth = 2), [[40, 36, 4], [86, 30, 3], [74, 22, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py + 6, r, 0, l), c.stroke()));
-						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 136);
+						(c.strokeStyle = skin), (c.lineWidth = 2), [[18, 60, 4], [112, 52, 3], [104, 40, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py, r, 0, l), c.stroke()));
+						c.restore();
+						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 137);
 					} else {
 						// the saucer: a glass dome on a grey disc with portholes, and its tractor beam
 						(c.fillStyle = "rgba(255,240,120,.55)"), c.beginPath(), c.moveTo(52, 92), c.lineTo(76, 92), c.lineTo(100, 128), c.lineTo(28, 128), c.fill();
@@ -11293,7 +11366,7 @@ const JGP = (() => {
 			[1.9, 2.8, "ufo", "", -0.06],
 			[1.5, 1.9, "alien", "#9ae8c8", 0.1],
 			[-1.45, 1.85, "goo", "#5ac83a", -0.05],
-		].forEach(([px, py, kind, skin, rz]) => R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]));
+		].forEach(([px, py, kind, skin, rz]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35] })));
 	}
 
 	// Garden Supplies: sage walls, terracotta roof, and plants everywhere: potted shrubs, flowers,
@@ -11474,9 +11547,10 @@ const JGP = (() => {
 			[0.75, 0.66, 0, 0.62, 0.3],
 			[1.62, 0.62, 1, 0.55, -0.4],
 		].forEach(([px, pz, kind, sc, rot], k) => {
-			const jar = R(cachedGeo("vjar", () => new THREE.CylinderGeometry(0.19, 0.17, 0.44, 20, 1, !0)), Object.assign(jarGlass, { side: THREE.DoubleSide }), o, [px, 1.34, pz]);
-			(jar.renderOrder = 3), (R(T.cyl(0.18, 0.165, 0.3, 20), jarWater, o, [px, 1.27, pz]).renderOrder = 2);
-			G.add(T.torus(0.19, 0.012, 6, 24), "#c8ccd0", G.m(px, 1.56, pz, Math.PI / 2, 0, 0));
+			// (glass and water stand a few mm clear of the counter's top, so no face of theirs lies in its plane)
+			const jar = R(cachedGeo("vjar", () => new THREE.CylinderGeometry(0.19, 0.17, 0.44, 20, 1, !0)), Object.assign(jarGlass, { side: THREE.DoubleSide }), o, [px, 1.344, pz]);
+			(jar.renderOrder = 3), (R(T.cyl(0.18, 0.165, 0.3, 20), jarWater, o, [px, 1.276, pz]).renderOrder = 2);
+			G.add(T.torus(0.19, 0.012, 6, 24), "#c8ccd0", G.m(px, 1.564, pz, Math.PI / 2, 0, 0));
 			voy(px, 1.32, pz, sc, kind, rot, 40 + k);
 		});
 		// a parchment card in the manuscript's unread script
@@ -13544,7 +13618,7 @@ const JGP = (() => {
 	// styles: 0 swap, 1 volley, 2 boomerang, 3 parade, 4 juggle, 5 orbit dance, 6 bounce, 7 bubble,
 	// 8 zip, 9 confetti, 10 serenade, 11 tag
 	(() => {
-		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY", MA: "MAMA GORBO", SP: "SPARKAKUS", NX: "NEXTESSA", BP: "BACKPACKA" },
+		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY", MA: "MAMA GORBO", SP: "SPARKAKUS" },
 			PAIRS = [
 			["HN", "MU", 7, "Sheriff, when may I return to my own era?", "When the consortium says so. Not before."],
 			["HN", "AN", 1, "May I record what you see in that window?", "It is NOT for jars. It is for REMEMBERING."],
@@ -13637,35 +13711,6 @@ const JGP = (() => {
 			["SP", "GL", 11, "Your symbols would make a fine index.", "An index is a symbol of symbols... don't you think?"],
 			["SP", "MG", 8, "Mont, return the VHS tapes you borrowed.", "Mont ate the VHS tapes. Mont is sorry."],
 			["SP", "MA", 1, "Mrs Gorbo, no burgers in the Library.", "Just a little one, dear? For your research."],
-			["NX", "HN", 3, "Pizza from your own era, Hennrick?", "Remarkable. Still warm after all those years."],
-			["NX", "MU", 9, "Delivery for the Sheriff! Extra cheese.", "Leave it on the desk. The Portal stays open."],
-			["NX", "AN", 7, "One slice, Anomalee? On the house!", "* Munch * ...the ORIGINATOR liked PIZZA."],
-			["NX", "KD", 5, "Pizza for the King of Jazz!", "Put it on my tab, baby."],
-			["NX", "GW", 6, "Goo topping? Coming right up!", "Gomp gomp! GOMP!"],
-			["NX", "ZL", 10, "Your basil's in every pie I make!", "Then my basil travels through time. Good."],
-			["NX", "SM", 2, "Delivery for... oh. She's asleep.", "Zzz..."],
-			["NX", "FZ", 5, "Pizza and juice? We should team up!", "Blossoms only, darling. Business is business."],
-			["NX", "ET", 4, "Etch my order number, quick! I'm on the clock.", "Order one. Etched forever."],
-			["NX", "GT", 9, "Tip for the delivery girl?", "A tip?! ...Here. A pebble. Very rare."],
-			["NX", "GL", 11, "What's the symbol for 'extra hot'?", "This one. Pizza is a symbol of joy... don't you think?"],
-			["NX", "MG", 8, "Hot pizza for Mont!", "Mont cannot eat pizza. Mont will hold it. Warm."],
-			["NX", "MA", 1, "A rival in the food business, Mama?", "Never, dear. Goo burgers and pizza go together."],
-			["NX", "SP", 0, "Library delivery! Careful, it's hot.", "Not near the books! ...But thank you."],
-			["BP", "HN", 7, "Glug! The pond tastes like history, Hennrick.", "Then I must sample it. For the jar."],
-			["BP", "MU", 3, "Permission to land, Sheriff?", "Landing permitted. Watch for UFOs."],
-			["BP", "AN", 8, "*splash* Sorry, Anomalee! Your screen's wet.", "WATER... is also a kind of CODE."],
-			["BP", "KD", 5, "Glug glug! Can I drink to the beat?", "Every gulp's a downbeat, baby!"],
-			["BP", "GW", 6, "Glug? Glug glug!", "Gomp! Gomp gomp!"],
-			["BP", "ZL", 10, "Where should I spray next, gardener?", "The thirsty row. Gently, please."],
-			["BP", "SM", 2, "Shh. I'll spray quietly round her.", "Zzz..."],
-			["BP", "FZ", 5, "Play me in, Fortizmo! The rain strut!", "Fly low, big fella. Spray on the two and four."],
-			["BP", "ET", 4, "Can water be etched?", "Ripples are etchings that don't last. I try anyway."],
-			["BP", "GT", 9, "Your gems sparkle when they're wet!", "Don't you dare spray my gems."],
-			["BP", "GL", 11, "My spray makes shapes in the air!", "Every splash is a symbol... don't you think?"],
-			["BP", "MG", 8, "Mont, do you like a good soaking?", "Mont is not waterproof. Mont says no."],
-			["BP", "MA", 1, "Shall I water your burger garden, Mama?", "Oh, you dear! Just the lettuce, please."],
-			["BP", "SP", 0, "Glug! Want a ride on my back, Sparkakus?", "No, thank you. The books would get wet."],
-			["BP", "NX", 7, "Can you deliver pond water, Nextessa?", "Only pizza, big guy. But I'll ask the boss."],
 			],
 			// THE CHURCH'S SLUG has an exchange with each of the cast too, but they are switched off for now (the
 			// owner's script: it never leaves the church, and its vignettes are gated off). [code, slug's line, reply]
@@ -13685,8 +13730,6 @@ const JGP = (() => {
 				["MG", "Mont. You were made to learn.", "Mont learns. Mont is learning now."],
 				["MA", "Mother of goo. You carry so much love.", "Oh! Aren't you a sweet one, dear."],
 				["SP", "Librarian. Your texts are missing a page.", "...Which page? I must know."],
-				["NX", "You deliver across time. As I once did.", "...Did you work for the pizza shop too?"],
-				["BP", "The rain remembers me.", "Glug... it remembers you too."],
 			],
 			// what each creature sends, how it moves and what it says without words
 			SIG = {
@@ -13704,8 +13747,6 @@ const JGP = (() => {
 				MG: { item: "coin", col: "#3db2d6", gest: "nod", emote: "!" },
 				MA: { item: "goo", col: "#e8409e", gest: "bow", emote: "♥" },
 				SP: { item: "card", col: "#2a50c8", gest: "nod", emote: "?" },
-				NX: { item: "slice", col: "#f0b848", gest: "hop", emote: "!" },
-				BP: { item: "goo", col: "#7ad8ff", gest: "stretch", emote: "~" },
 				SL: { item: "spore", col: "#c8b890", gest: "doze", emote: "…" },
 			},
 			V = (a = 0, b2 = 0, c = 0) => new THREE.Vector3(a, b2, c),
@@ -13714,7 +13755,6 @@ const JGP = (() => {
 			fx = [];
 		let cur = null,
 			nextAt = 0,
-			lastText = -1e9,
 			haloTex = null;
 		// ---- messengers
 		const glow = () =>
@@ -13747,8 +13787,6 @@ const JGP = (() => {
 			else if ("gem" === kind) R(new THREE.OctahedronGeometry(0.17, 0), x.clay(col, { shininess: 140, specular: 16777215, emissive: new THREE.Color(col).multiplyScalar(0.3).getStyle() }), g).scale.set(1, 1.3, 1);
 			else if ("tile" === kind) m(T.box(0.26, 0.26, 0.05), col), m(T.box(0.16, 0.03, 0.055), "#5a3a10");
 			else if ("coin" === kind) m(T.cyl(0.14, 0.14, 0.03, 16), col).rotation.set(Math.PI / 2, 0, 0);
-			// (NEXTESSA's: a slice of pizza with two pepperoni)
-			else if ("slice" === kind) m(new THREE.CylinderGeometry(0.26, 0.26, 0.04, 3, 1, !1, -Math.PI / 7, (2 * Math.PI) / 7), col), [0.1, 0.18].forEach((r, k) => (m(T.cyl(0.03, 0.03, 0.05, 8), "#a8281e").position.set(0.03 * (k ? -1 : 1), 0, r)));
 			const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow(), color: col, transparent: !0, opacity: 0.55, depthWrite: !1, blending: THREE.AdditiveBlending }));
 			halo.scale.setScalar(0.95), g.add(halo), g.scale.setScalar(sc);
 			return (g.userData.keepInFinale = !0), C.add(g), g;
@@ -13939,7 +13977,7 @@ const JGP = (() => {
 				dy = Math.atan2(Math.sin(dy), Math.cos(dy));
 				// (KING DINO stands inside his drum kit with his sticks over the drums: he never turns or spins,
 				// or he would sweep through them)
-				const fixed = "m_kingdino" === en.id,
+				const fixed = "m_kingdino" === en.id || "slug" === en.id,
 					go = { y: 0, rx: 0, ry: fixed ? 0 : Math.max(-1.45, Math.min(1.45, dy)) * face, rz: 0, s: [1, 1, 1] };
 				for (const gs of c0.sc.gest) {
 					if (gs.who !== k) continue;
@@ -14014,50 +14052,56 @@ const JGP = (() => {
 		}
 		// (the slug's rows in the same form as the rest, made once)
 		const ALL_PAIRS = (VIGS.all = PAIRS.concat(SLUG_PAIRS.map(([k, x, y]) => ["SL", k, 7, x, y])));
-		// who is in town to take part: the cast at their spots, SPARKAKUS in his Library (his stand-in, st.ent) and
-		// NEXTESSA once she has handed over the pizza and is on her way back to the Portal (she stops for it).
-		// BACKPACKA is only in town for the Event, when there are none; the slug's are switched off.
+		// who can take part: the cast at their spots, SPARKAKUS in his Library (his stand-in, st.ent) and, through a
+		// visit only, the church's slug (its stand-in, JGP.slug.ent). NEXTESSA and BACKPACKA never have vignettes.
 		const lineUp = (VIGS.lineUp = () => {
 			const m = {};
 			for (const en of It.all) for (const k in NAMES) en.def && en.def.name === NAMES[k] && en.def.stationary && (m[k] = en);
 			st.ent && (st.ent.sync(), (m.SP = st.ent));
-			ue.courier && "leaving" === ue.state && ((ue.courier.vigFree = () => ue.courier && "leaving" === ue.state), (m.NX = ue.courier));
 			return m;
 		});
-		const VIG_CHANCE = 0.15,
-			// a creature can take part only standing at its own spot (not busy, nor on its way home)
-			atSpot = (en) => (en.vigFree ? en.vigFree() : !en.busy && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4),
+		const // a creature can take part only standing at its own spot (not busy, nor on its way home)
+			// (and not in a visit: a visit plays its own pair's, see VIGS.play)
+			atSpot = (en) => !en.visiting && !en.hosting && !en.busy && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4,
 			talkedTo = (en) => "dialogue" === jt.top && xe.lastTarget === en;
-		function pick(now) {
+		// A VISIT'S EXCHANGE: two creatures play their pair's vignette, its two lines always shown (the visits).
+		// Whether one is playing (a visit waits for it to end).
+		VIGS.playing = () => !!cur;
+		VIGS.play = (A, B) => {
+			if (cur || !A || !B) return !1;
+			const code = (en) => (JGP.slug && en === JGP.slug.ent ? "SL" : Object.keys(NAMES).find((k) => en.def && en.def.name === NAMES[k])),
+				a = code(A),
+				b = code(B),
+				pk = a && b && ALL_PAIRS.find((q) => (q[0] === a && q[1] === b) || (q[0] === b && q[1] === a));
+			return !!pk && (start(pk, pk[0] === a ? A : B, pk[0] === a ? B : A, { text: !0 }), !0);
+		};
+		function pick() {
 			const m = lineUp(),
-				// (any two in town, however far apart: every pair gets its turn, the least played first and the
-				// nearer preferred)
-				// (the slug's exchanges, when switched on, would need it to come out of the church to play)
+				// (any two in town, however far apart: every pair gets its turn, the least played first, in random
+				// order; the slug's are seen only on a visit to it, see the visits)
 				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && m[pk[0]].group.position.distanceTo(m[pk[1]].group.position) < 90);
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
 			for (const pk of ok) {
-				const A = m[pk[0]].group.position,
-					B = m[pk[1]].group.position,
-					sc = 100 * (plays[pk[0] + pk[1]] || 0) + 0.6 * Math.hypot(A.x - B.x, A.z - B.z) + 14 * Math.random();
+				const sc = 100 * (plays[pk[0] + pk[1]] || 0) + 50 * Math.random();
 				sc < bs && ((bs = sc), (best = pk));
 			}
-			const text = now - lastText > 240 && Math.random() < 0.1;
-			text && (lastText = now), start(best, m[best[0]], m[best[1]], { text });
+			// (and every one with its two lines: an hour's play shows every pair's animation and its words)
+			return start(best, m[best[0]], m[best[1]], { text: !0 }), !0;
 		}
 		L.push((tt, dt) => {
 			dt = Math.min(0.1, dt || 0.016);
 			if (cur) {
 				// (it stops if the Event starts, either creature is wanted for something else or talked to)
 				st.ent && st.ent.sync();
-				if (me.active || cur.A.busy || cur.B.busy || talkedTo(cur.A) || talkedTo(cur.B) || [cur.A, cur.B].some((en) => en.vigFree && !en.vigFree())) return finish();
+				if (me.active || cur.A.busy || cur.B.busy || talkedTo(cur.A) || talkedTo(cur.B)) return finish();
 				return tick(dt);
 			}
 			if (me.active || "playing" !== jt.top) return void (nextAt = Math.max(nextAt, tt + 4));
-			// creatures interacting is meant to be rare: each chance (every 5-10 s) plays a vignette only
-			// 15% of the time, so the player does not always see one
-			tt > nextAt && (Math.random() < VIG_CHANCE && pick(tt), (nextAt = tt + 5 + 5 * Math.random()));
+			// (one every half minute or so, so that in an hour every pair of the cast has played once, in random
+			// order: a pair not free then is tried again a few seconds on)
+			tt > nextAt && (nextAt = tt + (pick(tt) ? 18 + 10 * Math.random() : 4));
 		});
 	})();
 	const GAZEBO = [5, -31];
@@ -15102,13 +15146,49 @@ const JGP = (() => {
 					[slug, head, mantle, pore, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
 					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray(), W = 5.45;
 					let talking = 0, look = 0, kT = 0, kD = 0, kP = 0;
-					// one Talk, and no Blossom: it is not one of the town's creatures (from anywhere round it, inside). The
-					// script's lines: its Talk, and what it says during the Garden Event (it never leaves the church)
-					z.add({ id: "slug", x: wx, z: wz, r: 3.2, solidR: 0.6, top: 0.8, label: () => "Talk", run: () => ((talking = 1), qt.open("SLUG", "#9a7a5a", me.active ? "Hello Kate" : "I am the one reborn.")) });
-					JGP.slug = { body: slug, head, mantle, stalks: stalks.map(([st]) => st), mode: () => (kT > 0.5 ? "talk" : kD > 0.5 ? "dance" : kP > 0.5 ? "plant" : "idle") };
+					// one Talk (from anywhere round it, inside) and, with one in hand, a Blossom (the station's own "Give a
+					// blossom": it takes one, as every gift does, and it answers in silence). The script's lines: its Talk,
+					// and what it says during the Garden Event (it never leaves the church)
+					z.add({
+						id: "slug",
+						x: wx,
+						z: wz,
+						r: 3.2,
+						solidR: 0.6,
+						top: 0.8,
+						label: () => "Talk",
+						// (pointed at anywhere on its body, head to tail)
+						pickObj: [slug, head],
+						run: () => ((talking = 1), qt.open("SLUG", "#9a7a5a", me.active ? "Hello Kate" : "I am the one reborn.")),
+						gift: () => Kt.blossoms > 0 && (Kt.blossoms--, G.heart(), (talking = 1), qt.open("SLUG", "#9a7a5a", "...")),
+					});
+					// (a visit's exchange with it: it talks, lifting its head, for so long, see JGP.slug.chat)
+					let chatTo = 0;
+					JGP.slug = {
+						body: slug,
+						head,
+						mantle,
+						stalks: stalks.map(([st]) => st),
+						mode: () => (kT > 0.5 ? "talk" : kD > 0.5 ? "dance" : kP > 0.5 ? "plant" : "idle"),
+						chat: (sec) => (chatTo = Re.t + sec),
+						// its stand-in for the visits and vignettes: a marker where it lies (it never moves, never turns, and
+						// the vignette's gestures go to a wrapper of its own that holds nothing: it talks instead)
+						ent: (() => {
+							const mk = new THREE.Object3D(),
+								[ox, , oz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray();
+							mk.position.set(ox, 0, oz), (mk.userData.vgW = new THREE.Group());
+							return { id: "slug", def: { name: "SLUG", stationary: !0 }, group: mk, home: mk.position, height: 0.7, bodyR: 1.1, vig: !1 };
+						})(),
+						// where a visitor stands with it, and the way in: from the open ground outside the right-hand Garden
+						// window, through the wall where the X is, to its side, facing it (all in the church's own frame)
+						visit: (vr) => {
+							const W2 = (lx, lz) => inner.localToWorld(new THREE.Vector3(lx, 0, lz)).toArray().filter((_, k) => k !== 1);
+							return { out: W2(IX + 3.4, -9), way: [W2(IX + 0.4, -9), W2(IX - 1.6, -9.6)], spot: W2(Math.min(IX - vr - 0.3, 1.1 + vr + 0.5), -11.6) };
+						},
+					};
 					L.push((tt, dt) => {
 						dt = Math.min(dt || 0.016, 0.1);
-						talking = talking && qt.isOpen ? 1 : 0;
+						talking = (talking && qt.isOpen) || tt < chatTo ? 1 : 0;
 						const ev = talking ? null : JGP.eventMove, e2 = Math.min(1, 3 * dt);
 						(kT += (talking - kT) * e2), (kD += (("dance" === ev) - kD) * e2), (kP += (("plant" === ev) - kP) * e2);
 						// (a slow look round, held still while talking)
@@ -15148,7 +15228,8 @@ const JGP = (() => {
 				const fr = lancet(WW + 0.44, WH, WN + 0.24);
 				fr.holes.push(new THREE.Path(lancet(WW, WH, WN).getPoints(40)));
 				B.geo("stone", new THREE.ExtrudeGeometry(fr, { depth: 0.16, bevelEnabled: !1, curveSegments: 20 }), "#e6dfcf", 0, Y0, 3.21);
-				B.box("stone", "#d8d0be", 0, Y0 - 0.12, 3.32, WW + 0.7, 0.24, 0.3);
+				// (the sill's top 4 mm above the frame's foot, which sits in it: no two faces in one plane)
+				B.box("stone", "#d8d0be", 0, Y0 - 0.118, 3.32, WW + 0.7, 0.244, 0.3);
 				const gg = new THREE.ShapeGeometry(lancet(WW, WH, WN), 24),
 					pa = gg.attributes.position,
 					uv = new Float32Array(2 * pa.count);
@@ -15179,7 +15260,8 @@ const JGP = (() => {
 				[-1, 1].forEach((sx) => {
 					const Sd = B.sub((sx * w) / 2, -D / 2, (sx * Math.PI) / 2);
 					Sd.geo("stone", new THREE.ExtrudeGeometry(sfr, { depth: 0.14, bevelEnabled: !1, curveSegments: 16 }), "#e6dfcf", 0, SY, 0.01);
-					Sd.box("stone", "#d8d0be", 0, SY - 0.11, 0.12, SW + 0.6, 0.22, 0.26);
+					// (the sill's top 4 mm above the frame's foot, which sits in it: no two faces in one plane)
+					Sd.box("stone", "#d8d0be", 0, SY - 0.108, 0.12, SW + 0.6, 0.224, 0.26);
 					// (under the right-hand one, a small red X painted on the wall: the secret way in is here)
 					sx > 0 && Sd.box("plain", "#b3261e", 0, 1.14, 0.008, 0.34, 0.045, 0.012, 0, 0, Math.PI / 4).box("plain", "#b3261e", 0, 1.14, 0.012, 0.34, 0.045, 0.012, 0, 0, -Math.PI / 4);
 					const st = b(576, 1536, (c) => (c.scale(1.5, 1.5), paintGardenWindow(c, sx < 0)), { smooth: !0 });
@@ -15794,7 +15876,8 @@ const JGP = (() => {
 				],
 				"church",
 			);
-			// NO CREATURE EVER GOES INSIDE (the secret room is the player's alone): they path round its hull and
+			// NO CREATURE EVER GOES INSIDE (the secret room is the player's and the slug's), but for one calling on the
+			// slug (see the visits): they path round its hull and
 			// never pick a spot in it, and should one still end up inside (a push, a teleport, a vignette's
 			// step), it is put straight back outside, and any destination inside it is moved out
 			{
@@ -15803,6 +15886,8 @@ const JGP = (() => {
 				L.push(() => {
 					for (let k = 0; k < It.all.length; k++) {
 						const e = It.all[k], P = e.group && e.group.position;
+						// (except one calling on the slug, see the visits)
+						if (e.visiting) continue;
 						if (P && F.inHull(CB, P.x, P.z)) {
 							const [ox, oz] = F.outside(P.x, P.z, (e.bodyR || 1) + 0.3);
 							P.set(ox, P.y, oz), JGP.churchGuard.moved++;
@@ -15841,7 +15926,7 @@ const JGP = (() => {
 				L.push((t2) => {
 					const f = It.byId.frog;
 					// (she stays put to serve a player at the bar, and while being talked to)
-					if (!f || f.busy || f.vig || me.active || f.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === f)) return void (waitTo = -1);
+					if (!f || f.busy || f.vig || f.visiting || f.hosting || me.active || f.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === f)) return void (waitTo = -1);
 					const p = f.group.position,
 						[ax] = JGP.barSpot(0);
 					// (still on the way to the last spot, or away from the aisle: wait till she is back)
@@ -15875,7 +15960,7 @@ const JGP = (() => {
 					L.push((t2) => {
 						const h = It.byId[id];
 						// (taken away for something else, its own walk is over: the way back is the engine's)
-						if (!h || h.busy || h.vig || h.meeting || h.battleDance || me.active) return void ((waitTo = -1), (giveUp = 0));
+						if (!h || h.busy || h.vig || h.meeting || h.visiting || h.hosting || h.battleDance || me.active) return void ((waitTo = -1), (giveUp = 0));
 						if (h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void ((waitTo = -1), (pt = t2));
 						const p = h.group.position;
 						if (Math.hypot(p.x - h.home.x, p.z - h.home.z) > 0.1) {
@@ -15912,7 +15997,7 @@ const JGP = (() => {
 						until = 0;
 					let tryAt = 0;
 					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
-						free = (h) => h && !h.busy && !h.vig && !h.battleDance && !h.nearPlayer && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h),
+						free = (h) => h && !h.busy && !h.vig && !h.visiting && !h.hosting && !h.battleDance && !h.nearPlayer && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h),
 						off = (t2, wait) => {
 							for (const h of pair()) h && ((h.seek = null), h.meeting && ((h.meeting = !1), h.home.set(h.group.position.x, h.home.y, h.group.position.z)));
 							(st = 0), (next = t2 + wait);
@@ -15922,7 +16007,7 @@ const JGP = (() => {
 					L.push((t2) => {
 						const [A, B] = pair();
 						if (!A || !B) return;
-						if (me.active || A.busy || B.busy || A.vig || B.vig) return void (st && off(t2, 40));
+						if (me.active || A.busy || B.busy || A.vig || B.vig || A.visiting || B.visiting || A.hosting || B.hosting) return void (st && off(t2, 40));
 						if (0 === st) {
 							if (t2 < next) return;
 							// (due: they wander toward each other till there is a clear way to meet)
@@ -15974,6 +16059,189 @@ const JGP = (() => {
 							}
 							off(t2, 20 + 20 * Math.random());
 						}
+					});
+				}
+				// VISITS: every so often one creature leaves its place to call on another. It walks over (a worker out
+				// through its way out of its kiosk or bar, MUSHROOM first stepping down off his desk, SOMLET getting up),
+				// stops beside the other on open ground, facing it, the two play their pair's vignette with both its
+				// lines shown, and the visitor walks slowly home (a worker back in by its way in). Everyone visits
+				// everyone, the visits made least often first. KING DINO never leaves his drums, SOMLET sleeps on at
+				// the Post Office and the church's slug never leaves its room: the others come to them (the slug only
+				// rarely, in and out through the wall where the X is, as the player does, and their exchange is seen
+				// only by a player in the church too). NEXTESSA and BACKPACKA neither visit nor are visited. Rare: one
+				// visit at a time, every three to six minutes; the Event, a battle or a meeting calls it off (everyone goes home as usual), and the
+				// player close by or talking to the visitor holds it up.
+				{
+					const WHO = ["gratelet", "drifter", "blinker", "m_kingdino", "gorbo", "cutebex", "m_somlet", "frog", "p_etcher", "p_gemtoe", "p_glyph", "w_mont", "p_mamagorbo", "keeper", "slug"],
+						STAYS = ["m_kingdino", "m_somlet", "slug"],
+						made = {},
+						ent = (id) => ("keeper" === id ? st.ent : "slug" === id ? JGP.slug && JGP.slug.ent : It.byId[id]),
+						isSP = (h) => !!h && h === st.ent,
+						at = (h, q, r = 0.4) => Math.hypot(h.group.position.x - q[0], h.group.position.z - q[1]) < r,
+						free = (h, out) => {
+							if (!h || h.vig || h.visiting || h.hosting) return !1;
+							if ("slug" === h.id) return !0;
+							if (isSP(h)) return st.ent.sync(), !st.away() && !st.romping() && !(st.talking && qt.isOpen);
+							return !h.busy && !h.meeting && !h.battleDance && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h) && (!out || (!h.nearPlayer && at(h, [h.home.x, h.home.z])));
+						},
+						// where the visitor stands: beside the host, on its side toward the visitor if it can, on open
+						// ground it can stand on, clear of everyone
+						spotBy = (v, h) => {
+							const hp = h.group.position,
+								vp = v.group.position,
+								vr = v.bodyR || 1,
+								hr = h.bodyR || 1,
+								a0 = Math.atan2(vp.x - hp.x, vp.z - hp.z);
+							for (let j = 0; j < 12; j++)
+								for (let k = 0; k < 16; k++) {
+									const r = hr + vr + 0.6 + 0.45 * j,
+										a = a0 + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * (Math.PI / 8),
+										x = hp.x + r * Math.sin(a),
+										z = hp.z + r * Math.cos(a);
+									if (
+										JGP.roamFree(x, z, vr, !0, v.def && v.def.at) &&
+										JGP.roamApart(x, z, vr, v, [v, h]) &&
+										WHO.every((id) => {
+											const o = ent(id);
+											return !o || o === v || o === h || Math.hypot(x - o.group.position.x, z - o.group.position.z) > vr + (o.bodyR || 1) + 0.4;
+										})
+									)
+										return [x, z];
+								}
+							return null;
+						};
+					let V = null,
+						// (rare: one every three to six minutes at most, so the player only now and then sees one)
+						next = 120 + 120 * Math.random(),
+						want = null;
+					// (for the tests: a visit at game time t, of h by v if given)
+					JGP.visitAt = (t, v, h) => ((next = t), (want = v ? [v, h] : null));
+					JGP.visits = () => ({ made, now: V && { v: V.vid, h: V.hid, stage: V.stage, played: !!V.played } });
+					// (for the tests: where v would stand to visit h, and its way there, without going)
+					JGP.visitPlan = (vid, hid) => {
+						const v = ent(vid),
+							h = ent(hid);
+						isSP(v) && st.ent.sync(), isSP(h) && st.ent.sync();
+						const sp = v && h && spotFor(v, h);
+						if (!sp) return null;
+						const via = ((v.def && v.def.via) || []).map((w) => [w[0], w[1]]),
+							p0 = isSP(v) ? JGP.libFront() : via.length ? via[via.length - 1] : [v.group.position.x, v.group.position.z];
+						return { sp, from: p0, way: wayTo(p0[0], p0[1], v, h, sp, isSP(v) ? 0.9 : v.bodyR || 1), r: Math.min(1, isSP(v) ? 0.9 : v.bodyR || 1), inside: "slug" === hid ? 3 : 0 };
+					};
+					// (the way from a point to where the visit stands: for the slug, across town to the open ground outside the
+					// right-hand Garden window, then in through the wall where the X is and to its side)
+					const wayTo = (x0, z0, v, h, sp, r) => {
+							if ("slug" !== h.id) return JGP.route(x0, z0, sp[0], sp[1], r);
+							const q = JGP.slug.visit(v.bodyR || 1);
+							return JGP.route(x0, z0, q.out[0], q.out[1], r).concat(q.way, [sp]);
+						},
+						wayFrom = (v, h, x1, z1, r) => {
+							const p = v.group.position;
+							if ("slug" !== h.id) return JGP.route(p.x, p.z, x1, z1, r);
+							const q = JGP.slug.visit(v.bodyR || 1);
+							return q.way.slice().reverse().concat([q.out], JGP.route(q.out[0], q.out[1], x1, z1, r));
+						},
+						spotFor = (v, h) => ("slug" === h.id ? JGP.slug.visit(v.bodyR || 1).spot : spotBy(v, h));
+					const begin = (t2, vid, hid) => {
+							const v = ent(vid),
+								h = ent(hid),
+								sp = v && h && spotFor(v, h);
+							if (!sp) return !1;
+							// (calling on the slug, it meets the church's walls rather than one box over it, so it can go in)
+							"slug" === hid && (v.inside = "church");
+							const face = Math.atan2(h.group.position.x - sp[0], h.group.position.z - sp[1]),
+								q = { v, h, vid, hid, sp, stage: "out", until: t2 + 40 + 1.6 * Math.hypot(sp[0] - v.group.position.x, sp[1] - v.group.position.z) };
+							(v.visiting = !0), (h.hosting = !0), isSP(h) && h.stay();
+							if (isSP(v)) {
+								// (SPARKAKUS from his Library's front)
+								const [fx, fz] = JGP.libFront();
+								(q.path = wayTo(fx, fz, v, h, sp, 0.9).map(([x, z]) => new THREE.Vector3(x, 0, z))), q.path.pop();
+								st.join({ x: sp[0], z: sp[1] }, face, q.path, 1.6);
+							} else {
+								// (the way there: out by its way out, if it has one, then a way across town round everything)
+								const via = ((v.def && v.def.via) || []).map((w) => [w[0], w[1]]),
+									p0 = via.length ? via[via.length - 1] : [v.group.position.x, v.group.position.z];
+								(q.home = v.home.clone()), (q.pat = v.pattern && Object.assign({}, v.pattern[1])), (q.way = via.concat(wayTo(p0[0], p0[1], v, h, sp, v.bodyR || 1)));
+								v.pattern && (v.pattern[1].face = face);
+							}
+							return (made[vid + "|" + hid] = (made[vid + "|" + hid] || 0) + 1), (V = q), !0;
+						},
+						// back home: slowly, by its way in; the host is free at once
+						goBack = (t2) => {
+							const q = V,
+								{ v, h } = q;
+							(h.hosting = !1), isSP(h) && h.browse();
+							if (isSP(v)) {
+								const [fx, fz] = JGP.libFront();
+								st.leave(wayFrom(v, h, fx, fz, 0.9).map(([x, z]) => new THREE.Vector3(x, 0, z)), 1.2);
+							} else {
+								// (back across town to its way in, in by it, and home)
+								const via = ((v.def && v.def.via) || []).map((w) => [w[0], w[1]]),
+									e0 = via.length ? via[via.length - 1] : [q.home.x, q.home.z];
+								(q.back = wayFrom(v, h, e0[0], e0[1], v.bodyR || 1).concat(via.slice(0, -1).reverse(), via.length ? [[q.home.x, q.home.z]] : [])), q.pat && Object.assign(v.pattern[1], q.pat), (v.walkK = 0.55);
+							}
+							(q.stage = "back"), (q.until = t2 + 200);
+						},
+						// called off (the Event, a battle): its place back at once, and the Event or the walk home takes it there
+						drop = () => {
+							const { v, h } = V;
+							(h.hosting = !1), isSP(h) && h.browse();
+							isSP(v) ? me.active || st.leave() : (V.pat && Object.assign(v.pattern[1], V.pat), V.home && v.home.copy(V.home), (v.walkK = 0));
+							(v.visiting = !1), (v.inside = null), (V = null), (next = Re.t + 180);
+						};
+					L.push((t2, dt) => {
+						dt = Math.min(0.1, dt || 0.016);
+						if (V) {
+							const { v, h } = V;
+							isSP(v) && st.ent.sync(), isSP(h) && st.ent.sync();
+							// (the Event, a battle or a meeting takes either away: the visit is off)
+							if (me.active || !It.all.concat([st.ent]).includes(v) || ((v.busy || v.battleDance) && !isSP(v)) || (V.stage !== "back" && !isSP(h) && (h.busy || h.battleDance || h.meeting))) return drop();
+							if ("out" === V.stage) {
+								if (t2 > V.until) return goBack(t2);
+								if (isSP(v)) return void (st.there() && (V.stage = "meet"), "meet" === V.stage && (V.meetAt = t2));
+								// (MUSHROOM steps down off his desk first, SOMLET gets up first)
+								if (v.pattern && v.pattern[1].y > 0) return void (v.pattern[1].y = Math.max(0, v.pattern[1].y - 2.5 * dt));
+								if ((v.lieK || 0) > 0.25) return;
+								const w = V.way[0];
+								v.home.set(w[0], v.home.y, w[1]);
+								// (a waypoint on the way counts when within 0.6 m: a corner it is pushed off still lets it on)
+								if (at(v, w, V.way.length > 1 ? 0.6 : 0.4)) V.way.length > 1 ? V.way.shift() : v.moving || ((V.stage = "meet"), (V.meetAt = t2));
+								return;
+							}
+							if ("meet" === V.stage) {
+								// their exchange, once any other vignette is over (or they go home without it after a while)
+								// (with the slug, only if the player is in the church too: else they keep it to themselves, quietly)
+								if ("slug" === h.id && !V.played) {
+									const CB = F.buildings.find((B) => "church" === B.name);
+									if (!(CB && F.inHull(CB, At.position.x, At.position.z))) return void ((V.played = t2), (V.quiet = !0));
+								}
+								if (!V.played) return void (VIGS.play(v, h) ? ((V.played = t2), "slug" === h.id && JGP.slug.chat(8.5)) : t2 - V.meetAt > 15 && goBack(t2));
+								if (V.quiet) return void (t2 - V.played > 9 && goBack(t2));
+								return void (!VIGS.playing() && t2 - V.played > 1.5 && goBack(t2));
+							}
+							// back home
+							if (isSP(v)) return void (st.away() || ((v.visiting = !1), (v.inside = null), (V = null), (next = t2 + 180 + 180 * Math.random())));
+							const w = V.back[0];
+							v.home.set(w[0], v.home.y, w[1]);
+							at(v, w, 0.6) && V.back.length > 1 && V.back.shift();
+							if ((1 === V.back.length && at(v, w) && !v.moving) || t2 > V.until) v.home.copy(V.home), (v.walkK = 0), (v.visiting = !1), (v.inside = null), (V = null), (next = t2 + 180 + 180 * Math.random());
+							return;
+						}
+						if (t2 < next || me.active || "playing" !== jt.top || Dbt.state) return;
+						next = t2 + 5;
+						// who: the asked-for pair, else of the pairs both free the one visited least, at random among those
+						let best = null,
+							bn = 1e9;
+						const pairs = want ? [want] : [];
+						if (!want) for (const a of WHO) if (!STAYS.includes(a)) for (const b of WHO) a !== b && pairs.push([a, b]);
+						// (the slug is called on only rarely: in one round in eight)
+						const slugToo = !!want || Math.random() < 0.125;
+						for (const [a, b] of pairs) {
+							if (("slug" === b && !slugToo) || !free(ent(a), !0) || !free(ent(b), !1)) continue;
+							const n2 = (made[a + "|" + b] || 0) + Math.random() * 0.5;
+							n2 < bn && ((bn = n2), (best = [a, b]));
+						}
+						best && begin(t2, best[0], best[1]) && (want = null);
 					});
 				}
 			}
@@ -16382,7 +16650,8 @@ const JGP = (() => {
 		// seeing the inside of a wall or a bookcase is disorienting. So when the headset comes within 20 cm of
 		// a solid structure the view darkens, and it is fully black from 8 cm (the near plane is at 15 cm);
 		// it clears again as the head comes back out. Solids: every building's parts (in its own frame, each
-		// as tall as what stands there) and the round colliders (the Summoning Stone, the portal's pillars).
+		// as tall as what stands there) and any round collider the player meets (walking through the Summoning
+		// Stone or a portal pillar never darkens the view).
 		{
 			// how tall each part is ([part index] → top, by building), and how far in a rough-edged one starts
 			const TOPS = {
@@ -16420,7 +16689,9 @@ const JGP = (() => {
 					});
 				}
 				for (const f of F.list) {
-					if (f.keep || f.r > 2) continue; // (the test plants and the pond are not solid at head height)
+					// (only what the player can't walk through: not the test plants or the pond, nor what the player walks
+					// right through, as the Summoning Stone and the portal's pillars)
+					if (f.keep || f.r > 2 || !f.stage) continue;
 					const dh = Math.hypot(x - f.x, z - f.z) - 0.55 * f.r,
 						dy = Math.max(y - 3, 0);
 					best = Math.min(best, dh > 0 || dy > 0 ? Math.hypot(Math.max(dh, 0), dy) : dh);
@@ -16649,6 +16920,128 @@ const JGP = (() => {
 		},
 		// a straight walk from p to (x, z) a roaming creature can take (every half metre clear; the first
 		// metre and a half is where it stands now, so it is not held there)
+		// A WAY ACROSS TOWN for a creature of radius r from (x0, z0) to (x1, z1) on open ground only (as roamFree:
+		// round the garden, the pond, buildings and everything the town keeps clear): the shortest way over a
+		// 1.2 m grid of the square (its open cells worked out once per size), pulled taut into straight walks.
+		// [[x, z], ...] to walk in turn, ending at (x1, z1); a start or end off open ground joins the nearest open cell.
+		route(x0, z0, x1, z1, r) {
+			const S = 1.2,
+				X0 = -t.parkHalf,
+				Z0 = -t.parkHalf,
+				NX = Math.ceil((2 * t.parkHalf) / S),
+				NZ = Math.ceil((t.parkHalf + t.parkSouth) / S),
+				rk = Math.round(Math.min(r, 1) * 10) / 10,
+				G0 = (JGP.route.grids = JGP.route.grids || {}),
+				open =
+					G0[rk] ||
+					(G0[rk] = (() => {
+						const g = new Uint8Array(NX * NZ);
+						// (a cell is open with room to spare, so a straight line across open cells keeps clear too)
+						for (let i = 0; i < NX; i++) for (let j = 0; j < NZ; j++) g[i + NX * j] = JGP.roamFree(X0 + (i + 0.5) * S, Z0 + (j + 0.5) * S, rk + 0.35) ? 1 : 0;
+						return g;
+					})()),
+				cx = (k) => X0 + ((k % NX) + 0.5) * S,
+				cz = (k) => Z0 + (((k / NX) | 0) + 0.5) * S,
+				// (the open cell nearest a point)
+				near = (x, z) => {
+					const i0 = Math.max(0, Math.min(NX - 1, Math.floor((x - X0) / S))),
+						j0 = Math.max(0, Math.min(NZ - 1, Math.floor((z - Z0) / S)));
+					for (let d = 0; d < 12; d++) {
+						let best = -1,
+							bd = 1e9;
+						for (let i = i0 - d; i <= i0 + d; i++)
+							for (let j = j0 - d; j <= j0 + d; j++) {
+								if (i < 0 || j < 0 || i >= NX || j >= NZ || (Math.abs(i - i0) !== d && Math.abs(j - j0) !== d)) continue;
+								const k = i + NX * j,
+									dd = Math.hypot(cx(k) - x, cz(k) - z);
+								open[k] && dd < bd && ((bd = dd), (best = k));
+							}
+						if (best >= 0) return best;
+					}
+					return -1;
+				},
+				a = near(x0, z0),
+				b = near(x1, z1);
+			if (a < 0 || b < 0) return [[x1, z1]];
+			// A* (8 ways, a binary heap)
+			// (full precision: costs rounded to 32 bits can keep "improving" by a rounding step, and the search
+			// then never ends where the goal can't be reached)
+			const g = new Float64Array(NX * NZ).fill(1e9),
+				from = new Int32Array(NX * NZ).fill(-1),
+				H = [],
+				hv = (k) => Math.hypot(cx(k) - cx(b), cz(k) - cz(b)),
+				push = (k, f) => {
+					H.push([f, k]);
+					for (let i = H.length - 1; i > 0; ) {
+						const pI = (i - 1) >> 1;
+						if (H[pI][0] <= H[i][0]) break;
+						[H[pI], H[i]] = [H[i], H[pI]], (i = pI);
+					}
+				},
+				pop = () => {
+					const top = H[0],
+						last = H.pop();
+					if (H.length) {
+						H[0] = last;
+						for (let i = 0; ; ) {
+							const l2 = 2 * i + 1,
+								r2 = l2 + 1;
+							let m2 = i;
+							l2 < H.length && H[l2][0] < H[m2][0] && (m2 = l2), r2 < H.length && H[r2][0] < H[m2][0] && (m2 = r2);
+							if (m2 === i) break;
+							[H[m2], H[i]] = [H[i], H[m2]], (i = m2);
+						}
+					}
+					return top;
+				};
+			(g[a] = 0), push(a, hv(a));
+			// (every loop here is bounded, whatever the grid: a plan can never hang a frame)
+			let guard = 16 * NX * NZ,
+				// (the cell reached nearest the goal: the way goes there when the goal itself can't be reached)
+				near2 = a,
+				nd = hv(a);
+			while (H.length && guard-- > 0) {
+				const [, k] = pop();
+				if (k === b) break;
+				hv(k) < nd && ((nd = hv(k)), (near2 = k));
+				const i = k % NX,
+					j = (k / NX) | 0;
+				for (let di = -1; di <= 1; di++)
+					for (let dj = -1; dj <= 1; dj++) {
+						if ((!di && !dj) || i + di < 0 || j + dj < 0 || i + di >= NX || j + dj >= NZ) continue;
+						const n = i + di + NX * (j + dj);
+						// (no cutting a corner between two closed cells)
+						if (!open[n] || (di && dj && (!open[i + di + NX * j] || !open[i + NX * (j + dj)]))) continue;
+						const c2 = g[k] + (di && dj ? 1.414 : 1) * S;
+						c2 < g[n] && ((g[n] = c2), (from[n] = k), push(n, c2 + hv(n)));
+					}
+			}
+			const end = b === a || from[b] >= 0 ? b : near2,
+				cells = [];
+			for (let k = end, n = 0; k >= 0 && k !== a && n < NX * NZ; k = from[k], n++) cells.unshift([cx(k), cz(k)]);
+			// pulled taut: from each point on, straight on along the cells for as long as the straight line stays on
+			// open cells (checked every 0.3 m on the grid: cheap, so planning a visit never stalls a frame)
+			const clear = (ax, az, bx, bz) => {
+					const n = Math.max(1, Math.ceil(Math.hypot(bx - ax, bz - az) / 0.3));
+					for (let k = 1; k < n; k++) {
+						const i = Math.floor((ax + ((bx - ax) * k) / n - X0) / S),
+							j = Math.floor((az + ((bz - az) * k) / n - Z0) / S);
+						if (i < 0 || j < 0 || i >= NX || j >= NZ || !open[i + NX * j]) return !1;
+					}
+					return !0;
+				},
+				out = [];
+			let px = cx(a),
+				pz = cz(a);
+			for (let i = 0; i < cells.length; ) {
+				let j = i;
+				for (; j + 1 < cells.length && clear(px, pz, cells[j + 1][0], cells[j + 1][1]); j++);
+				out.push(cells[j]), (px = cells[j][0]), (pz = cells[j][1]), (i = j + 1);
+			}
+			// (the last cell gives way to the goal itself; short of a goal it can't reach, it walks to its nearest
+			// cell and on from there)
+			return end === b && out.length && out.pop(), out.push([x1, z1]), out;
+		},
 		roamWalk(p, x, z, r, others, own, extra) {
 			const d = Math.hypot(x - p.x, z - p.z),
 				n = Math.max(2, Math.ceil(d / 0.5));
@@ -16722,6 +17115,8 @@ const JGP = (() => {
 			return best;
 		},
 		libParts: LIB_LAYOUT.parts,
+		// (for the tests: where the Library's shelf things and the Sheriff's posters are)
+		libLayout: LIB_LAYOUT,
 		buildPond,
 		blossomPickup,
 		backpacka: BP,
@@ -16799,9 +17194,10 @@ if (
 								r: 3.4,
 								solidR: 1.2,
 								waypointR: JGP.GARDEN_R + 1.2,
-								label: () => (me.active || !Kt.rewards.stone ? null : "Use the Summoning Stone"),
+								// (always there to look at; it starts the Event only once the Summoning Stone is yours)
+								label: () => (me.active ? null : "Use the Summoning Stone"),
 								run: () => {
-									me.active || !Kt.rewards.stone || oe.open();
+									me.active || oe.open();
 								},
 							}),
 							// the one shop in town, at the Garden Supplies counter
@@ -16891,21 +17287,24 @@ if (
 									rAt = (a) => new c(RX * Math.cos(a), 0, RC + RZ * Math.sin(a));
 								e.rotation.order = "YXZ";
 								// (`face`: once there he turns to the player, as for his Ancient Artifacts speech)
-								(st.join = (o, face) => {
+								(st.join = (o, face, path, sp) => {
 									const a = t.worldToLocal(new c(o.x, 0, o.z)).x < 0 ? -1 : 1,
 										// (browsing the shelves, he first goes back to his place)
 										back = e.parent === t && e.position.distanceTo(f) > 0.3 ? [t.localToWorld(f.clone())] : [];
 									// (called away mid-lap, as by the Event, he gets up at once and skips his apology)
 									RUN && ((e.rotation.x = 0), (RUN = null));
-									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: back.concat(v(a, !1)), face });
+									(wT = null), C.attach(e), (H = { target: new c(o.x, 0, o.z), back: !1, via: back.concat(v(a, !1), path || []), face, sp });
 								}),
-									(st.leave = () => {
+									// (`path`: the way back from where he is, as planned for a visit; `sp`: his pace)
+									(st.leave = (path, sp) => {
 										if (!H) return;
 										const o = f.clone();
 										t.localToWorld(o);
 										const a = t.worldToLocal(e.position.clone()).x < 0 ? -1 : 1;
-										H = { target: new c(o.x, 0, o.z), back: !0, via: v(a, !0) };
+										H = { target: new c(o.x, 0, o.z), back: !0, via: (path || []).concat(v(a, !0)), sp };
 									}),
+									// (out and arrived where he was sent, and stopped there)
+									(st.there = () => !!H && !H.back && !H.via.length && e.position.distanceTo(H.target) < 0.35),
 									// SPARKAKUS given a Blossom: he drops to all fours, runs a lap round the Library floor (an
 									// ellipse in front of the shelves, clear of every bookcase), comes back to his place, gets up
 									// on two feet again and then `done` (his apology). Only from his place in the Library.
@@ -16929,7 +17328,15 @@ if (
 											height: 3.1,
 											vig: !1,
 											get busy() {
-												return !!(H || RUN || wT || (st.talking && qt.isOpen));
+												return !!((H && !this.visiting) || RUN || wT || (st.talking && qt.isOpen));
+											},
+											// (for a visit to him: he stops where he is)
+											stay() {
+												(wT = null), (wAt = 1e9);
+											},
+											// (and browses again after it)
+											browse() {
+												wAt = 0;
 											},
 											get home() {
 												return mk.position;
@@ -16956,7 +17363,7 @@ if (
 											l = Math.hypot(s, i);
 										if (H.via.length && l <= 0.3) H.via.shift();
 										else if (l > 0.3) {
-											const o = Math.min(l, 2.2 * c);
+											const o = Math.min(l, (H.sp || 2.2) * c);
 											(a.x += (s / l) * o),
 												(a.z += (i / l) * o),
 												(a.y = Math.max(0, JGP.groundAt(a.x, a.z, 0.3))),
@@ -16965,7 +17372,7 @@ if (
 										} else
 											H.back
 												? (t.attach(e), e.position.copy(f), e.rotation.set(0, 0, 0), e.scale.setScalar(g), (H = null))
-												: ((a.y = Math.max(0, JGP.groundAt(a.x, a.z, 0.3))), e.rotation.set(0, H.face ? Math.atan2(At.position.x - a.x, At.position.z - a.z) : Math.atan2(-a.x, -a.z), 0));
+												: ((a.y = Math.max(0, JGP.groundAt(a.x, a.z, 0.3))), e.rotation.set(0, "number" == typeof H.face ? H.face : H.face ? Math.atan2(At.position.x - a.x, At.position.z - a.z) : Math.atan2(-a.x, -a.z), 0));
 										if (((p.x = e.position.x), (p.z = e.position.z), H)) {
 											o.rotation.y = 0;
 											const t = !bt.live || H.back || r.moving ? 0 : 1;
@@ -17003,7 +17410,7 @@ if (
 														? go(f, 4.2) && ((RUN.k = 4), (RUN.t = 0))
 														: ((RUN.lean = Math.max(0, 1 - RUN.t / 0.6)), (e.rotation.y += m(e.rotation.y, 0) * Math.min(1, 6 * c)), RUN.t >= 0.6 && ((e.rotation.x = 0), (r.moving = !1), (RUN = (RUN.done && RUN.done(), null))));
 										RUN && ((e.rotation.x = 1.15 * Wt(RUN.lean)), 0 < RUN.k && RUN.k < 4 && (r.moving = !0));
-									} else if (e.parent === t && !me.active && !(st.talking && qt.isOpen) && !st.ent.vig) {
+									} else if (e.parent === t && !me.active && !(st.talking && qt.isOpen) && !st.ent.vig && !st.ent.hosting) {
 										const q = e.position;
 										if (wT) {
 											const dx = wT.x - q.x,
@@ -17045,13 +17452,22 @@ if (
 									}
 								});
 							})(o),
+							// SPARKAKUS's Talk and Blossom, as everyone's: wherever he is in his Library (the station goes with him)
+							// and pointed at anywhere on him
 							z.add({
 								id: "stump",
-								x: t,
-								z: e,
+								get x() {
+									return st.ent ? (st.ent.sync(), st.ent.group.position.x) : t;
+								},
+								get z() {
+									return st.ent ? (st.ent.sync(), st.ent.group.position.z) : e;
+								},
 								r: 3.4,
-								solidR: 1.9,
+								solidR: 0.9,
 								waypointR: 3.8,
+								get pickObj() {
+									return st.group ? [st.group] : null;
+								},
 								label: () => (st.away() || st.romping() ? null : "Talk to " + i.name),
 								run: () => {
 									st.away() || st.romping() || LIB.talk();

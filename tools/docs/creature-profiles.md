@@ -176,7 +176,8 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 - **Drumming:** behind his kit with a stick in each hand. While the player is anywhere near (or a Dance battle is
   on) he plays his jazz: the right hand keeps the ride and takes the crash and the floor tom, the left has the
   snare and the rack toms; each stroke snaps the arm down onto the drum and lets it ride back up. He stays at the
-  kit all through the Garden Event. Walking, each step lifts him a little more than his feet swing down.
+  kit all through the Garden Event, and never goes visiting: the others come to him. Walking, each step lifts him
+  a little more than his feet swing down.
 
 ## Fortizmo (`frog`)
 
@@ -202,8 +203,9 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   each roll angle is worked out once from her vertices, so nothing goes into the ground as she rolls over and
   settles; her tentacles droop toward the ground and splay off it. She settles slowly and gets up quickly when
   wanted. Asleep on her side, she doesn't turn to the player. She sleeps through everything, the Garden Event
-  included (she stays at home for it), and only ever says "Zzz", except when given a Blossom: her eyes open for
-  the first time (white, violet iris, catchlight) for her "Thank you", and close again.
+  included (she stays at home for it, and never goes visiting: the others come to her), and only ever says "Zzz",
+  except when given a Blossom: her eyes open for the first time (white, violet iris, catchlight; her heavy lids
+  squash away as they open, so none of them shows round the open eyes) for her "Thank you", and close again.
 
 ## Mushroom (`drifter`): the sheriff
 
