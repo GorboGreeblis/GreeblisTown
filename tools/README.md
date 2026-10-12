@@ -52,8 +52,10 @@ row says otherwise, run it with `shot2.js`.
 | `t_give.js` | The mobile GIVE button hides without a Blossom (run with `mob.js`) |
 | `t_blog2.js` | Dance battle text, an Artifact from first wins only, a bow on repeat wins, the Library finale |
 | `t_gem.js`, `t_pizza.js`, `vigrun.js` | The Ancient Gem trade, the pizza courier, many creature vignettes |
-| `t_vigall.js` | Every NPC has a vignette with every other: drives the vignettes in game time and reports which of the 136 pairs played (and why any did not), wrappers back at rest, errors |
-| `t_visits.js` | Creatures visiting each other: a spot and a clear way for every visitor and host (169 pairs), then five visits played out (getting there, the exchange with its lines, slowly home). `VW=320 VH=240` |
+| `t_vigall.js` | Vignettes where the cast stand: only two side by side play (every other pair meets by a visit), an animation and the lines separately, none again before its turn; wrappers back at rest, errors |
+| `t_visits.js` | Creatures visiting each other: a spot and a clear way for every visitor and host (168 pairs), then eight visits played out (a kiosk host stepping out, Sparkakus met on his Library floor, the slug through the X): getting there, the meeting side by side, slowly home, and nobody passing through anything on the way. `VW=320 VH=240` |
+| `t_visitlive.js` | Visits and vignettes as they happen on their own for `GAME` game seconds: each visit and each vignette with the gap between the two, the pairs played and the rate per hour. `VW=320 VH=240` |
+| `t_errcopy.js` | The test modes' error tools: the desktop error counter and its copy button, or the mobile panel's (run with `mob.js` and `?mobile=1`), and the copied text |
 | `t_stone.js` | The GARDEN EVENT menu (Summoning Stone, Seeds, Snacks, Yes / No) and its rule: without the Summoning Stone, Yes only says the runes stay dark and nothing starts; with it, it starts |
 | `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
 | `t_misc.js` | King Dino's jazz on the floor (also while he is talked to, given a Blossom, in a battle), pickup respawn, the Blossom menu option |

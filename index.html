@@ -2613,12 +2613,15 @@ const It = {
 				l = Math.hypot(s, i),
 				c = a.y || 0;
 			if (l > 0.05) {
-				const t = Math.min(l, 1.4 * wk * o);
+				// (one whose place is up on something, as MUSHROOM on his desk, jumps up onto it over the last 1.3 m: an arc
+				// clear of its front edge, quicker than a walk)
+				const hop = c > 0.5 && l < 1.3,
+					t = Math.min(l, (hop ? 3 : 1.4 * wk) * o),
+					k = Math.max(0, 1 - (l - t) / 1.3);
 				return {
 					x: n.x + (s / l) * t,
 					z: n.z + (i / l) * t,
-					// (rising no faster than 2.5 m/s, so arriving from a walk home never jumps him onto his desk)
-					y: Math.min(c * Math.max(0, 1 - l / 1.2), (n.y || 0) + 2.5 * o),
+					y: hop ? Math.min(c * k + 0.8 * Math.sin(Math.PI * k), (n.y || 0) + 12 * o) : Math.min(c * Math.max(0, 1 - l / 1.2), (n.y || 0) + 2.5 * o),
 					face: Math.atan2(s, i),
 				};
 			}
@@ -4812,8 +4815,8 @@ const le = (() => {
 			model,
 		};
 	})(),
-	// the librarian's talk: the Ancient Artifacts quest. With all three, SPARKAKUS steps out in
-	// front of the Library and the light bulb comes on over his head for his long speech.
+	// the librarian's talk: the Ancient Artifacts quest. With all three, SPARKAKUS stays where he stands in
+	// his open Library and the light bulb comes on over his head for his long speech.
 	LIB = {
 		say(txt, cb) {
 			(st.talking = !0),
@@ -4825,16 +4828,10 @@ const le = (() => {
 			const say = LIB.say;
 			if (Kt.rewards.artifacts) return say(i.done);
 			if (Kt.artifacts < 3) return say(Kt.artifacts ? i.progress(Kt.artifacts) : i.ask);
-			// (the bulb comes on once he is out from under the roof, or after a few seconds whatever happens)
-			const [fx, fz] = JGP.libFront(),
-				t0 = performance.now(),
-				lit = setInterval(() => {
-					const q = st.pos();
-					(Math.hypot(q.x - fx, q.z - fz) < 0.6 || performance.now() - t0 > 6e3) && (clearInterval(lit), Bulb.start(() => st.pos(), st.height));
-				}, 100);
-			st.join({ x: fx, z: fz }, !0), (Bulb.hold = !0);
+			// (he speaks where he stands in his open Library, never walking out: the bulb comes on over his head at once)
+			st.ent && st.ent.stay(), Bulb.start(() => st.pos(), st.height), (Bulb.hold = !0);
 			say(i.finale, () => {
-				clearInterval(lit), Bulb.level || Bulb.start(() => st.pos(), st.height);
+				Bulb.level || Bulb.start(() => st.pos(), st.height);
 				// he glues the three pieces back together in the air between you (the bulb stays on through it)
 				const q = st.pos(),
 					dx = At.position.x - q.x,
@@ -4846,7 +4843,7 @@ const le = (() => {
 							() =>
 								say(i.speech, () => {
 									(Bulb.hold = !1), (Kt.rewards.artifacts = !0), (Kt.gem = !0), gem.collect(), G.pickup();
-									say("* " + i.gemGot + " *", () => st.leave());
+									say("* " + i.gemGot + " *", () => st.ent && st.ent.browse());
 								}),
 							700,
 						),
@@ -5199,11 +5196,13 @@ const xe = (() => {
 			// (a station with a body of its own, as the church's slug, is hit anywhere on that body)
 			for (const t of z.list)
 				if (t.pickObj && t.label() && Math.hypot(t.x - o.x, t.z - o.z) < e.pickRange + 3)
-					for (const h of j.intersectObjects(t.pickObj, !0))
-						if (h.object.isMesh && h.object.visible) {
-							h.distance < r && ((r = h.distance), (n = t));
-							break;
-						}
+					// (one body part at a time: the trimmed three.js has no intersectObjects)
+					for (const ob of t.pickObj)
+						for (const h of j.intersectObject(ob, !0))
+							if (h.object.isMesh && h.object.visible) {
+								h.distance < r && ((r = h.distance), (n = t));
+								break;
+							}
 			if (me.active && st.away() && st.group)
 				for (const t of j.intersectObject(st.group, !0))
 					if (t.object.isMesh && t.object.visible) {
@@ -6314,6 +6313,7 @@ const xe = (() => {
 			mob.diag = root.querySelector("#jgpDiag");
 			mob.diag.addEventListener("click", (e) => {
 				const tg = e.target.dataset && e.target.dataset.act;
+				if ("copy" === tg) return void copyErrors(e.target);
 				if (tg) {
 					const q = new URLSearchParams(location.search);
 					"batch" === tg && q.set("batch", "0" === q.get("batch") ? "1" : "0");
@@ -6324,6 +6324,63 @@ const xe = (() => {
 				mob.diag.classList.toggle("min");
 			});
 			mob.pr = Math.min(1, devicePixelRatio || 1);
+		}
+		// ALL THE ERRORS AT ONCE, for a bug report: the counts, the device and every distinct error (with how often and
+		// when it first came) to the clipboard; where the page may not write there (the sandboxed inscription frame), a box
+		// with the text selected, to copy by hand
+		function errorText() {
+			const lg = window.__jgpErrLog || new Map(),
+				rows = [...lg].map(([k, q]) => "x" + q.n + " (first at " + q.at + " s)\n" + k);
+			return ["Greeblis Town USA errors", "game errors " + Re.errors + ", shader errors " + (window.__jgpShaderErrors || 0) + ", game time " + Math.round(Re.t) + " s", (MOB ? "mobile" : "desktop") + " | " + navigator.userAgent, "", rows.length ? rows.join("\n\n") : "(none)"].join("\n");
+		}
+		function copyErrors(btn) {
+			const txt = errorText(),
+				said = (w) => btn && ((btn.textContent = w), setTimeout(() => (btn.textContent = "copy errors"), 1500)),
+				byHand = () => {
+					let box = document.getElementById("jgpErrCopy");
+					box ||
+						((box = document.createElement("textarea")),
+						(box.id = "jgpErrCopy"),
+						(box.readOnly = !0),
+						(box.style.cssText = "position:fixed;left:5vw;top:10vh;width:90vw;height:60vh;z-index:120;font:11px/1.4 'Courier New',monospace;background:#14141e;color:#e8e8ff;border:3px solid #ff5fb0;border-radius:8px;padding:8px"),
+						box.addEventListener("blur", () => box.remove()),
+						document.body.appendChild(box));
+					(box.value = txt), box.focus(), box.select(), said("select + copy");
+				},
+				old = () => {
+					const ta = document.createElement("textarea");
+					(ta.value = txt), (ta.style.cssText = "position:fixed;left:-9999px;top:0"), document.body.appendChild(ta), ta.select();
+					let ok = !1;
+					try {
+						ok = document.execCommand("copy");
+					} catch (e) {}
+					ta.remove(), ok ? said("copied") : byHand();
+				};
+			try {
+				navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt).then(() => said("copied"), old) : old();
+			} catch (e) {
+				old();
+			}
+		}
+		window.__jgpErrorText = errorText;
+		// DESKTOP: the error count, top right, with its copy button
+		function deskErrors() {
+			if (MOB || document.getElementById("jgpDeskErr")) return;
+			const el = document.createElement("div");
+			(el.id = "jgpDeskErr"),
+				(el.style.cssText = "position:fixed;right:10px;top:10px;z-index:45;padding:5px 8px;border-radius:8px;background:rgba(13,13,26,.72);color:#e8e8ff;font:bold 12px 'Courier New',monospace;display:flex;gap:8px;align-items:center"),
+				(el.innerHTML = '<span></span><button style="font:bold 11px \'Courier New\',monospace;border:2px solid #0d0d1a;border-radius:6px;background:#8a3ffc;color:#fff;padding:2px 6px;cursor:pointer">copy errors</button>');
+			const n = el.firstChild,
+				bt = el.lastChild;
+			// (its clicks stay on it, not on the game)
+			["pointerdown", "mousedown", "click"].forEach((k) => el.addEventListener(k, (e) => e.stopPropagation()));
+			bt.addEventListener("click", () => copyErrors(bt));
+			document.body.appendChild(el);
+			let last = -1;
+			setInterval(() => {
+				const k = Re.errors + (window.__jgpShaderErrors || 0);
+				k !== last && ((last = k), (n.textContent = "errors " + k), (n.style.color = k ? "#ff5fb0" : "#a8e830"));
+			}, 500);
 		}
 		function mobileTick(now) {
 			mob.frames++;
@@ -6337,7 +6394,7 @@ const xe = (() => {
 			pr !== mob.pr && ((mob.pr = Math.round(10 * pr) / 10), O.setPixelRatio(mob.pr), O.setSize(innerWidth, innerHeight));
 			if (!mob.diag) return;
 			if (mob.diag.classList.contains("min"))
-				return void (mob.diag.innerHTML = "<b>" + mob.fps + " fps</b> x" + mob.pr + ((window.__jgpShaderErrors || Re.errors) ? ' <span class="bad">!</span>' : "") + " ▾");
+				return void (mob.diag.innerHTML = "<b>" + mob.fps + " fps</b> x" + mob.pr + ((window.__jgpShaderErrors || Re.errors) ? ' <span class="bad">! ' + (Re.errors + (window.__jgpShaderErrors || 0)) + "</span>" : "") + " ▾");
 			const gl = O.getContext(),
 				info = O.info,
 				se2 = window.__jgpShaderErrors || 0;
@@ -6351,12 +6408,12 @@ const xe = (() => {
 				"batching " + (gcEB.off ? '<span class="bad">OFF</span>' : "ON x" + gcEB.N) + "\n" +
 				(se2 ? '<span class="bad">shader errors ' + se2 + "</span>\n" : "shader errors 0\n") +
 				(Re.errors ? '<span class="bad">game errors ' + Re.errors + "</span>\n" : "") +
-				'<button data-act="batch">batching ' + (gcEB.off ? "ON" : "OFF") + '</button> <button data-act="quality">' + (/[?&]hq=1/.test(location.search) ? "low res" : "high res") + "</button>";
+				'<button data-act="copy">copy errors</button> <button data-act="batch">batching ' + (gcEB.off ? "ON" : "OFF") + '</button> <button data-act="quality">' + (/[?&]hq=1/.test(location.search) ? "low res" : "high res") + "</button>";
 		}
 		/* ========================== end mobile ============================ */
 		function enterDesktop() {
 			if (o.presenting || !At) return;
-			buildUI();
+			buildUI(), deskErrors();
 			C.add(B), C.add(f), C.add(dk.ray);
 			(B.near = 0.1), (B.far = t.far), B.updateProjectionMatrix();
 			dk.offRay.position.set(0, -1e4, 0), dk.offRay.rotation.set(-Math.PI / 2, 0, 0);
@@ -7026,7 +7083,7 @@ const JGP = (() => {
 		},
 		// (his screen shows a robot for his Blossom line and a shovel for his Event line)
 		w_mont: {
-			lines: ["Hello Human.|Mont will hide you from alien hunting Sheriff.", "Mont knows of humans.|Mont eats many VHS and digests much knowledge of your culture.", "Mont understands the high point of human culture|…|‘Flint Knapping for Beginners’"],
+			lines: ["Hello Human.|Mont will hide you from alien hunting Sheriff.", "Mont knows of humans.|Mont eats many VHS and digests much knowledge of your culture.", "Mont understands the high point of human culture|…|‘Flint Knapping for Beginners’", "We are all digital monsters."],
 			gift: "Let’s dance!",
 			campfire: "Joyful to bring life to our Town.",
 		},
@@ -10571,10 +10628,9 @@ const JGP = (() => {
 	// The Library: an open reading ground, with no walls, roof or raised floor. Rows of freestanding
 	// double-sided bookcases full of books stand spaced out round the librarian SPARKAKUS: two rows
 	// behind him and a row down each side, with open aisles between them. The LIBRARY banner stands on
-	// two posts behind the back row of bookcases, high enough to show over them, and a small reading
-	// table to his left holds the Ancient Artifacts once they are brought in. He stands on the ground
-	// at (0, 0, -0.45), at 1.16 scale (as tall as HENNRICK), and walks straight out to the front for
-	// his speech. (LIB_LAYOUT gives the footprints, for the colliders.)
+	// two posts behind the back row of bookcases, high enough to show over them. He stands on the ground
+	// at (0, 0, -0.45), at 1.16 scale (as tall as HENNRICK), and gives his speech where he stands; other
+	// creatures calling on him come in across its open front. (LIB_LAYOUT gives the footprints, for the colliders.)
 	const LIB_LAYOUT = (() => {
 		// bookcases: [centre x, centre z, along z?]; each is 2.2 m long and 0.56 m deep
 		// (spaced well apart: 1.8 m between the two of a pair, 2.2 m between the front and back rows, 1.6 m
@@ -10599,7 +10655,7 @@ const JGP = (() => {
 			rug: [-5.5, -6.8, 5.5, 1.0],
 			rugTop: 0.03,
 			// the things that stand face-out on a shelf, one to a shelf, in a gap in its row: [case, side (1 = its +z
-			// face), shelf, x along the case, what]: four books, each with its own cover, a Wish Blossom from
+			// face), shelf, x along the case, what]: five books, each with its own cover, a Wish Blossom from
 			// Greeblis Park in a little pot, an Electric Blossom from Greeblis City and an Acorn from Greeblis Woods
 			// (the side cases' +z face looks into the room on the left, -z on the right)
 			features: [
@@ -10610,6 +10666,7 @@ const JGP = (() => {
 				[7, -1, 2, 0.35, "wish"],
 				[5, 1, 1, 0.4, "electric"],
 				[2, 1, 2, -0.3, "acorn"],
+				[3, 1, 1, 0.35, "shyness"],
 			],
 		};
 	})();
@@ -10809,6 +10866,18 @@ const JGP = (() => {
 					c.strokeRect(66, 252, 132, 14), c.beginPath(), c.arc(186, 244, 6, 0, l), c.stroke();
 					c.setLineDash([4, 6]), c.beginPath(), c.moveTo(60, 282), c.lineTo(200, 282), c.stroke(), c.setLineDash([]);
 				},
+			},
+		};
+		// a gentle self-help book: a little creature peeking out from behind a wall
+		COVERS.shyness = {
+			cloth: "#e8b8c8",
+			ink: "#6a3a5a",
+			text: "#4a2440",
+			title: [["OVERCOMING", 32], ["SHYNESS", 40]],
+			emblem: (c) => {
+				c.fillRect(140, 196, 18, 92), c.beginPath(), c.arc(140, 236, 24, Math.PI / 2, 1.5 * Math.PI), c.fill();
+				c.beginPath(), c.ellipse(128, 274, 14, 10, 0, Math.PI / 2, 1.5 * Math.PI), c.fill();
+				(c.fillStyle = "#e8b8c8"), c.fillRect(124, 228, 6, 8), (c.fillStyle = "#6a3a5a");
 			},
 		};
 		LIB_LAYOUT.cases.forEach(bookcase);
@@ -13937,13 +14006,15 @@ const JGP = (() => {
 			Gs(0, a.gest, 0.15, 0.7, 0.6);
 			return { flights, gest, end: Math.max(end, 4) };
 		}
+		// (a pair's two vignettes: its animation, or its two lines, never both at once; plays[AB] and plays[ABt] count them)
 		function start(pk, A, B, opt = {}) {
-			const id = pk[0] + pk[1],
+			const text = !!opt.text,
+				id = pk[0] + pk[1] + (text ? "t" : ""),
 				rs = srand(1 + ALL_PAIRS.indexOf(pk) * 7919),
-				sc = script(pk, A, B, pk[2], rs),
-				text = !!opt.text;
+				// (the lines: the two turn to each other and speak, nothing thrown, no flourishes)
+				sc = text ? { flights: [], gest: [], end: 8.2 } : script(pk, A, B, pk[2], rs);
 			(plays[id] = (plays[id] || 0) + 1), wrap(A), wrap(B), (A.vig = B.vig = !0);
-			cur = { pk, A, B, t: 0, sc, text, done: {}, bubbles: [], end: text ? Math.max(sc.end, 8.2) : sc.end };
+			cur = { pk, A, B, t: 0, sc, text, done: {}, bubbles: [], end: sc.end };
 			Ut.above(A, SIG[pk[0]].emote, f(po())), (cur.flights = sc.flights.map((fx0) => Object.assign({}, fx0, { g: null, landed: !1 })));
 		}
 		function finish() {
@@ -14067,28 +14138,38 @@ const JGP = (() => {
 		// A VISIT'S EXCHANGE: two creatures play their pair's vignette, its two lines always shown (the visits).
 		// Whether one is playing (a visit waits for it to end).
 		VIGS.playing = () => !!cur;
-		VIGS.play = (A, B) => {
+		// (two side by side: no more than an arm's length or so between them)
+		VIGS.beside = (A, B) => Math.hypot(A.group.position.x - B.group.position.x, A.group.position.z - B.group.position.z) < (A.bodyR || 1) + (B.bodyR || 1) + 2.4;
+		VIGS.play = (A, B, text) => {
 			if (cur || !A || !B) return !1;
 			const code = (en) => (JGP.slug && en === JGP.slug.ent ? "SL" : Object.keys(NAMES).find((k) => en.def && en.def.name === NAMES[k])),
 				a = code(A),
 				b = code(B),
 				pk = a && b && ALL_PAIRS.find((q) => (q[0] === a && q[1] === b) || (q[0] === b && q[1] === a));
-			return !!pk && (start(pk, pk[0] === a ? A : B, pk[0] === a ? B : A, { text: !0 }), !0);
+			return !!pk && (start(pk, pk[0] === a ? A : B, pk[0] === a ? B : A, { text: !!text }), !0);
 		};
+		// (pairs that can never stand side by side: two who never leave their places)
+		const FIXED = ["KD", "SM", "SL"],
+			can = ALL_PAIRS.filter((pk) => !(FIXED.includes(pk[0]) && FIXED.includes(pk[1])));
+		// (how often a pair's animation, or its lines, has played)
+		const nPl = (pk, text) => plays[pk[0] + pk[1] + (text ? "t" : "")] || 0;
+		VIGS.n = nPl;
+		VIGS.can = can;
 		function pick() {
-			const m = lineUp(),
-				// (any two in town, however far apart: every pair gets its turn, the least played first, in random
-				// order; the slug's are seen only on a visit to it, see the visits)
-				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && m[pk[0]].group.position.distanceTo(m[pk[1]].group.position) < 90);
+			const low = Math.min(...can.map((pk) => Math.min(nPl(pk), nPl(pk, 1)))),
+				m = lineUp(),
+				// (only two standing side by side where they are, as the Dancers on the floor: every other pair meets by
+				// a visit first, see the visits, which give every pair its turn, the least played first)
+				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && VIGS.beside(m[pk[0]], m[pk[1]]) && Math.min(nPl(pk), nPl(pk, 1)) <= low);
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
 			for (const pk of ok) {
-				const sc = 100 * (plays[pk[0] + pk[1]] || 0) + 50 * Math.random();
+				const sc = 100 * Math.min(nPl(pk), nPl(pk, 1)) + 50 * Math.random();
 				sc < bs && ((bs = sc), (best = pk));
 			}
-			// (and every one with its two lines: an hour's play shows every pair's animation and its words)
-			return start(best, m[best[0]], m[best[1]], { text: !0 }), !0;
+			// (whichever of its two, the animation or the lines, has played less)
+			return start(best, m[best[0]], m[best[1]], { text: nPl(best, 1) < nPl(best) || (nPl(best, 1) === nPl(best) && Math.random() < 0.5) }), !0;
 		}
 		L.push((tt, dt) => {
 			dt = Math.min(0.1, dt || 0.016);
@@ -14099,8 +14180,7 @@ const JGP = (() => {
 				return tick(dt);
 			}
 			if (me.active || "playing" !== jt.top) return void (nextAt = Math.max(nextAt, tt + 4));
-			// (one every half minute or so, so that in an hour every pair of the cast has played once, in random
-			// order: a pair not free then is tried again a few seconds on)
+			// (two side by side: one every half minute or so at most, tried again a few seconds on when none are)
 			tt > nextAt && (nextAt = tt + (pick(tt) ? 18 + 10 * Math.random() : 4));
 		});
 	})();
@@ -15844,7 +15924,7 @@ const JGP = (() => {
 				E.add(mx, mz, 4.2, "scenery"), keepAt.push([mx, mz]);
 			}
 		});
-		// (the Library is open ground: its solid parts are the bookcases, the banner's posts and the table)
+		// (the Library is open ground: its solid parts are the bookcases and the banner's posts)
 		F.addBuilding(KIOSK_AT.K.shop.x, KIOSK_AT.K.shop.z, KIOSK_AT.K.shop.ry, LIB_LAYOUT.hull, LIB_LAYOUT.parts, "shop");
 		// no lawn tufts through the bookcases
 		LIB_LAYOUT.cases.forEach(([lx, lz]) => keepAt.push(KIOSK_AT.at("shop", lx, lz)));
@@ -16075,7 +16155,8 @@ const JGP = (() => {
 					const WHO = ["gratelet", "drifter", "blinker", "m_kingdino", "gorbo", "cutebex", "m_somlet", "frog", "p_etcher", "p_gemtoe", "p_glyph", "w_mont", "p_mamagorbo", "keeper", "slug"],
 						STAYS = ["m_kingdino", "m_somlet", "slug"],
 						made = {},
-						ent = (id) => ("keeper" === id ? st.ent : "slug" === id ? JGP.slug && JGP.slug.ent : It.byId[id]),
+						// (ZOLLOD has no id of his own, only his kind)
+						ent = (id) => ("keeper" === id ? st.ent : "slug" === id ? JGP.slug && JGP.slug.ent : It.byId[id] || It.all.find((e) => e.def && e.def.__type === id)),
 						isSP = (h) => !!h && h === st.ent,
 						at = (h, q, r = 0.4) => Math.hypot(h.group.position.x - q[0], h.group.position.z - q[1]) < r,
 						free = (h, out) => {
@@ -16086,8 +16167,8 @@ const JGP = (() => {
 						},
 						// where the visitor stands: beside the host, on its side toward the visitor if it can, on open
 						// ground it can stand on, clear of everyone
-						spotBy = (v, h) => {
-							const hp = h.group.position,
+						spotBy = (v, h, at0) => {
+							const hp = at0 ? { x: at0[0], z: at0[1] } : h.group.position,
 								vp = v.group.position,
 								vr = v.bodyR || 1,
 								hr = h.bodyR || 1,
@@ -16110,13 +16191,26 @@ const JGP = (() => {
 								}
 							return null;
 						};
-					let V = null,
-						// (rare: one every three to six minutes at most, so the player only now and then sees one)
-						next = 120 + 120 * Math.random(),
-						want = null;
+					// the visits under way (two at most on their way out or meeting at once; any number walking home)
+					const VS = [],
+						// (each creature's vignette code, by name, and the pairs as visits: either way round, the one
+						// who stays put always the host; KING DINO with SOMLET, or either with the slug, can never meet)
+						CODE = { gratelet: "HN", drifter: "MU", blinker: "AN", m_kingdino: "KD", gorbo: "GW", cutebex: "ZL", m_somlet: "SM", frog: "FZ", p_etcher: "ET", p_gemtoe: "GT", p_glyph: "GL", w_mont: "MG", p_mamagorbo: "MA", keeper: "SP", slug: "SL" },
+						BY = Object.fromEntries(Object.entries(CODE).map(([id, c]) => [c, id])),
+						WAYS = VIGS.all
+							.map((pk) => {
+								const a = BY[pk[0]],
+									b = BY[pk[1]];
+								return { key: pk[0] + pk[1], slug: "slug" === a || "slug" === b, ways: [STAYS.includes(a) ? null : [a, b], STAYS.includes(b) ? null : [b, a]].filter(Boolean) };
+							})
+							.filter((w) => w.ways.length);
+					let next = 25 + 20 * Math.random(),
+						want = null,
+						forced = null;
 					// (for the tests: a visit at game time t, of h by v if given)
 					JGP.visitAt = (t, v, h) => ((next = t), (want = v ? [v, h] : null));
-					JGP.visits = () => ({ made, now: V && { v: V.vid, h: V.hid, stage: V.stage, played: !!V.played } });
+					const show = (q) => q && { v: q.vid, h: q.hid, stage: q.stage, played: !!q.played, gap: +Math.hypot(q.v.group.position.x - q.h.group.position.x, q.v.group.position.z - q.h.group.position.z).toFixed(1) };
+					JGP.visits = () => ({ made, now: show(forced && VS.includes(forced) ? forced : forced ? null : VS[0]), all: VS.map(show) });
 					// (for the tests: where v would stand to visit h, and its way there, without going)
 					JGP.visitPlan = (vid, hid) => {
 						const v = ent(vid),
@@ -16126,32 +16220,89 @@ const JGP = (() => {
 						if (!sp) return null;
 						const via = ((v.def && v.def.via) || []).map((w) => [w[0], w[1]]),
 							p0 = isSP(v) ? JGP.libFront() : via.length ? via[via.length - 1] : [v.group.position.x, v.group.position.z];
-						return { sp, from: p0, way: wayTo(p0[0], p0[1], v, h, sp, isSP(v) ? 0.9 : v.bodyR || 1), r: Math.min(1, isSP(v) ? 0.9 : v.bodyR || 1), inside: "slug" === hid ? 3 : 0 };
+						return { sp, from: p0, way: wayTo(p0[0], p0[1], v, h, sp, isSP(v) ? 0.9 : v.bodyR || 1), r: Math.min(1, isSP(v) ? 0.9 : v.bodyR || 1), inside: "slug" === hid ? 3 : isSP(h) ? 2 : 0 };
 					};
 					// (the way from a point to where the visit stands: for the slug, across town to the open ground outside the
-					// right-hand Garden window, then in through the wall where the X is and to its side)
+					// right-hand Garden window, then in through the wall where the X is and to its side; for SPARKAKUS, to the
+					// open front of his Library and in across its floor to his side)
 					const wayTo = (x0, z0, v, h, sp, r) => {
+							if (isSP(h)) return JGP.route(x0, z0, ...JGP.libFront(), r).concat([sp]);
 							if ("slug" !== h.id) return JGP.route(x0, z0, sp[0], sp[1], r);
 							const q = JGP.slug.visit(v.bodyR || 1);
 							return JGP.route(x0, z0, q.out[0], q.out[1], r).concat(q.way, [sp]);
 						},
 						wayFrom = (v, h, x1, z1, r) => {
 							const p = v.group.position;
+							if (isSP(h)) return [JGP.libFront()].concat(JGP.route(...JGP.libFront(), x1, z1, r));
 							if ("slug" !== h.id) return JGP.route(p.x, p.z, x1, z1, r);
 							const q = JGP.slug.visit(v.bodyR || 1);
 							return q.way.slice().reverse().concat([q.out], JGP.route(q.out[0], q.out[1], x1, z1, r));
 						},
-						spotFor = (v, h) => ("slug" === h.id ? JGP.slug.visit(v.bodyR || 1).spot : spotBy(v, h));
+						// (a host who works in a kiosk or behind the bar, ZOLLOD, MUSHROOM or FORTIZMO, comes out by its way
+						// out to meet its visitor at the end of it, MUSHROOM jumping down off his desk first)
+						viaOf = (h) => !isSP(h) && "slug" !== h.id && !STAYS.includes(h.id) && h.def && h.def.via && h.def.via.length ? h.def.via.map((w) => [w[0], w[1]]) : null,
+						// (beside SPARKAKUS on his Library's open floor, toward its front, clear of every bookcase)
+						spotLib = (v) => {
+							const B = F.buildings.find((b) => "shop" === b.name),
+								p = st.ent.group.position,
+								vr = Math.min(1, v.bodyR || 1),
+								[lx, lz] = F.local(B, p.x, p.z);
+							for (let j = 0; j < 6; j++)
+								for (let k = 0; k < 12; k++) {
+									const r = 1.5 + vr + 0.3 * j,
+										a = (k % 2 ? 1 : -1) * Math.ceil(k / 2) * (Math.PI / 6),
+										x = lx + r * Math.sin(a),
+										z = lz + r * Math.cos(a);
+									if (JGP.libParts.every(([a0, b0, c0, d0]) => Math.hypot(Math.max(a0 - x, 0, x - c0), Math.max(b0 - z, 0, z - d0)) > vr + 0.35)) return KIOSK_AT.at("shop", x, z);
+								}
+							return null;
+						},
+						spotFor = (v, h) => {
+							if ("slug" === h.id) return JGP.slug.visit(v.bodyR || 1).spot;
+							if (isSP(h)) return spotLib(v);
+							const hv = viaOf(h);
+							return spotBy(v, h, hv && hv[hv.length - 1]);
+						},
+						// (a jump down off a desk to the first step on: an arc clear of its edge, 0.8 s; true when landed)
+						hop = (e, H, t2) => {
+							const k = Math.min(1, (t2 - H.t0) / 0.8),
+								p = e.group.position;
+							p.set(H.a[0] + (H.b[0] - H.a[0]) * k, k < 1 ? H.c * (1 - k) + 0.8 * Math.sin(Math.PI * k) : 0, H.a[1] + (H.b[1] - H.a[1]) * k), e.home.set(H.b[0], e.home.y, H.b[1]);
+							return k >= 1;
+						},
+						// (a host walking out by its way out, or back in by it)
+						hostOut = (q, t2) => {
+							const h = q.h;
+							if (!q.hw || !q.hw.length) return;
+							h.pattern && h.pattern[1].y > 0 && ((q.hhop = { t0: t2, c: h.pattern[1].y, a: [h.group.position.x, h.group.position.z], b: q.hw[0] }), (h.pattern[1].y = 0));
+							if (q.hhop) return void (hop(h, q.hhop, t2) && (q.hhop = null));
+							const w = q.hw[0];
+							h.home.set(w[0], h.home.y, w[1]), at(h, w, q.hw.length > 1 ? 0.6 : 0.4) && q.hw.shift();
+						},
+						hostBack = (q, t2) => {
+							const h = q.h,
+								w = q.hb[0];
+							h.home.set(w[0], h.home.y, w[1]), at(h, w, 0.6) && q.hb.length > 1 && q.hb.shift();
+							((1 === q.hb.length && at(h, w) && !h.moving) || t2 > q.until) && (h.home.copy(q.hHome), (h.hosting = !1), (q.hb = null));
+						},
+						hostHome = (q) => {
+							const h = q.h;
+							(q.hw || q.hb) && (h.home.copy(q.hHome), q.hPat && Object.assign(h.pattern[1], q.hPat)), (q.hw = q.hb = q.hhop = null), (h.hosting = !1), isSP(h) && h.browse();
+						};
 					const begin = (t2, vid, hid) => {
 							const v = ent(vid),
 								h = ent(hid),
 								sp = v && h && spotFor(v, h);
 							if (!sp) return !1;
-							// (calling on the slug, it meets the church's walls rather than one box over it, so it can go in)
-							"slug" === hid && (v.inside = "church");
-							const face = Math.atan2(h.group.position.x - sp[0], h.group.position.z - sp[1]),
+							// (calling on the slug, it meets the church's walls rather than one box over it, so it can go in; on
+							// SPARKAKUS, the Library's bookcases rather than its whole ground)
+							"slug" === hid && (v.inside = "church"), isSP(h) && (v.inside = "shop");
+							const hv = viaOf(h),
+								hp = hv ? hv[hv.length - 1] : [h.group.position.x, h.group.position.z],
+								face = Math.atan2(hp[0] - sp[0], hp[1] - sp[1]),
 								q = { v, h, vid, hid, sp, stage: "out", until: t2 + 40 + 1.6 * Math.hypot(sp[0] - v.group.position.x, sp[1] - v.group.position.z) };
 							(v.visiting = !0), (h.hosting = !0), isSP(h) && h.stay();
+							hv && ((q.hw = hv), (q.hHome = h.home.clone()), (q.hPat = h.pattern && Object.assign({}, h.pattern[1])), h.pattern && (h.pattern[1].face = Math.atan2(sp[0] - hp[0], sp[1] - hp[1])));
 							if (isSP(v)) {
 								// (SPARKAKUS from his Library's front)
 								const [fx, fz] = JGP.libFront();
@@ -16164,13 +16315,15 @@ const JGP = (() => {
 								(q.home = v.home.clone()), (q.pat = v.pattern && Object.assign({}, v.pattern[1])), (q.way = via.concat(wayTo(p0[0], p0[1], v, h, sp, v.bodyR || 1)));
 								v.pattern && (v.pattern[1].face = face);
 							}
-							return (made[vid + "|" + hid] = (made[vid + "|" + hid] || 0) + 1), (V = q), !0;
+							return (made[vid + "|" + hid] = (made[vid + "|" + hid] || 0) + 1), VS.push(q), q;
 						},
 						// back home: slowly, by its way in; the host is free at once
-						goBack = (t2) => {
-							const q = V,
-								{ v, h } = q;
-							(h.hosting = !1), isSP(h) && h.browse();
+						goBack = (q, t2) => {
+							const { v, h } = q;
+							// (a host who came out goes back in by its way, and is free once home)
+							q.hHome
+								? ((q.hw = null), (q.hhop = null), (q.hb = (viaOf(h) || []).slice(0, -1).reverse().concat([[q.hHome.x, q.hHome.z]])), q.hPat && Object.assign(h.pattern[1], q.hPat))
+								: ((h.hosting = !1), isSP(h) && h.browse());
 							if (isSP(v)) {
 								const [fx, fz] = JGP.libFront();
 								st.leave(wayFrom(v, h, fx, fz, 0.9).map(([x, z]) => new THREE.Vector3(x, 0, z)), 1.2);
@@ -16183,65 +16336,84 @@ const JGP = (() => {
 							(q.stage = "back"), (q.until = t2 + 200);
 						},
 						// called off (the Event, a battle): its place back at once, and the Event or the walk home takes it there
-						drop = () => {
-							const { v, h } = V;
-							(h.hosting = !1), isSP(h) && h.browse();
-							isSP(v) ? me.active || st.leave() : (V.pat && Object.assign(v.pattern[1], V.pat), V.home && v.home.copy(V.home), (v.walkK = 0));
-							(v.visiting = !1), (v.inside = null), (V = null), (next = Re.t + 180);
+						drop = (q) => {
+							const { v } = q;
+							hostHome(q);
+							isSP(v) ? me.active || st.leave() : (q.pat && Object.assign(v.pattern[1], q.pat), q.home && v.home.copy(q.home), (v.walkK = 0));
+							(v.visiting = !1), (v.inside = null), VS.splice(VS.indexOf(q), 1);
 						};
-					L.push((t2, dt) => {
-						dt = Math.min(0.1, dt || 0.016);
-						if (V) {
-							const { v, h } = V;
-							isSP(v) && st.ent.sync(), isSP(h) && st.ent.sync();
-							// (the Event, a battle or a meeting takes either away: the visit is off)
-							if (me.active || !It.all.concat([st.ent]).includes(v) || ((v.busy || v.battleDance) && !isSP(v)) || (V.stage !== "back" && !isSP(h) && (h.busy || h.battleDance || h.meeting))) return drop();
-							if ("out" === V.stage) {
-								if (t2 > V.until) return goBack(t2);
-								if (isSP(v)) return void (st.there() && (V.stage = "meet"), "meet" === V.stage && (V.meetAt = t2));
-								// (MUSHROOM steps down off his desk first, SOMLET gets up first)
-								if (v.pattern && v.pattern[1].y > 0) return void (v.pattern[1].y = Math.max(0, v.pattern[1].y - 2.5 * dt));
-								if ((v.lieK || 0) > 0.25) return;
-								const w = V.way[0];
-								v.home.set(w[0], v.home.y, w[1]);
-								// (a waypoint on the way counts when within 0.6 m: a corner it is pushed off still lets it on)
-								if (at(v, w, V.way.length > 1 ? 0.6 : 0.4)) V.way.length > 1 ? V.way.shift() : v.moving || ((V.stage = "meet"), (V.meetAt = t2));
-								return;
+					// one visit's step
+					const step = (q, t2, dt) => {
+						const { v, h } = q;
+						isSP(v) && st.ent.sync(), isSP(h) && st.ent.sync();
+						// (the host out to meet it, or back in again)
+						"back" === q.stage ? q.hb && hostBack(q, t2) : hostOut(q, t2);
+						// (the Event, a battle or a meeting takes either away: the visit is off)
+						if (me.active || !It.all.concat([st.ent]).includes(v) || ((v.busy || v.battleDance) && !isSP(v)) || (q.stage !== "back" && !isSP(h) && (h.busy || h.battleDance || h.meeting))) return drop(q);
+						if ("out" === q.stage) {
+							if (t2 > q.until) return goBack(q, t2);
+							if (isSP(v)) return void (st.there() && (q.stage = "meet"), "meet" === q.stage && (q.meetAt = t2));
+							// (MUSHROOM jumps down off the front of his desk first, to the first step of his way out: an arc clear
+							// of its edge; SOMLET gets up first)
+							if (v.pattern && v.pattern[1].y > 0) (q.hop = { t0: t2, c: v.pattern[1].y, a: [v.group.position.x, v.group.position.z], b: q.way[0] }), (v.pattern[1].y = 0);
+							if (q.hop) {
+								const H = q.hop,
+									k = Math.min(1, (t2 - H.t0) / 0.8),
+									p = v.group.position;
+								p.set(H.a[0] + (H.b[0] - H.a[0]) * k, k < 1 ? H.c * (1 - k) + 0.8 * Math.sin(Math.PI * k) : 0, H.a[1] + (H.b[1] - H.a[1]) * k), v.home.set(H.b[0], v.home.y, H.b[1]);
+								return void (k >= 1 && (q.hop = null));
 							}
-							if ("meet" === V.stage) {
-								// their exchange, once any other vignette is over (or they go home without it after a while)
-								// (with the slug, only if the player is in the church too: else they keep it to themselves, quietly)
-								if ("slug" === h.id && !V.played) {
-									const CB = F.buildings.find((B) => "church" === B.name);
-									if (!(CB && F.inHull(CB, At.position.x, At.position.z))) return void ((V.played = t2), (V.quiet = !0));
-								}
-								if (!V.played) return void (VIGS.play(v, h) ? ((V.played = t2), "slug" === h.id && JGP.slug.chat(8.5)) : t2 - V.meetAt > 15 && goBack(t2));
-								if (V.quiet) return void (t2 - V.played > 9 && goBack(t2));
-								return void (!VIGS.playing() && t2 - V.played > 1.5 && goBack(t2));
-							}
-							// back home
-							if (isSP(v)) return void (st.away() || ((v.visiting = !1), (v.inside = null), (V = null), (next = t2 + 180 + 180 * Math.random())));
-							const w = V.back[0];
+							if ((v.lieK || 0) > 0.25) return;
+							const w = q.way[0];
 							v.home.set(w[0], v.home.y, w[1]);
-							at(v, w, 0.6) && V.back.length > 1 && V.back.shift();
-							if ((1 === V.back.length && at(v, w) && !v.moving) || t2 > V.until) v.home.copy(V.home), (v.walkK = 0), (v.visiting = !1), (v.inside = null), (V = null), (next = t2 + 180 + 180 * Math.random());
+							// (a waypoint on the way counts when within 0.6 m: a corner it is pushed off still lets it on)
+							if (at(v, w, q.way.length > 1 ? 0.6 : 0.4)) q.way.length > 1 ? q.way.shift() : v.moving || ((q.stage = "meet"), (q.meetAt = t2));
 							return;
 						}
-						if (t2 < next || me.active || "playing" !== jt.top || Dbt.state) return;
-						next = t2 + 5;
-						// who: the asked-for pair, else of the pairs both free the one visited least, at random among those
-						let best = null,
-							bn = 1e9;
-						const pairs = want ? [want] : [];
-						if (!want) for (const a of WHO) if (!STAYS.includes(a)) for (const b of WHO) a !== b && pairs.push([a, b]);
-						// (the slug is called on only rarely: in one round in eight)
-						const slugToo = !!want || Math.random() < 0.125;
-						for (const [a, b] of pairs) {
-							if (("slug" === b && !slugToo) || !free(ent(a), !0) || !free(ent(b), !1)) continue;
-							const n2 = (made[a + "|" + b] || 0) + Math.random() * 0.5;
-							n2 < bn && ((bn = n2), (best = [a, b]));
+						if ("meet" === q.stage) {
+							// their exchange, side by side, once any other vignette is over (or they go home without it after a while)
+							// (with the slug, only if the player is in the church too: else they keep it to themselves, quietly)
+							if ("slug" === h.id && !q.played) {
+								const CB = F.buildings.find((B) => "church" === B.name);
+								if (!(CB && F.inHull(CB, At.position.x, At.position.z))) return void ((q.played = t2), (q.quiet = !0));
+							}
+							if (!q.played) return void (VIGS.beside(v, h) && VIGS.play(v, h, q.text) ? ((q.played = t2), "slug" === h.id && JGP.slug.chat(8.5)) : t2 - q.meetAt > 40 && goBack(q, t2));
+							if (q.quiet) return void (t2 - q.played > 9 && goBack(q, t2));
+							return void (!VIGS.playing() && t2 - q.played > 1.5 && goBack(q, t2));
 						}
-						best && begin(t2, best[0], best[1]) && (want = null);
+						// back home (the visit over once the host is home too)
+						const end = () => ((v.visiting = !1), (v.inside = null), (q.vDone = !0));
+						if (q.vDone) return void (q.hb || VS.splice(VS.indexOf(q), 1));
+						if (isSP(v)) return void (st.away() || end());
+						const w = q.back[0];
+						v.home.set(w[0], v.home.y, w[1]);
+						at(v, w, 0.6) && q.back.length > 1 && q.back.shift();
+						if ((1 === q.back.length && at(v, w) && !v.moving) || t2 > q.until) v.home.copy(q.home), (v.walkK = 0), end();
+					};
+					L.push((t2, dt) => {
+						dt = Math.min(0.1, dt || 0.016);
+						for (let k = VS.length - 1; k >= 0; k--) step(VS[k], t2, dt);
+						if (t2 < next || me.active || "playing" !== jt.top || Dbt.state || VS.filter((q) => "back" !== q.stage).length >= 2) return;
+						next = t2 + 4;
+						// who: the asked-for pair, else the pair whose vignette has played least, at random among those,
+						// that can meet now (both free, not already side by side: those play where they stand)
+						// (the slug is called on only rarely: in one round in eight)
+						const slugToo = Math.random() < 0.125;
+						let best = null,
+							bn = 1e9,
+							kind = !1;
+						for (const w of want ? [{ key: "", ways: [want] }] : WAYS) {
+							if (w.slug && !slugToo) continue;
+							const ok = w.ways.filter(([a, b]) => free(ent(a), !0) && free(ent(b), !!(ent(b) && viaOf(ent(b)))) && (want || !VIGS.beside(ent(a), ent(b))));
+							if (!ok.length) continue;
+							const n2 = Math.min(VIGS.plays[w.key] || 0, VIGS.plays[w.key + "t"] || 0) + Math.random() * 0.5;
+							n2 < bn && ((bn = n2), (best = ok[(Math.random() * ok.length) | 0]), (kind = (VIGS.plays[w.key + "t"] || 0) < (VIGS.plays[w.key] || 0) || ((VIGS.plays[w.key + "t"] || 0) === (VIGS.plays[w.key] || 0) && Math.random() < 0.5)));
+						}
+						if (!best) return;
+						const q = begin(t2, best[0], best[1]);
+						// (one setting off about every minute, 45 to 65 s apart: with the pairs side by side, every pair's two
+						// vignettes, its animation and its lines, in about three hours)
+						q && ((q.text = kind), (next = t2 + 45 + 20 * Math.random()), want && ((forced = q), (want = null)));
 					});
 				}
 			}
@@ -17038,9 +17210,18 @@ const JGP = (() => {
 				for (; j + 1 < cells.length && clear(px, pz, cells[j + 1][0], cells[j + 1][1]); j++);
 				out.push(cells[j]), (px = cells[j][0]), (pz = cells[j][1]), (i = j + 1);
 			}
-			// (the last cell gives way to the goal itself; short of a goal it can't reach, it walks to its nearest
-			// cell and on from there)
-			return end === b && out.length && out.pop(), out.push([x1, z1]), out;
+			// (the last cell gives way to the goal itself when the straight line there stays on open cells to within a
+			// cell of it; short of a goal it can't reach, it walks to its nearest cell and on from there)
+			if (end === b && out.length) {
+				const [qx, qz] = out.length > 1 ? out[out.length - 2] : [cx(a), cz(a)],
+					d = Math.hypot(x1 - qx, z1 - qz),
+					f = Math.max(0, d - S) / (d || 1);
+				clear(qx, qz, qx + (x1 - qx) * f, qz + (z1 - qz) * f) && out.pop();
+			}
+			// (a start off open ground, as just out of a kiosk's door, goes to its nearest open cell first)
+			const i0 = Math.floor((x0 - X0) / S),
+				j0 = Math.floor((z0 - Z0) / S);
+			return (i0 + NX * j0 === a && i0 >= 0 && i0 < NX) || out.unshift([cx(a), cz(a)]), out.push([x1, z1]), out;
 		},
 		roamWalk(p, x, z, r, others, own, extra) {
 			const d = Math.hypot(x - p.x, z - p.z),
@@ -17141,6 +17322,10 @@ const JGP = (() => {
 function vo(t, e) {
 	try {
 		const o = (e ? "[" + e + "] " : "") + (t && t.stack ? t.stack.split("\n").slice(0, 3).join("\n") : String(t));
+		// (every distinct error kept with its count and when it first came, for the test modes' copy button)
+		const lg = (window.__jgpErrLog = window.__jgpErrLog || new Map()),
+			q = lg.get(o);
+		q ? q.n++ : lg.size < 200 && lg.set(o, { n: 1, at: Math.round(performance.now() / 100) / 10 });
 		console.error(o);
 		const a = window.__gbGuard;
 		if (!a || !a.DEBUG) return;
