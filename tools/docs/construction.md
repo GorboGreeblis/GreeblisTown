@@ -457,6 +457,21 @@ Goo that runs down a body and moves like goo, without clipping:
     the words the owner gave it, "A Prehistoric Era in Jazz!", with a cloth banner hung under the board on two
     ropes carrying the second line in one row of big letters, "Let King Dino take you to the Jurassic Greeblis
     Park!" (the one piece of lore text in the background, at the owner's request).
+  - **minor details** (the owner asked for more small things in the town, each a creature's, no words): picture
+    bands on the blank sign bands (GEMTOE's scales with an amethyst and spilling coins, MONTGUMMERY's row of
+    cassettes with the last one bitten on the video store, GOOWARD's winged goo cone on the parlour, ZOLLOD's five
+    pots from seed to flower on the florist's, ANOMALEE's workbench and her pizza on her repair shop); iron bars
+    over GEMTOE's windows; the barber's blue awning; a premiere searchlight on the picture house's roof and
+    KING DINO's bill hung from the east side's lamps; GLYPH's A-board with a hex plate on the walk; ETCHER's
+    half-etched slab leaning on his pier with his mallet and chisel; Blossom stencils on the grocer's crates;
+    SPARKAKUS's paw prints in the north sidewalk, his rocking chair and open book on his porch; GOOWARD's drips
+    across the north-east crosswalk; ZOLLOD's hanging baskets on the lamps behind the line-up; SOMLET's mail
+    cart left at the kerb opposite the Post Office; the seal's five flowers in beds at the Town Hall steps; the
+    sighting painted on the Consortium's trailer and its standard flown from the mast; a tape-return bin and two
+    chewed cassettes at the video store; KING DINO's ride cymbal by his porch drum; FORTIZMO's carrot patch;
+    MUSHROOM's porch telescope trained on the sky. Paid for by the drive-in's M arches (tube segments 44 x 10 to
+    24 x 8) and the lamp posts' iron (eight-sided to six-sided), both invisible at their size: the town is
+    101,529 triangles in 24 meshes. `test/t_detail.js` renders any list of close shots.
   All of it goes into the existing bins and atlas (24 town meshes, no new draw calls). Its triangles are paid for:
   the park fence's pickets are four-sided tubes with no end faces (never seen; a third of the fence's triangles),
   the lamp globes and marquee bulbs are coarser spheres, and the far trees use the one-crown build. The town is
