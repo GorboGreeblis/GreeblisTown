@@ -7,7 +7,9 @@
 // mode does (desktop, mobile and VR all move the same body). Run: NOSHOT=1 node shot2.js <url> x.png ./t_church.js
 module.exports = async (p) => {
   const log = (...a) => console.log(...a);
-  await p.mouse.click(640, 60); await p.waitForTimeout(2500);
+  // (the click that starts the game goes to the middle of the view: a click near the top edge can land on the menu bar,
+  // and the world's frame callbacks stand still while a menu is open)
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(2500);
   const r = await p.evaluate(() => {
     const B = F.buildings.find((b) => b.name === 'church'), D = 18, P = At.position, out = {};
     // walk straight from local (8, z) towards local x = 2, 5 cm a step, colliding as the game does
@@ -47,9 +49,11 @@ module.exports = async (p) => {
     const zn = z.list.find((q) => q.id === 'slug');
     return { target: xe.current && xe.current.id, actions: xe.actions.map((a) => a.label), at: [zn.x.toFixed(2), zn.z.toFixed(2)] };
   });
-  const pose = () => p.evaluate(() => JSON.stringify({ head: +JGP.slug.head.rotation.y.toFixed(2), breath: +JGP.slug.mantle.scale.y.toFixed(3), stalk: +JGP.slug.stalks[0].rotation.x.toFixed(2) }));
+  const pose = () => p.evaluate(() => JSON.stringify({ head: +JGP.slug.head.rotation.y.toFixed(3), breath: +JGP.slug.mantle.scale.y.toFixed(4), stalk: +JGP.slug.stalks[0].rotation.x.toFixed(3) }));
   const idle = [await pose()];
-  await p.waitForTimeout(1500), idle.push(await pose());
+  // (1.5 s of game time, not wall time: headless game time runs slower)
+  { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 600 && (await p.evaluate(() => Re.t)) - t0 < 1.5; k++) await p.waitForTimeout(100); }
+  idle.push(await pose());
   await p.evaluate(() => xe.run('interact'));
   // (wait 2 s of game time, not wall time: headless game time runs about ten times slower)
   { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 600 && (await p.evaluate(() => Re.t)) - t0 < 2; k++) await p.waitForTimeout(100); }

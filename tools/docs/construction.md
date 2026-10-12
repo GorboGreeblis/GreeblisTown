@@ -573,6 +573,14 @@ Goo that runs down a body and moves like goo, without clipping:
     hand, a Blossom (it takes one and answers "..."); it never leaves its place (others rarely come to it, see the visits), and its own moves: idle (stalks swaying and pulling in, breathing, looking
     round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
     `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
+    A second pass from the owner's photo (their request: more detail, bigger if needed): the slug is 1.15 times
+    bigger about its middle; a thin wet keel rides the top of its body from tail to head; the tail's last stretch
+    and tip are a shade paler in a group of their own; the mantle has a slightly paler lip round its edge; the
+    eye-stalks are thicker at the root, bend up a little and each starts 7 cm inside the head so they stay
+    connected in every pose (the owner asked); the skin is glossier. At rest it also settles and swells a little,
+    its tail tip curls slowly and its head creeps forward and back. `test/t_church.js` samples the idle over game
+    time (its first click goes to the middle of the view: a click near the top edge landed on the menu bar, which
+    freezes the world's frame callbacks and made the pose checks fail).
   - **No Blossom or Flint ever spawns inside:** every pickup spot comes from `go()`, which turns down anything within
     0.8 m of a building's hull, and the room lies inside the church's (`test/t_church.js` samples it).
   - **No creature goes inside:** they path round the hull and never pick a spot in it, and `JGP.churchGuard`
