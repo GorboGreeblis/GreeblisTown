@@ -5,7 +5,7 @@
 // Run with run.js. Headless game time is slow: the Event part waits on Re.t and can take several minutes.
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
-  await p.mouse.click(640, 360); await W(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
   console.log(await p.evaluate(() => {
     Kt.blossoms = 1;
     const bad = [], moves = [];

@@ -3,7 +3,7 @@
 // and the open screen.
 // Run: NOSHOT=1 node shot2.js <url> x.png ./talk.js
 module.exports = async (p) => {
-  await p.mouse.click(640, 360); await p.waitForTimeout(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   const ids = await p.evaluate(() => It.all.map(e => e.id || e.def.__type));
   const out = [];
   for (const id of ids) {

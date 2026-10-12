@@ -3,7 +3,7 @@
 // never go below the ground and the hands keep clear of the skirt.
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(640, 360); await W(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
   await p.evaluate(() => {
     At.position.set(-2, 0, 30);
     window.__A = { lowFoot: 9, handIn: 0, frames: 0 };

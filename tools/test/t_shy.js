@@ -6,7 +6,7 @@
 //   NOSHOT=1 node shot2.js <url> x.png ./t_shy.js
 module.exports = async (p, out) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(640, 360); await W(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
   // (every page of what opens, as typed out)
   const pages = async () => {
     const r = [];

@@ -1,7 +1,7 @@
 // Render isolated portraits: clone each entity's def/builder at an empty spot of open lawn (SPAWN=x,z;
 // keep it clear of buildings, whose raised floors would hide a model's lower part), 2 angles, then remove it.
 module.exports = async (p, out) => {
-  await p.mouse.click(640, 360); await p.waitForTimeout(1200);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1200);
   const ids = (process.env.IDS || '').split(',').filter(Boolean);
   const res = await p.evaluate(([ids, ANGS, ELEV, DIST, SP]) => {
     const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 500), out = []; O.setSize(360, 360, false); At.visible = false; At.position.set(0, 0, 0);

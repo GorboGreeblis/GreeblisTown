@@ -297,6 +297,10 @@ Goo that runs down a body and moves like goo, without clipping:
   free from shyness!"): from then on talking to him opens the shop as before, and his pairs count half in the
   visit order, so he meets the others about twice as often. MAMA GORBO's fourth Talk line hints at the book;
   GEMTOE's fourth Talk line is his own. `test/t_shy.js` plays the whole quest through.
+- Flavor lines (owner's request): every creature but the ANCIENT, NEXTESSA, BACKPACKA and ZOLLOD has one more Talk
+  line, last in its turn, a word about its own lore and design that only adds to the town. They come only outside
+  the Event (Talk there gives the Event line). SPARKAKUS's (`i.flavor`) takes turns with his quest line, after it,
+  and never stands in for his finale. `test/t_flavor.js` talks each one through and checks the Event.
 
 ### Vignettes
 
@@ -338,7 +342,16 @@ Goo that runs down a body and moves like goo, without clipping:
   away); Fortizmo plays the tag and everyone goes home.
 - **Roles:** `NO_PLANT` (Fortizmo) comes but doesn't plant; `AT_POST` (King Dino) keeps drumming; Nextessa is
   never there; Backpacka only appears for it. Sparkakus leaves the Library to plant and dance with everyone (only
-  when Seeds are in), but nothing comes up where he digs.
+  when Seeds are in): `beginPlanting` gives him a spot of his own inside the garden like theirs, and he grows a
+  flower there like every planter (his dig is watched by its own small check, as he isn't one of the cast the
+  Event steps). His Talk at the Event is his Event line, wherever he is (his station and his garden target are
+  never silenced by the Event's no-talk check, which is for creatures with no Event line). A planter held off its
+  spot by a neighbour or the stone (broad HENNRICK on the inner row) takes the spot where it stands after a
+  second, within a metre, so it still plants and grows its flower. The church's ANCIENT never dances or
+  plants (owner's rule): it stays as it always is and only talks when talked to.
+- **Workers come out straight:** a kiosk or bar worker walks its way out from inside only; one already out when the
+  Event starts (on a visit, or stepped out to meet a visitor) goes straight to the garden, never back into its
+  kiosk to walk the way out again (ZOLLOD used to get stuck walking into Garden Supplies).
 - **Pizza** (only once the Snacks quest is complete: `Kt.rewards.snacks`, Nextessa has delivered): stacks of pizza
   boxes stand outside the garden's stone ring beside the seed sacks for as long as the Event runs (fixed bodies in
   `uo.fixed`, so everyone keeps clear of them), and Anomalee doesn't plant: she gets an open box at her spot and
@@ -405,11 +418,13 @@ Goo that runs down a body and moves like goo, without clipping:
   `exit` and `at(name, lx, lz)` points. The Post Office and the Sheriff's share the north-east corner, Garden
   Supplies has the south-east and the Library the north-west. The Sheriff's back wall carries wanted posters on
   parchment: two little green aliens, their UFO, GLOOPERNAUGHT (a big green goo creature, named under its
-  picture), a rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
+  picture), a brown rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
   with red collar and gold epaulettes, a paw tucked in) front and centre under the star, and a drawing of the
   player's own avatar (copper hair and ponytail band, freckles, the flowered indigo dress), pinned a few
   millimetres proud of the goo poster's corner so the two never flicker. Its back wall is plain: the battens
   every other kiosk has would cut across the posters, so the owner had them taken off (`noBattens`).
+  Garden Supplies' wheelbarrow of flowers out front stands on its wheel: two fork rails run from under the tray's
+  front edge down to the axle, the wheel's top level with the tray's bottom, and two legs at the back.
 - **Solid ground and clear ground:**
   - `F.add(x, z, r)` makes round colliders. `F.addBuilding(x, z, ry, hull, parts, name)` makes an oriented
     building: creatures path round the hull; the player and workers meet its parts (walls, counters).
@@ -531,6 +546,14 @@ Goo that runs down a body and moves like goo, without clipping:
   Dress's suns and tiled the same); navy belt; dark trainers. Taking the Sun Dress off goes back to her own print,
   never to a bare colour. The Sun Dress's gold hem rides on the skirt itself, so it sways with it. Her walking bob
   (`dk.bobY`) goes on just before the camera and render: the player step keeps her body at y 0 for collisions.
+- **The dialogue box** (one canvas, drawn the same in every mode) shows the speaker's name tag only when there is a
+  speaker: a box with no name (a pickup's notice, such as "Overcoming Shyness book obtained") has no tag at all,
+  never an empty coloured one.
+- **No X in the top right of any menu** (owner's rule): every panel closes by its own button at the bottom (LEAVE,
+  DONE, No) or, in the test modes, a tap off it. A Dance battle has LEAVE from its first round.
+- **Taps in the test modes** (owner's request: no NEXT or CLOSE buttons on mobile): a tap or click anywhere moves
+  a dialogue on, page by page, and closes it after the last; a tap off the action menu or a panel (the shop)
+  closes it. The panels keep their own X and LEAVE. VR is unchanged (the trigger already moves dialogue on).
 - **The test modes' error tools** count every error in one place, `vo()` (the frame loop, a click, a key, a
   button), so the desktop counter and the copied report agree; and the VR placer never runs there (a new dialogue
   or panel used to show in the wrong place for one frame).
@@ -547,6 +570,13 @@ Goo that runs down a body and moves like goo, without clipping:
   ahead, as a compile stall in a headset is long and crackles the music.
 - **During the Event** a safeguard hides far scenery (outside `finaleKeepR`) to protect the frame rate; mark
   anything that must stay visible `keepInFinale`.
+- **Work only when something changed:** a creature's ground height is worked out again only when it has moved
+  (`gFit` keeps `gfX/gfZ/gfG`; a ground probe is seven samples); `F.inHull` works its local point out in place
+  (no array per call); creature-to-creature pushes test squared distance before any square root; a visit's
+  failed search for a spot is retried a second later, not every frame; idle footprint samples are staggered so
+  they never all fall in one frame.
+- **Hide what has finished:** Backpacka's droplet cloud is its own object in the scene, so it is hidden with him;
+  it was drawn every frame for the rest of the session after the first Event.
 - Measure with `test/t_perf.js`.
 
 ## No clipping, no flicker

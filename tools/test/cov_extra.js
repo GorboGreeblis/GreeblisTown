@@ -3,7 +3,7 @@
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
   const clear = () => p.evaluate(() => { for (let i = 0; i < 30 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} try { _t.close(); } catch (e) {} });
-  await p.mouse.click(640, 360); await W(1000);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1000);
   const ids = await p.evaluate(() => z.list.map((s) => s.id));
   console.log('stations', ids.join(','));
   for (const id of ids) {

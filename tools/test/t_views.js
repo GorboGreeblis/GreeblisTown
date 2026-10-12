@@ -5,7 +5,7 @@
 // world [dx, dy, dz] otherwise. Writes <out>_<name>.png. AWAY=1 first moves the player out of the way.
 module.exports = async (p, out) => {
   const fs = require('fs');
-  await p.mouse.click(640, 360); await p.waitForTimeout(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   if (process.env.AWAY) { await p.evaluate(() => At.position.set(0, 0, 44)); await p.waitForTimeout(4000); }
   for (const [name, target, off, ly, fov] of JSON.parse(process.env.VIEWS || '[]')) {
     const img = await p.evaluate(([target, off, ly, fov]) => {
