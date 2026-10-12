@@ -30,7 +30,7 @@ Planting and dance speeds are in radians per second of game time; 5.45 is one bo
 | Backpacka | – | `BP` (the Event) | Only at the Garden Event | – | – |
 
 At the Garden Event King Dino stays at his drums, Fortizmo plays instead of planting, Sparkakus plants with
-everyone (only when Seeds are in) but nothing comes up where he digs, Nextessa never comes and Backpacka is its
+everyone (only when Seeds are in) and grows a flower where he digs like every planter, Nextessa never comes and Backpacka is its
 climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)})`.
 
 ## Sparkakus (`keeper`): the librarian
@@ -100,7 +100,7 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 - **Given a Blossom:** she shoots her colourful goo at the player, eight arcs that splat on the view (her def's
   `goo` palette: cyan, magenta, violet, lime and peach).
 - **Removed on request:** a red eye in a side fold, a dangling knob under the chin, and the smoke wisps.
-- **Role:** wanders the park and meets Gooward every minute or two, with hearts. She also appears, in the
+- **Role:** wanders the park and meets Gooward every 20 to 40 s, with hearts. She also appears, in the
   window's own cyan, in the church's two Garden windows.
 
 ## Gooward (`gorbo`)

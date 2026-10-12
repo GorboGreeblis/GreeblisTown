@@ -202,7 +202,7 @@ Goo that runs down a body and moves like goo, without clipping:
   pair meets a second time before every pair has met once),
   and the meeting plays whichever of its two vignettes, the animation or the lines, has played less: never both.
   Everyone visits everyone, kiosk workers included; King Dino (at his drums), Somlet (asleep at the Post Office)
-  and the church's Ancient never leave, the others come to them (two of those three never meet, as intended).
+  and the church's Ancient never leave, the others come to them (so no two of those three ever meet, as intended).
   Nextessa and Backpacka neither visit nor are visited.
   - The way: a worker out by its `via` (Mushroom jumps down off the front of his desk first: an 0.8 s arc to the
     first step of his way out), then `JGP.route` (a 1.2 m grid of open ground, as `roamFree`, pulled taut into
@@ -274,8 +274,8 @@ Goo that runs down a body and moves like goo, without clipping:
 
 - **Three quests** on the HUD: the Seeds (sold at Garden Supplies as a "bagel seasoning packet", 10 flint), the
   Summoning Stone and the Snacks (Nextessa's pizza, called from the phone booth).
-- **The phone is locked** until Mushroom has been given a Blossom (`Kt.phone`, set in `te()`): before, it rings and
-  no one answers, so Nextessa can't be called; after, it works for the rest of the session (also in testing).
+- **The phone is locked** until Mushroom has been given a Blossom (`Kt.phone`, set in `te()`): before, the booth only says
+  the connection to the Portal seems blocked, so Nextessa can't be called; after, it works for the rest of the session (also in testing).
   `test/t_phone.js` checks both.
 - **Dance battles** (Greeblis City's panel and bar) with the three Dancers: rock, paper, scissors. The Dancer goes
   first and shows its move with its own animation; Rock out! beats the splits, the splits beat going horizontal,
@@ -298,7 +298,7 @@ Goo that runs down a body and moves like goo, without clipping:
   station stops offering it. The first Talk with the book in hand frees him ("…|That book…|Let me see..|Wow I'm
   free from shyness!"): from then on talking to him opens the shop as before, and his pairs count half in the
   visit order, so he meets the others about twice as often. MAMA GORBO's fourth Talk line hints at the book;
-  GEMTOE's fourth Talk line is his own. `test/t_shy.js` plays the whole quest through.
+  GEMTOE's fourth Talk line is her own. `test/t_shy.js` plays the whole quest through.
 - Flavor lines (owner's request): every creature but the ANCIENT, NEXTESSA, BACKPACKA, ZOLLOD and SPARKAKUS has
   one more Talk line, last in its turn, a word about its own lore and design that only adds to the town. They
   come only outside the Event (Talk there gives the Event line). SPARKAKUS has none (owner's call: his Talk
@@ -342,7 +342,7 @@ Goo that runs down a body and moves like goo, without clipping:
   Strut" (88 BPM, C minor, 24 bars timed to his visit) and everyone steps out to the ring walk and dances;
   Backpacka flies in (timeline `D`: 16 s to the pond, 14 s drinking, 12 s to the garden, 15 s spraying, 14.5 s
   away); Fortizmo plays the tag and everyone goes home.
-- **Roles:** `NO_PLANT` (Fortizmo) comes but doesn't plant; `AT_POST` (King Dino) keeps drumming; Nextessa is
+- **Roles:** `NO_PLANT` (Fortizmo) comes but doesn't plant; `AT_POST` (King Dino at his drums, Somlet asleep at the Post Office) stay where they are; Nextessa is
   never there; Backpacka only appears for it. Sparkakus leaves the Library to plant and dance with everyone (only
   when Seeds are in): `beginPlanting` gives him a spot of his own inside the garden like theirs, and he grows a
   flower there like every planter (his dig is watched by its own small check, as he isn't one of the cast the
@@ -409,7 +409,7 @@ Goo that runs down a body and moves like goo, without clipping:
   yellow (the building, trim, lot and menu); no burger on the roof; the pylon is just the big teal M on a beam,
   about as tall as the Main Street rooftops, beside the restaurant's front corner. Its 20 m lot replaced the
   hardware store on Main Street, and its M is meant to show over the rooftops from the square.
-- **No far scenery:** the fields, farmsteads, turbines, windmills, railroad, telephone poles, water tower and grain
+- **No far scenery:** the fields, farmsteads, turbines, windmills, railroad, telephone poles, the old far water tower and grain
   elevator were removed for performance (about 48k triangles and 8 draw calls, and no spinners to turn each
   frame). The town ring round the square, the trees between its buildings and Mistergummery's stay. No cars.
 - **The town is the creatures' own, shown not told** (owner's rules: as interesting as possible, from the park's
@@ -594,8 +594,8 @@ Goo that runs down a body and moves like goo, without clipping:
     `test/t_church.js` checks the way in, the walls and the head guard; `test/churchshots.js` renders it.
   - **The Ancient** (the slug creature; its name on screen is ANCIENT, its id in code stays `slug`) lies across the middle of the floor and never moves from there. It has a Talk and, with one in
     hand, a Blossom (it takes one and answers "..."); it never leaves its place (others rarely come to it, see the visits), and its own moves: idle (stalks swaying and pulling in, breathing, looking
-    round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
-    `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
+    round), Talk (head lifted, not turned to the player, nodding); at the Event it never dances or plants (the owner's rule): it stays as it always is and only
+    talks when talked to. `JGP.slug` exposes it for tests.
     A second pass from the owner's photo (their request: more detail, bigger if needed): the slug is 1.15 times
     bigger about its middle; a thin wet keel rides the top of its body from tail to head; the tail's last stretch
     and tip are a shade paler in a group of their own; the mantle has a slightly paler lip round its edge; the
