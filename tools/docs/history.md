@@ -7,6 +7,7 @@ Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 
 | PR | Merged | What changed |
 | --- | --- | --- |
+| [#66](https://github.com/GorboGreeblis/GreeblisTown/pull/66) | 2026-10-12 | The whole town outside the park reworked, shown not told: every store carries its creature's trade as a sculpture, the civic row and the south street's homes show who lives there, the street-name blades and all but two text signs gone. The owner's billboard: King Dino painted as a real dinosaur in his own colours and crown at his drums, "A Prehistoric Era in Jazz!", a draped cloth banner on ropes under it with the second line, on the corner lot across the road from the park's north-west corner so it reads from the garden. Hennrick (far past) and Nextessa (far future) give the town nothing. Town triangles under the old count. |
 | [#64](https://github.com/GorboGreeblis/GreeblisTown/pull/64) | 2026-10-12 | The town outside the park, shown not told: Mama Gorbo's water tower and goo burger, the Consortium's field office and dish, Montgummery's video store, Zollod's nursery, Gemtoe's crystals, the Ancients' ring, the Gorbos' house; the Library rug after the owner's paisley fabric; far trees lighter. New owner rules: show, don't tell; fewer words and signs; the town's design comes only from its own creatures; the inside of the church is final. |
 | [#63](https://github.com/GorboGreeblis/GreeblisTown/pull/63) | 2026-10-12 | A flavor Talk line for every creature but the Ancient, Nextessa, Backpacka and Zollod, outside the Event only. Event fixes: Sparkakus plants inside the garden, grows a flower and has his Talk line there; the Ancient never plants or dances; Zollod no longer walks into his kiosk; every planter grows its flower. No X on any menu; mobile taps instead of NEXT and CLOSE; no empty name tag; the brown Napoleon rabbit; the wheelbarrow on its wheel; per-frame savings. |
 | [#60](https://github.com/GorboGreeblis/GreeblisTown/pull/60) | 2026-10-12 | Audit fixes for visits and vignettes: Sparkakus walks straight to a join target; a quiet exchange with the ANCIENT counts as the pair's turn; desk dwellers walk home flat and jump up only on the last leg; a visit called off in the church slips out by the X; the gem geometry and halo materials are cached, bubble materials disposed, and style 4 flies both messengers for real. Owner requests: anyone can be talked to mid-visit (the visit holds and resumes; Sparkakus answers away from his Library too); the Garden Supplies counter prompt hides until Zollod is freed, so the shop can never open past his book line; OVERCOMING SHYNESS stands alone, half as big again, at eye level on a left side case; the church room's panels overlap at every corner so no seam shows. |
@@ -72,8 +73,8 @@ Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 The standing rules that came out of these are in [greeblis-rules.md](greeblis-rules.md); these are the other
 decisions, with the PR that carried them.
 
-- **The game:** it is called "Greeblis Town USA" (#31). One repo from #51 on; the readable parcel's label in the
-  mail pile is the one exception to the privacy rule.
+- **The game:** it is called "Greeblis Town USA" (#31). One repo from #51 on; the readable parcels' labels in the
+  mail pile are the one exception to the privacy rule.
 - **Creatures:**
   - Every model is final (#43); Montgummery's screen mouth is a flat line, with a pixel smile only for a while
     after a Blossom (#40).

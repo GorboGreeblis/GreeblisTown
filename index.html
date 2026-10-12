@@ -4939,7 +4939,7 @@ const xe = (() => {
 				o.push({ verb: "interact", label: "Talk to " + a, run: () => te(e) }),
 					Kt.blossoms > 0 &&
 						o.push({ verb: "give", label: "Give a blossom", run: () => te(e, !0) });
-			} else e && (o.push({ verb: "interact", label: e.label(), run: e.run }), e.gift && Kt.blossoms > 0 && o.push({ verb: "give", label: "Give a blossom", run: e.gift }));
+			} else e && (o.push({ verb: "interact", label: e.label(), run: e.run }), e.gift && Kt.blossoms > 0 && !me.active && o.push({ verb: "give", label: "Give a blossom", run: e.gift }));
 			return o;
 		}
 		return {
@@ -11394,38 +11394,54 @@ const JGP = (() => {
 				G.add(G.UBX, "#c8a060", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, 0.31, h + 0.01, 0.012))), G.add(G.UBX, "#c8a060", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, 0.012, h + 0.01, 0.16)));
 			}
 			// parcels half buried at odd angles
-			[[-1.7, -3.5, 0.55], [1.9, -4.0, 0.6], [0.5, -5.8, 0.5], [-0.9, -4.0, 0.42], [2.6, -5.4, 0.45], [-2.6, -5.2, 0.5], [1.1, -3.3, 0.38], [-0.2, -6.1, 0.4]].forEach(([px, pz, sz]) => {
+			[[-1.7, -3.5, 0.55], [1.9, -4.0, 0.6], [0.5, -5.8, 0.5], [-0.9, -4.0, 0.42], [-2.6, -5.2, 0.5], [1.1, -3.3, 0.38], [-0.2, -6.1, 0.4]].forEach(([px, pz, sz]) => {
 				const mm = lean(px, pz, 0.12 * sz).multiply(new THREE.Matrix4().makeRotationY(rs() * l)).multiply(new THREE.Matrix4().makeRotationZ(0.5 * (rs() - 0.5)));
 				G.add(G.UBX, "#b88a52", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, sz, 0.65 * sz, 0.8 * sz)));
 				G.add(G.UBX, "#e8dcb0", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, sz + 0.012, 0.65 * sz + 0.012, 0.025))), G.add(G.UBX, "#e8dcb0", mm.clone().multiply(S(0, 0, 0, 0, 0, 0, 0.025, 0.65 * sz + 0.012, 0.8 * sz + 0.012)));
 			});
-			// ONE parcel that can be read: kraft paper and twine, sat on the heap's open end, with a white paper
-			// label addressed "To Clipston" facing out (the label stands 6 mm proud of the box, so the two
-			// never flicker against each other)
+			// FIVE parcels that can be read, spaced out round the heap and half sunk in it like the rest, none of them
+			// obvious: kraft paper and twine, a white paper label on each facing out of the heap at its spot, "To
+			// Clipston" on the open end, "To Ormstown" at the back, "To Montreal" on the far side, "To Cobourg" by the
+			// front and "To Bangkok" at the back corner (a label stands 6 mm proud of its box, so the two never flicker
+			// against each other; the words are the owner's, their chosen exceptions to the privacy rule)
 			{
-				const P = new THREE.Group(),
-					px = 2.55,
-					pz = -4.9;
-				P.position.set(px, mound(px, pz) + 0.13, pz), (P.rotation.y = Math.PI / 2 - 0.25), (P.rotation.z = -0.12), o.add(P);
 				const kraft = KIT.surf("fabric", "#b8864e", { rep: 1, bump: 0.02, shine: 8 }),
-					twine = x.clay("#e2d4a8", { shininess: 10 });
-				R(T.box(0.62, 0.36, 0.46), kraft, P);
-				// (the twine stands a centimetre proud of the paper all round)
-				R(T.box(0.64, 0.38, 0.02), twine, P), R(T.box(0.02, 0.38, 0.48), twine, P);
-				const tag = b(
-					256,
-					128,
-					(c) => {
-						(c.fillStyle = "#fbf8ee"), c.fillRect(0, 0, 256, 128), (c.strokeStyle = "#c8b890"), (c.lineWidth = 4), c.strokeRect(4, 4, 248, 120);
-						(c.fillStyle = "#c8282a"), c.fillRect(200, 12, 42, 32), (c.fillStyle = "#fbf8ee"), c.fillRect(206, 18, 30, 20);
-						(c.fillStyle = "#1e2440"), (c.textAlign = "center"), (c.textBaseline = "middle"), (c.font = "italic bold 40px Georgia, serif");
-						c.fillText("To Clipston", 118, 70);
-						(c.strokeStyle = "#5a6070"), (c.lineWidth = 2), c.beginPath(), c.moveTo(30, 100), c.lineTo(206, 100), c.stroke();
-					},
-					{ smooth: !0 },
-				);
-				// (on the left half of the face, clear of the twine)
-				R(T.box(0.26, 0.13, 0.004), new THREE.MeshLambertMaterial({ map: tag }), P, [-0.16, 0.02, 0.234]);
+					twine = x.clay("#e2d4a8", { shininess: 10 }),
+					tag = (txt) =>
+						b(
+							256,
+							128,
+							(c) => {
+								(c.fillStyle = "#fbf8ee"), c.fillRect(0, 0, 256, 128), (c.strokeStyle = "#c8b890"), (c.lineWidth = 4), c.strokeRect(4, 4, 248, 120);
+								(c.fillStyle = "#c8282a"), c.fillRect(200, 12, 42, 32), (c.fillStyle = "#fbf8ee"), c.fillRect(206, 18, 30, 20);
+								(c.fillStyle = "#1e2440"), (c.textAlign = "center"), (c.textBaseline = "middle");
+								// (the name fitted to the label)
+								for (let fs = 40; fs > 20 && ((c.font = "italic bold " + fs + "px Georgia, serif"), c.measureText(txt).width > 200); fs -= 2);
+								c.fillText(txt, 118, 70);
+								(c.strokeStyle = "#5a6070"), (c.lineWidth = 2), c.beginPath(), c.moveTo(30, 100), c.lineTo(206, 100), c.stroke();
+							},
+							{ smooth: !0 },
+						),
+					// a parcel w by h by d in the group Q, the twine a centimetre proud of the paper all round, and its label
+					// on the left half of its front face, clear of the twine
+					parcel = (Q, w, h, d, txt) => {
+						R(T.box(w, h, d), kraft, Q);
+						R(T.box(w + 0.02, h + 0.02, 0.02), twine, Q), R(T.box(0.02, h + 0.02, d + 0.02), twine, Q);
+						R(T.box(0.42 * w, 0.36 * h, 0.004), new THREE.MeshLambertMaterial({ map: tag(txt) }), Q, [-0.26 * w, 0.05 * h, d / 2 + 0.004]);
+					};
+				// [x, z, which way its label faces, its lean, its size, the name]: each sits with its bottom in the paper,
+				// clear of the buried parcels and the stacks round it
+				[
+					[2.55, -4.9, Math.PI / 2 - 0.25, -0.12, 0.62, "To Clipston"],
+					[-0.9, -6.4, Math.PI + 0.2, 0.1, 0.5, "To Ormstown"],
+					[-2.75, -4.3, -Math.PI / 2 + 0.15, -0.08, 0.54, "To Montreal"],
+					[2.35, -3.45, Math.PI / 2 - 0.5, 0.14, 0.46, "To Cobourg"],
+					[1.9, -6.1, Math.PI - 0.6, -0.1, 0.5, "To Bangkok"],
+				].forEach(([px, pz, ry, rz, sz, txt]) => {
+					const P = new THREE.Group();
+					P.position.set(px, mound(px, pz) + 0.34 * sz, pz), (P.rotation.y = ry), (P.rotation.z = rz), (P.rotation.x = -0.06), o.add(P);
+					parcel(P, sz, 0.58 * sz, 0.74 * sz, txt);
+				});
 			}
 			// tall stacks leaning on its sides
 			[[-3.0, -3.3, 0.9], [3.05, -3.6, 1.1], [-3.05, -5.9, 0.8], [2.9, -6.1, 0.7]].forEach(([px, pz, h]) => stack(px, 0, pz, h, 0.3));
@@ -18924,7 +18940,8 @@ if (
 								run: () => {
 									st.romping() || Bulb.hold || (me.active ? LIB.say(i.event) : LIB.talk());
 								},
-								// (a Blossom for him: off he runs on all fours, then says sorry; called away he skips the lap)
+								// (a Blossom for him, before or after his quest: off he runs on all fours, then says sorry; called away he
+								// skips the lap. No one takes a Blossom at the Event: the option is not offered there)
 								gift: () => {
 									me.active || st.romping() || Bulb.hold || Kt.blossoms < 1 || (Kt.blossoms--, G.heart(), st.romp(() => LIB.say(i.gift)));
 								},

@@ -574,8 +574,12 @@ Goo that runs down a body and moves like goo, without clipping:
     so nothing flickers from inside. All window glass glows at night.
 - **Post Office mail mountain:** behind the kiosk, under the roof line so it is hidden from the square (a visual
   joke): a heightfield of 19 overlapping cones gives a faceted paper heap, not a dome, under about 2,300
-  envelopes (some on edge), tied bundles, parcels, leaning stacks and an avalanche round the foot. One kraft
-  parcel on the heap's open end is the readable parcel, its label 6 mm proud of the box.
+  envelopes (some on edge), tied bundles, parcels, leaning stacks and an avalanche round the foot. Five kraft
+  parcels spaced out round the heap and half sunk in it like the rest can be read, none of them obvious (the
+  owner's call: never stacked or set out for the player), each label 6 mm proud of its box and facing out of the
+  heap at its spot: "To Clipston" on the open end, "To Ormstown" at the back, "To Montreal" on the far side, "To
+  Cobourg" by the front, "To Bangkok" at the back corner (the owner's words; the name on each is fitted to its
+  label; the list in `buildPostOffice` takes another in one line, placed clear of the buried parcels and stacks).
 - **Dance floor:** 1.2 m tiles in front of the Juice Bar's counter, one 10 × 32 rectangle from the bar's north end
   south for twice the bar's length. All tiles the same dark purple in darker grout with a satin sheen; one canvas
   at 32 px per tile with mipmaps, so the grout doesn't shimmer in the distance or in VR. Canvas row 0 is the
