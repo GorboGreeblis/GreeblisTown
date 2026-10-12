@@ -3,6 +3,7 @@
 # (from the repo root), then:  tools/test/battery.sh > tools/test/battery.log 2>&1
 # (the Garden Event with the new flowers is t_plants.js, run on its own: it is slow)
 cd "$(dirname "$0")"; U=${URL:-http://localhost:8765/index.html}; G=$(cd ../.. && pwd)/index.html
+echo "== the readable copy (tools/index.html)"; sh ./copycheck.sh 2>&1 | tail -2
 echo "== boot desktop"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./boot.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-400
 echo "== boot mobile + GIVE button"; timeout 300 node mob.js $U x_mob.png ./t_give.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-300
 echo "== ordinal sandbox, desktop"; timeout 300 node ordtest.js $G x_ord.png 2>&1 | tail -3

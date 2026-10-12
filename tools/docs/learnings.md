@@ -370,7 +370,9 @@ None of City's tooling survives; this is what it took.
       requests (Town: `tools/test/ordtest.js`, desktop and `MOBILE=1`).
 - [ ] It boots when served as `text/html` with no charset.
 - [ ] No `http://`, `https://`, `fetch(`, `XMLHttpRequest`, `localStorage`, `eval(` or `Function(` in the outer page.
-- [ ] Under ~400 KB; only `index.html` changed.
+- [ ] Under ~400 KB; only `index.html` changed, and `tools/index.html` holds the same page, readable
+      (`tools/test/copycheck.sh`): the copy is made before the root is minified or packed and is never
+      compressed itself (the owner's rule, for every game).
 - [ ] If game code changed: every shader program compiles (`renderer.info.programs`, `diagnostics.runnable`;
       Town: `t_shader.js`); a full playthrough has no errors (Town: `battery.sh`); every pair scene plays, normally
       and with talk forced; 15 minutes of the director and a long soak with VR enter/exit cycles; a seeded 7-view
