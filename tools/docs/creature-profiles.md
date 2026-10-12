@@ -160,8 +160,8 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 ## Hennrick (`gratelet`)
 
 - **Build:** pulled unchanged from Greeblis City (`modelScale` 0.88), 3.15 m.
-- **Lore:** he comes from the far past, from Greeblis City; paradoxically, here and now the park looks like
-  small-town America in the far future. His lines speak of this era as his future ("In my era, the towers of
+- **Lore:** he comes from the far past, from Greeblis City, and came to the park through the Portal some time
+  before the player arrives; paradoxically, here and now the park looks like small-town America in the far future. His lines speak of this era as his future ("In my era, the towers of
   Greeblis City reach the clouds."). He is not from the town and gives it nothing of his design.
 - **Role:** strolls from spot to spot round the Portal and stops to look at it. He keeps his own built-in Greeblis
   City dance, which rolls him side to side about his feet; he is lifted by the roll so the outer foot never dips
@@ -252,6 +252,9 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   with a falling sad phrase. Once the Snacks quest is complete she eats pizza at the Event instead of planting.
 
 ## Nextessa (`t_nextessa`)
+
+- **Lore:** she is from the far future, which is why she comes through the Portal (with the pizza). She is not of
+  the town, and the town takes no design element from her.
 
 - **Build:** `city_nextessa`, her Greeblis City model.
 - **Role:** the pizza courier. Called from the phone booth (only once Mushroom has opened the Portal), she comes

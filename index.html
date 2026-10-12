@@ -14882,10 +14882,15 @@ const JGP = (() => {
 			(cx.strokeStyle = "#1a1a1e"), (cx.lineCap = "round"), (cx.lineWidth = 9), cx.beginPath(), cx.moveTo(128, 128), cx.lineTo(128 - 46, 128 - 34), cx.stroke();
 			(cx.lineWidth = 6), cx.beginPath(), cx.moveTo(128, 128), cx.lineTo(128 + 52, 128 - 66), cx.stroke(), cx.beginPath(), cx.arc(128, 128, 9, 0, l), cx.fill();
 		});
+		// the picture house's blade sign: a column of gold stars (no letters: the town shows, it doesn't tell)
 		slot("blade", 96, 384, (cx, w, h) => {
 			(cx.fillStyle = "#1e1e24"), cx.fillRect(0, 0, w, h), (cx.strokeStyle = "#ffd84a"), (cx.lineWidth = 6), cx.strokeRect(6, 6, w - 12, h - 12);
-			(cx.fillStyle = "#ffe27a"), (cx.font = "bold 70px 'Trebuchet MS', Arial, sans-serif"), (cx.textAlign = "center"), (cx.textBaseline = "middle");
-			[..."STAR"].forEach((ch, k) => cx.fillText(ch, w / 2, 58 + 88 * k));
+			cx.fillStyle = "#ffe27a";
+			for (let k = 0; k < 4; k++) {
+				cx.beginPath();
+				for (let j = 0; j < 10; j++) cx.lineTo(48 + (j % 2 ? 13 : 32) * Math.sin((j * Math.PI) / 5), 56 + 88 * k - (j % 2 ? 13 : 32) * Math.cos((j * Math.PI) / 5));
+				cx.fill();
+			}
 		});
 		slot("flag", 256, 144, (cx, w, h) => {
 			for (let k = 0; k < 13; k++) (cx.fillStyle = k % 2 ? "#ffffff" : "#c22a32"), cx.fillRect(0, (k * h) / 13, w, h / 13 + 1);
@@ -14901,30 +14906,10 @@ const JGP = (() => {
 			};
 			oct(62, "#ffffff"), oct(56, "#c8202a"), (cx.fillStyle = "#ffffff"), (cx.font = "bold 34px Arial, sans-serif"), (cx.textAlign = "center"), (cx.textBaseline = "middle"), cx.fillText("STOP", 64, 66);
 		});
-		[
-			["s_diner", "DINER", "#f6eed6", "#c22a2a", { edge: "#c22a2a", face: SANS }],
-			["s_barber", "BARBER", "#f8f6f0", "#1e3c8a", { edge: "#c22a2a" }],
-			["s_theater", "THEATER", "#f8f4e4", "#1a1a1e", { edge: "#e8b830", face: SANS }],
-			["s_bakery", "BAKERY", "#f4cad4", "#6a3a28", { edge: "#ffffff" }],
-			["s_pharmacy", "PHARMACY", "#e6f0f2", "#1a6a7a", { edge: "#1a6a7a", face: SANS }],
-			["s_books", "BOOKS", "#22325a", "#e8c860", { edge: "#e8c860" }],
-			["s_post", "POST OFFICE", "#22325a", "#ffffff", { edge: "#ffffff", face: SANS }],
-			["s_cafe", "CAFE", "#3a2a20", "#f4e6c8", { edge: "#c8a060" }],
-			["s_grocery", "GROCERY", "#b8262a", "#ffffff", { face: SANS }],
-			["s_antiques", "ANTIQUES", "#141416", "#e0b850", { edge: "#e0b850" }],
-			["s_feed", "FEED & SEED", "#8e2a22", "#ffffff", { edge: "#ffffff" }],
-			["s_icecream", "ICE CREAM", "#bfeee0", "#e0407a", { edge: "#ffffff", face: SANS }],
-			["s_fire", "FIRE DEPT", "#b8262a", "#ffffff", { edge: "#ffd23a", face: SANS }],
-			["s_townhall", "TOWN HALL", "#eae2cc", "#3a3228", { shadow: "rgba(255,255,255,.6)", fill: 0.7 }],
-			["s_school", "SCHOOL", "#fbf8f0", "#1a1a1e", { edge: "#1a1a1e" }],
-			["s_gas", "GAS", "#c8202a", "#ffffff", { face: SANS, size: 0.7 }],
-			["s_hotel", "HOTEL", "#2a3a2a", "#f0e2b0", { edge: "#f0e2b0" }],
-			["s_mgum", "Mistergummery's", "#c8282a", "#ffffff", { edge: "#55b8c6", face: SANS, shadow: "rgba(0,0,0,.25)" }],
-		].forEach(([key, txt, bg, fg, o2]) => slot(key, 384, 96, board(txt, bg, fg, o2)));
+		// (the only names in the town: Mistergummery's and the bank's, both the owner's; everything else is shown)
+		slot("s_mgum", 384, 96, board("Mistergummery's", "#c8282a", "#ffffff", { edge: "#55b8c6", face: SANS, shadow: "rgba(0,0,0,.25)" }));
 		slot("s_bank", 640, 96, board("FIRST BANK OF GREEBLIS", "#e8dcc4", "#4a3c2c", { shadow: "rgba(255,255,255,.6)", fill: 0.9 }));
-		// ---- the town's own lore, out past the park (the background pass): shown, not told, so only the video
-		// store's name, a blank cassette label and the Consortium's star go on the sign atlas
-		slot("s_video", 384, 96, board("VIDEO RENTAL", "#1e3c8a", "#ffd23a", { edge: "#ffd23a", face: SANS }));
+		// ---- the town's own lore, shown not told (owner's rules): pictures, never words, on the sign atlas
 		// the label on the video store's giant cassette: blank, a few pencilled lines
 		slot("s_vhs", 256, 64, (cx, w, h) => {
 			(cx.fillStyle = "#f4f0e0"), cx.fillRect(0, 0, w, h), (cx.strokeStyle = "#8a8478"), (cx.lineWidth = 3);
@@ -14944,13 +14929,271 @@ const JGP = (() => {
 			for (let y0 = 0; y0 < h; y0 += 6) cx.fillRect(0, y0, w, 3);
 			(cx.fillStyle = "#ffffff"), cx.fillRect(48, 40, 22, 30), cx.fillRect(122, 40, 22, 30), cx.fillRect(60, 100, 72, 10);
 		});
-		[
-			// the streets around the square are named after creatures of Greeblis Park
-			["st_main", "SEALIO ST"],
-			["st_elm", "GORBO AVE"],
-			["st_oak", "ZORTO ST"],
-			["st_maple", "DECIBELLE AVE"],
-		].forEach(([key, txt]) => slot(key, 256, 64, board(txt, "#1e6a3a", "#ffffff", { edge: "#ffffff", face: SANS, size: 0.62 })));
+		// the picture house's bill: tonight KING DINO, his turquoise crown under his purple-and-orange plume, two
+		// drumsticks crossed to the right, his lemon-yellow self peeking in from the left, on cream
+		slot("marq", 384, 96, (cx, w, h) => {
+			(cx.fillStyle = "#f8f4e4"), cx.fillRect(0, 0, w, h), (cx.strokeStyle = "#1a1a1e"), (cx.lineWidth = 5), cx.strokeRect(6, 6, w - 12, h - 12);
+			const cx0 = w / 2;
+			// the plume behind, rising from the crown and curling over to the right: purple, then its orange front
+			(cx.fillStyle = "#7a3ab8"), cx.beginPath(), cx.moveTo(cx0 - 10, 52), cx.bezierCurveTo(cx0 - 30, 4, cx0 + 40, 0, cx0 + 66, 30), cx.bezierCurveTo(cx0 + 78, 46, cx0 + 60, 56, cx0 + 44, 44), cx.bezierCurveTo(cx0 + 30, 30, cx0 + 10, 30, cx0 + 14, 52), cx.fill();
+			(cx.fillStyle = "#f08a2a"), cx.beginPath(), cx.moveTo(cx0 - 2, 52), cx.bezierCurveTo(cx0 - 12, 16, cx0 + 34, 10, cx0 + 54, 32), cx.bezierCurveTo(cx0 + 60, 42, cx0 + 48, 48, cx0 + 40, 40), cx.bezierCurveTo(cx0 + 28, 26, cx0 + 12, 32, cx0 + 12, 52), cx.fill();
+			// the crown: five rounded prongs, the middle tallest, a knob on it, a dark band at its foot
+			(cx.fillStyle = "#38b8b0"), cx.beginPath(), cx.moveTo(cx0 - 50, 88), cx.lineTo(cx0 - 50, 62);
+			[-50, -25, 0, 25, 50].forEach((dx, k) => {
+				const top = k === 2 ? 26 : k % 2 ? 48 : 52;
+				cx.lineTo(cx0 + dx - 10, top + 8), cx.quadraticCurveTo(cx0 + dx, top - 8, cx0 + dx + 10, top + 8), cx.lineTo(cx0 + dx + 12.5, 70);
+			});
+			cx.lineTo(cx0 + 50, 88), cx.closePath(), cx.fill();
+			(cx.fillStyle = "#1a3a3a"), cx.fillRect(cx0 - 50, 78, 100, 7), (cx.fillStyle = "#ffd23a"), cx.beginPath(), cx.arc(cx0, 24, 6, 0, l), cx.fill();
+			// the drumsticks crossed to the right; to the left his lemon-yellow head and a turquoise button or two
+			(cx.strokeStyle = "#d8a860"), (cx.lineWidth = 7), (cx.lineCap = "round");
+			[[cx0 + 100, 22, cx0 + 162, 78], [cx0 + 162, 22, cx0 + 100, 78]].forEach(([x0, y0, x1, y1]) => (cx.beginPath(), cx.moveTo(x0, y0), cx.lineTo(x1, y1), cx.stroke()));
+			cx.fillStyle = "#f6f0dc";
+			[[cx0 + 162, 78], [cx0 + 100, 78]].forEach(([x0, y0]) => (cx.beginPath(), cx.arc(x0, y0, 8, 0, l), cx.fill()));
+			(cx.fillStyle = "#f2d84a"), cx.beginPath(), cx.ellipse(cx0 - 124, 50, 42, 32, 0, 0, l), cx.fill(), cx.beginPath(), cx.ellipse(cx0 - 92, 58, 22, 16, 0, 0, l), cx.fill();
+			(cx.fillStyle = "#1a3a5a"), cx.beginPath(), cx.arc(cx0 - 110, 42, 5, 0, l), cx.fill(), (cx.fillStyle = "#38b8b0");
+			[[cx0 - 168, 36], [cx0 - 168, 54], [cx0 - 168, 72]].forEach(([x0, y0]) => cx.fillRect(x0, y0, 10, 10));
+		});
+		// the owner's billboard: KING DINO painted as a real dinosaur (in contrast to his gummy self in the park), a
+		// theropod in ochre under a spotlight at his drums, his crown and plume on him, and the words the owner gave it
+		slot("bb_dino", 512, 256, (cx, w, h) => {
+			(cx.fillStyle = "#101428"), cx.fillRect(0, 0, w, h);
+			const sp = cx.createRadialGradient(150, 100, 10, 150, 100, 190);
+			sp.addColorStop(0, "#56487a"), sp.addColorStop(1, "#101428"), (cx.fillStyle = sp), cx.fillRect(0, 0, 332, h);
+			(cx.fillStyle = "rgba(255,240,200,.10)"), cx.beginPath(), cx.moveTo(110, 0), cx.lineTo(200, 0), cx.lineTo(300, 256), cx.lineTo(30, 256), cx.fill(), (cx.fillStyle = "#1c1830"), cx.fillRect(0, 210, 332, 46);
+			const rn = srand(21);
+			// the plume first, behind him: feathers fanning back from the crown, purple with orange tips, each with a shaft
+			for (let k = 0; k < 8; k++) {
+				const a = -1.5 + 0.17 * k,
+					len = 62 + 26 * rn(),
+					x0 = 140,
+					y0 = 36;
+				cx.save(), cx.translate(x0, y0), cx.rotate(a);
+				const fg = cx.createLinearGradient(0, 0, len, 0);
+				fg.addColorStop(0, "#5a2a98"), fg.addColorStop(0.55, "#8a3ab8"), fg.addColorStop(1, "#f08a2a"), (cx.fillStyle = fg), cx.beginPath(), cx.ellipse(len / 2, 0, len / 2, 6 + 3 * rn(), 0, 0, l), cx.fill();
+				(cx.strokeStyle = "rgba(255,230,200,.35)"), (cx.lineWidth = 1), cx.beginPath(), cx.moveTo(4, 0), cx.lineTo(len - 4, 0), cx.stroke(), cx.restore();
+			}
+			// the tail, behind the kit to the right
+			const tg = cx.createLinearGradient(230, 160, 332, 150);
+			tg.addColorStop(0, "#a8902a"), tg.addColorStop(1, "#5a4414"), (cx.fillStyle = tg), cx.beginPath(), cx.moveTo(226, 186), cx.bezierCurveTo(260, 150, 300, 140, 332, 150), cx.lineTo(332, 172), cx.bezierCurveTo(300, 166, 262, 184, 236, 212), cx.closePath(), cx.fill();
+			// the mouth open: its dark inside, the lower jaw, two rows of teeth
+			(cx.fillStyle = "#3a1414"), cx.beginPath(), cx.moveTo(150, 88), cx.lineTo(222, 82), cx.lineTo(214, 104), cx.lineTo(154, 106), cx.closePath(), cx.fill();
+			const jg = cx.createLinearGradient(140, 92, 220, 112);
+			jg.addColorStop(0, "#c8a838"), jg.addColorStop(1, "#6a5014"), (cx.fillStyle = jg), cx.beginPath(), cx.moveTo(148, 94), cx.bezierCurveTo(170, 108, 200, 112, 218, 102), cx.bezierCurveTo(224, 110, 212, 122, 190, 120), cx.bezierCurveTo(168, 118, 150, 110, 146, 98), cx.closePath(), cx.fill();
+			cx.fillStyle = "#f4f0e0";
+			for (let k = 0; k < 7; k++) {
+				const x0 = 160 + 9 * k,
+					y0 = 87 - 0.6 * k;
+				cx.beginPath(), cx.moveTo(x0 - 2.6, y0), cx.lineTo(x0 + 2.6, y0), cx.lineTo(x0, y0 + 8), cx.fill();
+			}
+			for (let k = 0; k < 6; k++) {
+				const x0 = 166 + 8.5 * k,
+					y0 = 103 + 0.6 * k;
+				cx.beginPath(), cx.moveTo(x0 - 2.2, y0), cx.lineTo(x0 + 2.2, y0), cx.lineTo(x0, y0 - 6.5), cx.fill();
+			}
+			// the body, neck and head as one shape, lit from the upper left
+			const body = () => {
+				cx.beginPath(), cx.moveTo(100, 212), cx.bezierCurveTo(80, 150, 95, 110, 120, 96), cx.bezierCurveTo(118, 70, 112, 48, 124, 36), cx.bezierCurveTo(140, 22, 180, 24, 206, 44), cx.bezierCurveTo(222, 56, 230, 70, 226, 80);
+				cx.bezierCurveTo(200, 84, 172, 84, 150, 88), cx.bezierCurveTo(148, 100, 160, 112, 178, 120), cx.bezierCurveTo(215, 128, 240, 150, 236, 212), cx.closePath();
+			};
+			const skin = cx.createLinearGradient(90, 20, 240, 200);
+			skin.addColorStop(0, "#f8e468"), skin.addColorStop(0.5, "#d8b838"), skin.addColorStop(1, "#7a6018"), body(), (cx.fillStyle = skin), cx.fill();
+			// scales, folds, a highlight on the brow, shadow under the chest (inside the body only)
+			cx.save(), body(), cx.clip();
+			for (let k = 0; k < 460; k++) {
+				const x0 = 80 + 170 * rn(),
+					y0 = 20 + 200 * rn(),
+					r = 1.2 + 2.2 * rn();
+				(cx.fillStyle = rn() < 0.7 ? "rgba(90,70,10,.2)" : "rgba(255,245,190,.18)"), cx.beginPath(), cx.ellipse(x0, y0, r, 0.7 * r, 0.4, 0, l), cx.fill();
+			}
+			(cx.strokeStyle = "rgba(60,40,10,.45)"), (cx.lineWidth = 1.4);
+			[[[126, 60], [140, 74], [150, 92]], [[118, 100], [134, 112], [146, 130]], [[160, 122], [176, 136], [180, 152]], [[104, 150], [116, 170], [112, 200]], [[200, 130], [214, 150], [212, 176]]].forEach((pts) => (cx.beginPath(), cx.moveTo(pts[0][0], pts[0][1]), cx.quadraticCurveTo(pts[1][0], pts[1][1], pts[2][0], pts[2][1]), cx.stroke()));
+			const hl = cx.createRadialGradient(150, 40, 4, 150, 40, 70);
+			hl.addColorStop(0, "rgba(255,245,200,.35)"), hl.addColorStop(1, "rgba(255,245,200,0)"), (cx.fillStyle = hl), cx.fillRect(80, 0, 180, 120);
+			const shd = cx.createLinearGradient(0, 120, 0, 212);
+			shd.addColorStop(0, "rgba(40,20,0,0)"), shd.addColorStop(1, "rgba(40,20,0,.5)"), (cx.fillStyle = shd), cx.fillRect(60, 120, 200, 95);
+			// (his turquoise, as markings: three patches down each flank with a green spot, as his buttons are, and a
+			// patch at each shoulder where his ball joints are)
+			[[112, 150], [110, 170], [112, 190], [222, 156], [226, 176], [224, 196]].forEach(([x0, y0]) => {
+				const pg = cx.createRadialGradient(x0 - 2, y0 - 2, 1, x0, y0, 9);
+				pg.addColorStop(0, "#7ae8e0"), pg.addColorStop(1, "#1e8a84"), (cx.fillStyle = pg), cx.beginPath(), cx.ellipse(x0, y0, 8, 7, 0.3, 0, l), cx.fill(), (cx.fillStyle = "#7ad04a"), cx.beginPath(), cx.arc(x0, y0, 2.4, 0, l), cx.fill();
+			});
+			[[120, 126], [214, 132]].forEach(([x0, y0]) => {
+				const pg = cx.createRadialGradient(x0 - 3, y0 - 3, 1, x0, y0, 12);
+				pg.addColorStop(0, "#7ae8e0"), pg.addColorStop(1, "#1e8a84"), (cx.fillStyle = pg), cx.beginPath(), cx.arc(x0, y0, 11, 0, l), cx.fill();
+			});
+			cx.restore();
+			// the eye under its brow ridge, amber with a slit pupil and a glint; the nostril
+			(cx.fillStyle = "#5a3a10"), cx.beginPath(), cx.ellipse(151, 50, 13, 7, -0.2, Math.PI, 0), cx.fill();
+			(cx.fillStyle = "#e8a020"), cx.beginPath(), cx.ellipse(152, 55, 7.5, 6, 0, 0, l), cx.fill(), (cx.fillStyle = "#1a0a00"), cx.beginPath(), cx.ellipse(153, 55, 2.2, 5.5, 0, 0, l), cx.fill();
+			(cx.fillStyle = "rgba(255,255,255,.8)"), cx.beginPath(), cx.arc(150, 52, 1.6, 0, l), cx.fill(), (cx.fillStyle = "#4a2e08"), cx.beginPath(), cx.ellipse(208, 56, 3.5, 2.2, -0.4, 0, l), cx.fill();
+			// short arms out of the chest, three claws each, a stick in each hand
+			const arm = (x0, y0, x1, y1, sx) => {
+				(cx.strokeStyle = "#d0b034"), (cx.lineCap = "round"), (cx.lineWidth = 15), cx.beginPath(), cx.moveTo(x0, y0), cx.lineTo(x1, y1), cx.stroke(), (cx.strokeStyle = "#5a3e10"), (cx.lineWidth = 2);
+				for (let k = 0; k < 3; k++) cx.beginPath(), cx.moveTo(x1, y1), cx.lineTo(x1 + sx * (6 + 2 * k), y1 - 8 + 6 * k), cx.stroke();
+			};
+			arm(118, 128, 86, 98, -1), arm(214, 134, 246, 104, 1);
+			(cx.strokeStyle = "#d8a860"), (cx.lineWidth = 5), cx.beginPath(), cx.moveTo(86, 98), cx.lineTo(60, 128), cx.stroke(), cx.beginPath(), cx.moveTo(246, 104), cx.lineTo(280, 82), cx.stroke();
+			// his crown, turquoise metal with a gold knob, resting on the skull
+			cx.save(), cx.translate(148, 36), cx.rotate(-0.18);
+			const cg = cx.createLinearGradient(-22, -30, 22, 0);
+			cg.addColorStop(0, "#8ae8e0"), cg.addColorStop(0.5, "#38b8b0"), cg.addColorStop(1, "#1a6a68"), (cx.fillStyle = cg), cx.beginPath(), cx.moveTo(-22, 0), cx.lineTo(-22, -10);
+			[-22, -11, 0, 11, 22].forEach((dx, k) => {
+				const top = k === 2 ? -32 : k % 2 ? -22 : -24;
+				cx.lineTo(dx - 4, top + 5), cx.quadraticCurveTo(dx, top - 4, dx + 4, top + 5), cx.lineTo(dx + 5.5, -12);
+			});
+			cx.lineTo(22, 0), cx.closePath(), cx.fill(), (cx.fillStyle = "#ffd23a"), cx.beginPath(), cx.arc(0, -33, 3.5, 0, l), cx.fill(), cx.restore();
+			// his kit in front: red lacquer shells with chrome rims and cream heads, cymbals on stands
+			const drum = (x0, y0, rx, ry, name) => {
+				const rg = cx.createLinearGradient(x0 - rx, y0 - ry, x0 + rx, y0 + ry);
+				rg.addColorStop(0, "#f0f2f6"), rg.addColorStop(0.5, "#8a9098"), rg.addColorStop(1, "#dadde2"), (cx.fillStyle = rg), cx.beginPath(), cx.ellipse(x0, y0, rx + 3, ry + 3, 0, 0, l), cx.fill();
+				const sg = cx.createLinearGradient(x0 - rx, y0 - ry, x0 + rx, y0 + ry);
+				sg.addColorStop(0, "#f04a4a"), sg.addColorStop(1, "#6a0e0e"), (cx.fillStyle = sg), cx.beginPath(), cx.ellipse(x0, y0, rx, ry, 0, 0, l), cx.fill();
+				const hg = cx.createRadialGradient(x0 - 0.3 * rx, y0 - 0.3 * ry, 2, x0, y0, rx);
+				hg.addColorStop(0, "#fbf8ee"), hg.addColorStop(1, "#d8d0bc"), (cx.fillStyle = hg), cx.beginPath(), cx.ellipse(x0, y0, rx - 5, ry - 5, 0, 0, l), cx.fill();
+				name && ((cx.fillStyle = "#b8202a"), (cx.font = "bold 11px Georgia, serif"), (cx.textAlign = "center"), (cx.textBaseline = "middle"), cx.fillText("KING", x0, y0 - 6), cx.fillText("DINO", x0, y0 + 7));
+			};
+			drum(120, 152, 22, 18), drum(210, 152, 22, 18), drum(74, 180, 24, 14), drum(258, 184, 26, 18), drum(165, 198, 44, 44, !0);
+			(cx.strokeStyle = "#b8bcc4"), (cx.lineWidth = 3);
+			[[58, 120, 58, 208], [282, 110, 282, 208]].forEach(([x0, y0, x1, y1]) => (cx.beginPath(), cx.moveTo(x0, y0), cx.lineTo(x1, y1), cx.stroke()));
+			[[58, 118, 30, 7, -0.1], [282, 108, 28, 7, 0.1]].forEach(([x0, y0, rx, ry, a]) => {
+				const yg = cx.createLinearGradient(x0 - rx, y0, x0 + rx, y0);
+				yg.addColorStop(0, "#f8e8a0"), yg.addColorStop(0.5, "#c89a30"), yg.addColorStop(1, "#f0d070"), (cx.fillStyle = yg), cx.beginPath(), cx.ellipse(x0, y0, rx, ry, a, 0, l), cx.fill();
+			});
+			// the words, as the owner asked
+			(cx.fillStyle = "#e8b830"), cx.fillRect(338, 44, 164, 3), cx.fillRect(338, 212, 164, 3);
+			fitFont(cx, "A Prehistoric", 160, 34, SERIF), (cx.textAlign = "center"), (cx.textBaseline = "middle"), (cx.fillStyle = "#1a1a1e"), cx.fillText("A Prehistoric", 422, 80), (cx.fillStyle = "#f8f4e4"), cx.fillText("A Prehistoric", 420, 78);
+			fitFont(cx, "Era in", 160, 34, SERIF), (cx.fillStyle = "#1a1a1e"), cx.fillText("Era in", 422, 122), (cx.fillStyle = "#f8f4e4"), cx.fillText("Era in", 420, 120);
+			fitFont(cx, "Jazz!", 160, 62, SERIF), (cx.fillStyle = "#1a1a1e"), cx.fillText("Jazz!", 423, 176), (cx.fillStyle = "#ffd23a"), cx.fillText("Jazz!", 420, 173);
+		});
+		// the banner hung under it, the owner's second line in one row of big letters on cream, red-edged
+		slot("bb_ban", 512, 80, (cx, w, h) => {
+			(cx.fillStyle = "#f4ecd8"), cx.fillRect(0, 0, w, h);
+			// the weave: fine threads both ways, a little uneven
+			const rn = srand(63);
+			cx.fillStyle = "rgba(120,100,70,.09)";
+			for (let k = 0; k < 900; k++) cx.fillRect(w * rn(), h * rn(), 1 + 3 * rn(), 1);
+			for (let k = 0; k < 500; k++) cx.fillRect(w * rn(), h * rn(), 1, 1 + 3 * rn());
+			// the fold along the top where it hangs from its ties, the hem along the bottom
+			const fg = cx.createLinearGradient(0, 0, 0, 22);
+			fg.addColorStop(0, "rgba(60,40,20,.28)"), fg.addColorStop(1, "rgba(60,40,20,0)"), (cx.fillStyle = fg), cx.fillRect(0, 0, w, 22);
+			const hg = cx.createLinearGradient(0, h - 14, 0, h);
+			hg.addColorStop(0, "rgba(60,40,20,0)"), hg.addColorStop(1, "rgba(60,40,20,.22)"), (cx.fillStyle = hg), cx.fillRect(0, h - 14, w, 14), (cx.fillStyle = "rgba(120,100,70,.35)"), cx.fillRect(0, h - 7, w, 1);
+			// two red stripes, the dye a little uneven, and the words between them
+			cx.fillStyle = "#b8303a";
+			[9, h - 14].forEach((y0) => {
+				for (let x0 = 0; x0 < w; x0 += 4) cx.fillRect(x0, y0 + 0.6 * Math.sin(x0 / 7), 4, 5);
+			});
+			const t2 = "Let King Dino take you to the Jurassic Greeblis Park!";
+			fitFont(cx, t2, w - 30, 40, SANS), (cx.textAlign = "center"), (cx.textBaseline = "middle"), (cx.fillStyle = "rgba(40,20,20,.35)"), cx.fillText(t2, w / 2 + 1, h / 2 + 3), (cx.fillStyle = "#a8242e"), cx.fillText(t2, w / 2, h / 2 + 1);
+		});
+		// GLYPH's filigree: gold swirls over dark porcelain blue, a tiny gem at each curl
+		slot("filig", 384, 96, (cx, w, h) => {
+			(cx.fillStyle = "#1e2a5a"), cx.fillRect(0, 0, w, h), (cx.strokeStyle = "#d8b040"), (cx.lineWidth = 3), (cx.lineCap = "round");
+			for (let k = 0; k < 7; k++) {
+				const x0 = 28 + 54 * k;
+				cx.beginPath(), cx.moveTo(x0 - 22, 72), cx.bezierCurveTo(x0 - 22, 22, x0 + 10, 18, x0 + 10, 44), cx.bezierCurveTo(x0 + 10, 60, x0 - 8, 58, x0 - 6, 46), cx.stroke();
+				cx.beginPath(), cx.moveTo(x0 + 22, 24), cx.bezierCurveTo(x0 + 22, 74, x0 - 10, 78, x0 - 10, 52), cx.stroke();
+				(cx.fillStyle = k % 2 ? "#3ac8c0" : "#e8409e"), cx.beginPath(), cx.arc(x0 - 6, 46, 4, 0, l), cx.fill();
+			}
+			(cx.strokeStyle = "#3ac8c0"), (cx.lineWidth = 2), cx.strokeRect(5, 5, w - 10, h - 10);
+		});
+		// ETCHER's etching: data cut into a panel, fine teal grooves swirling over deep blue, as his tentacles leave it
+		slot("etch", 256, 256, (cx, w, h) => {
+			(cx.fillStyle = "#1e3a4a"), cx.fillRect(0, 0, w, h), (cx.strokeStyle = "#6ad8c8"), (cx.lineWidth = 1.6);
+			const rn = srand(44);
+			for (let k = 0; k < 26; k++) {
+				let x0 = w * rn(),
+					y0 = h * rn(),
+					a = rn() * l;
+				cx.beginPath(), cx.moveTo(x0, y0);
+				for (let j = 0; j < 30; j++) (a += 0.32 * (rn() - 0.5) + 0.12), (x0 += 5 * Math.cos(a)), (y0 += 5 * Math.sin(a)), cx.lineTo(x0, y0);
+				cx.stroke();
+			}
+			cx.fillStyle = "#9ee09a";
+			for (let k = 0; k < 40; k++) cx.fillRect(w * rn(), h * rn(), 2, 2);
+		});
+		// SPARKAKUS's alebrije paint, as on his coat: winding vines with leaves, little flowers and dots in gold,
+		// green, magenta, orange and teal over royal blue
+		slot("alebr", 512, 128, (cx, w, h) => {
+			(cx.fillStyle = "#2c4cc0"), cx.fillRect(0, 0, w, h);
+			const rn = srand(12),
+				cols = ["#f2c21a", "#7ad04a", "#e0408a", "#f08a2a", "#3ac8c0", "#b070e0"];
+			for (let k = 0; k < 16; k++) {
+				const col = cols[k % cols.length];
+				let x0 = w * rn(),
+					y0 = h * rn(),
+					a = rn() * l;
+				const pts = [];
+				for (let j = 0; j < 12; j++) (a += 0.6 * (rn() - 0.5)), (x0 += 9 * Math.cos(a)), (y0 += 9 * Math.sin(a)), pts.push([x0, y0, a]);
+				(cx.strokeStyle = col), (cx.lineWidth = 3.2), cx.beginPath(), pts.forEach(([px, py], j) => (j ? cx.lineTo(px, py) : cx.moveTo(px, py))), cx.stroke();
+				(cx.fillStyle = col), pts.forEach(([px, py, pa], j) => j % 3 || (cx.beginPath(), cx.ellipse(px + 4 * Math.cos(pa + 1.5), py + 4 * Math.sin(pa + 1.5), 4, 1.8, pa + 1.5, 0, l), cx.fill()));
+			}
+			for (let k = 0; k < 90; k++) (cx.fillStyle = cols[k % 6]), cx.beginPath(), cx.arc(w * rn(), h * rn(), 1.6 + 1.6 * rn(), 0, l), cx.fill();
+			for (let k = 0; k < 12; k++) {
+				const px = w * rn(),
+					py = h * rn();
+				cx.fillStyle = "#f2c21a";
+				for (let j = 0; j < 5; j++) cx.beginPath(), cx.arc(px + 4 * Math.cos((j * l) / 5), py + 4 * Math.sin((j * l) / 5), 2.4, 0, l), cx.fill();
+				(cx.fillStyle = "#e0408a"), cx.beginPath(), cx.arc(px, py, 1.6, 0, l), cx.fill();
+			}
+		});
+		// MUSHROOM's cap, for the roof of his house: gold at the crown to deep orange at the rim, white warts
+		slot("capskin", 256, 256, (cx, w, h) => {
+			const g = cx.createRadialGradient(128, 128, 10, 128, 128, 150);
+			g.addColorStop(0, "#f0b030"), g.addColorStop(0.55, "#e8862a"), g.addColorStop(1, "#c85a10"), (cx.fillStyle = g), cx.fillRect(0, 0, w, h);
+			const rn = srand(7);
+			cx.fillStyle = "#fbf6e4";
+			for (let k = 0; k < 26; k++) {
+				const a = rn() * l,
+					r = 18 + 110 * Math.sqrt(rn()),
+					sz = 6 + 10 * rn();
+				cx.beginPath(), cx.ellipse(128 + r * Math.cos(a), 128 + r * Math.sin(a), sz, 0.8 * sz, a, 0, l), cx.fill();
+			}
+		});
+		// ANOMALEE's screen: her magenta glow with scanlines (the old sets in her window, and her own upstairs)
+		slot("scan", 128, 96, (cx, w, h) => {
+			const g1 = cx.createRadialGradient(64, 48, 6, 64, 48, 80);
+			g1.addColorStop(0, "#ff5af0"), g1.addColorStop(1, "#c010c0"), (cx.fillStyle = g1), cx.fillRect(0, 0, w, h), (cx.fillStyle = "rgba(255,255,255,.12)");
+			for (let y0 = 0; y0 < h; y0 += 4) cx.fillRect(0, y0, w, 1.5);
+			(cx.fillStyle = "rgba(255,255,255,.25)"), cx.fillRect(10, 8, 30, 5);
+		});
+		// the genealogical society's emblem: a family tree in a gold oval, SPARKAKUS's daffodils at its foot
+		slot("tree", 192, 192, (cx, w, h) => {
+			cx.clearRect(0, 0, w, h), (cx.fillStyle = "#2c4cc0"), cx.beginPath(), cx.ellipse(96, 96, 92, 92, 0, 0, l), cx.fill();
+			(cx.strokeStyle = "#d8b040"), (cx.lineWidth = 8), cx.beginPath(), cx.ellipse(96, 96, 86, 86, 0, 0, l), cx.stroke();
+			(cx.strokeStyle = "#8a5a2a"), (cx.lineCap = "round"), (cx.lineWidth = 12), cx.beginPath(), cx.moveTo(96, 160), cx.lineTo(96, 100), cx.stroke(), (cx.lineWidth = 7);
+			[[96, 110, 60, 70], [96, 110, 132, 70], [96, 96, 96, 56], [60, 70, 40, 52], [132, 70, 150, 52]].forEach(([x0, y0, x1, y1]) => (cx.beginPath(), cx.moveTo(x0, y0), cx.lineTo(x1, y1), cx.stroke()));
+			cx.fillStyle = "#4a9a3a";
+			[[40, 50, 22], [150, 50, 22], [96, 50, 24], [66, 62, 18], [126, 62, 18]].forEach(([x0, y0, r]) => (cx.beginPath(), cx.arc(x0, y0, r, 0, l), cx.fill()));
+			cx.fillStyle = "#f2c21a";
+			for (let k = 0; k < 7; k++) cx.beginPath(), cx.arc(50 + 15 * k, 156 + 6 * Math.sin(k), 6, 0, l), cx.fill();
+			(cx.fillStyle = "#d8b040"), cx.beginPath(), cx.arc(96, 34, 6, 0, l), cx.fill();
+		});
+		// the town's seal, in the Town Hall's entablature: a wreath round the garden's five flowers
+		slot("seal", 192, 96, (cx, w, h) => {
+			cx.clearRect(0, 0, w, h), (cx.fillStyle = "#e6dcc6"), cx.beginPath(), cx.ellipse(96, 48, 94, 46, 0, 0, l), cx.fill();
+			(cx.strokeStyle = "#3f7a2a"), (cx.lineWidth = 7), cx.beginPath(), cx.ellipse(96, 48, 84, 36, 0, 0, l), cx.stroke();
+			["#e8409e", "#ffd23a", "#9a52e0", "#36d0e8", "#e8301e"].forEach((c, k) => {
+				const x0 = 40 + 28 * k,
+					y0 = 48 - (k === 2 ? 8 : 0);
+				cx.fillStyle = c;
+				for (let j = 0; j < 5; j++) cx.beginPath(), cx.arc(x0 + 8 * Math.cos((j * l) / 5), y0 + 8 * Math.sin((j * l) / 5), 5, 0, l), cx.fill();
+				(cx.fillStyle = "#f6f0dc"), cx.beginPath(), cx.arc(x0, y0, 3.5, 0, l), cx.fill();
+			});
+		});
+		// a gold star on its own (SPARKAKUS's tail-tip star, as a finial)
+		slot("gstar", 96, 96, (cx, w, h) => {
+			cx.clearRect(0, 0, w, h), (cx.fillStyle = "#f2c21a"), cx.beginPath();
+			for (let j = 0; j < 10; j++) cx.lineTo(48 + (j % 2 ? 18 : 46) * Math.sin((j * Math.PI) / 5), 50 - (j % 2 ? 18 : 46) * Math.cos((j * Math.PI) / 5));
+			cx.fill();
+		});
+		// a lightning bolt, MONTGUMMERY's teal on dark, for the charging station's pylon
+		slot("bolt", 128, 192, (cx, w, h) => {
+			(cx.fillStyle = "#1a1a1e"), cx.fillRect(0, 0, w, h), (cx.fillStyle = "#55b8c6"), cx.beginPath();
+			[[74, 14], [36, 104], [62, 104], [50, 178], [96, 80], [68, 80], [86, 14]].forEach(([x0, y0], k) => (k ? cx.lineTo(x0, y0) : cx.moveTo(x0, y0)));
+			cx.closePath(), cx.fill();
+		});
 		[
 			["aw_red", "#c8282e", "#f8f4ec"],
 			["aw_green", "#2a6a3a", "#f8f4ec"],
@@ -15005,6 +15248,22 @@ const JGP = (() => {
 		// ---- shared unit geometries -----------------------------------------------------------------
 		const UB = cached("ubox", () => new THREE.BoxGeometry(1, 1, 1)),
 			UQ = cached("uquad", () => new THREE.PlaneGeometry(1, 1)),
+			// a hung cloth banner, 1 x 1 before scaling: it sags between its tied top corners (a shallow curve), its
+			// hem bellies forward and ripples as if a breeze had it, and its tied corners pinch in a little
+			drape = cached("drape", () => {
+				const g2 = new THREE.PlaneGeometry(1, 1, 28, 5),
+					P = g2.attributes.position;
+				for (let k = 0; k < P.count; k++) {
+					const u = P.getX(k) + 0.5,
+						v = P.getY(k) + 0.5,
+						sw = Math.sin(Math.PI * u);
+					// (the trimmed three.js has setXYZ, not setZ)
+					P.setXYZ(k, P.getX(k) * (1 - 0.03 * v), P.getY(k) - 0.16 * sw - 0.04 * (1 - v) * sw, 0.26 * sw * (1 - 0.8 * v) + 0.05 * Math.sin(3 * Math.PI * u + 0.6) * (1 - v) + 0.025 * Math.sin(7 * Math.PI * u) * (1 - v));
+				}
+				return g2.computeVertexNormals(), g2;
+			}),
+			// a square tube of side 1 with no ends: the fence's pickets (their ends are never seen)
+			upick = cached("upick", () => new THREE.CylinderGeometry(0.5 * Math.SQRT2, 0.5 * Math.SQRT2, 1, 4, 1, !0).rotateY(Math.PI / 4)),
 			UH = cached("uhoriz", () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)),
 			// subdivided versions for long surfaces: the fog is evaluated per vertex, so a road drawn as one
 			// 640 m triangle pair would fog over even right in front of the camera
@@ -15189,6 +15448,9 @@ const JGP = (() => {
 				const sw = Math.min(sfW - 0.4, 3.5);
 				B.sign(o2.sign, 0, 4.08, 0.18, sw, sw / 4);
 			}
+			// (a picture band: one wide painting, or a row of square tiles of one painting)
+			o2.band && B.sign(o2.band, 0, 4.08, 0.18, Math.min(sfW - 0.4, 3.6), 0.9);
+			if (o2.tiles) for (let k = -1.5; k <= 1.5; k++) B.sign(o2.tiles, 0.92 * k, 4.08, 0.18, 0.9, 0.9);
 			if (o2.awn) {
 				const aw = sfW - 0.2;
 				B.sign(o2.awn, 0, 3.2, 0.85, aw, Math.hypot(0.7, 1.5), 0, -Math.atan2(1.5, 0.7)).sign(o2.awn, 0, 2.72, 1.6, aw, 0.32);
@@ -15246,6 +15508,8 @@ const JGP = (() => {
 			});
 			[-1, 1].forEach((sx) => B.win((sx * w) / 4.4, 1.6, 1.3, 4.0, { trim: "#6a5a40" }));
 			B.box("boards", "#6a4a2a", 0, 2.4, 0.03, 1.9, 3.0, 0.1).box("lit", "#56646e", 0, 4.4, 0.02, 1.9, 0.8, 0.06);
+			// (a flint nugget carved over the doors: the money the town keeps)
+			B.geo("plain", usph(5), "#5a564e", 0, 6.0, 0.5, 1.3, 0.9, 0.8, 0.4, 0.3, 0.2);
 			B.box("stone", tr, 0, 8.2, 0.9, w + 0.3, 1.1, 1.8).sign("s_bank", 0, 8.2, 1.82, Math.min(w - 0.4, 6.6), 0.99).box("plain", tr, 0, 8.9, 0.95, w + 0.6, 0.3, 2.0);
 			B.geo("plain", GABLE.slopes, "#c8c2b4", 0, 9.05, 0.2, 2.4, 1.6, w + 0.4, 0, Math.PI / 2, 0).geo("stone", GABLE.ends, tr, 0, 9.05, 0.2, 2.4, 1.6, w, 0, Math.PI / 2, 0);
 			return B;
@@ -15255,14 +15519,125 @@ const JGP = (() => {
 			B.geo("plain", usph(10), "#d8dce0", px, 3.35, 0.35, 0.26, 0.26, 0.26).geo("plain", ucyl(10), "#d8dce0", px, 2.0, 0.35, 0.26, 0.1, 0.26);
 			B.box("plain", "#d8dce0", px, 2.7, 0.18, 0.06, 0.06, 0.34);
 		};
-		const theater = (B, w) => {
-			B.box("plain", "#1a1a1e", 0, 3.95, 1.15, w - 2, 1.0, 2.3).sign("s_theater", 0, 3.95, 2.31, 3.6, 0.9);
-			[-1, 1].forEach((sx) => B.sign("s_theater", (sx * (w - 2)) / 2 + sx * 0.01, 3.95, 1.15, 2.1, 0.52, (sx * Math.PI) / 2));
-			for (let k = 0; k < 14; k++) [3.42, 4.48].forEach((yy) => B.geo("lamp", usph(6), "#fff2b8", -(w - 2.2) / 2 + ((w - 2.2) * k) / 13, yy, 2.32, 0.12, 0.12, 0.12));
+		// the picture house: a marquee of bulbs over the doors carrying tonight's bill, KING DINO (his crown, plume
+		// and drumsticks painted, no words), and a blade sign of gold stars up the corner
+		const marquee = (B, w) => {
+			B.box("plain", "#1a1a1e", 0, 3.95, 1.15, w - 2, 1.0, 2.3).sign("marq", 0, 3.95, 2.31, 3.6, 0.9);
+			for (let k = 0; k < 14; k++) [3.42, 4.48].forEach((yy) => B.geo("lamp", usph(4), "#fff2b8", -(w - 2.2) / 2 + ((w - 2.2) * k) / 13, yy, 2.32, 0.12, 0.12, 0.12));
 			B.box("plain", "#1a1a1e", w / 2 - 1.4, 7.4, 0.85, 0.16, 4.6, 1.3);
 			[-1, 1].forEach((sx) => B.sign("blade", w / 2 - 1.4 + sx * 0.09, 7.4, 0.85, 1.1, 4.4, (sx * Math.PI) / 2));
 		};
-
+		// ---- the trade emblems: what each store is, shown by a thing over its door or on its roof (owner's rule:
+		// show, don't tell), each in its creature's own colours ----
+		// an iron bracket out from the wall, an emblem hung from its end
+		const bracket = (B, px, py, len) => B.box("plain", "#1e2226", px, py, len / 2, 0.06, 0.06, len).box("plain", "#1e2226", px, py - 0.25, len - 0.1, 0.04, 0.5, 0.04);
+		// a gem, eight-sided (two four-sided cones base to base)
+		const gem = (B, col, px, py, pz, s2, a = 0) => B.geo("plain", ucone(4), col, px, py + 0.5 * s2, pz, s2, s2, s2, 0, a, 0).geo("plain", ucone(4), col, px, py - 0.5 * s2, pz, s2, s2, s2, Math.PI, a, 0);
+		// GEMTOE's amethysts: a cluster of six-sided crystals, pale at the points
+		const crystals = (B, px, py, pz, s2) =>
+			[
+				[0, 0, 1.0, 0, 0],
+				[0.26, 0.1, 0.72, 0.35, 0.15],
+				[-0.24, 0.06, 0.8, -0.3, 0.1],
+				[0.08, -0.24, 0.55, 0.1, -0.35],
+			].forEach(([dx, dz, hh, rz, rx], k) => {
+				const c = k % 2 ? "#7a3ab8" : "#9a5ad0",
+					r = (0.18 + 0.1 * hh) * s2;
+				B.geo("plain", ucyl(6), c, px + dx * s2, py + 0.4 * hh * s2, pz + dz * s2, r, 0.8 * hh * s2, r, rx, 0, rz).geo("plain", ucone(6), "#c8a0f0", px + dx * s2 - Math.sin(rz) * 0.42 * hh * s2, py + (0.8 * hh + 0.12) * s2, pz + dz * s2 + Math.sin(rx) * 0.42 * hh * s2, r, 0.25 * s2, r, rx, 0, rz);
+			});
+		// MAMA GORBO's goo shake: a tall cup with a dome of goo and a striped straw, her goo running down it
+		const gooShake = (B, px, py, pz, s2) => {
+			B.geo("plain", ucyl(10, 0.46), "#f6f0e4", px, py + 0.6 * s2, pz, 0.8 * s2, 1.2 * s2, 0.8 * s2).geo("plain", ucyl(10), "#c8282a", px, py + 1.22 * s2, pz, 0.86 * s2, 0.06 * s2, 0.86 * s2);
+			B.geo("plain", usph(10, !0), "#e8409e", px, py + 1.24 * s2, pz, 0.84 * s2, 0.5 * s2, 0.84 * s2).geo("plain", usph(6), "#36d0e8", px + 0.12 * s2, py + 1.6 * s2, pz + 0.1 * s2, 0.26 * s2, 0.2 * s2, 0.26 * s2);
+			B.box("plain", "#f8f4ec", px + 0.2 * s2, py + 1.75 * s2, pz - 0.1 * s2, 0.07 * s2, 0.9 * s2, 0.07 * s2, 0.18, 0, -0.18).box("plain", "#c8282a", px + 0.24 * s2, py + 1.98 * s2, pz - 0.14 * s2, 0.075 * s2, 0.25 * s2, 0.075 * s2, 0.18, 0, -0.18);
+			[["#36d0e8", 0.4, 0.7], ["#9a52e0", 2.1, 0.45], ["#c8e040", 3.7, 0.6], ["#e8409e", 5.2, 0.35]].forEach(([c, a, len]) =>
+				B.geo("plain", ucyl(5), c, px + 0.41 * s2 * Math.sin(a), py + (1.2 - len / 2) * s2, pz + 0.41 * s2 * Math.cos(a), 0.1 * s2, len * s2, 0.1 * s2).geo("plain", usph(5), c, px + 0.41 * s2 * Math.sin(a), py + (1.2 - len) * s2, pz + 0.41 * s2 * Math.cos(a), 0.14 * s2, 0.17 * s2, 0.14 * s2),
+			);
+		};
+		// a giant carrot (the Juice Bar's carrot juice, from the grocer's crates) lying on a parapet
+		const carrot = (B, px, py, pz, s2, ry) => {
+			B.geo("plain", ucone(8), "#f08a2a", px, py, pz, 0.5 * s2, 2.2 * s2, 0.5 * s2, 0, ry, Math.PI / 2 - 0.2);
+			for (let k = 0; k < 3; k++) B.geo("plain", ucone(4), "#4f9a2a", px + 1.3 * s2 * Math.cos(ry), py + 0.1 * s2 + 0.3 * s2 * Math.abs(k - 1), pz - 1.3 * s2 * Math.sin(ry) + 0.12 * s2 * (k - 1), 0.12 * s2, 0.8 * s2, 0.12 * s2, 0, ry, -Math.PI / 2 + 0.55 * (k - 1) + 0.2);
+		};
+		// the grocer's stand on the sidewalk: two crates of fruit on a trestle, in the Juice Bar's colours
+		const produce = (B, px, pz) => {
+			B.box("boards", "#b8a070", px, 0.42, pz, 2.6, 0.08, 0.9);
+			[-1, 1].forEach((sx) => B.box("plain", "#7a5a3a", px + 1.15 * sx, 0.2, pz, 0.08, 0.4, 0.7));
+			["#ff8a1a", "#ffd23a", "#8ad83a", "#ff5a7a"].forEach((c, k) => {
+				const x0 = px - 0.9 + 0.6 * k;
+				B.box("boards", "#c8a070", x0, 0.62, pz, 0.56, 0.32, 0.6);
+				for (let j = 0; j < 3; j++) B.geo("plain", usph(4), c, x0 - 0.16 + 0.16 * j, 0.84, pz + 0.12 * (j % 2 ? 1 : -1), 0.17, 0.15, 0.17);
+			});
+		};
+		// a giant ice cream: three scoops of goo flavour on a waffle cone
+		const iceCream = (B, px, py, pz, s2) => {
+			B.geo("plain", ucone(8), "#d8a860", px, py + 0.8 * s2, pz, 0.9 * s2, 1.6 * s2, 0.9 * s2, Math.PI, 0, 0);
+			[["#36d0e8", 0, 1.95, 0], ["#e8409e", -0.38, 2.5, 0.05], ["#c8e040", 0.36, 2.55, -0.05]].forEach(([c, dx, dy, dz]) => B.geo("plain", usph(8), c, px + dx * s2, py + dy * s2, pz + dz * s2, 0.92 * s2, 0.84 * s2, 0.92 * s2));
+			B.geo("plain", usph(4), "#c8282a", px + 0.1 * s2, py + 3.0 * s2, pz, 0.22 * s2, 0.22 * s2, 0.22 * s2);
+		};
+		// ETCHER's tails: ribbed purple tentacles draped down the piers from the parapet, each tip rounded closed
+		const tentacle = (B, px, py, pz, len, sx) => {
+			let x0 = px,
+				y0 = py,
+				z0 = pz;
+			for (let k = 0; k < 3; k++) {
+				const sg = len / 3,
+					rz = 0.14 * sx * k * k,
+					rx = -0.1 * k * k;
+				B.geo("plain", ucyl(6, 0.42), "#7a3ab8", x0 + 0.5 * sg * Math.sin(rz), y0 - 0.5 * sg * Math.cos(rz), z0 + 0.5 * sg * Math.sin(-rx), 0.38 - 0.06 * k, sg, 0.38 - 0.06 * k, rx, 0, rz);
+				(x0 += sg * Math.sin(rz)), (y0 -= sg * Math.cos(rz)), (z0 += sg * Math.sin(-rx));
+			}
+			B.geo("plain", usph(5), "#9a5ad0", x0, y0 - 0.1, z0, 0.3, 0.38, 0.3);
+		};
+		// the Great Sphinx, a stone copy on a plinth, one eye socket empty (the missing Eye of the Great Sphinx of the
+		// Computer Core is the Ancient Gem SPARKAKUS puts back together)
+		const sphinx = (B, px, pz, ry) => {
+			const P = B.sub(px, pz, ry),
+				st = "#b8ad98";
+			const k = 1.45;
+			P.box("stone", "#a49c8c", 0, 0.3, 0, 1.3 * k, 0.6, 2.2 * k).box("stone", "#c8bfa8", 0, 0.62, 0, 1.4 * k, 0.06, 2.3 * k);
+			P.box("plain", st, 0, 0.62 + 0.36 * k, -0.3 * k, 0.72 * k, 0.66 * k, 1.5 * k).box("plain", st, 0, 0.62 + 0.38 * k, -0.85 * k, 0.8 * k, 0.74 * k, 0.5 * k);
+			[-1, 1].forEach((sx) => P.box("plain", st, 0.3 * sx * k, 0.62 + 0.18 * k, 0.55 * k, 0.22 * k, 0.3 * k, 0.9 * k).box("plain", st, 0.3 * sx * k, 0.62 + 0.4 * k, -0.95 * k, 0.26 * k, 0.5 * k, 0.4 * k));
+			P.box("plain", st, 0, 0.62 + 0.84 * k, 0.05 * k, 0.56 * k, 0.3 * k, 0.6 * k).geo("plain", usph(8), st, 0, 0.62 + 1.16 * k, 0.15 * k, 0.5 * k, 0.52 * k, 0.5 * k).box("plain", "#a89e88", 0, 0.62 + 1.24 * k, -0.06 * k, 0.74 * k, 0.46 * k, 0.5 * k).box("plain", "#a89e88", 0, 0.62 + 0.88 * k, -0.1 * k, 0.78 * k, 0.3 * k, 0.2 * k);
+			P.box("plain", "#9a9080", 0, 0.62 + 1.1 * k, 0.36 * k, 0.1 * k, 0.16 * k, 0.1 * k).geo("plain", usph(5), "#2a2a2e", -0.12 * k, 0.62 + 1.22 * k, 0.37 * k, 0.09 * k, 0.08 * k, 0.06 * k).geo("plain", usph(5), "#8a8070", 0.12 * k, 0.62 + 1.22 * k, 0.37 * k, 0.08 * k, 0.07 * k, 0.05 * k);
+		};
+		// a giant Blossom, the flower that grows round the park, as its pickups are: a green stem with leaves, red
+		// flame petals round orange ones, an ember glowing over the heart
+		const giantBlossom = (B, px, py, pz, s2) => {
+			B.geo("plain", ucyl(6, 0.7), "#3f8a2a", px, py + 1.0 * s2, pz, 0.14 * s2, 2.0 * s2, 0.14 * s2);
+			[-1, 1].forEach((sd, k) => B.geo("plain", usph(5), k ? "#4f9a2a" : "#3f8a2a", px + 0.42 * sd * s2, py + (0.7 + 0.35 * k) * s2, pz, 0.7 * s2, 0.12 * s2, 0.3 * s2, 0, k, -0.6 * sd));
+			const ty = py + 2.0 * s2;
+			for (let k = 0; k < 7; k++) {
+				const a = (k / 7) * l;
+				B.geo("plain", ucone(5), "#e8301e", px + 0.3 * s2 * Math.cos(a), ty + 0.45 * s2, pz + 0.3 * s2 * Math.sin(a), 0.36 * s2, 1.1 * s2, 0.36 * s2, 0.7 * Math.sin(a), 0, -0.7 * Math.cos(a));
+			}
+			for (let k = 0; k < 5; k++) {
+				const a = (k / 5) * l + 0.4;
+				B.geo("plain", ucone(5), "#ff6a1a", px + 0.12 * s2 * Math.cos(a), ty + 0.5 * s2, pz + 0.12 * s2 * Math.sin(a), 0.26 * s2, 0.9 * s2, 0.26 * s2, 0.3 * Math.sin(a), 0, -0.3 * Math.cos(a));
+			}
+			B.geo("plain", usph(5), "#a8200e", px, ty + 0.1 * s2, pz, 0.3 * s2, 0.3 * s2, 0.3 * s2).geo("lamp", usph(5), "#ffb347", px, ty + 1.35 * s2, pz, 0.2 * s2, 0.2 * s2, 0.2 * s2);
+		};
+		// a bed of little Blossoms (two cones each) along a box of earth
+		const blossomBed = (B, px, pz, w2) => {
+			B.box("plain", "#5a4030", px, 0.14, pz, w2, 0.28, 0.5);
+			for (let k = 0; k < Math.round(w2 / 0.45); k++) {
+				const x0 = px - w2 / 2 + 0.25 + 0.45 * k;
+				B.geo("plain", ucone(4), "#4f9a2a", x0, 0.45, pz + 0.1 * (k % 2 ? 1 : -1), 0.08, 0.4, 0.08).geo("plain", ucone(5), k % 3 ? "#e8301e" : "#ff6a1a", x0, 0.8, pz + 0.1 * (k % 2 ? 1 : -1), 0.22, 0.3, 0.22);
+			}
+		};
+		// a stack of old television sets, ANOMALEE's magenta screens glowing in them
+		const tvStack = (B, px, pz, ry = 0) => {
+			const P = B.sub(px, pz, ry);
+			[[0, 0.3, 0.8, 0.6], [0.05, 0.9, 0.7, 0.55], [-0.04, 1.42, 0.56, 0.48]].forEach(([dx, yy, w2, h2]) => {
+				P.box("plain", "#c8c0b0", dx, yy, 0, w2, h2, 0.6).sign("scan", dx, yy, 0.305, 0.72 * w2, 0.7 * h2).box("plain", "#3a3a3e", dx + 0.38 * w2, yy - 0.1, 0.305, 0.08, 0.08, 0.02);
+			});
+			P.box("plain", "#7a8088", -0.1, 1.95, -0.1, 0.03, 0.6, 0.03, 0, 0, 0.5).box("plain", "#7a8088", 0.1, 1.95, -0.1, 0.03, 0.6, 0.03, 0, 0, -0.5);
+		};
+		// a rabbit-ear aerial on a mast
+		const aerial = (B, px, py, pz, s2) => {
+			B.box("plain", "#7a8088", px, py + 1.2 * s2, pz, 0.08 * s2, 2.4 * s2, 0.08 * s2).box("plain", "#7a8088", px, py + 2.45 * s2, pz, 0.5 * s2, 0.1 * s2, 0.1 * s2);
+			[-1, 1].forEach((sd) => B.box("plain", "#9aa0a8", px + 0.45 * sd * s2, py + 3.1 * s2, pz, 0.05 * s2, 1.5 * s2, 0.05 * s2, 0, 0, -0.55 * sd));
+		};
 		// ---- civic buildings ----------------------------------------------------------------------
 		const COURTHOUSE = (cx, cz) => {
 			const B = place(cx, cz, 0),
@@ -15282,7 +15657,7 @@ const JGP = (() => {
 			// portico: podium, columns, entablature with the name, pediment, and steps
 			B.box("stone", st, 0, 0.7, 2.5, 13, 1.4, 5);
 			[-4.8, -1.6, 1.6, 4.8].forEach((px) => B.geo("plain", ucyl(16), wh, px, 1.4 + 4.5, 4.2, 1.0, 9, 1.0).box("plain", wh, px, 10.55, 4.2, 1.3, 0.3, 1.3).box("plain", wh, px, 1.55, 4.2, 1.3, 0.3, 1.3));
-			B.box("plain", wh, 0, 11.4, 2.5, 13.6, 1.4, 5.4).sign("s_townhall", 0, 11.4, 5.22, 6, 1.5);
+			B.box("plain", wh, 0, 11.4, 2.5, 13.6, 1.4, 5.4).sign("seal", 0, 11.4, 5.22, 2.5, 1.25);
 			B.geo("plain", GABLE.slopes, "#c8ccd0", 0, 12.1, 2.5, 5.6, 2.6, 14, 0, Math.PI / 2, 0).geo("stone", GABLE.ends, wh, 0, 12.1, 2.5, 5.4, 2.6, 13.6, 0, Math.PI / 2, 0);
 			B.box("boards", "#5a3a22", 0, 2.9, 0.06, 2.4, 3.0, 0.1).geo("lit", halfDisc, "#56646e", 0, 4.45, 0.05, 2.4, 2.4, 1);
 			for (let k = 0; k < 4; k++) B.box("stone", st, 0, 1.4 - 0.35 * (k + 0.5), 5.2 + 0.45 * k, 9 - 0.2 * k, 0.35, 0.5);
@@ -15685,13 +16060,22 @@ const JGP = (() => {
 				brick = "#b04a32",
 				tr = "#efe6d2";
 			B.box("brick", brick, 0, h / 2, -D / 2, w, h, D).box("plain", "#3a3a3e", 0, h + 0.03, -D / 2, w - 0.1, 0.06, D - 0.1);
-			[-2.7, 2.1].forEach((px) => {
-				B.box("plain", tr, px, 2.2, 0.04, 4.0, 4.6, 0.12).box("boards", "#8a4a32", px, 2.1, 0.08, 3.6, 4.2, 0.1);
-				for (let k = 1; k < 5; k++) B.box("plain", "#5a3a26", px, 0.84 * k, 0.14, 3.6, 0.05, 0.04);
-				B.box("lit", "#4a5a64", px, 2.95, 0.15, 3.2, 0.55, 0.04);
-			});
+			// the left bay shut; the right bay rolled up, the engine's nose in it (what the place is, shown)
+			B.box("plain", tr, -2.7, 2.2, 0.04, 4.0, 4.6, 0.12).box("boards", "#8a4a32", -2.7, 2.1, 0.08, 3.6, 4.2, 0.1);
+			for (let k = 1; k < 5; k++) B.box("plain", "#5a3a26", -2.7, 0.84 * k, 0.14, 3.6, 0.05, 0.04);
+			B.box("lit", "#4a5a64", -2.7, 2.95, 0.15, 3.2, 0.55, 0.04);
+			B.box("plain", tr, 2.1, 2.2, 0.04, 4.0, 4.6, 0.12).box("plain", "#1e1e22", 2.1, 2.1, -1.9, 3.6, 4.2, 4.0).box("boards", "#8a4a32", 2.1, 3.95, 0.12, 3.6, 0.5, 0.1);
+			{
+				const E0 = B.sub(2.1, -0.9, 0),
+					red = "#c8282a";
+				E0.box("plain", red, 0, 1.55, 0, 2.6, 1.9, 2.0).box("plain", red, 0, 2.7, -0.5, 2.4, 0.5, 1.2).box("plain", "#c8ccd4", 0, 0.5, 1.05, 2.8, 0.3, 0.3).box("plain", "#2a2a2e", 0, 1.1, 1.02, 1.5, 0.55, 0.06);
+				[-1, 1].forEach((sx) => E0.geo("lamp", usph(5), "#fff2b8", 1.0 * sx, 1.0, 1.03, 0.3, 0.3, 0.12).geo("plain", ucyl(8), "#1a1a1e", 1.25 * sx, 0.45, 0.2, 0.9, 0.3, 0.9, 0, 0, Math.PI / 2));
+				E0.box("lit", "#6a8aa0", 0, 2.15, 1.02, 2.2, 0.7, 0.05).box("plain", "#1a1a1e", 0, 2.75, 0.2, 2.0, 0.24, 0.5).geo("lamp", usph(4), "#ff4a4a", 0, 2.75, 0.5, 0.5, 0.22, 0.22).geo("plain", ucyl(8), "#c8ccd4", 0, 2.75, 0.55, 0.16, 0.16, 0.16, Math.PI / 2, 0, 0);
+			}
 			B.box("boards", "#c8282a", 5.6, 1.15, 0.05, 1.1, 2.3, 0.1).box("lit", "#4a5a64", 5.6, 1.7, 0.11, 0.6, 0.6, 0.02);
-			B.box("plain", "#c8282a", 0, 4.9, 0.08, w - 0.4, 0.3, 0.14).sign("s_fire", -0.3, 5.55, 0.12, 4.4, 1.1);
+			B.box("plain", "#c8282a", 0, 4.9, 0.08, w - 0.4, 0.3, 0.14);
+			// the brass bell under the tower's top
+			B.box("plain", "#5a3a22", -w / 2 - 1.6, 13.4, -1.0, 1.2, 0.12, 0.12).geo("plain", ucone(8), "#c8a040", -w / 2 - 1.6, 12.9, -1.0, 0.7, 0.8, 0.7).geo("plain", usph(6), "#1a1a1e", -w / 2 - 1.6, 12.5, -1.0, 0.12, 0.12, 0.12);
 			[-4.5, -1.5, 1.5, 4.5].forEach((px) => B.win(px, 6.2, 1.1, 1.6, { trim: tr, lintel: "#e6dac0", dark: rnd() < 0.4 }));
 			B.box("plain", tr, 0, h - 0.25, 0.18, w + 0.1, 0.4, 0.4);
 			// hose-drying tower with a siren on top
@@ -15711,7 +16095,9 @@ const JGP = (() => {
 				col = o2.col,
 				f0 = 0.7;
 			B.box("concrete", "#b8b0a4", 0, 0.35, -d / 2, w + 0.2, 0.7, d + 0.2).box("siding", col, 0, f0 + h / 2, -d / 2, w, h, d);
-			B.geo("shingle", GABLE.slopes, o2.roof, 0, f0 + h, -d / 2, w + 1.0, 3.2, d + 1.2).geo("siding", GABLE.ends, col, 0, f0 + h, -d / 2, w, 3.2, d);
+			// (MUSHROOM's house wears his cap for a roof: a dome in his cap's skin, overhanging all round)
+			if (o2.capRoof) B.geo("sign", onSlot("capskin", usph(12, !0)), "#ffffff", 0, f0 + h - 0.05, -d / 2, w + 3.2, 4.2, d + 3.4).geo("plain", usph(12, !0), "#d8c090", 0, f0 + h - 0.08, -d / 2, w + 3.3, 0.3, d + 3.5);
+			else B.geo("shingle", GABLE.slopes, o2.roof, 0, f0 + h, -d / 2, w + 1.0, 3.2, d + 1.2).geo("siding", GABLE.ends, col, 0, f0 + h, -d / 2, w, 3.2, d);
 			[-1, 1].forEach((sx) => [0, -d].forEach((zz) => B.box("plain", tr, (sx * w) / 2, f0 + h / 2, zz, 0.22, h, 0.22)));
 			B.box("plain", tr, 0, f0 + h - 0.15, 0.06, w + 0.1, 0.3, 0.14);
 			B.box("plain", tr, 0, f0 + 1.15, 0.03, 1.3, 2.4, 0.08).box("boards", o2.door || "#8a2a2a", 0, f0 + 1.1, 0.07, 1.0, 2.2, 0.06).box("lit", "#56646e", 0, f0 + 1.8, 0.11, 0.5, 0.5, 0.02);
@@ -15724,7 +16110,8 @@ const JGP = (() => {
 				cols = [-w / 2 + 0.3, -w / 6, w / 6, w / 2 - 0.3];
 			B.box("boards", "#b8a88e", 0, f0 - 0.08, pd / 2, w, 0.16, pd).box("plain", tr, 0, 0.3, pd - 0.05, w, 0.6, 0.1);
 			for (let k = 0; k < 3; k++) B.box("concrete", "#c8c0b4", 0, 0.5 - 0.2 * k, pd + 0.2 + 0.4 * k, 1.6, 0.2, 0.4);
-			cols.forEach((px) => B.box("plain", tr, px, f0 + ph / 2, pd - 0.25, 0.24, ph, 0.24));
+			// (MONTGUMMERY's porch stands on stacks of his terracotta pots)
+			cols.forEach((px) => (o2.potCols ? [0, 1, 2].forEach((k) => B.geo("plain", ucyl(6, 0.62), k % 2 ? "#c8703a" : "#b8603a", px, f0 + (k + 0.5) * (ph / 3), pd - 0.25, 0.5, ph / 3, 0.5)) : B.box("plain", tr, px, f0 + ph / 2, pd - 0.25, 0.24, ph, 0.24)));
 			B.box("plain", tr, 0, f0 + ph + 0.15, pd - 0.25, w + 0.1, 0.3, 0.3).box("shingle", o2.roof, 0, f0 + ph + 0.48, pd / 2 - 0.1, w + 0.4, 0.14, pd + 0.6, 0.16);
 			for (let k = 0; k + 1 < cols.length; k++) {
 				if (k === 1) continue;
@@ -15745,7 +16132,8 @@ const JGP = (() => {
 			);
 			B.box("concrete", "#d0c8bc", 0, 0.02, (pd + 1.2 + fz) / 2, 1.2, 0.04, fz - pd - 1.2);
 			B.box("plain", "#6a5440", -1.3, 0.55, fz + 0.35, 0.1, 1.1, 0.1).box("plain", o2.mail || "#2a2a2e", -1.3, 1.15, fz + 0.35, 0.3, 0.26, 0.5);
-			[-w / 2 + 1.3, w / 2 - 1.3].forEach((px, k) => B.geo("plain", crownGeo(k + 1, 1), "#3f7a32", px, 0.55, pd + 0.55, 1.0, 0.7, 0.7));
+			[-w / 2 + 1.3, w / 2 - 1.3].forEach((px, k) => (o2.puffs ? B.geo("plain", usph(6), "#f2e4b4", px, 0.5, pd + 0.55, 0.9, 0.8, 0.9) : B.geo("plain", crownGeo(k + 1, 1), "#3f7a32", px, 0.55, pd + 0.55, 1.0, 0.7, 0.7)));
+			o2.extra && o2.extra(B, w, d, h, f0, pd);
 			return B;
 		};
 		const SCHOOL = (cx, cz, ry) => {
@@ -15760,7 +16148,6 @@ const JGP = (() => {
 			B.geo("shingle", GABLE.slopes, "#4a4a50", 0, top, -d / 2, d + 0.8, 3.4, w + 0.8, 0, Math.PI / 2, 0).geo("siding", GABLE.ends, red, 0, top, -d / 2, d, 3.4, w, 0, Math.PI / 2, 0);
 			[-1, 1].forEach((sx) => [0, -d].forEach((zz) => B.box("plain", tr, (sx * w) / 2, 0.8 + h / 2, zz, 0.22, h, 0.22)));
 			B.box("plain", tr, 0, 2.2, 0.04, 2.2, 2.9, 0.08).box("boards", "#7a5232", 0, 2.05, 0.08, 1.9, 2.5, 0.06).box("plain", "#3a2a1e", 0, 2.05, 0.12, 0.03, 2.5, 0.02).box("lit", "#56646e", 0, 3.6, 0.1, 1.9, 0.5, 0.04);
-			B.sign("s_school", 0, top + 0.9, 0.06, 2.6, 0.65);
 			for (let k = 0; k < 3; k++) B.box("concrete", "#c8c0b4", 0, 0.65 - 0.22 * k, 0.4 + 0.4 * k, 2.6, 0.22, 0.4);
 			[-1, 1].forEach((sx) => {
 				const Sd = B.sub((sx * w) / 2, -d / 2, (sx * Math.PI) / 2);
@@ -15780,20 +16167,24 @@ const JGP = (() => {
 			[-0.6, 0.6].forEach((px) => sw.box("plain", "#3a3a3e", px - 0.2, 1.6, 0, 0.02, 1.7, 0.02).box("plain", "#3a3a3e", px + 0.2, 1.6, 0, 0.02, 1.7, 0.02).box("plain", "#c8282a", px, 0.75, 0, 0.5, 0.05, 0.22));
 			return B;
 		};
+		// the filling station, the far-future kind (HENNRICK's paradox: small-town America ahead of its time): the
+		// pumps are charging posts with glowing ports and coiled cables, the canopy and pylon in MONTGUMMERY's teal,
+		// a lightning bolt where a brand name would be
 		const GAS_STATION = (cx, cz) => {
 			const B = place(cx, cz, 0),
 				wh = "#f4f2ec",
-				red = "#c8202a";
-			B.box("plain", wh, 0, 2.25, -3, 8, 4.5, 6).box("plain", red, 0, 4.25, 0.02, 8.1, 0.5, 0.1).box("plain", "#3a3a3e", 0, 4.53, -3, 8.2, 0.06, 6.2);
+				teal = "#55b8c6";
+			B.box("plain", wh, 0, 2.25, -3, 8, 4.5, 6).box("plain", teal, 0, 4.25, 0.02, 8.1, 0.5, 0.1).box("plain", "#3a3a3e", 0, 4.53, -3, 8.2, 0.06, 6.2);
 			B.box("lit", "#3e4c56", -1.6, 1.8, 0.01, 3.4, 2.2, 0.06).box("boards", "#7a5232", 2.3, 1.15, 0.03, 1.1, 2.3, 0.06).box("lit", "#4a5a64", 2.3, 1.6, 0.07, 0.7, 0.9, 0.02);
-			B.box("plain", wh, 0, 4.7, 5.5, 9, 0.5, 6).box("plain", red, 0, 4.7, 8.52, 9.05, 0.36, 0.06).sign("s_gas", 0, 4.7, 8.56, 1.6, 0.4);
+			B.box("plain", wh, 0, 4.7, 5.5, 9, 0.5, 6).box("plain", teal, 0, 4.7, 8.52, 9.05, 0.36, 0.06);
 			[-3.4, 3.4].forEach((px) => B.box("plain", wh, px, 2.25, 5.5, 0.3, 4.5, 0.3));
 			B.box("concrete", "#c8c4bc", 0, 0.08, 5.5, 2.4, 0.16, 4.4);
 			[-0.7, 0.7].forEach((px, k) => {
 				const pz = 4.4 + 2.2 * k;
-				B.box("plain", red, px, 0.95, pz, 0.6, 1.5, 0.45).box("plain", wh, px, 1.8, pz, 0.62, 0.22, 0.47).box("lit", "#f8f4d0", px, 1.25, pz + 0.235, 0.4, 0.3, 0.02).box("plain", "#1a1a1e", px + 0.33, 1.1, pz, 0.05, 0.7, 0.05);
+				B.box("plain", wh, px, 0.95, pz, 0.6, 1.5, 0.45).box("plain", teal, px, 1.8, pz, 0.62, 0.22, 0.47).geo("lamp", usph(5), "#8af0ff", px, 1.25, pz + 0.235, 0.26, 0.26, 0.08);
+				B.geo("plain", ao([[px + 0.3, 1.75, pz], [px + 0.7, 1.55, pz + 0.12], [px + 0.72, 0.95, pz + 0.16], [px + 0.42, 0.7, pz + 0.05], [px + 0.31, 0.95, pz]], 0.035, 0.035, 10, 4), "#1d2a23");
 			});
-			B.box("plain", "#5a6a7a", 5.4, 3.0, 8.0, 0.25, 6, 0.25).box("plain", red, 5.4, 6.3, 8.0, 1.8, 1.2, 0.3).sign("s_gas", 5.4, 6.3, 8.16, 1.6, 0.4).sign("s_gas", 5.4, 6.3, 7.84, 1.6, 0.4, Math.PI)
+			B.box("plain", "#5a6a7a", 5.4, 3.0, 8.0, 0.25, 6, 0.25).box("plain", "#1a1a1e", 5.4, 6.3, 8.0, 1.1, 1.6, 0.3).sign("bolt", 5.4, 6.3, 8.16, 0.9, 1.35).sign("bolt", 5.4, 6.3, 7.84, 0.9, 1.35, Math.PI);
 			B.box("asphalt", "#5c5c60", 0, -0.04, 6, 12, 0.08, 9);
 			return B;
 		};
@@ -15922,7 +16313,7 @@ const JGP = (() => {
 		const lampPost = (X, Z) => {
 			const iron = "#1e2226";
 			put("plain", ucyl(8), iron, S(X, 0.25, Z, 0, 0, 0, 0.42, 0.5, 0.42)), put("plain", ucyl(8), iron, S(X, 2.25, Z, 0, 0, 0, 0.15, 4.0, 0.15));
-			put("plain", ucyl(8), iron, S(X, 4.3, Z, 0, 0, 0, 0.34, 0.12, 0.34)), put("lamp", usph(12), "#f6f0dc", S(X, 4.66, Z, 0, 0, 0, 0.62, 0.66, 0.62));
+			put("plain", ucyl(8), iron, S(X, 4.3, Z, 0, 0, 0, 0.34, 0.12, 0.34)), put("lamp", usph(8), "#f6f0dc", S(X, 4.66, Z, 0, 0, 0, 0.62, 0.66, 0.62));
 			put("plain", ucone(8), iron, S(X, 5.06, Z, 0, 0, 0, 0.26, 0.2, 0.26)), E.add(X, Z, 0.6, "scenery");
 		};
 		const gazebo = (X, Z) => {
@@ -16094,7 +16485,7 @@ const JGP = (() => {
 			[-1, 1].forEach((sx) => [-1, 1].forEach((sz) => B.box("plain", "#1e2226", sx * 0.24, 0.15, sz * 0.2, 0.06, 0.3, 0.06)));
 			E.add(-3.2, 40.3 + ZS, 0.6, "scenery");
 		}
-		// street-name blades and stop signs at the corners of the square
+		// stop signs at the corners of the square (no street-name blades: the town keeps its words to a minimum)
 		[
 			[1, -1],
 			[1, 1],
@@ -16103,13 +16494,6 @@ const JGP = (() => {
 		].forEach(([sx, sz]) => {
 			const X = 41.3 * sx,
 				Z = sz > 0 ? 41.3 + ZS : -41.3;
-			put("plain", ucyl(6), "#7a8088", S(X, 1.7, Z, 0, 0, 0, 0.1, 3.4, 0.1));
-			const B = place(X, Z, 0);
-			// each blade carries its name on both faces (one double-sided plane read backwards from behind)
-			const n1 = sx > 0 ? "st_main" : "st_oak",
-				n2 = sz > 0 ? "st_maple" : "st_elm";
-			B.sign(n1, 0.012, 3.25, 0, 1.6, 0.4, Math.PI / 2).sign(n1, -0.012, 3.25, 0, 1.6, 0.4, -Math.PI / 2);
-			B.sign(n2, 0, 3.55, 0.012, 1.6, 0.4).sign(n2, 0, 3.55, -0.012, 1.6, 0.4, Math.PI);
 			put("plain", ucyl(6), "#7a8088", S(X - 0.9 * sx, 1.25, Z + 0.4 * sz, 0, 0, 0, 0.08, 2.5, 0.08));
 			place(X - 0.9 * sx, Z + 0.4 * sz, faceIn(X, Z)).sign("stop", 0, 2.35, 0.05, 0.8, 0.8);
 		});
@@ -16123,42 +16507,295 @@ const JGP = (() => {
 			NARROW = (74 - MGW) / 64;
 		[
 			[MGW, 0, (X, Z) => MISTERGUMMERYS(X + 12.4, Z, -Math.PI / 2)],
-			[12 * NARROW, 12, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#c8a072", sign: "s_pharmacy", awn: "aw_blue", front: "#24404a", crest: !0 })],
-			[8 * NARROW, 8, (X, Z, w, h) => FRONTIER(X, Z, -Math.PI / 2, w, h, { col: "#a8c4d8", sign: "s_barber", front: "#22325a", shutter: "#22325a", extra: (B, w2) => barberPole(B, w2 / 2 - 0.45) })],
-			[12 * NARROW, 10.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#7a3a2a", front: "#1a1a1e", signBg: "#1a1a1e", extra: (B, w2) => theater(B, w2) })],
-			[10 * NARROW, 9, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#d8c8a0", sign: "s_bakery", awn: "aw_pink", front: "#6a3a28", lintel: "#b8a888" })],
-			[11 * NARROW, 9.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#a8402c", sign: "s_diner", awn: "aw_red", front: "#7a1a1a", crest: !0 })],
-			[11 * NARROW, 8.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#b86a42", sign: "s_books", awn: "aw_yellow", front: "#22325a" })],
+			// GEMTOE's gem exchange: crimson brick, her amethysts clustered on the crest and one hung over the walk
+			[
+				12 * NARROW,
+				12,
+				(X, Z, w, h) =>
+					STORE(X, Z, -Math.PI / 2, w, h, {
+						col: "#8a2a2a",
+						pier: "#6a1e22",
+						front: "#3a1a2a",
+						lintel: "#d8b040",
+						crest: !0,
+						extra: (B, w2, h2) => {
+							crystals(B, 0, h2 + 1.2, -0.15, 2.6), bracket(B, -w2 / 2 + 1.0, 5.9, 1.3), gem(B, "#9a5ad0", -w2 / 2 + 1.0, 5.1, 1.15, 0.62, Math.PI / 4);
+						},
+					}),
+			],
+			// the barber's, by its pole (a trade sign everybody reads)
+			[8 * NARROW, 8, (X, Z, w, h) => FRONTIER(X, Z, -Math.PI / 2, w, h, { col: "#a8c4d8", front: "#22325a", shutter: "#22325a", extra: (B, w2) => barberPole(B, w2 / 2 - 0.45) })],
+			// the picture house, billing KING DINO
+			[12 * NARROW, 10.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#7a3a2a", front: "#1a1a1e", signBg: "#1a1a1e", extra: (B, w2) => marquee(B, w2) })],
+			// the diner, ridged chrome under a red front, MAMA GORBO's goo shake up on its roof
+			[10 * NARROW, 9, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { bin: "siding", col: "#d8dce0", pier: "#c8282a", front: "#c8282a", awn: "aw_red", trim: "#c8ccd4", lintel: "#c8ccd4", extra: (B, w2, h2) => gooShake(B, 0, h2, -1.5, 2.4) })],
+			// GLYPH's sign shop: porcelain blue, gold filigree on its band, his red trident on a gold shield over the door,
+			// hexagon plates shingled along the frieze, and his two purple tiles with their gold coins up on the crest
+			[
+				11 * NARROW,
+				9.5,
+				(X, Z, w, h) =>
+					STORE(X, Z, -Math.PI / 2, w, h, {
+						col: "#9ab4d0",
+						pier: "#1e2a5a",
+						front: "#1e2a5a",
+						band: "filig",
+						trim: "#d8b040",
+						lintel: "#d8b040",
+						crest: !0,
+						extra: (B, w2, h2) => {
+							const red = "#c8202a";
+							B.geo("plain", ucyl(12), "#d8b040", 0, 4.1, 0.32, 1.7, 0.1, 1.7, Math.PI / 2, 0, 0).box("plain", red, 0, 3.85, 0.4, 0.14, 0.95, 0.06).box("plain", red, 0, 4.3, 0.4, 0.72, 0.12, 0.06);
+							[-0.28, 0, 0.28].forEach((dx) => B.box("plain", red, dx, 4.52, 0.4, 0.12, 0.5, 0.06).geo("plain", ucone(4), red, dx, 4.86, 0.4, 0.16, 0.2, 0.06));
+							const n = Math.floor((w2 - 1) / 0.6);
+							for (let k = 0; k < n; k++) B.geo("plain", ucyl(6), ["#1e2a5a", "#d8b040", "#3ac8c0"][k % 3], -((n - 1) * 0.6) / 2 + 0.6 * k, h2 - 0.8, 0.22, 0.72, 0.06, 0.72, Math.PI / 2, 0, 0);
+							[-1, 1].forEach((sx) => B.box("plain", "#6a2aa0", 0.75 * sx, h2 + 1.7, -0.15, 0.9, 0.9, 0.12).geo("plain", ucyl(10), "#d8b040", 0.75 * sx, h2 + 1.7, -0.06, 0.5, 0.06, 0.5, Math.PI / 2, 0, 0));
+						},
+					}),
+			],
+			// SPARKAKUS's genealogical society: a family tree in a gold oval over its door, his daffodils in beds under
+			// the windows, his gold star over the crest
+			[
+				11 * NARROW,
+				8.5,
+				(X, Z, w, h) =>
+					STORE(X, Z, -Math.PI / 2, w, h, {
+						col: "#b86a42",
+						front: "#2c4cc0",
+						door: "#2c4cc0",
+						crest: !0,
+						extra: (B, w2, h2) => {
+							B.sign("tree", 0, 4.1, 0.2, 1.2, 1.2);
+							[-1, 1].forEach((sx) => {
+								const x0 = sx * (w2 / 4 + 0.3);
+								B.box("plain", "#5a4030", x0, 0.3, 0.58, 2.2, 0.5, 0.5).box("plain", "#4f9a2a", x0, 0.57, 0.58, 2.1, 0.06, 0.42);
+								for (let k = 0; k < 5; k++) B.geo("plain", usph(4), "#f2c21a", x0 - 0.9 + 0.45 * k, 0.78, 0.58 + (k % 2 ? 0.1 : -0.1), 0.3, 0.26, 0.3);
+							});
+							B.box("plain", "#1e2226", 0, h2 + 1.5, -0.15, 0.05, 0.6, 0.05).sign("gstar", 0, h2 + 2.15, -0.12, 0.9, 0.9).sign("gstar", 0, h2 + 2.15, -0.18, 0.9, 0.9, Math.PI);
+						},
+					}),
+			],
 		].forEach(([w, h, mk]) => (mk(52.6, zc + (w * MK) / 2, w * MK, h), (zc += w * MK)));
 		// Main Street, west side
 		zc = -37;
 		[
 			[12, 9.5, (X, Z, w, h) => BANK(X, Z, Math.PI / 2, w, h)],
-			[12, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#9a4a36", sign: "s_post", front: "#22325a", crest: !0 })],
-			[9, 7.5, (X, Z, w, h) => FRONTIER(X, Z, Math.PI / 2, w, h, { col: "#f0dc9a", sign: "s_cafe", awn: "aw_red", front: "#3a2a20", shutter: "#3a5a3a" })],
-			[12, 10, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#c49a6a", sign: "s_grocery", awn: "aw_green", front: "#2a4a2a" })],
-			[9, 9, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#7a4a34", sign: "s_antiques", front: "#141416", awn: "aw_brown" })],
-			[11, 8, (X, Z, w, h) => FRONTIER(X, Z, Math.PI / 2, w, h, { col: "#9a3a2a", sign: "s_feed", front: "#5a2a20", trim: "#f2ece0" })],
-			[9, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#c4806a", sign: "s_icecream", awn: "aw_pink", front: "#2a6a6a" })],
+			// the grocer's: fruit in crates on the walk (the Juice Bar's colours), a giant carrot on the crest
+			[12, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#c49a6a", awn: "aw_green", front: "#2a4a2a", crest: !0, extra: (B, w2, h2) => (produce(B, -2.6, 1.2), carrot(B, 0, h2 + 1.45, -0.15, 1.4, 0)) })],
+			// the ice cream parlour: three scoops of goo flavour on a cone over its false front
+			[9, 7.5, (X, Z, w, h) => FRONTIER(X, Z, Math.PI / 2, w, h, { col: "#f0dc9a", awn: "aw_pink", front: "#3a2a20", shutter: "#e87aa0", extra: (B, w2, h2) => iceCream(B, 0, h2 + 1.1, -0.2, 0.95) })],
+			// ETCHER's archive: blue-teal stone, his etched data in a row of panels over the door, his green gem on the
+			// crest, and his purple tails draped down the piers and the sides
+			[
+				12,
+				10,
+				(X, Z, w, h) =>
+					STORE(X, Z, Math.PI / 2, w, h, {
+						bin: "stone",
+						col: "#6a8a9a",
+						pier: "#1e3a4a",
+						front: "#1e3a4a",
+						tiles: "etch",
+						trim: "#9ee09a",
+						lintel: "#2a5aa8",
+						crest: !0,
+						extra: (B, w2, h2) => {
+							B.box("plain", "#2a8a9e", 0, h2 + 1.3, -0.15, 1.2, 0.14, 0.6), gem(B, "#3ad880", 0, h2 + 2.1, -0.15, 0.8, Math.PI / 4);
+							[-1, 1].forEach((sx) => (tentacle(B, sx * (w2 / 2 - 0.25), h2 - 0.3, 0.3, 4.4, sx), tentacle(B, sx * (w2 / 2 + 0.22), h2 - 0.3, -2.2, 3.6, 0)));
+						},
+					}),
+			],
+			// the curiosity shop, a stone copy of the Great Sphinx out front with one eye socket empty (the missing Eye is
+			// the Ancient Gem), and an urn beside the door
+			[
+				9,
+				9,
+				(X, Z, w, h) =>
+					STORE(X, Z, Math.PI / 2, w, h, {
+						col: "#7a4a34",
+						front: "#141416",
+						awn: "aw_brown",
+						extra: (B, w2) => {
+							sphinx(B, -w2 / 2 + 1.7, 1.3, 0), B.geo("plain", ucyl(8, 0.36), "#8a7a6a", w2 / 2 - 1.2, 0.5, 1.1, 0.7, 1.0, 0.7).geo("plain", usph(6, !0), "#8a7a6a", w2 / 2 - 1.2, 1.0, 1.1, 0.5, 0.3, 0.5);
+						},
+					}),
+			],
+			// the florist's, a giant Blossom over its false front and beds of little ones along the walk
+			[
+				11,
+				8,
+				(X, Z, w, h) =>
+					FRONTIER(X, Z, Math.PI / 2, w, h, {
+						col: "#7aa86a",
+						trim: "#f4f0e6",
+						front: "#2a4a2a",
+						shutter: "#e8301e",
+						extra: (B, w2, h2) => {
+							giantBlossom(B, 0, h2 + 1.1, -0.2, 0.95), blossomBed(B, -w2 / 2 + 1.7, 1.15, 2.4), blossomBed(B, w2 / 2 - 1.7, 1.15, 2.4);
+						},
+					}),
+			],
+			// ANOMALEE's television repair: moulded plastic grey, a rabbit-ear aerial on the roof, old sets stacked
+			// by the door with her magenta glow in their screens
+			[9, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { bin: "siding", col: "#c8ccd2", pier: "#9aa0a8", front: "#2a2a36", lintel: "#9aa0a8", extra: (B, w2, h2) => (aerial(B, 1.4, h2, -3.0, 1.7), tvStack(B, -w2 / 2 + 1.6, 0.75, 0)) })],
 		].forEach(([w, h, mk]) => (mk(-52.6, ZS - (zc + (w * MK) / 2), w * MK, h), (zc += w * MK)));
 		// north: courthouse with a flagpole and the fire station; a hotel on the corner (the church is in
 		// the square now)
 		COURTHOUSE(0, -62), FIRE_STATION(29, -58);
-		STORE(-70, -55, 0, 14, 12.5, { col: "#8a3a2c", sign: "s_hotel", awn: "aw_green", front: "#2a3a2a", crest: !0 });
+		STORE(-70, -55, 0, 14, 12.5, {
+			col: "#8a3a2c",
+			awn: "aw_green",
+			front: "#2a3a2a",
+			crest: !0,
+			extra: (B, w, h) => {
+				const tr = "#efe6d2";
+				// (iron balconies under the top floor's windows, a water tank on the roof, a brass luggage cart by the door)
+				for (let k = 0; k < 5; k++) {
+					const px = -w / 2 + ((k + 0.5) * w) / 5;
+					B.box("plain", "#1e2226", px, 8.42, 0.38, 1.6, 0.06, 0.7).box("plain", "#1e2226", px, 8.85, 0.7, 1.6, 0.05, 0.05);
+					[-0.7, 0, 0.7].forEach((dx) => B.box("plain", "#1e2226", px + dx, 8.64, 0.7, 0.04, 0.44, 0.04));
+				}
+				B.geo("plain", ucyl(8), "#6a5a4a", 0, h + 2.0, -5, 2.6, 2.2, 2.6).geo("plain", ucone(8), "#5a4a3a", 0, h + 3.4, -5, 2.8, 0.7, 2.8);
+				[-1, 1].forEach((sx) => [-1, 1].forEach((sz) => B.box("plain", "#5a5a60", 0.9 * sx, h + 0.45, -5 + 0.9 * sz, 0.12, 0.9, 0.12)));
+				B.box("plain", "#c8a040", 2.2, 0.85, 0.9, 1.0, 0.06, 0.6).box("plain", "#c8a040", 2.2, 1.35, 0.9, 0.05, 1.0, 0.05).box("plain", "#c8a040", 2.2, 1.85, 0.9, 1.0, 0.05, 0.6);
+				[-1, 1].forEach((sx) => B.box("plain", "#c8a040", 2.2 + 0.47 * sx, 1.35, 0.9, 0.05, 1.0, 0.05).geo("plain", ucyl(8), "#1a1a1e", 2.2 + 0.4 * sx, 0.3, 0.9, 0.3, 0.08, 0.3, 0, 0, Math.PI / 2));
+				B.box("plain", "#8a2a2a", 2.2, 1.05, 0.9, 0.7, 0.36, 0.5).box("plain", "#2a3a5a", 2.2, 1.35, 0.9, 0.5, 0.26, 0.4);
+				(tr, 0);
+			},
+		});
 		put("concrete", UB, WALK, S(0, -0.05, -53.6, 0, 0, 0, 3, 0.12, 3.2));
 		put("plain", ucyl(8), "#d8dce0", S(-10, 6.6, -54.5, 0, 0, 0, 0.18, 13.2, 0.18)), put("plain", usph(8), "#d8b040", S(-10, 13.3, -54.5, 0, 0, 0, 0.3, 0.3, 0.3));
 		put("concrete", ucyl(8), "#c8c2b6", S(-10, 0.15, -54.5, 0, 0, 0, 1.2, 0.3, 1.2)), place(-10, -54.5, 0).sign("flag", 1.55, 12.0, 0, 2.9, 1.63);
 		// south: porch houses facing the square, more on the side streets, the schoolhouse
 		[
-			[-32, { col: "#f4f2ea", roof: "#4a4a52", door: "#8a2a2a", shutter: "#2a4a3a" }],
-			[-16, { col: "#f2df9a", roof: "#5a4a3a", door: "#2a4a8a", shutter: "#f6f4ee" }],
-			[0, { col: "#a8c8e0", roof: "#4a4a52", door: "#c8282a", shutter: "#22325a" }],
-			// (the Gorbos' house: MAMA GORBO's peach with her goo colours on the door and shutters)
-			[16, { col: "#ffb486", roof: "#5a3a2a", door: "#e8409e", shutter: "#36d0e8" }],
-			[32, { col: "#e8c4c0", roof: "#4a4a52", door: "#2a5a4a", shutter: "#f6f4ee" }],
-			[66, { col: "#f4f2ea", roof: "#3a4a5a", door: "#2a4a3a", shutter: "#22325a", w: 9 }],
-			[84, { col: "#d8b88a", roof: "#4a4a52", door: "#8a2a2a", shutter: "#5a3a24", w: 9 }],
-			[-64, { col: "#f0e6c8", roof: "#4a4a52", door: "#2a4a8a", shutter: "#3a5a3a", w: 9 }],
+			// KING DINO's: lemon yellow with turquoise trim, his crown on the ridge, a drum on the porch
+			[
+				-32,
+				{
+					col: "#f2d84a",
+					roof: "#2a7a7a",
+					door: "#38b8b0",
+					shutter: "#2a6a6a",
+					extra: (B, w, d, h, f0, pd) => {
+						const ry0 = f0 + h + 3.2;
+						B.geo("plain", ucyl(6), "#38b8b0", 0, ry0 + 0.25, -d / 2, 1.1, 0.5, 1.1);
+						for (let k = 0; k < 5; k++) B.geo("plain", ucone(4), "#38b8b0", 0.42 * Math.sin((k * l) / 5), ry0 + 0.5 + (k ? 0.3 : 0.45), -d / 2 + 0.42 * Math.cos((k * l) / 5), 0.28, k ? 0.6 : 0.9, 0.28);
+						B.geo("plain", usph(4), "#ffd23a", 0, ry0 + 1.1, -d / 2 + 0.42, 0.18, 0.18, 0.18);
+						B.geo("plain", ucyl(10), "#c8282a", w / 2 - 2.0, f0 + 0.32, pd / 2, 1.0, 0.64, 1.0).geo("plain", ucyl(10), "#f6f0dc", w / 2 - 2.0, f0 + 0.66, pd / 2, 1.0, 0.04, 1.0);
+					},
+				},
+			],
+			// FORTIZMO's: green, a lily pond in the front yard, her brass horn resting on the porch
+			[
+				-16,
+				{
+					col: "#8ab86a",
+					roof: "#4a6a3a",
+					door: "#e8742a",
+					shutter: "#3a6a3a",
+					extra: (B, w, d, h, f0, pd) => {
+						B.geo("plain", ucyl(12), "#3a8ab8", w / 4, 0.03, 5.0, 3.2, 0.06, 3.2).geo("plain", ucyl(12), "#7a8a6a", w / 4, 0.02, 5.0, 3.5, 0.04, 3.5);
+						[[-0.8, 0.4], [0.6, -0.5], [0.2, 0.9]].forEach(([dx, dz]) => B.geo("plain", ucyl(8), "#4f9a2a", w / 4 + dx, 0.08, 5.0 + dz, 0.9, 0.04, 0.9));
+						B.geo("plain", usph(5), "#ff6a90", w / 4 + 0.6, 0.18, 5.0 - 0.5, 0.3, 0.22, 0.3);
+						B.geo("plain", ucone(8), "#d8b040", -w / 3, f0 + 0.26, pd / 2, 0.6, 0.9, 0.6, 0, 0, -Math.PI / 2 + 0.3).geo("plain", ucyl(6), "#d8b040", -w / 3 - 0.55, f0 + 0.2, pd / 2 - 0.05, 0.12, 0.5, 0.12, 0, 0, Math.PI / 2 - 0.3);
+					},
+				},
+			],
+			// SOMLET's: cream like her, a plum roof, puffs of cotton for shrubs, a hammock on the porch and a mail sack
+			// by the door
+			[
+				0,
+				{
+					col: "#f2e4b4",
+					roof: "#5a3a5a",
+					door: "#22325a",
+					shutter: "#7a4a7a",
+					puffs: !0,
+					extra: (B, w, d, h, f0, pd) => {
+						[-1.7, 1.7].forEach((px) => B.box("plain", "#6a5440", px, f0 + 0.75, pd / 2, 0.08, 1.5, 0.08));
+						B.box("plain", "#f6f0dc", -0.95, f0 + 1.12, pd / 2, 0.9, 0.06, 0.8, 0, 0, 0.42).box("plain", "#f6f0dc", 0.95, f0 + 1.12, pd / 2, 0.9, 0.06, 0.8, 0, 0, -0.42).box("plain", "#f6f0dc", 0, f0 + 0.92, pd / 2, 1.1, 0.06, 0.9);
+						B.geo("plain", usph(6), "#8a94a8", 1.0, f0 + 0.3, pd / 2 + 0.5, 0.5, 0.6, 0.5).box("plain", "#5a6478", 1.0, f0 + 0.6, pd / 2 + 0.5, 0.26, 0.1, 0.26);
+					},
+				},
+			],
+			// the Gorbos': MAMA GORBO's peach with her goo colours on the door and shutters, goo dripping off the porch
+			// roof and a puddle of it on the lawn
+			[
+				16,
+				{
+					col: "#ffb486",
+					roof: "#5a3a2a",
+					door: "#e8409e",
+					shutter: "#36d0e8",
+					extra: (B, w, d, h, f0, pd) => {
+						const ye = f0 + 2.9 + 0.44;
+						[["#36d0e8", -3.2, 0.7], ["#e8409e", -1.1, 1.1], ["#9a52e0", 1.2, 0.5], ["#c8e040", 3.3, 0.9]].forEach(([c, px, len]) => B.geo("plain", ucyl(5), c, px, ye - len / 2, pd + 0.28, 0.14, len, 0.14).geo("plain", usph(5), c, px, ye - len, pd + 0.28, 0.22, 0.26, 0.22));
+						B.geo("plain", ucyl(8), "#36d0e8", -2.6, 0.03, 5.2, 1.6, 0.05, 1.3).geo("plain", ucyl(8), "#e8409e", 2.4, 0.03, 5.6, 1.0, 0.05, 1.2);
+					},
+				},
+			],
+			// MUSHROOM's: cream like his stem, his cap for a roof (gold to deep orange, white warts), toadstools in the yard
+			[
+				32,
+				{
+					col: "#f6eed4",
+					roof: "#c85a10",
+					capRoof: !0,
+					door: "#e8862a",
+					shutter: "#d0600e",
+					extra: (B, w, d, h, f0, pd) => {
+						[[-3.6, 5.2, 0.9], [-2.9, 5.9, 0.6], [3.4, 5.4, 0.75]].forEach(([px, pz, s2]) => B.geo("plain", ucyl(6, 0.42), "#f6eed4", px, 0.35 * s2, pz, 0.26 * s2, 0.7 * s2, 0.26 * s2).geo("plain", usph(6, !0), "#c82a24", px, 0.62 * s2, pz, 0.9 * s2, 0.5 * s2, 0.9 * s2));
+					},
+				},
+			],
+			// ANOMALEE's: moulded plastic grey, her magenta glow in the upstairs window, a rabbit-ear aerial on the roof
+			[
+				66,
+				{
+					col: "#c8ccd2",
+					roof: "#4a4a52",
+					door: "#c010c0",
+					shutter: "#2fd4e6",
+					w: 9,
+					extra: (B, w, d, h, f0, pd) => {
+						aerial(B, 1.2, f0 + h + 3.0, -d / 2, 1.3), B.sign("scan", 0, f0 + h - 2.3 + 0.75, 0.1, 1.0, 1.5);
+					},
+				},
+			],
+			// MONTGUMMERY's: his teal, his pots for porch posts, a stack of his tapes by the door, an aerial on the ridge
+			[
+				84,
+				{
+					col: "#55b8c6",
+					roof: "#3a3a42",
+					door: "#e2521f",
+					shutter: "#1d2a23",
+					w: 9,
+					potCols: !0,
+					extra: (B, w, d, h, f0, pd) => {
+						for (let k = 0; k < 4; k++) B.box("plain", "#1a1a1e", -w / 2 + 1.7 + 0.04 * k, f0 + 0.06 + 0.11 * k, pd / 2, 0.5, 0.1, 0.3, 0, 0.1 * (k % 2), 0);
+						aerial(B, -1.4, f0 + h + 3.0, -d / 2, 1.0);
+					},
+				},
+			],
+			// SPARKAKUS's: royal blue painted with his alebrije vines between the floors, daffodils along the porch, his
+			// gold star over the ridge
+			[
+				-64,
+				{
+					col: "#2c4cc0",
+					roof: "#1e2a60",
+					door: "#f2c21a",
+					shutter: "#e0408a",
+					w: 9,
+					extra: (B, w, d, h, f0, pd) => {
+						B.sign("alebr", 0, 3.72, 0.12, w - 0.8, 0.72);
+						B.box("plain", "#5a4030", 0, 0.25, pd + 0.62, w - 1.4, 0.4, 0.5).box("plain", "#4f9a2a", 0, 0.47, pd + 0.62, w - 1.5, 0.06, 0.42);
+						for (let k = 0; k < 9; k++) B.geo("plain", usph(4), "#f2c21a", -w / 2 + 1.2 + 0.8 * k, 0.68, pd + 0.62 + (k % 2 ? 0.1 : -0.1), 0.3, 0.26, 0.3);
+						B.box("plain", "#1e2226", 0, f0 + h + 3.5, -d / 2 + 1.5, 0.05, 0.6, 0.05).sign("gstar", 0, f0 + h + 4.1, -d / 2 + 1.53, 0.8, 0.8).sign("gstar", 0, f0 + h + 4.1, -d / 2 + 1.47, 0.8, 0.8, Math.PI);
+					},
+				},
+			],
 		].forEach(([X, o2]) => HOUSE(X, 60 + ZS, Math.PI, o2));
 		SCHOOL(-82, 60 + ZS, Math.PI);
 		// north-east: the gas station on the corner
@@ -16167,6 +16804,34 @@ const JGP = (() => {
 		// Tall enough to be seen over the rooftops from the square, and built into the town's merged meshes
 		// with its existing materials and sign atlas: no draw call of its own (the trees thinned a little to
 		// pay for the triangles: see the tree count below).
+		// a billboard on two steel posts, its face to the square, a catwalk and two lamps under it (the one the owner
+		// asked for: KING DINO at his drums, "A Prehistoric Era in Jazz!")
+		const BILLBOARD = (X, Z, name, y0, banner, W = 10, H = 5) => {
+			const B = place(X, Z, faceIn(X, Z));
+			// (a cloth banner hung under the board, its top corners tied by rope to the board's bottom corners: the
+			// cloth sags between them and bellies out; a second line of the owner's words printed on it)
+			if (banner) {
+				const bw = 0.9 * W,
+					bh = 1.5,
+					ty = y0 - 0.95;
+				B.geo("sign", onSlot(banner, drape), "#ffffff", 0, ty - bh / 2 + 0.08, 0.34, bw, bh, 1);
+				[-1, 1].forEach((sx) => {
+					const x1 = 0.485 * bw * sx,
+						x0 = 0.5 * W * sx - 0.1 * sx,
+						y1 = ty + 0.02,
+						y2 = y0 - 0.35,
+						dx = x0 - x1,
+						dy = y2 - y1,
+						ln = Math.hypot(dx, dy);
+					B.box("plain", "#8a7a62", (x0 + x1) / 2, (y1 + y2) / 2, 0.34, 0.035, ln, 0.035, 0, 0, -Math.atan2(dx, dy)).box("plain", "#8a7a62", x1, y1 - 0.04, 0.34, 0.09, 0.09, 0.05);
+				});
+			}
+			[-1, 1].forEach((sx) => B.geo("plain", ucyl(6), "#5a6068", 0.28 * W * sx, (y0 + 0.4) / 2, -0.3, 0.5, y0 + 0.4, 0.5));
+			B.box("plain", "#5a6068", 0, y0 - 2.9, -0.3, 0.56 * W + 0.5, 0.14, 0.14);
+			B.box("plain", "#3a3e44", 0, y0 + H / 2, -0.3, W + 0.4, H + 0.4, 0.3).sign(name, 0, y0 + H / 2, -0.14, W, H);
+			B.box("plain", "#5a6068", 0, y0 - 0.25, 0.25, W, 0.08, 0.9).box("plain", "#5a6068", 0, y0 + 0.2, 0.66, W, 0.06, 0.06);
+			[-1, 1].forEach((sx) => B.box("plain", "#3a3e44", 0.3 * W * sx, y0 - 0.05, 0.62, 0.06, 0.4, 0.06).geo("lamp", ucone(6), "#f6f0dc", 0.3 * W * sx, y0 + 0.22, 0.62, 0.34, 0.22, 0.34));
+		};
 		// the town's water tower, painted MAMA GORBO's peach with her goo running down from its roof (cyan,
 		// magenta, violet and lime) and her lime goo tail wound round its middle, on four steel legs
 		const WATER_TOWER = (X, Z) => {
@@ -16227,7 +16892,6 @@ const JGP = (() => {
 		// eats the tapes), a giant VHS cassette on its roof
 		STORE(56, -60, 0, 10, 8, {
 			col: "#8a9ab0",
-			sign: "s_video",
 			awn: "aw_yellow",
 			// (in MONTGUMMERY's teal, his own face on a TV on the roof, a giant cassette beside it and two of his
 			// pots by the door: it is plainly his shop)
@@ -16308,7 +16972,27 @@ const JGP = (() => {
 			[0.35, 0.95].forEach((yy) => B.geo("plain", ucyl(10, 0.5, !0), "#8a8a90", 0, yy, 0, 7.6, 0.05, 7.6));
 		}
 		WATER_TOWER(84, -4);
+		// (on the empty corner lot across the road from the park's north-west corner, turned to face the square
+		// diagonally: close enough to read from the garden, the Library's low shelves the only thing before it)
+		BILLBOARD(-55, -55, "bb_dino", 10, "bb_ban");
 		FIELD_OFFICE(-26, -72);
+		// the Consortium's find: a scorched ring in the field behind its office, taped off between orange posts, two
+		// floodlights trained on it (the UFO sightings MUSHROOM is investigating, shown)
+		{
+			const B = place(-34, -86, 0);
+			B.geo("plain", ucyl(12), "#2a241e", 0, 0.01, 0, 6.4, 0.04, 6.4).geo("plain", ucyl(12, 0.5, !0), "#3a3028", 0, 0.03, 0, 7.4, 0.06, 7.4);
+			for (let k = 0; k < 6; k++) {
+				const a = (k / 6) * l,
+					a2 = ((k + 1) / 6) * l;
+				B.box("plain", "#f08a2a", 4.6 * Math.sin(a), 0.5, 4.6 * Math.cos(a), 0.1, 1.0, 0.1);
+				B.box("plain", "#ffd23a", 4.6 * Math.sin((a + a2) / 2), 0.8, 4.6 * Math.cos((a + a2) / 2), 0.02, 0.1, 4.6, 0, (a + a2) / 2, 0);
+			}
+			[[-5.6, -2.5, 0.8], [5.4, 3.0, -2.4]].forEach(([px, pz, ry]) => {
+				const F0 = B.sub(px, pz, ry);
+				[0, 2.1, 4.2].forEach((a) => F0.box("plain", "#5a6068", 0.5 * Math.sin(a), 1.0, 0.5 * Math.cos(a), 0.06, 2.1, 0.06, 0.22 * Math.cos(a), 0, -0.22 * Math.sin(a)));
+				F0.box("plain", "#3a3e44", 0, 2.1, 0.1, 0.5, 0.4, 0.3, -0.5, 0, 0).geo("lamp", usph(4), "#fff2b8", 0, 2.0, 0.3, 0.4, 0.3, 0.1, -0.5, 0, 0);
+			});
+		}
 		// lamp posts along Main Street's far sidewalks
 		[-32, -16, 0, 16, 32].forEach((Z) => (lampPost(50.6, ZS / 2 + Z * MK), lampPost(-50.6, ZS / 2 + Z * MK)));
 
@@ -16328,6 +17012,8 @@ const JGP = (() => {
 			// (the lore pieces: the water tower, the Consortium's field office and dish, the billboards)
 			[77, 91, -11, 3],
 			[-42, -14, -78, -56],
+			[-42, -26, -94, -78],
+			[-63, -47, -63, -47],
 			[83, 93, -42, -34],
 			[-38, -28, 91, 101],
 			[34, 46, 92, 100],
@@ -16361,7 +17047,7 @@ const JGP = (() => {
 					mid = (a + b2) / 2,
 					at = (u, y, w, h, d) => (alongX ? S(u, y, c, 0, 0, 0, w, h, d) : S(c, y, u, 0, 0, 0, d, h, w));
 				[0.18, 0.9].forEach((y) => put("plain", UBs(segs(len), 1), iron, at(mid, y, len, 0.05, 0.05)));
-				for (let u = a + 0.16; u < b2 - 0.08; u += 0.16 / LOD) put("plain", UB, iron, at(u, 0.52, 0.03, 1.04, 0.03));
+				for (let u = a + 0.16; u < b2 - 0.08; u += 0.16 / LOD) put("plain", upick, iron, at(u, 0.52, 0.03, 1.04, 0.03));
 				for (let u = a + 2.4; u < b2 - 0.5; u += 2.4) put("plain", UB, iron, at(u, 0.6, 0.08, 1.2, 0.08)), put("plain", ucone(4), iron, at(u, 1.27, 0.1, 0.16, 0.1));
 			};
 			run(-FH + 0.35, FH - 0.35, -FH, !0), run(-FH + 0.35, FS - 0.35, -FH, !1), run(-FH + 0.35, FS - 0.35, FH, !1);

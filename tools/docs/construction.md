@@ -410,24 +410,55 @@ Goo that runs down a body and moves like goo, without clipping:
 - **No far scenery:** the fields, farmsteads, turbines, windmills, railroad, telephone poles, water tower and grain
   elevator were removed for performance (about 48k triangles and 8 draw calls, and no spinners to turn each
   frame). The town ring round the square, the trees between its buildings and Mistergummery's stay. No cars.
-- **The town's lore, shown not told** (owner's rules: as interesting as possible, from the park's own lore,
-  style and design; no words or signs to carry it; nothing from creatures not of the town, such as Hennrick;
-  no flint knapping; no extra cost). All of it goes into the existing bins and atlas (still 24 town meshes):
-  - a water tower east of Main Street in Mama Gorbo's peach, her goo running down from its roof in her four
-    colours and her lime tail wound round the tank, tall enough to show over the rooftops;
-  - Mama Gorbo's goo burger: a giant roadside burger on a pole behind Mistergummery's, her goo dripping out;
-  - the Consortium's field office (a trailer with the sheriff's gold star) and its listening dish on a lattice
-    mast, turned to the sky, on the empty lot beside the Town Hall;
-  - Montgummery's video store on the north-east corner lot: his teal storefront, his pixel face on a teal TV on
-    the roof beside a giant cassette (blank label), and two of his pots by the door;
-  - Zollod's nursery behind the south houses: a glass greenhouse with one of his flowers grown giant through
-    its roof;
-  - Gemtoe's hoard: amethyst crystals pushing up out of a fenced lot behind the south-west houses;
-  - the Ancients' ring of standing stones at the end of the road west;
-  - the Gorbos' house on the south street, in Mama Gorbo's peach with magenta and cyan.
-  The far trees (more than 84 m out) use the one-crown build, which paid for all of it: the town went from
-  101.6k to about 99k triangles. `test/t_townview.js` renders the map, the views out of the square and each
-  piece close up, and prints the triangle count.
+- **The town is the creatures' own, shown not told** (owner's rules: as interesting as possible, from the park's
+  lore, style and design; lore through visual elements, never words; few signs; nothing from creatures not of the
+  town, such as Hennrick; no flint knapping; no extra cost). The only words left outside the park are the two
+  names the owner gave (FIRST BANK OF GREEBLIS, Mistergummery's and its menu board), the stop signs, and the
+  billboard the owner asked for. Every store on Main Street carries a sculptural trade emblem in its creature's
+  colours where a name would be:
+  - **east side** (north to south): Mistergummery's; GEMTOE's gem exchange (crimson brick, her amethysts
+    clustered on the crest, one hung on a bracket over the walk); the barber's by its pole; the picture house
+    (a marquee of bulbs carrying a painted bill of KING DINO, crown, plume and drumsticks, and a blade sign of
+    gold stars); the diner (ridged cream siding under a red front, MAMA GORBO's goo shake on the roof); GLYPH's
+    sign shop (porcelain blue, gold filigree painted on its band, his red trident on a gold shield over the door,
+    hexagon plates shingled along the frieze, his two purple tiles with gold coins on the crest); SPARKAKUS's
+    genealogical society (a family tree in a gold oval over the door, daffodil beds, his gold star over the crest);
+  - **west side**: the bank with a flint nugget carved over its doors; the grocer's (crates of fruit on the walk in
+    the Juice Bar's colours, a giant carrot on the crest); the ice cream parlour (three scoops of goo flavour on a
+    cone over its false front); ETCHER's archive (blue-teal stone, his etched data in a row of painted tiles, his
+    green gem on the crest, his purple tails draped down the piers and sides); the curiosity shop (a stone copy of
+    the Great Sphinx out front, one eye socket empty: the missing Eye is the Ancient Gem); the florist's (a giant
+    Blossom over its false front, beds of little ones); ANOMALEE's television repair (moulded plastic grey, a
+    rabbit-ear aerial, old sets stacked by the door with her magenta glow in their screens);
+  - **north**: the Town Hall with the town's seal (a wreath round the garden's five flowers) in its entablature
+    and the clock; the fire station with its right bay rolled up and the engine's nose in it, a brass bell under
+    the tower top; the hotel (balconies, a canopy, a brass luggage cart, a tank on the roof); MONTGUMMERY's video
+    store on the north-east lot (his teal, his face on a TV on the roof beside a giant blank-labelled cassette,
+    his pots by the door); the filling station of the far future (charging posts with glowing ports and coiled
+    cables, the canopy in his teal, a lightning bolt on the pylon); the Consortium's field office (the sheriff's
+    star on its side), its listening dish, and its find behind them: a scorched ring taped off between orange
+    posts under two floodlights;
+  - **south street, the homes**: SPARKAKUS (royal blue, his alebrije vines painted between the floors, daffodils,
+    his star over the ridge), KING DINO (lemon yellow and turquoise, his crown on the ridge, a drum on the porch),
+    FORTIZMO (green, a lily pond, her horn on the porch), SOMLET (cream and plum, cotton puffs for shrubs, a
+    hammock, a mail sack), the Gorbos (peach, goo dripping off the porch roof, puddles on the lawn), MUSHROOM
+    (cream, his spotted cap for a roof, toadstools in the yard), ANOMALEE (plastic grey, her glow in the upstairs
+    window, an aerial), MONTGUMMERY (teal, stacks of his pots for porch posts, his tapes by the door, an aerial);
+  - **out past them**: the water tower in MAMA GORBO's peach with her goo and her lime tail; her goo burger on a
+    pole behind Mistergummery's; ZOLLOD's greenhouse with one of his flowers grown giant through its roof;
+    GEMTOE's amethysts in a fenced lot; the Ancients' ring of standing stones at the end of the road west; and
+    the owner's billboard, on the empty corner lot across the road from the park's north-west corner, turned to
+    face the square diagonally (close enough to read from the garden, over the Library's low shelves): a painting of KING DINO as a real dinosaur (a theropod, in
+    contrast to his gummy self in the park, but in his own lemon yellow with his turquoise as markings where his
+    buttons and ball joints are) at his drums under a spotlight, his crown and plume on, and
+    the words the owner gave it, "A Prehistoric Era in Jazz!", with a cloth banner hung under the board on two
+    ropes carrying the second line in one row of big letters, "Let King Dino take you to the Jurassic Greeblis
+    Park!" (the one piece of lore text in the background, at the owner's request).
+  All of it goes into the existing bins and atlas (24 town meshes, no new draw calls). Its triangles are paid for:
+  the park fence's pickets are four-sided tubes with no end faces (never seen; a third of the fence's triangles),
+  the lamp globes and marquee bulbs are coarser spheres, and the far trees use the one-crown build. The town is
+  99.6k triangles, under the 101.6k it was before any of this. `test/t_townview.js` renders the map, the views
+  out of the square, every piece close up and the fence pickets from inside, and prints the counts.
 - **The player** starts at (0, 2), just south of the Summoning Stone, facing the church (`player.spawn` and
   `player.face` in the config `t`; face 0 looks south along +z).
 - **Kiosks:** `kioskFrame(o, {sign, ink, wall, wall2, tin})` builds the shared shell (deck, back wall, half side

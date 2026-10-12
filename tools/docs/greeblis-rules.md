@@ -72,7 +72,9 @@ of them. Read the guides here before changing the game.
   paid for in trees).
 - **Show, don't tell:** lore comes into the environment through visual elements, never through text (words on
   signs don't count as visual). Keep words and signs in the background to a minimum. Only creatures of the town
-  give the town its design: Hennrick, for one, is not from here.
+  give the town its design: Hennrick (from the far past) and Nextessa (from the far future, which is why she
+  comes through the Portal) are not from here, and the town takes nothing from either.
+  (The one exception is the billboard the owner asked for, with the words they gave it.)
 - **The inside of the church is final:** never change or update it (its room, the Ancient's corner, its props,
   the secret way in) from now on.
 
