@@ -20,7 +20,7 @@ echo "== walking soak"; NOSHOT=1 timeout 600 node shot2.js $U x.png ./soak.js 2>
 echo "== King Dino's jazz"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_jazz.js 2>&1 | grep -v "^$" | tail -14 | cut -c1-300
 echo "== Somlet asleep on her side"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_somlet.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
 echo "== roamers (short; ROAM_S/TRAP_S longer for a full check)"; VW=320 VH=240 ROAM_S=40 TRAP_S=40 NOSHOT=1 timeout 1800 node shot2.js $U x.png ./t_roam.js 2>&1 | grep -v "^$" | tail -17 | cut -c1-300
-echo "== the church's secret room and the slug"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_church.js 2>&1 | grep -v "^$" | tail -9 | cut -c1-300
+echo "== the church's secret room and the Ancient"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_church.js 2>&1 | grep -v "^$" | tail -9 | cut -c1-300
 echo "== a Dance battle costs a Blossom"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_battlecost.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
 echo "== the phone lock"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_phone.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
 echo "== the avatar's walk (test modes)"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_avatar.js 2>&1 | grep -v "^$" | tail -2

@@ -68,7 +68,7 @@ const t = {
 		far: window.__jgpMobile ? 260 : 310,
 		// (the player starts at the heart of the garden, just south of the Summoning Stone, facing the church:
 		// face is the heading, 0 looking south along +z)
-		player: { speed: 4.5, bodyR: 0.6, spawn: [0, 2], face: 0, hair: "#c8321e", dress: "#ff5fb0", skin: "#f2c6a0" },
+		player: { speed: 4.5, bodyR: 0.6, spawn: [0, 2], face: 0, hair: "#c2551f", dress: "#4a6fa8", skin: "#f4dcc6" },
 		bodies: { solidK: 0.85, aisle: 2.6 },
 		pizza: { callDelayMs: 1800, spawnR: 75, speed: 3.2, stopDist: 2.3, exitSpeed: 3.6, giveUpS: 100 },
 		camera: { fov: 55 },
@@ -846,7 +846,7 @@ const F = {
 				now = performance.now() / 1e3;
 			let hit = !1;
 			for (const B of this.buildings) {
-				// (one on its way in or out of a building, as a creature calling on the church's slug, meets its walls too)
+				// (one on its way in or out of a building, as a creature calling on the church's ANCIENT, meets its walls too)
 				const worker = ent && ((ent.home && this.inHull(B, ent.home.x, ent.home.z)) || ent.inside === B.name),
 					hl = worker && this.local(B, ent.home.x, ent.home.z);
 				for (const R of pl || worker ? B.parts : [B.hull]) {
@@ -3290,6 +3290,10 @@ const Ut = (() => {
 		rewards: { seeds: !1, artifacts: !1, stone: !1, snacks: !1 },
 		gem: !1,
 		artifacts: 0,
+		// the shyness sub-quest: OVERCOMING SHYNESS taken from its Library shelf, and ZOLLOD freed by it (he talks,
+		// sells and visits only from then on)
+		shyBook: !1,
+		shyFree: !1,
 		// (Snacks from NEXTESSA's pizzas)
 		snacks: 0,
 		blossoms: 0,
@@ -3764,7 +3768,7 @@ const ee = (function () {
 			t.flowerHat && ((t.flowerHat.visible = o), (t.bow.visible = !o)),
 				t.frogs && (t.frogs.forEach((t) => (t.visible = a)), (t.shoeL.visible = t.shoeR.visible = !a)),
 				t.dressMat &&
-					((t.dressMat.map = n ? t.sunTex : null),
+					((t.dressMat.map = n ? t.sunTex : t.baseTex || null),
 					t.dressMat.color.copy(n ? new THREE.Color(16777215) : t.dressColor),
 					(t.dressMat.needsUpdate = !0),
 					(t.sunHem.visible = n));
@@ -4818,6 +4822,11 @@ const le = (() => {
 	// the librarian's talk: the Ancient Artifacts quest. With all three, SPARKAKUS stays where he stands in
 	// his open Library and the light bulb comes on over his head for his long speech.
 	LIB = {
+		// the shyness sub-quest's pickup, rung from the Library builder (whose own G is its mesh batcher,
+		// shadowing the sounds): the chime and the word that the book is yours
+		tookBook() {
+			G.pickup(), qt.open("", M.orange, "Overcoming Shyness book obtained");
+		},
 		say(txt, cb) {
 			(st.talking = !0),
 				qt.open(i.name, M.orange, txt, () => {
@@ -4859,7 +4868,24 @@ const xe = (() => {
 			const o = [];
 			if (e && Vt(e)) return o;
 			// ZOLLOD keeps Garden Supplies: outside the Event talking to him opens the shop (at the Event he says his line)
-			if (e && e.kind && "cutebex" === Xt(e) && !me.active) return o.push({ verb: "interact", label: shopText.label, run: () => ne.open() }), o;
+			// (until you bring him OVERCOMING SHYNESS from the Library he is too shy for it: one Talk, no Blossom, no shop)
+			if (e && e.kind && "cutebex" === Xt(e) && !me.active)
+				return (
+					o.push(
+						Kt.shyFree
+							? { verb: "interact", label: shopText.label, run: () => ne.open() }
+							: {
+									verb: "interact",
+									label: "Talk to " + e.def.name,
+									run: () => {
+										(xe.lastTarget = e), e.onTalk && e.onTalk(e);
+										// (the first Talk with the book in hand frees him: the shop, his visits)
+										Kt.shyBook ? ((Kt.shyFree = !0), qt.open(e.def.name, e.def.color || M.orange, "…|That book…|Let me see..|Wow I’m free from shyness!")) : qt.open(e.def.name, e.def.color || M.orange, "…|…|I’m shy…");
+									},
+								},
+					),
+					o
+				);
 			if (e && e.kind && me.active)
 				return (
 					o.push({
@@ -5193,7 +5219,7 @@ const xe = (() => {
 						break;
 					}
 			}
-			// (a station with a body of its own, as the church's slug, is hit anywhere on that body)
+			// (a station with a body of its own, as the church's ANCIENT, is hit anywhere on that body)
 			for (const t of z.list)
 				if (t.pickObj && t.label() && Math.hypot(t.x - o.x, t.z - o.z) < e.pickRange + 3)
 					// (one body part at a time: the trimmed three.js has no intersectObjects)
@@ -7045,7 +7071,7 @@ const JGP = (() => {
 	// ---- THE SCRIPT (from the owner): what each creature says, by its id. lines: its three Talk lines, in turn
 	// (each "|" starts a new page of the same line); gift: its Blossom line; campfire: what it says when talked to
 	// during the Garden Event (none: it can't be talked to then, as FORTIZMO, who is playing). sad: the Talk line
-	// that plays sad sounds. ZOLLOD's Talk opens the shop (outside the Event); SPARKAKUS's and the slug's words
+	// that plays sad sounds. ZOLLOD's Talk opens the shop (outside the Event); SPARKAKUS's and the ANCIENT's words
 	// are with them (i and the church); GEMTOE's trade is gemTrade.
 	const SCRIPT = {
 		// ANOMALEE, looking up at the church window
@@ -7072,12 +7098,12 @@ const JGP = (() => {
 		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
 		// (with the Ancient Gem in hand, Talk is her trade instead: gemTrade)
 		p_gemtoe: {
-			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?"],
+			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?", "I seek the rarest gems."],
 			gift: "This is mine now.",
 			campfire: "Enjoying the SHARED garden… what is this feeling?",
 		},
 		p_mamagorbo: {
-			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for our famous goo burger.|The hubby and I run the local fast food joint.", "What a beautiful day in Greeblis Park!"],
+			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for our famous goo burger.|The hubby and I run the local fast food joint.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness."],
 			gift: "Gooooooom!",
 			campfire: "Pretty flowers come to life!",
 		},
@@ -10667,6 +10693,7 @@ const JGP = (() => {
 				[5, 1, 1, 0.4, "electric"],
 				[2, 1, 2, -0.3, "acorn"],
 				[3, 1, 1, 0.35, "shyness"],
+				[4, 1, 1, -0.35, "bobert"],
 			],
 		};
 	})();
@@ -10735,6 +10762,25 @@ const JGP = (() => {
 				bk.position.set(bx, SH[fsh] + 0.152, bz), bk.rotation.set(-0.08, face, 0, "YXZ"), o.add(bk);
 				R(T.box(0.22, 0.3, 0.035), x.clay(C.cloth), bk);
 				R(new THREE.PlaneGeometry(0.2, 0.28), new THREE.MeshLambertMaterial({ map: cover(C) }), bk, [0, 0, 0.0215]);
+				// OVERCOMING SHYNESS can be taken: pointed at and selected (a click, or a tap on a phone), it leaves the shelf
+				// for your inventory (ZOLLOD's sub-quest). Only by pointing: standing near it never selects it.
+				if ("shyness" === what) {
+					const wv = new THREE.Vector3();
+					z.list.push({
+						id: "shybook",
+						get x() {
+							return bk.getWorldPosition(wv).x;
+						},
+						get z() {
+							return bk.getWorldPosition(wv).z;
+						},
+						label: () => (Kt.shyBook ? null : "Take OVERCOMING SHYNESS"),
+						pickObj: [bk],
+						run: () => {
+							Kt.shyBook || ((Kt.shyBook = !0), (bk.visible = !1), LIB.tookBook());
+						},
+					});
+				}
 			});
 		};
 		// A WISH BLOSSOM from Greeblis Park, as its pickups were, at 22% in a little terracotta pot: a green stem
@@ -10866,6 +10912,20 @@ const JGP = (() => {
 					c.strokeRect(66, 252, 132, 14), c.beginPath(), c.arc(186, 244, 6, 0, l), c.stroke();
 					c.setLineDash([4, 6]), c.beginPath(), c.moveTo(60, 282), c.lineTo(200, 282), c.stroke(), c.setLineDash([]);
 				},
+			},
+		};
+		// a storybook of the woods: a ranger's hat over a tall pine
+		COVERS.bobert = {
+			cloth: "#2e5e38",
+			ink: "#e8d9a0",
+			text: "#f0e8c8",
+			title: [["RANGER", 36], ["BOBERT", 40]],
+			emblem: (c) => {
+				c.beginPath(), c.moveTo(128, 196), c.lineTo(100, 240), c.lineTo(156, 240), c.closePath(), c.fill();
+				c.beginPath(), c.moveTo(128, 214), c.lineTo(92, 268), c.lineTo(164, 268), c.closePath(), c.fill();
+				c.fillRect(122, 268, 12, 16);
+				c.beginPath(), c.ellipse(128, 182, 34, 9, 0, 0, l), c.fill();
+				c.beginPath(), c.arc(128, 176, 16, Math.PI, 2 * Math.PI), c.fill();
 			},
 		};
 		// a gentle self-help book: a little creature peeking out from behind a wall
@@ -13781,8 +13841,8 @@ const JGP = (() => {
 			["SP", "MG", 8, "Mont, return the VHS tapes you borrowed.", "Mont ate the VHS tapes. Mont is sorry."],
 			["SP", "MA", 1, "Mrs Gorbo, no burgers in the Library.", "Just a little one, dear? For your research."],
 			],
-			// THE CHURCH'S SLUG has an exchange with each of the cast too, but they are switched off for now (the
-			// owner's script: it never leaves the church, and its vignettes are gated off). [code, slug's line, reply]
+			// THE CHURCH'S ANCIENT has an exchange with each of the cast too, but they are switched off for now (the
+			// owner's script: it never leaves the church, and its vignettes are gated off). [code, the ANCIENT's line, reply]
 			SLUG_VIGNETTES = !1,
 			SLUG_PAIRS = [
 				["HN", "Your era and mine are one, traveller.", "Fascinating. Which era would that be?"],
@@ -13792,7 +13852,7 @@ const JGP = (() => {
 				["GW", "Little goo. You were made with love.", "Gomp... gomp."],
 				["ZL", "All that grows, grows again.", "Then my work is never done. Good."],
 				["SM", "Sleep. I will keep watch.", "Zzz..."],
-				["FZ", "Play the old song. The first one.", "For you, slug? On the house."],
+				["FZ", "Play the old song. The first one.", "For you, Ancient? On the house."],
 				["ET", "Etch this: I have returned.", "...My tentacles are shaking. Etching."],
 				["GT", "What you hoard, you will lose.", "...Who told you about my gems?"],
 				["GL", "I was the first symbol.", "...Don't you think? ...Yes. I think so."],
@@ -14121,13 +14181,15 @@ const JGP = (() => {
 			}
 			t > c0.end && finish();
 		}
-		// (the slug's rows in the same form as the rest, made once)
+		// (the ANCIENT's rows in the same form as the rest, made once)
 		const ALL_PAIRS = (VIGS.all = PAIRS.concat(SLUG_PAIRS.map(([k, x, y]) => ["SL", k, 7, x, y])));
 		// who can take part: the cast at their spots, SPARKAKUS in his Library (his stand-in, st.ent) and, through a
-		// visit only, the church's slug (its stand-in, JGP.slug.ent). NEXTESSA and BACKPACKA never have vignettes.
+		// visit only, the church's ANCIENT (its stand-in, JGP.slug.ent). NEXTESSA and BACKPACKA never have vignettes.
 		const lineUp = (VIGS.lineUp = () => {
 			const m = {};
 			for (const en of It.all) for (const k in NAMES) en.def && en.def.name === NAMES[k] && en.def.stationary && (m[k] = en);
+			// (ZOLLOD only once OVERCOMING SHYNESS has freed him)
+			Kt.shyFree || delete m.ZL;
 			st.ent && (st.ent.sync(), (m.SP = st.ent));
 			return m;
 		});
@@ -14148,19 +14210,17 @@ const JGP = (() => {
 				pk = a && b && ALL_PAIRS.find((q) => (q[0] === a && q[1] === b) || (q[0] === b && q[1] === a));
 			return !!pk && (start(pk, pk[0] === a ? A : B, pk[0] === a ? B : A, { text: !!text }), !0);
 		};
-		// (pairs that can never stand side by side: two who never leave their places)
-		const FIXED = ["KD", "SM", "SL"],
-			can = ALL_PAIRS.filter((pk) => !(FIXED.includes(pk[0]) && FIXED.includes(pk[1])));
 		// (how often a pair's animation, or its lines, has played)
 		const nPl = (pk, text) => plays[pk[0] + pk[1] + (text ? "t" : "")] || 0;
 		VIGS.n = nPl;
-		VIGS.can = can;
 		function pick() {
-			const low = Math.min(...can.map((pk) => nPl(pk) + nPl(pk, 1))),
-				m = lineUp(),
-				// (only two standing side by side where they are, as the Dancers on the floor: every other pair meets by
-				// a visit first, see the visits, which give every pair its turn, the least played first)
-				ok = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && VIGS.beside(m[pk[0]], m[pk[1]]) && nPl(pk) + nPl(pk, 1) <= low);
+			// only two standing side by side where they are, as the Dancers on the floor, and fair among those: none
+			// of them plays again before each pair standing together has had its turn (every other pair meets by a
+			// visit, see the visits, which keep the whole cast even on their own count)
+			const m = lineUp(),
+				here = (SLUG_VIGNETTES ? ALL_PAIRS : PAIRS).filter((pk) => m[pk[0]] && m[pk[1]] && m[pk[0]] !== m[pk[1]] && atSpot(m[pk[0]]) && atSpot(m[pk[1]]) && VIGS.beside(m[pk[0]], m[pk[1]])),
+				low = here.length ? Math.min(...here.map((pk) => nPl(pk) + nPl(pk, 1))) : 0,
+				ok = here.filter((pk) => nPl(pk) + nPl(pk, 1) <= low);
 			if (!ok.length) return;
 			let best = null,
 				bs = 1e9;
@@ -15091,9 +15151,9 @@ const JGP = (() => {
 			// night: floor, walls and ceiling are all the same damp, gritty olive-grey ground, flecked with pale shell
 			// bits and orange and blue-grey grains, lit best at the floor and least at the ceiling, as by a flash;
 			// on the floor lie pebbles, a few big flat dark stones, white flakes of shell, dark cracks and strands of
-			// dry grass; and across the middle crawls a big, glossy, near-black slug that can be talked to. Its walls
+			// dry grass; and across the middle crawls the ANCIENT, a big, glossy, near-black slug that can be talked to. Its walls
 			// stand 35 cm inside the outer ones (whose faces only show from outside), the floor at ground level.
-			// (The room and the slug, built only from that photo, are final: keep them as they are.)
+			// (The room and the ANCIENT, built only from that photo, are final: keep them as they are.)
 			{
 				let seed = 7;
 				const rnd2 = () => ((seed = (16807 * seed) % 2147483647) / 2147483647),
@@ -15139,7 +15199,7 @@ const JGP = (() => {
 				[-1, 1].forEach((sx) => R(T.box(0.04, HT, L0), mat(L0 / 1.8, HT / 1.8, 0xb0b298), inner, [sx * (IX + 0.02), 0.03 + HT / 2, zc]));
 				[ZB - 0.02, ZF + 0.02].forEach((zz) => R(T.box(2 * IX - 0.02, HT, 0.04), mat((2 * IX) / 1.8, HT / 1.8, 0xb0b298), inner, [0, 0.03 + HT / 2, zz]));
 				R(T.box(2 * IX - 0.02, 0.04, L0 - 0.02), mat((2 * IX) / 1.8, L0 / 1.8, 0x8a8c76), inner, [0, 9.24, zc]);
-				// on the floor (one merged mesh, none under the slug): pebbles, pale, rusty, blue-grey and dark, half
+				// on the floor (one merged mesh, none under the ANCIENT): pebbles, pale, rusty, blue-grey and dark, half
 				// sunk into it; a few big flat dark stones; white flakes of shell; dark cracks; and strands of dry grass
 				const PB = ["#c8c4b8", "#b07a44", "#6a7a80", "#3a3a32", "#9a9888", "#dcd8cc"], peb = [],
 					spot = (pad) => {
@@ -15175,8 +15235,57 @@ const JGP = (() => {
 					for (let j = 0; j < 6; j++) pts.push(new THREE.Vector3(px + 0.12 * j * Math.cos(a + 0.15 * j), 0.036 + 0.01 * Math.sin(j), pz + 0.12 * j * Math.sin(a + 0.15 * j)));
 					peb.push({ geo: new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.004, 3), color: k % 2 ? "#b8a478" : "#a89468", matrix: S(0, 0, 0) });
 				}
+				// more from the photo: a clustered patch of flat slate-dark chips beside the head; a few bigger
+				// stones half sunk in their own shadowed pits; more strands of dry grass, two crossing; little
+				// white curls of shell; and a long shallow crack along the front corner
+				for (let k = 0; k < 13; k++) {
+					const a = l * rnd2(), d = 0.34 * Math.sqrt(rnd2()), px = 1.72 + d * Math.cos(a), pz = -10.5 + d * Math.sin(a), r0 = 0.045 + 0.05 * rnd2();
+					peb.push({ geo: T.dodeca(1, 0), color: k % 2 ? "#23251f" : "#2d2f27", matrix: S(px, 0.028, pz, 0, l * rnd2(), 0, r0, 0.07 * r0, 0.8 * r0) });
+				}
+				for (let k = 0; k < 4; k++) {
+					const [px, pz] = spot(0.7), r0 = 0.15 + 0.08 * rnd2(), a = l * rnd2(), ring = [];
+					for (let j = 0; j < 8; j++) ring.push([px + 1.5 * r0 * Math.cos((j / 8) * l + a), pz + 1.35 * r0 * Math.sin((j / 8) * l + a)]);
+					for (let j = 1; j < 7; j++) peb.push({ ...flat([ring[0], ring[j], ring[j + 1]], 0.031), color: "#262722", matrix: S(0, 0, 0) });
+					peb.push({ geo: T.dodeca(1, 0), color: k % 2 ? "#a8a294" : "#b08050", matrix: S(px, 0.03 + 0.3 * r0, pz, rnd2() * 3, rnd2() * 3, 0, r0, 0.6 * r0, 1.15 * r0) });
+				}
+				for (let k = 0; k < 6; k++) {
+					let [px, pz] = spot(1);
+					const a = l * rnd2(), ln = k === 0 ? 0.16 : 0.08 + 0.05 * rnd2(), pts = [];
+					for (let j = 0; j < 6; j++) pts.push(new THREE.Vector3(px + ln * j * Math.cos(a + 0.1 * j), 0.036 + 0.012 * Math.sin(j + k), pz + ln * j * Math.sin(a + 0.1 * j)));
+					peb.push({ geo: new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, k === 0 ? 0.005 : 0.0035, 3), color: k % 2 ? "#c2b284" : "#d0c498", matrix: S(0, 0, 0) });
+					// (two of them crossed by a second straw)
+					if (k > 3) {
+						const b2 = a + 1.2 + 0.4 * rnd2(), p2 = [];
+						for (let j = 0; j < 6; j++) p2.push(new THREE.Vector3(px + 0.3 * Math.cos(a) + 0.07 * j * Math.cos(b2), 0.046 + 0.01 * Math.sin(j), pz + 0.3 * Math.sin(a) + 0.07 * j * Math.sin(b2)));
+						peb.push({ geo: new THREE.TubeGeometry(new THREE.CatmullRomCurve3(p2), 12, 0.0035, 3), color: "#b8a878", matrix: S(0, 0, 0) });
+					}
+				}
+				for (let k = 0; k < 5; k++) {
+					const [px, pz] = spot(0.5);
+					peb.push({ geo: T.torus(0.024, 0.008, 4, 8, Math.PI * (1.1 + 0.5 * rnd2())), color: "#e8e4da", matrix: S(px, 0.028, pz, Math.PI / 2, 0, l * rnd2()) });
+				}
+				{
+					let px = -IX + 0.5, pz = ZF - 0.7;
+					const pts = [];
+					for (let j = 0; j < 9; j++) {
+						const nx = px + 0.11 + 0.05 * rnd2(), nz = pz - 0.05 - 0.08 * rnd2(), w0 = 0.011 * (1 - j / 11);
+						pts.push([px, pz - w0], [px, pz + w0], [nx, nz], [px, pz - w0], [nx, nz], [nx, nz - w0]), (px = nx), (pz = nz);
+					}
+					peb.push({ ...flat(pts, 0.032), color: "#1c1c16", matrix: S(0, 0, 0) });
+				}
 				R(v(peb), new THREE.MeshLambertMaterial({ vertexColors: !0, color: 11579568, side: THREE.DoubleSide }), inner);
-				// THE SLUG: a glossy, near-black tube, thin at the tail and blunt at the head, curving across the
+				// the damp sheen the ANCIENT leaves: a faint glossy ribbon trailing from its tail toward the back
+				// wall, catching the light as in the photo (never under the body itself)
+				{
+					const tr = [[-0.72, -13.52], [-0.86, -13.72], [-1.06, -13.88], [-1.3, -13.98]], pts = [];
+					for (let j = 0; j < tr.length - 1; j++) {
+						const [ax, az] = tr[j], [bx, bz] = tr[j + 1], dx = bz - az, dz = -(bx - ax), dn = Math.hypot(dx, dz) || 1, w0 = 0.055 * (1 - j / 4.5), ox = (dx / dn) * w0, oz = (dz / dn) * w0;
+						pts.push([ax - ox, az - oz], [ax + ox, az + oz], [bx, bz], [ax - ox, az - oz], [bx, bz], [bx - ox, bz - oz]);
+					}
+					const f2 = flat(pts, 0.034);
+					R(f2.geo, new THREE.MeshPhongMaterial({ color: "#2e2b22", shininess: 130, specular: 7368816, transparent: !0, opacity: 0.38, depthWrite: !1 }), inner);
+				}
+				// THE ANCIENT: a glossy, near-black tube, thin at the tail and blunt at the head, curving across the
 				// floor (low and oval in section, lying on it), the mantle a smooth hump over its front third, two
 				// long eye-stalks with knobs and two short tentacles below; a wet highlight runs along its back
 				{
@@ -15239,8 +15348,8 @@ const JGP = (() => {
 						label: () => "Talk",
 						// (pointed at anywhere on its body, head to tail)
 						pickObj: [slug, head],
-						run: () => ((talking = 1), qt.open("SLUG", "#9a7a5a", me.active ? "Hello Kate" : "I am the one reborn.")),
-						gift: () => Kt.blossoms > 0 && (Kt.blossoms--, G.heart(), (talking = 1), qt.open("SLUG", "#9a7a5a", "...")),
+						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", me.active ? "Hello Kate" : "I am the one reborn.")),
+						gift: () => Kt.blossoms > 0 && (Kt.blossoms--, G.heart(), (talking = 1), qt.open("ANCIENT", "#9a7a5a", "...")),
 					});
 					// (a visit's exchange with it: it talks, lifting its head, for so long, see JGP.slug.chat)
 					let chatTo = 0;
@@ -15257,7 +15366,7 @@ const JGP = (() => {
 							const mk = new THREE.Object3D(),
 								[ox, , oz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray();
 							mk.position.set(ox, 0, oz), (mk.userData.vgW = new THREE.Group());
-							return { id: "slug", def: { name: "SLUG", stationary: !0 }, group: mk, home: mk.position, height: 0.7, bodyR: 1.1, vig: !1 };
+							return { id: "slug", def: { name: "ANCIENT", stationary: !0 }, group: mk, home: mk.position, height: 0.7, bodyR: 1.1, vig: !1 };
 						})(),
 						// where a visitor stands with it, and the way in: from the open ground outside the right-hand Garden
 						// window, through the wall where the X is, to its side, facing it (all in the church's own frame)
@@ -15956,8 +16065,8 @@ const JGP = (() => {
 				],
 				"church",
 			);
-			// NO CREATURE EVER GOES INSIDE (the secret room is the player's and the slug's), but for one calling on the
-			// slug (see the visits): they path round its hull and
+			// NO CREATURE EVER GOES INSIDE (the secret room is the player's and the ANCIENT's), but for one calling on the
+			// ANCIENT (see the visits): they path round its hull and
 			// never pick a spot in it, and should one still end up inside (a push, a teleport, a vignette's
 			// step), it is put straight back outside, and any destination inside it is moved out
 			{
@@ -15966,7 +16075,7 @@ const JGP = (() => {
 				L.push(() => {
 					for (let k = 0; k < It.all.length; k++) {
 						const e = It.all[k], P = e.group && e.group.position;
-						// (except one calling on the slug, see the visits)
+						// (except one calling on the ANCIENT, see the visits)
 						if (e.visiting) continue;
 						if (P && F.inHull(CB, P.x, P.z)) {
 							const [ox, oz] = F.outside(P.x, P.z, (e.bodyR || 1) + 0.3);
@@ -16146,7 +16255,7 @@ const JGP = (() => {
 				// stops beside the other on open ground, facing it, the two play their pair's vignette with both its
 				// lines shown, and the visitor walks slowly home (a worker back in by its way in). Everyone visits
 				// everyone, the visits made least often first. KING DINO never leaves his drums, SOMLET sleeps on at
-				// the Post Office and the church's slug never leaves its room: the others come to them (the slug only
+				// the Post Office and the church's ANCIENT never leaves its room: the others come to them (the ANCIENT only
 				// rarely, in and out through the wall where the X is, as the player does, and their exchange is seen
 				// only by a player in the church too). NEXTESSA and BACKPACKA neither visit nor are visited. Rare: one
 				// visit at a time, every three to six minutes; the Event, a battle or a meeting calls it off (everyone goes home as usual), and the
@@ -16161,6 +16270,8 @@ const JGP = (() => {
 						at = (h, q, r = 0.4) => Math.hypot(h.group.position.x - q[0], h.group.position.z - q[1]) < r,
 						free = (h, out) => {
 							if (!h || h.vig || h.visiting || h.hosting) return !1;
+							// (ZOLLOD neither visits nor is visited until OVERCOMING SHYNESS has freed him)
+							if (h.def && "cutebex" === h.def.__type && !Kt.shyFree) return !1;
 							if ("slug" === h.id) return !0;
 							if (isSP(h)) return st.ent.sync(), !st.away() && !st.romping() && !(st.talking && qt.isOpen);
 							return !h.busy && !h.meeting && !h.battleDance && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h) && (!out || (!h.nearPlayer && at(h, [h.home.x, h.home.z])));
@@ -16194,7 +16305,7 @@ const JGP = (() => {
 					// the visits under way (two at most on their way out or meeting at once; any number walking home)
 					const VS = [],
 						// (each creature's vignette code, by name, and the pairs as visits: either way round, the one
-						// who stays put always the host; KING DINO with SOMLET, or either with the slug, can never meet)
+						// who stays put always the host; KING DINO with SOMLET, or either with the ANCIENT, can never meet)
 						CODE = { gratelet: "HN", drifter: "MU", blinker: "AN", m_kingdino: "KD", gorbo: "GW", cutebex: "ZL", m_somlet: "SM", frog: "FZ", p_etcher: "ET", p_gemtoe: "GT", p_glyph: "GL", w_mont: "MG", p_mamagorbo: "MA", keeper: "SP", slug: "SL" },
 						BY = Object.fromEntries(Object.entries(CODE).map(([id, c]) => [c, id])),
 						WAYS = VIGS.all
@@ -16207,10 +16318,11 @@ const JGP = (() => {
 					let next = 25 + 20 * Math.random(),
 						want = null,
 						forced = null;
-					// (for the tests: a visit at game time t, of h by v if given)
-					JGP.visitAt = (t, v, h) => ((next = t), (want = v ? [v, h] : null));
-					const show = (q) => q && { v: q.vid, h: q.hid, stage: q.stage, played: !!q.played, gap: +Math.hypot(q.v.group.position.x - q.h.group.position.x, q.v.group.position.z - q.h.group.position.z).toFixed(1) };
-					JGP.visits = () => ({ made, now: show(forced && VS.includes(forced) ? forced : forced ? null : VS[0]), all: VS.map(show) });
+					// (for the tests: a visit of h by v, begun at once whatever the pacing or the cap; with no pair,
+					// t is the next natural visit's time, so a t far in the future silences them)
+					JGP.visitAt = (t, v, h) => ((next = v ? next : t), (want = v ? [v, h] : null));
+					const show = (q) => q && { v: q.vid, h: q.hid, stage: q.stage, played: !!q.played, wondered: !!q.wondered, gap: +Math.hypot(q.v.group.position.x - q.h.group.position.x, q.v.group.position.z - q.h.group.position.z).toFixed(1) };
+					JGP.visits = () => ({ made, now: show((forced && VS.includes(forced) ? forced : VS[0]) || null), all: VS.map(show) });
 					// (for the tests: where v would stand to visit h, and its way there, without going)
 					JGP.visitPlan = (vid, hid) => {
 						const v = ent(vid),
@@ -16222,7 +16334,7 @@ const JGP = (() => {
 							p0 = isSP(v) ? JGP.libFront() : via.length ? via[via.length - 1] : [v.group.position.x, v.group.position.z];
 						return { sp, from: p0, way: wayTo(p0[0], p0[1], v, h, sp, isSP(v) ? 0.9 : v.bodyR || 1), r: Math.min(1, isSP(v) ? 0.9 : v.bodyR || 1), inside: "slug" === hid ? 3 : isSP(h) ? 2 : 0 };
 					};
-					// (the way from a point to where the visit stands: for the slug, across town to the open ground outside the
+					// (the way from a point to where the visit stands: for the ANCIENT, across town to the open ground outside the
 					// right-hand Garden window, then in through the wall where the X is and to its side; for SPARKAKUS, to the
 					// open front of his Library and in across its floor to his side)
 					const wayTo = (x0, z0, v, h, sp, r) => {
@@ -16306,15 +16418,26 @@ const JGP = (() => {
 							!hv && !isSP(h) && "slug" !== hid && h.moving && h.home.set(h.group.position.x, h.home.y, h.group.position.z);
 							hv && ((q.hw = hv), (q.hHome = h.home.clone()), (q.hPat = h.pattern && Object.assign({}, h.pattern[1])), h.pattern && (h.pattern[1].face = Math.atan2(sp[0] - hp[0], sp[1] - hp[1])));
 							if (isSP(v)) {
-								// (SPARKAKUS from his Library's front)
 								const [fx, fz] = JGP.libFront();
-								(q.path = wayTo(fx, fz, v, h, sp, 0.9).map(([x, z]) => new THREE.Vector3(x, 0, z))), q.path.pop();
-								st.join({ x: sp[0], z: sp[1] }, face, q.path, 1.6);
+								if ("slug" === hid) {
+									// (calling on the ANCIENT he goes to the open ground outside the X first: he stops there,
+									// puzzled, and only then in through the wall)
+									const sv = JGP.slug.visit(0.9),
+										p1 = JGP.route(fx, fz, sv.out[0], sv.out[1], 0.9).map(([x, z]) => new THREE.Vector3(x, 0, z));
+									p1.pop(), (q.pause = sv.out), (q.spIn = sv.way.map(([x, z]) => new THREE.Vector3(x, 0, z)));
+									st.join({ x: sv.out[0], z: sv.out[1] }, Math.atan2(sp[0] - sv.out[0], sp[1] - sv.out[1]), p1, 1.6);
+								} else {
+									// (SPARKAKUS from his Library's front)
+									(q.path = wayTo(fx, fz, v, h, sp, 0.9).map(([x, z]) => new THREE.Vector3(x, 0, z))), q.path.pop();
+									st.join({ x: sp[0], z: sp[1] }, face, q.path, 1.6);
+								}
 							} else {
 								// (the way there: out by its way out, if it has one, then a way across town round everything)
 								const via = ((v.def && v.def.via) || []).map((w) => [w[0], w[1]]),
 									p0 = via.length ? via[via.length - 1] : [v.group.position.x, v.group.position.z];
 								(q.home = v.home.clone()), (q.pat = v.pattern && Object.assign({}, v.pattern[1])), (q.way = via.concat(wayTo(p0[0], p0[1], v, h, sp, v.bodyR || 1)));
+								// (calling on the ANCIENT: the open ground outside the X, where it will stop, puzzled)
+								"slug" === hid && (q.pause = JGP.slug.visit(v.bodyR || 1).out);
 								v.pattern && (v.pattern[1].face = face);
 							}
 							return (made[vid + "|" + hid] = (made[vid + "|" + hid] || 0) + 1), VS.push(q), q;
@@ -16342,7 +16465,7 @@ const JGP = (() => {
 							const { v } = q;
 							hostHome(q);
 							isSP(v) ? me.active || st.leave() : (q.pat && Object.assign(v.pattern[1], q.pat), q.home && v.home.copy(q.home), (v.walkK = 0));
-							(v.visiting = !1), (v.inside = null), VS.splice(VS.indexOf(q), 1);
+							(v.visiting = !1), (v.inside = null), forced === q && (forced = null), VS.splice(VS.indexOf(q), 1);
 						};
 					// one visit's step
 					const step = (q, t2, dt) => {
@@ -16354,7 +16477,21 @@ const JGP = (() => {
 						if (me.active || !It.all.concat([st.ent]).includes(v) || ((v.busy || v.battleDance) && !isSP(v)) || (q.stage !== "back" && !isSP(h) && (h.busy || h.battleDance || h.meeting))) return drop(q);
 						if ("out" === q.stage) {
 							if (t2 > q.until) return goBack(q, t2);
-							if (isSP(v)) return void (st.there() && (q.stage = "meet"), "meet" === q.stage && (q.meetAt = t2));
+							if (isSP(v)) {
+								// (on his way to the ANCIENT he too stops at the wall, a "?" over his head, before going in)
+								if (q.spIn) {
+									if (!st.there()) return;
+									if (!q.paused) {
+										const p0 = st.pos();
+										return void ((q.paused = t2 + 1.3), (q.wondered = !0), Ut.at(p0.x, p0.y + st.height + 0.4, p0.z, "?", "#ff7a2f"));
+									}
+									if (t2 < q.paused) return;
+									const path = q.spIn;
+									q.spIn = null;
+									return void st.join({ x: q.sp[0], z: q.sp[1] }, Math.atan2(h.group.position.x - q.sp[0], h.group.position.z - q.sp[1]), path, 1.6);
+								}
+								return void (st.there() && (q.stage = "meet"), "meet" === q.stage && (q.meetAt = t2));
+							}
 							// (MUSHROOM jumps down off the front of his desk first, to the first step of his way out: an arc clear
 							// of its edge; SOMLET gets up first)
 							if (v.pattern && v.pattern[1].y > 0) (q.hop = { t0: t2, c: v.pattern[1].y, a: [v.group.position.x, v.group.position.z], b: q.way[0] }), (v.pattern[1].y = 0);
@@ -16368,13 +16505,20 @@ const JGP = (() => {
 							if ((v.lieK || 0) > 0.25) return;
 							const w = q.way[0];
 							v.home.set(w[0], v.home.y, w[1]);
+							// (at the wall outside the X it stops, puzzled — its own "?", in its own colour, over its head —
+							// and then goes on in: the way through played out for whoever is watching)
+							if (q.pause && !q.pauseDone && at(v, q.pause, 0.7)) {
+								if (!q.paused) return void ((q.paused = t2 + 1.3), (q.wondered = !0), Ut.above(v, "?", (v.def && v.def.color) || "#f2c72e"));
+								if (t2 < q.paused) return;
+								q.pauseDone = !0;
+							}
 							// (a waypoint on the way counts when within 0.6 m: a corner it is pushed off still lets it on)
 							if (at(v, w, q.way.length > 1 ? 0.6 : 0.4)) q.way.length > 1 ? q.way.shift() : v.moving || ((q.stage = "meet"), (q.meetAt = t2));
 							return;
 						}
 						if ("meet" === q.stage) {
 							// their exchange, side by side, once any other vignette is over (or they go home without it after a while)
-							// (with the slug, only if the player is in the church too: else they keep it to themselves, quietly)
+							// (with the ANCIENT, only if the player is in the church too: else they keep it to themselves, quietly)
 							if ("slug" === h.id && !q.played) {
 								const CB = F.buildings.find((B) => "church" === B.name);
 								if (!(CB && F.inHull(CB, At.position.x, At.position.z))) return void ((q.played = t2), (q.quiet = !0));
@@ -16390,7 +16534,7 @@ const JGP = (() => {
 						}
 						// back home (the visit over once the host is home too)
 						const end = () => ((v.visiting = !1), (v.inside = null), (q.vDone = !0));
-						if (q.vDone) return void (q.hb || VS.splice(VS.indexOf(q), 1));
+						if (q.vDone) return void (q.hb || (forced === q && (forced = null), VS.splice(VS.indexOf(q), 1)));
 						if (isSP(v)) return void (st.away() || end());
 						const w = q.back[0];
 						v.home.set(w[0], v.home.y, w[1]);
@@ -16400,11 +16544,13 @@ const JGP = (() => {
 					L.push((t2, dt) => {
 						dt = Math.min(0.1, dt || 0.016);
 						for (let k = VS.length - 1; k >= 0; k--) step(VS[k], t2, dt);
-						if (t2 < next || me.active || "playing" !== jt.top || Dbt.state || VS.filter((q) => "back" !== q.stage).length >= 2) return;
-						next = t2 + 4;
+						if (me.active || "playing" !== jt.top || Dbt.state) return;
+						// (a visit asked for by name starts at once, past the pacing and the two-at-once cap)
+						if (!want && (t2 < next || VS.filter((q) => "back" !== q.stage).length >= 2)) return;
+						want || (next = t2 + 4);
 						// who: the asked-for pair, else the pair whose vignette has played least, at random among those,
 						// that can meet now (both free, not already side by side: those play where they stand)
-						// (the slug is called on only rarely: in one round in eight)
+						// (the ANCIENT is called on only rarely: in one round in eight)
 						const slugToo = Math.random() < 0.125;
 						let best = null,
 							bn = 1e9,
@@ -16413,15 +16559,16 @@ const JGP = (() => {
 							if (w.slug && !slugToo) continue;
 							const ok = w.ways.filter(([a, b]) => free(ent(a), !0) && free(ent(b), !!(ent(b) && viaOf(ent(b)))) && (want || !VIGS.beside(ent(a), ent(b))));
 							if (!ok.length) continue;
-							// (by the pair's two together: no pair meets again before every pair has met once)
-							const n2 = (VIGS.plays[w.key] || 0) + (VIGS.plays[w.key + "t"] || 0) + Math.random() * 0.5;
+							// (by the pair's two together: no pair meets again before every pair has met once; ZOLLOD's pairs,
+							// once he is freed, count half, so he meets others twice as often)
+							const n2 = ((VIGS.plays[w.key] || 0) + (VIGS.plays[w.key + "t"] || 0)) * (/ZL/.test(w.key) ? 0.5 : 1) + Math.random() * 0.5;
 							n2 < bn && ((bn = n2), (best = ok[(Math.random() * ok.length) | 0]), (kind = (VIGS.plays[w.key + "t"] || 0) < (VIGS.plays[w.key] || 0) || ((VIGS.plays[w.key + "t"] || 0) === (VIGS.plays[w.key] || 0) && Math.random() < 0.5)));
 						}
 						if (!best) return;
 						const q = begin(t2, best[0], best[1]);
 						// (one setting off about every minute, 45 to 65 s apart: with the pairs side by side, every pair's two
 						// vignettes, its animation and its lines, in about three hours)
-						q && ((q.text = kind), (next = t2 + 45 + 20 * Math.random()), want && ((forced = q), (want = null)));
+						q && (q.text = kind), q && (want ? ((forced = q), (want = null)) : (next = t2 + 45 + 20 * Math.random()));
 					});
 				}
 			}
@@ -17811,7 +17958,7 @@ if (
 							// while FORTIZMO plays at the Event, everyone round the garden dances
 							// (the tune of this Event: an earlier Event's tag still sounding at a restart is not it)
 							music = me.active && ee.playing && bt.live && "playing" === gcHorn.phase;
-						// (the church's slug, not one of the creatures, follows it lying where it is)
+						// (the church's ANCIENT, not one of the creatures, follows it lying where it is)
 						JGP.eventMove = music ? "dance" : o ? "plant" : null;
 						for (const t of It.all) {
 							// (the pizza courier never dances or plants, and is not kept after she leaves)
@@ -17892,8 +18039,8 @@ if (
 						a = x.clay(o.skin),
 						n = x.clay(o.hair),
 						r = x.clay(o.dress, { unique: !0 }),
-						s = x.clay(M.teal),
-						i = x.clay("#e83a3a"),
+						s = x.clay("#32466e"),
+						i = x.clay("#30343f"),
 						c = e.userData;
 					["L", "R"].forEach((t, o) => {
 						const n = o ? 1 : -1,
@@ -17929,23 +18076,44 @@ if (
 							R(T.torus(a, 0.2 * a, 6, 14, Math.PI), x.basic(n), t, [0, e, o], [r, 0, Math.PI]);
 						})(h, { y: -0.13, z: 0.315, w: 0.05, color: "#a03848", tilt: 0.3 }),
 						oo(h, { y: -0.08, z: 0.29, sep: 0.19, r: 0.045 }),
+						[[-0.14, -0.03], [-0.09, -0.055], [-0.045, -0.025], [0.05, -0.05], [0.1, -0.03], [0.15, -0.045], [0, -0.068]].forEach(([fx2, fy2]) =>
+							R(T.sphere(0.0085, 6, 5), x.clay("#dca47f"), h, [fx2, fy2, Math.sqrt(Math.max(0.02, 0.1156 - fx2 * fx2 - fy2 * fy2))], null, [1, 1, 0.35]),
+						),
 						(c.eyes = p),
 						["L", "R"].forEach((t, e) => {
 							const o = e ? 1 : -1,
 								a = new THREE.Group();
-							a.position.set(0.28 * o, 0.1, -0.16),
+							a.position.set(0.032 * o, -0.04, -0.3),
 								h.add(a),
-								R(T.sphere(0.11, 10, 8), n, a, [0.05 * o, -0.22, -0.02], null, [0.9, 2, 0.9]),
-								R(T.torus(0.05, 0.02, 6, 10), s, a, [0, 0, 0], [0, 1.2 * o, 0]),
+								R(T.sphere(0.095, 10, 8), n, a, [0.008 * o, -0.24, -0.02], null, [0.78, 2.5, 0.78]),
+								R(T.sphere(0.05, 8, 6), n, a, [-0.006 * o, -0.53, -0.04], null, [0.7, 1.4, 0.7]),
 								(c["pony" + t] = a);
 						});
 					const f = new THREE.Group();
 					return (
-						f.position.set(0, 0.34, -0.02),
+						f.position.set(0, -0.13, -0.33),
 						h.add(f),
 						(c.bow = f),
-						[-1, 1].forEach((t) => R(T.cone(0.08, 0.16, 6), s, f, [0.08 * t, 0, 0], [0, 0, (t * Math.PI) / 2])),
-						R(T.sphere(0.04, 8, 6), s, f),
+						R(T.torus(0.088, 0.026, 8, 14), s, f, [0, 0, 0], [1.42, 0, 0]),
+						R(T.sphere(0.034, 8, 6), s, f, [0, 0.02, 0.085]),
+						(c.baseTex = (() => {
+							let sd = 5;
+							const rnd = () => (sd = (16807 * sd) % 2147483647) / 2147483647,
+								tx = b(128, 128, (g) => {
+									(g.fillStyle = o.dress), g.fillRect(0, 0, 128, 128);
+									for (let k = 0; k < 9; k++) {
+										const x0 = 16 + 96 * rnd(), y0 = 16 + 96 * rnd(), rr = 4 + 1.8 * rnd();
+										g.save(), g.translate(x0, y0), g.rotate(rnd() * l), (g.fillStyle = "rgba(240,243,248,0.92)");
+										for (let p2 = 0; p2 < 6; p2++) g.rotate(l / 6), g.beginPath(), g.ellipse(0, rr + 1.4, 0.55 * rr, rr, 0, 0, l), g.fill();
+										(g.fillStyle = "#cddcf0"), g.beginPath(), g.arc(0, 0, 0.52 * rr, 0, l), g.fill(), g.restore();
+									}
+									g.fillStyle = "rgba(240,243,248,0.8)";
+									for (let k = 0; k < 24; k++) g.beginPath(), g.arc(4 + 120 * rnd(), 4 + 120 * rnd(), 1.1, 0, l), g.fill();
+								}, { smooth: !0 });
+							return (tx.wrapS = tx.wrapT = THREE.RepeatWrapping), tx.repeat.set(4, 1.5), tx;
+						})()),
+						(r.map = c.baseTex),
+						r.color.set("#ffffff"),
 						(c.dressMat = r),
 						(c.dressColor = r.color.clone()),
 						// the clothes sold at Garden Supplies, each hidden until it is worn

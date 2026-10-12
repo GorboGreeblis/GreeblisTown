@@ -32,7 +32,7 @@ python3 -m http.server 8765      # from the repo root, in another terminal: the 
 button); both ordinal sandboxes; talking to every creature; battles, Artifacts and the Library finale; the Gem
 trade; pizza; vignettes; pickup reachability; the jazz on the floor, pickup respawn and the Blossom option;
 Fortizmo's patrol; the shaders; a walking soak; King Dino's jazz; Somlet asleep; the roamers; the avatar's walk;
-the VR head guard; Sparkakus browsing; the church's secret room and its slug; a Dance battle's Blossom; the phone lock; and the z-fighting
+the VR head guard; Sparkakus browsing; the church's secret room and its Ancient; a Dance battle's Blossom; the phone lock; and the z-fighting
 scan. Every line should end with
 `err 0` / `errors 0`.
 
@@ -53,8 +53,9 @@ row says otherwise, run it with `shot2.js`.
 | `t_blog2.js` | Dance battle text, an Artifact from first wins only, a bow on repeat wins, the Library finale |
 | `t_gem.js`, `t_pizza.js`, `vigrun.js` | The Ancient Gem trade, the pizza courier, many creature vignettes |
 | `t_vigall.js` | Vignettes where the cast stand: only two side by side play (every other pair meets by a visit), an animation and the lines separately, none again before its turn; wrappers back at rest, errors |
-| `t_visits.js` | Creatures visiting each other: a spot and a clear way for every visitor and host (168 pairs), then eight visits played out (a kiosk host stepping out, Sparkakus met on his Library floor, the slug through the X): getting there, the meeting side by side, slowly home, and nobody passing through anything on the way. `VW=320 VH=240` |
+| `t_visits.js` | Creatures visiting each other: a spot and a clear way for every visitor and host (168 pairs), then eight visits played out (a kiosk host stepping out, Sparkakus met on his Library floor, the Ancient through the X, stopping puzzled at the wall): getting there, the meeting side by side, slowly home, and nobody passing through anything on the way. `VW=320 VH=240` |
 | `t_visitlive.js` | Visits and vignettes as they happen on their own for `GAME` game seconds: each visit and each vignette with the gap between the two, the pairs played and the rate per hour. `VW=320 VH=240` |
+| `t_shy.js` | ZOLLOD's shyness sub-quest played through: the shy lines, no Blossom, no shop, no visits; OVERCOMING SHYNESS clicked off its Library shelf ("book obtained", gone from the shelf); the freeing Talk; the shop and his visits after; MAMA GORBO's and GEMTOE's fourth Talk lines |
 | `t_errcopy.js` | The test modes' error tools: the desktop error counter and its copy button, or the mobile panel's (run with `mob.js` and `?mobile=1`), and the copied text |
 | `t_stone.js` | The GARDEN EVENT menu (Summoning Stone, Seeds, Snacks, Yes / No) and its rule: without the Summoning Stone, Yes only says the runes stay dark and nothing starts; with it, it starts |
 | `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
@@ -65,10 +66,10 @@ row says otherwise, run it with `shot2.js`.
 | `t_jazz.js` | King Dino's jazz: heard on every corner of the dance floor and in every Dance battle, silent elsewhere, never with Fortizmo's horn tune; measures both at the speakers and prints FAIL where the jazz should sound and does not |
 | `t_somlet.js` | Somlet asleep on her side: her lowest point stays above the ground resting and getting up (`SHOTS=<prefix>` for renders) |
 | `t_roam.js` | The roamers: spots visited, nobody stuck or somewhere they should not be, trap scenarios, a Gorbo meeting with hearts. `VW=320 VH=240`, `ROAM_S`/`TRAP_S` game seconds |
-| `t_plants.js` | The new flowers at a whole Garden Event: one plant per planter, by kind; how many show the full or the light model from the garden's edge; what the slug did; game time against real time (a slow-down means the plants cost too much); renders of the grown garden. Slow |
+| `t_plants.js` | The new flowers at a whole Garden Event: one plant per planter, by kind; how many show the full or the light model from the garden's edge; what the Ancient did; game time against real time (a slow-down means the plants cost too much); renders of the grown garden. Slow |
 | `plantshots.js` | Renders each plant kind from four views (`JGP.plantShow`) for checking against the owner's photos. `ONLY=1,3` |
-| `t_church.js` | The church's secret room: in through the wall under the right-hand Garden window (the little X) and nowhere else, the head guard, no creature inside, and the slug: one Talk (no Blossom), its idle and Talk moves, never leaving its spot |
-| `churchshots.js` | Renders the way in from outside and the secret room (down the nave, the slug, the ceiling) |
+| `t_church.js` | The church's secret room: in through the wall under the right-hand Garden window (the little X) and nowhere else, the head guard, no creature inside, and the Ancient: one Talk (no Blossom), its idle and Talk moves, never leaving its spot |
+| `churchshots.js` | Renders the way in from outside and the secret room (down the nave, the Ancient, the ceiling) |
 | `t_battlecost.js` | A Dance battle costs a Blossom: no Blossom option (and no battle from a gift) with none in hand; with one, giving it empties the hand and opens the battle |
 | `t_phone.js` | The phone is locked (its connection to the Portal is blocked) until Mushroom has a Blossom, then calls Nextessa for the rest of the session |
 | `t_script.js` | The owner's script, the parts that move: Sparkakus's Artifacts talk and the glue bottle putting the Gem together, his Blossom lap on all fours (clear of every bookcase), and renders of the Library's face-out books and Wish Blossom and the Sheriff's posters. `VW=320 VH=240` |
@@ -137,7 +138,7 @@ Check a name still exists before trusting a result: a rename in the game breaks 
 | `ARTS`, `LIB` | Ancient Artifacts, Sparkakus's talk |
 | `gcHorn`, `ee` | Fortizmo's horn, her tune |
 | `st` | The Library's worker, Sparkakus (`away()`, `pos()`) |
-| `JGP` | The game layer's exports: `garden` (`plants`, `lods`: each plant's full and light mesh), `plantShow`, `backpacka`, `barSpot`, `barVia`, `noPlant`, `onDance`, `groundAt`, `headGuard`, `jazz`, `meetAt`, `unfightParts`, `roamFree`, `roamWalk`, `slug` and `eventMove` (the church's slug and the Event move it follows), `churchGuard`, `ufoNow` (a UFO pass now), … |
+| `JGP` | The game layer's exports: `garden` (`plants`, `lods`: each plant's full and light mesh), `plantShow`, `backpacka`, `barSpot`, `barVia`, `noPlant`, `onDance`, `groundAt`, `headGuard`, `jazz`, `meetAt`, `unfightParts`, `roamFree`, `roamWalk`, `slug` and `eventMove` (the church's Ancient and the Event move it follows), `churchGuard`, `ufoNow` (a UFO pass now), … |
 | `z.list` | Stations: `campfire` = the Summoning Stone, `gshop`, `stump` = the Library, `pool`, `phone`, `slug` |
 
 ## Finding dead code (how the size pass was done)

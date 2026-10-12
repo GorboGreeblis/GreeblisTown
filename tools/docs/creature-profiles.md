@@ -231,8 +231,11 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 - **Signature:** Zollox's curling trunk with its magenta tip, small pink flowers on his head, an olive canvas
   gardener's apron with seed packets in the pocket, and a trowel in his right hand.
 - **Animation:** his fronds sway, the worm turns, his trunk and tail move, and he strides when walking.
-- **Role:** the Garden Supplies keeper. Interacting with him opens the shop at once (at the Garden Event he says
-  his line instead: bringing plants to life is his life's work).
+- **Role:** the Garden Supplies keeper — once he dares. He starts too shy for it: one Talk ("…|…|I'm shy…"), no
+  Blossom option, no shop, and he neither visits nor is visited. Take OVERCOMING SHYNESS from its Library shelf
+  (point at it and select) and Talk to him with it: "…|That book…|Let me see..|Wow I'm free from shyness!" From
+  then on interacting with him opens the shop at once (at the Garden Event he says his line instead: bringing
+  plants to life is his life's work), and he goes visiting about twice as often as anyone else.
 
 ## Anomalee (`blinker`)
 
