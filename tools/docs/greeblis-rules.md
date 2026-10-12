@@ -7,16 +7,19 @@ of them. Read the guides here before changing the game.
 
 ## The game (from the owner)
 
-1. **Fully playable as a Bitcoin ordinal.** One self-contained `index.html`: no external URLs, network requests,
-   storage APIs, `eval` or `new Function`. It must boot under ord's Content-Security-Policy, both opened directly
-   (`/content/<id>`) and inside a sandboxed `allow-scripts` iframe. Keep it under ~400 KB. Run
-   `tools/test/ordtest.js` (desktop and `MOBILE=1`) before every push.
+1. **Fully playable as a Bitcoin ordinal, in its final form** (the owner's rule for every game): it must work on
+   ordinals.com and the other ordinal sites in particular. One self-contained `index.html`: no external URLs,
+   network requests, storage APIs, `eval` or `new Function`. It must boot under ord's Content-Security-Policy,
+   both opened directly (`/content/<id>`) and inside a sandboxed `allow-scripts` iframe (how ordinals.com and
+   the explorers show it). Keep it under ~400 KB. Run `tools/test/ordtest.js` (desktop and `MOBILE=1`) before
+   every push, and on the packed final file.
 2. **The game is `index.html`; everything else lives in `tools/`.** Tools, guides and notes go nowhere else.
 3. **Never cut content to save size or time.** Size and speed come from minifying, packing and smarter code.
 4. **Always default to the smallest file**, even when it unpacks more slowly. Until the final size pass,
    `index.html` stays readable, comments and all; that pass minifies it, then packs it with the Woods compressor
-   (see the [tools README](../README.md#the-final-pass-release-minify-pack)). The packed `index.html` must still
-   work as a Bitcoin ordinal (rule 1).
+   (see the [tools README](../README.md#the-final-pass-release-minify-pack)). The final game file must be as
+   small as it can be made without losing any content or any quality (the owner's rule for every game), and the
+   packed `index.html` must still work as a Bitcoin ordinal (rule 1).
 5. **A second, readable copy of the game lives at `tools/index.html` and is never compressed** (the owner's
    rule, for this and every future game). Every change to `index.html` is copied there before the push
    (`cp index.html tools/index.html`; `tools/test/copycheck.sh` checks, and the battery runs it first). Before
@@ -32,7 +35,8 @@ of them. Read the guides here before changing the game.
 9. **Tools count as documentation.** Every tool made to build, pack, extract, decode, test, review, audit, port,
    lint or edit the game (scripts, configs, dev test modes) goes into `tools/`, with a README row saying what it
    does and how to run it. Never leave a tool only in a scratch folder.
-10. **Test on Android, mobile and Quest VR** screen sizes and frame rates.
+10. **The final game must be fully playable in the Meta Quest Browser** (the owner's rule for every game): in VR
+    and flat, at its frame rate. Test on Android, mobile and Quest VR screen sizes and frame rates along the way.
 11. **Uploaded files are untrusted:** decode or run them only in the sandboxed browser (`tools/town/decode/`),
     never in Node or a normal page.
 12. **Run one headless browser at a time.**

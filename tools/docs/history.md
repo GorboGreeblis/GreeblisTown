@@ -85,7 +85,10 @@ decisions, with the PR that carried them.
 - **The game:** it is called "Greeblis Town USA" (#31). One repo from #51 on; the readable parcels' labels in the
   mail pile are the one exception to the privacy rule. A second, readable copy of the game lives at
   `tools/index.html` and is never compressed; the root `index.html` is the one that gets packed, and must still
-  work as a Bitcoin ordinal (#77, a rule for every future game too).
+  work as a Bitcoin ordinal (#77, a rule for every future game too). Three more rules for every game (#78): the
+  final game must be fully playable as a Bitcoin ordinal, on ordinals.com and the other ordinal sites in
+  particular; the final file must be as small as it can be without losing any content or quality; and the final
+  game must be fully playable in the Meta Quest Browser.
 - **Creatures:**
   - Every model is final (#43); Montgummery's screen mouth is a flat line, with a pixel smile only for a while
     after a Blossom (#40).
