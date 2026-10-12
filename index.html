@@ -15978,6 +15978,41 @@ const JGP = (() => {
 					}
 					peb.push({ ...flat(pts, 0.032), color: "#1c1c16", matrix: S(0, 0, 0) });
 				}
+				// a third look at the photo (the owner asked for more of it): bigger rounded stones with pale faces half
+				// sunk in the ground; a cluster of rust-orange stones toward one corner and blue-grey ones here and
+				// there; many more small white shell fragments; low humps in the ground's own colour; and a longer,
+				// wider crack across the lower corner with a lighter rim
+				for (let k = 0; k < 7; k++) {
+					const [px, pz] = spot(0.6), r0 = 0.1 + 0.08 * rnd2();
+					peb.push({ geo: T.dodeca(1, 1), color: ["#b4ae9e", "#c2bcac", "#a4a094", "#bab4a4"][k % 4], matrix: S(px, 0.03 + 0.22 * r0, pz, rnd2() * 3, rnd2() * 3, 0, r0, 0.55 * r0, 1.15 * r0) });
+				}
+				for (let k = 0; k < 6; k++) {
+					const a = l * rnd2(), d = 0.6 * Math.sqrt(rnd2()), px = IX - 1.4 + d * Math.cos(a), pz = ZB + 2.2 + d * Math.sin(a), r0 = 0.05 + 0.05 * rnd2();
+					peb.push({ geo: T.dodeca(1, 0), color: k % 2 ? "#b8702a" : "#c8864a", matrix: S(px, 0.03 + 0.25 * r0, pz, rnd2() * 3, rnd2() * 3, 0, r0, 0.6 * r0, 1.2 * r0) });
+				}
+				for (let k = 0; k < 5; k++) {
+					const [px, pz] = spot(0.4), r0 = 0.06 + 0.06 * rnd2();
+					peb.push({ geo: T.dodeca(1, 0), color: k % 2 ? "#6e7e86" : "#5a6a72", matrix: S(px, 0.03 + 0.25 * r0, pz, rnd2() * 3, rnd2() * 3, 0, r0, 0.5 * r0, 1.1 * r0) });
+				}
+				for (let k = 0; k < 24; k++) {
+					const [px, pz] = spot(0.2), a = l * rnd2(), r0 = 0.012 + 0.03 * rnd2(), c0 = Math.cos(a) * r0, s0 = Math.sin(a) * r0;
+					peb.push({ ...flat([[px - c0, pz - s0], [px + s0 * 0.8, pz - c0 * 0.8], [px + c0 * 0.9, pz + s0 * 0.9]], 0.0335), color: k % 4 ? "#eae6dc" : "#f4f0e6", matrix: S(0, 0, 0) });
+				}
+				for (let k = 0; k < 5; k++) {
+					const [px, pz] = spot(0.9);
+					peb.push({ geo: T.dodeca(1, 1), color: k % 2 ? "#64644e" : "#5c5c46", matrix: S(px, 0.0, pz, 0, l * rnd2(), 0, 0.5 + 0.4 * rnd2(), 0.028, 0.4 + 0.3 * rnd2()) });
+				}
+				{
+					// (the long crack: a lighter rim with the dark fissure down its middle)
+					let px = -IX + 0.3, pz = ZF - 2.0;
+					const rim = [], crk = [];
+					for (let j = 0; j < 12; j++) {
+						const nx = px + 0.16 + 0.06 * rnd2(), nz = pz - 0.09 - 0.07 * rnd2(), w1 = 0.05 * (1 - j / 16), w0 = 0.018 * (1 - j / 14);
+						rim.push([px, pz - w1], [px, pz + w1], [nx, nz], [px, pz - w1], [nx, nz], [nx, nz - w1]);
+						crk.push([px, pz - w0], [px, pz + w0], [nx, nz], [px, pz - w0], [nx, nz], [nx, nz - w0]), (px = nx), (pz = nz);
+					}
+					peb.push({ ...flat(rim, 0.031), color: "#8a8870", matrix: S(0, 0, 0) }), peb.push({ ...flat(crk, 0.0325), color: "#16160f", matrix: S(0, 0, 0) });
+				}
 				R(v(peb), new THREE.MeshLambertMaterial({ vertexColors: !0, color: 11579568, side: THREE.DoubleSide }), inner);
 				// the damp sheen the ANCIENT leaves: a faint glossy ribbon trailing from its tail toward the back
 				// wall, catching the light as in the photo (never under the body itself)
@@ -15989,6 +16024,16 @@ const JGP = (() => {
 					}
 					const f2 = flat(pts, 0.034);
 					R(f2.geo, new THREE.MeshPhongMaterial({ color: "#2e2b22", shininess: 130, specular: 7368816, transparent: !0, opacity: 0.38, depthWrite: !1 }), inner);
+				}
+				// (and from the photo's edges: a band of shadow along the back wall's foot, and three damp stains
+				// darkening the ground here and there, one thin translucent mesh)
+				{
+					const sh = [[-IX, ZB], [IX, ZB], [IX, ZB + 0.5], [-IX, ZB], [IX, ZB + 0.5], [-IX, ZB + 0.5]];
+					for (let k = 0; k < 3; k++) {
+						const [px, pz] = spot(1.0), rx2 = 0.3 + 0.35 * rnd2(), rz2 = 0.2 + 0.3 * rnd2(), a0 = l * rnd2();
+						for (let j = 0; j < 8; j++) sh.push([px, pz], [px + rx2 * Math.cos(a0 + (j / 8) * l), pz + rz2 * Math.sin(a0 + (j / 8) * l)], [px + rx2 * Math.cos(a0 + ((j + 1) / 8) * l), pz + rz2 * Math.sin(a0 + ((j + 1) / 8) * l)]);
+					}
+					R(flat(sh, 0.0305).geo, new THREE.MeshLambertMaterial({ color: "#1e1e16", transparent: !0, opacity: 0.32, depthWrite: !1 }), inner);
 				}
 				// THE ANCIENT: a glossy, near-black tube, thin at the tail and blunt at the head, curving across the
 				// floor (low and oval in section, lying on it), the mantle a smooth hump over its front third, two
@@ -16003,7 +16048,7 @@ const JGP = (() => {
 						}),
 						slug = new THREE.Group(),
 						skin = new THREE.MeshPhongMaterial({ map: skinTex, color: 7368816, specular: 9474192, shininess: 110 }),
-						tipM = new THREE.MeshPhongMaterial({ color: 5263430, specular: 6316128, shininess: 60 }),
+						tipM = new THREE.MeshPhongMaterial({ color: 4208180, specular: 6316128, shininess: 60 }),
 						keelM = new THREE.MeshPhongMaterial({ color: 3813412, specular: 11579568, shininess: 140 }),
 						// (a second look at the owner's photo: the slug 1.15 times bigger about its middle, to carry its details)
 						SC = 1.15,
