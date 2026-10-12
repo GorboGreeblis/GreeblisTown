@@ -700,3 +700,23 @@ old ids for several (`gratelet` is Hennrick, `frog` Fortizmo, `drifter` Mushroom
   T-rex who sprang on a coiled orange tail and hosted the dance-off.
 - **Gemtoe, Etcher and Backpacka** were built new from artwork. Park had a magenta gem-hoarding bird, Gemwing, and a
   rune carver, Etchelon; nothing links them to Gemtoe or Etcher.
+
+## Next: the Meta Quest optimisation pass (started, not yet built)
+
+The owner's top priority and a rule for every game: optimised for the Meta Quest Browser, performance always
+improved but never at the expense of quality. The baseline, from `tools/test/t_perf.js` (desktop mode, 1.6 m
+eye, 100° lens):
+
+| Measure | Worst view |
+| --- | --- |
+| Draw calls | 400 (south gate); 349 dance floor, 353 Juice Bar |
+| Triangles | 527k (south gate) |
+| CPU per frame | 3.06 ms (2.82 ms three.js) |
+
+Where to start: the Garden Supplies kiosk is 52.8k triangles in one mesh, seen from almost everywhere; the Post
+Office with its mail heap 46k; Gooward 37 draws; Anomalee 10 draws for 0.5k triangles; the phone booth 8 draws for
+0.5k; about 120 small unnamed objects at the south gate cost 2 draws each. On the CPU, `updateMatrixWorld` takes
+1.5 ms (static subtrees still update every frame), the creature batcher `Qe` 1.3 ms, and state changes
+(`depthMask`, program switches) about 1.8 ms together. Areas to check: merging static parts, static matrices,
+lossless triangle removal (hidden faces), the XR path (foveation, multiview, frame rate, per-frame allocation).
+Every change must be pixel-lossless or under a pixel or two on the headset, measured before and after.
