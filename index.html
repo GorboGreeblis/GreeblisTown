@@ -116,7 +116,12 @@ const t = {
 			uiCloseDist: 25,
 			menuScale: 0.55,
 			lift: 1.5,
-			quality: [0.72, 0.68, 0.64, 0.6, 0.55],
+			// (the VR quality ladder, best first: the render resolution as a share of the headset's own, and the fixed
+			// foveation, 0 off to 1 strongest. It starts at the headset's full resolution with no foveation, so thin and
+			// high-contrast edges everywhere stay steady (at 72% and full foveation they shimmered: the owner saw it on
+			// the church roof), and gives up a step only while the frame rate needs it)
+			quality: [1, 0.9, 0.82, 0.74, 0.66],
+			foveation: [0, 0.25, 0.5, 0.75, 1],
 			maxLayerRebuilds: 30,
 			targetHz: 72,
 			emaAlpha: 0.08,
@@ -5528,7 +5533,7 @@ const xe = (() => {
 									framebufferScaleFactor: e.quality[Ge.level],
 								});
 							try {
-								a.fixedFoveation = 1;
+								a.fixedFoveation = e.foveation[Ge.level];
 							} catch (e) {}
 							Oe.updateRenderState({ baseLayer: a }), Ge.rebuilds++;
 						} catch (e) {
@@ -5759,7 +5764,7 @@ const xe = (() => {
 							re();
 						try {
 							const t = Oe.renderState.baseLayer;
-							t && (t.fixedFoveation = 1);
+							t && (t.fixedFoveation = e.foveation[Ge.level]);
 						} catch (e) {}
 						try {
 							const t = Oe.supportedFrameRates;
