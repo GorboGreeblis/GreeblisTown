@@ -11589,10 +11589,11 @@ const JGP = (() => {
 						[-1, 1].forEach((sd) => (c.save(), c.translate(64 + 13 * sd, 78), c.rotate(0.45 * sd), c.beginPath(), c.ellipse(0, 0, 11, 6, 0, 0, l), c.fill(), c.restore()));
 						(c.strokeStyle = "#2a3a1a"), (c.lineWidth = 2), c.beginPath(), c.moveTo(58, 100), c.lineTo(70, 100), c.stroke();
 					} else if ("goo" === kind) {
-						// GLOOPERNAUGHT: a big green goo creature, a slumped dome running with drips, little arms of goo,
-						// two wide-set eyes, bubbles rising off it, and its name under the picture (the picture drawn a
-						// little smaller, so its drips stop clear of the name)
-						c.save(), c.translate(64, 72), c.scale(0.86, 0.86), c.translate(-64, -80);
+						// GLOOPERNAUGHT: its name right under WANTED (the owner's layout), then the creature: a big green goo
+						// creature, a slumped dome running with drips, little arms of goo, two wide-set eyes, bubbles rising
+						// off it (drawn a little smaller, between the name and REWARD)
+						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 46);
+						c.save(), c.translate(64, 91), c.scale(0.86, 0.86), c.translate(-64, -80);
 						(c.fillStyle = skin), c.beginPath(), c.moveTo(22, 118), c.bezierCurveTo(18, 70, 40, 42, 64, 42), c.bezierCurveTo(88, 42, 110, 70, 106, 118), c.closePath(), c.fill();
 						[[30, 118, 8], [46, 118, 12], [70, 118, 7], [90, 118, 11]].forEach(([px, py, d]) => (c.beginPath(), c.moveTo(px - 5, py - 2), c.quadraticCurveTo(px, py + d, px + 5, py - 2), c.fill(), c.beginPath(), c.arc(px, py + d, 3, 0, l), c.fill()));
 						[-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 38 * sd, 86), c.quadraticCurveTo(64 + 54 * sd, 80, 64 + 52 * sd, 64), c.lineTo(64 + 46 * sd, 66), c.quadraticCurveTo(64 + 46 * sd, 80, 64 + 36 * sd, 96), c.fill()));
@@ -11601,7 +11602,6 @@ const JGP = (() => {
 						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 14 * sd + 2, 77, 4, 0, l), c.fill()));
 						(c.strokeStyle = skin), (c.lineWidth = 2), [[18, 60, 4], [112, 52, 3], [104, 40, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py, r, 0, l), c.stroke()));
 						c.restore();
-						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 137);
 					} else if ("rabbit" === kind) {
 						// a brown rabbit dressed as NAPOLEON BONAPARTE, the bicorne especially: long ears up past the hat's
 						// peak, the dark crescent with its gold trim and tricolour cockade, a navy coat with red collar,
@@ -11679,16 +11679,17 @@ const JGP = (() => {
 		[
 			[-1.9, 2.75, "alien", "#7ad84a", 0.08],
 			[1.9, 2.8, "ufo", "", -0.06],
-			[1.5, 1.9, "alien", "#9ae8c8", 0.1],
+			[1.62, 1.9, "alien", "#9ae8c8", 0.1],
 			[-1.45, 1.85, "goo", "#5ac83a", -0.05],
 			// (owner's requests: a rabbit dressed like NAPOLEON BONAPARTE, the bicorne especially — front and
 			// centre under the star, now that the wall's battens are off — and a drawing of the town's own
 			// visitor, up on the left between the alien and the goo)
 			[0, 1.88, "rabbit", "#8a5a36", 0.04],
-			// (pinned over the goo poster's corner, a few millimetres proud of it so the two never flicker)
-			[-0.86, 2.22, "visitor", "#f4dcc6", -0.07, 0.006],
-			// (and, on the right, a stranger drawn from a photo the owner sent, between the alien and the rabbit)
-			[0.92, 2.2, "stranger", "#f1d7c2", 0.06],
+			// (beside the goo poster's corner, clear of it)
+			[-0.76, 2.22, "visitor", "#f4dcc6", -0.07],
+			// (and, on the right, a stranger drawn from a photo the owner sent, between the alien and the rabbit,
+			// clear of both: no two posters on this wall share any of the same spot, so none can ever flicker)
+			[0.88, 2.2, "stranger", "#f1d7c2", 0.06],
 		].forEach(([px, py, kind, skin, rz, dz = 0]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35 + dz], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35 + dz] })));
 	}
 
