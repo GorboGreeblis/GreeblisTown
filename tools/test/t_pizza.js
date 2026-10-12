@@ -2,7 +2,7 @@
 // name, spawn spot and state, and 20 s later where it is (or 'gone') and the error count.
 // Run: NOSHOT=1 node shot2.js <url> x.png ./t_pizza.js
 module.exports = async (p, out) => {
-  await p.mouse.click(640, 360); await p.waitForTimeout(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   await p.evaluate(() => { t.pizza.callDelayMs = 300; At.position.set(-7, 0, 21); ue.call(); });
   for (let k = 0; k < 8; k++) { await p.waitForTimeout(400); await p.evaluate(() => { try { qt.skipAll(); qt.advance(); } catch (e) {} }); }
   await p.waitForTimeout(3000);

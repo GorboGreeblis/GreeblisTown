@@ -2,7 +2,7 @@
 // (world, metres), look-at height, fov]; writes <out>_<name>.png. AWAY=1 moves the player off first.
 //   VIEWS='[["leg","blinker",[1.2,0.9,-1.2],0.5,35]]' NOSHOT=1 node shot2.js <url> x.png ./t_shots.js
 module.exports = async (p, out) => {
-  await p.mouse.click(640, 360); await p.waitForTimeout(1000); if (process.env.AWAY) { await p.evaluate(() => At.position.set(30, 0, -30)); await p.waitForTimeout(15000); }
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1000); if (process.env.AWAY) { await p.evaluate(() => At.position.set(30, 0, -30)); await p.waitForTimeout(15000); }
   const V = JSON.parse(process.env.VIEWS || '[]');
   const fs = require('fs');
   for (const [name, id, off, ly, fov] of V) {

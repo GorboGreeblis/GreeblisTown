@@ -2,7 +2,7 @@
 // player starts, using the game's own player collision (buildings, solids, creatures, fence), then
 // checks thousands of spawn spots, plus every live pickup, against it.
 module.exports = async (p) => {
-  await p.mouse.click(640, 360); await p.waitForTimeout(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   console.log(await p.evaluate(() => {
     const R = t.player.bodyR, S = 0.25, H = t.parkHalf, X0 = -H, Z0 = -H, NX = Math.ceil((2 * H) / S), NZ = Math.ceil((H + t.parkSouth) / S);
     const lim = t.parkHalf - 0.15 - R, limS = t.parkSouth - 0.15 - R;

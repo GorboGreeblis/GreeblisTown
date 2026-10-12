@@ -6,7 +6,7 @@
 //   NOSHOT=1 node shot2.js <url> plants.png ./t_plants.js
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(640, 360); await W(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
   const shot = (name, cam, look) => p.evaluate(([cam, look]) => {
     const c = new THREE.PerspectiveCamera(50, 4 / 3, 0.1, 300); c.position.set(...cam); c.lookAt(...look);
     O.setSize(800, 600, !1); O.render(C, c); const d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); return d;

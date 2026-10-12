@@ -2,7 +2,7 @@
 // minutes) and prints the first exception or the error count. Also a scene for cov.js.
 // Run: NOSHOT=1 node shot2.js <url> x.png ./vigrun.js
 module.exports = async (p) => {
-  await p.mouse.click(640, 360); await p.waitForTimeout(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   console.log(await p.evaluate(() => {
     const fn = L.find((g) => /pick\(tt\)/.test(String(g)));
     if (!fn) return 'no vignette callback';

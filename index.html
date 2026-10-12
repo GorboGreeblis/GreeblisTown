@@ -5286,10 +5286,12 @@ const xe = (() => {
 				})(a, t) ||
 					a.ov !== F.dialogue ||
 					qt.advance();
-			else if (ae.open);
+			// (in the desktop and mobile test modes a tap or click off the menu or the panel closes it; a tap
+			// anywhere on a dialogue moves it on, page by page, and closes it after the last: no NEXT or CLOSE)
+			else if (ae.open) dk.on && re();
 			else {
 				if ("dialogue" === jt.top) return qt.advance();
-				if ("panel" === jt.top) return;
+				if ("panel" === jt.top) return void (dk.on && _t.close());
 				if ("playing" === jt.top)
 					return a && "world" === a.kind
 						? (function (t, o) {
@@ -5326,6 +5328,8 @@ const xe = (() => {
 			}
 		}
 		const ae = { open: !1, target: null, options: [] };
+		// (for the tests: whether the action menu is open)
+		(window.__jgpMenu = { open: () => ae.open });
 		function re() {
 			(ae.open = !1), (ae.target = null), F.menu && (F.menu.mesh.visible = !1);
 		}
@@ -5966,9 +5970,10 @@ const xe = (() => {
 								(t.solidH = t.h),
 								t.draw((r) => {
 									S(r, 8, 44, 1008, 396, 26, g, E, 8);
+									// (the name tag only with a name: a box with nobody speaking — a pickup, a notice — has none,
+									// never an empty coloured tag)
 									const s = Math.min(640, 60 + 19 * e.length);
-									S(r, 36, 6, s, 64, 14, n, E, 5),
-										A(r, e, 36 + s / 2, 39, V(r, e, s - 30, 42, 28), "#ffffff", "center");
+									e.trim() && (S(r, 36, 6, s, 64, 14, n, E, 5), A(r, e, 36 + s / 2, 39, V(r, e, s - 30, 42, 28), "#ffffff", "center"));
 									const i = k(r, o, 920, 300, 56, 34);
 									(r.fillStyle = "#ffffff"),
 										(r.textAlign = "left"),
@@ -6294,7 +6299,7 @@ const xe = (() => {
 			root.id = "jgpTouch";
 			root.innerHTML =
 				'<div class="pad"><div class="knob"></div></div>' +
-				'<div class="btns"><button data-k="talk">TALK</button><button data-k="give">GIVE</button><button data-k="next">NEXT</button><button data-k="close">CLOSE</button></div>' +
+				'<div class="btns"><button data-k="talk">TALK</button><button data-k="give">GIVE</button></div>' +
 				'<div class="zoom"><button data-k="zin">+</button><button data-k="zout">−</button></div>' +
 				'<div id="jgpDiag" class="min"></div>';
 			document.body.appendChild(root);
@@ -6336,8 +6341,6 @@ const xe = (() => {
 					try {
 						if ("talk" === k) ae.open ? ae.options[0] && ae.options[0].run() : "playing" === jt.top && xe.run("interact");
 						else if ("give" === k) "playing" === jt.top && !ae.open && xe.run("give");
-						else if ("next" === k) qt.isOpen ? qt.advance() : jt.has("panel") && _t.confirm();
-						else if ("close" === k) ae.open ? re() : jt.has("panel") ? _t.close() : qt.isOpen && qt.skipAll();
 						else if ("zin" === k) dk.dist = u(dk.dist - 1.2, 3, 16);
 						else if ("zout" === k) dk.dist = u(dk.dist + 1.2, 3, 16);
 					} catch (err) {
@@ -6695,7 +6698,7 @@ const xe = (() => {
 		} else {
 			($e.textContent = "-Greeblis Town USA-"),
 				(Ke.textContent = MOB
-					? "MOBILE TEST MODE\n(temporary, VR is the real game)\n\nTap to start\n\nleft stick: move · drag: look\ntap a creature or use TALK / GIVE\nNEXT / CLOSE for dialogue"
+					? "MOBILE TEST MODE\n(temporary, VR is the real game)\n\nTap to start\n\nleft stick: move · drag: look\ntap a creature or use TALK / GIVE\ntap the screen to go on or close"
 					: "DESKTOP TEST MODE\n(temporary, VR is the real game)\n\nClick to start\n\nWASD move · drag / Q E orbit · wheel zoom\nclick select · F talk · G give blossom\nSpace advance · 1-9 pick · Esc close"),
 				(mo("gateVer").textContent = "v0.1 prototype"),
 				Ze.classList.add("on"),
@@ -11497,7 +11500,7 @@ const JGP = (() => {
 						c.restore();
 						(c.fillStyle = "#3a2414"), (c.font = "bold 13px Georgia, serif"), c.fillText("GLOOPERNAUGHT", 64, 137);
 					} else if ("rabbit" === kind) {
-						// a rabbit dressed as NAPOLEON BONAPARTE, the bicorne especially: long ears up past the hat's
+						// a brown rabbit dressed as NAPOLEON BONAPARTE, the bicorne especially: long ears up past the hat's
 						// peak, the dark crescent with its gold trim and tricolour cockade, a navy coat with red collar,
 						// gold epaulettes and buttons over a cream breast panel — and one paw tucked into the coat
 						const ink = "#1d2436";
@@ -11510,7 +11513,7 @@ const JGP = (() => {
 						(c.fillStyle = "#f6f2e6"), [-1, 1].forEach((sd) => (c.beginPath(), c.ellipse(64 + 8 * sd, 89, 9, 7, 0, 0, l), c.fill()));
 						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 9 * sd, 78, 3, 0, l), c.fill()));
 						(c.fillStyle = "#e08a9a"), c.beginPath(), c.moveTo(61, 85), c.lineTo(67, 85), c.lineTo(64, 89), c.closePath(), c.fill();
-						(c.strokeStyle = "#b8b4a8"), (c.lineWidth = 1), [-1, 1].forEach((sd) => [0, 1, 2].forEach((k) => (c.beginPath(), c.moveTo(64 + 12 * sd, 86 + k), c.lineTo(64 + 26 * sd, 83 + 3 * k), c.stroke())));
+						(c.strokeStyle = "#efe6d2"), (c.lineWidth = 1), [-1, 1].forEach((sd) => [0, 1, 2].forEach((k) => (c.beginPath(), c.moveTo(64 + 12 * sd, 86 + k), c.lineTo(64 + 26 * sd, 83 + 3 * k), c.stroke())));
 						(c.fillStyle = ink), c.beginPath(), c.moveTo(32, 126), c.quadraticCurveTo(34, 102, 52, 98), c.lineTo(76, 98), c.quadraticCurveTo(94, 102, 96, 126), c.closePath(), c.fill();
 						(c.fillStyle = "#efe6d2"), c.beginPath(), c.moveTo(56, 100), c.lineTo(72, 100), c.lineTo(70, 126), c.lineTo(58, 126), c.closePath(), c.fill();
 						(c.fillStyle = "#b8352a"), c.fillRect(51, 95, 9, 7), c.fillRect(68, 95, 9, 7);
@@ -11518,7 +11521,7 @@ const JGP = (() => {
 						(c.strokeStyle = "#e8b830"), [-1, 1].forEach((sd) => [0, 1, 2, 3].forEach((k) => (c.beginPath(), c.moveTo(64 + (25 + 2 * k) * sd, 104), c.lineTo(64 + (25 + 2 * k) * sd, 110), c.stroke())));
 						[-1, 1].forEach((sd) => [0, 1, 2].forEach((k) => (c.beginPath(), c.arc(64 + 13 * sd, 106 + 7 * k, 1.8, 0, l), c.fill())));
 						(c.fillStyle = skin), c.beginPath(), c.moveTo(78, 103), c.quadraticCurveTo(68, 105, 62, 111), c.lineTo(66, 115), c.quadraticCurveTo(73, 110, 80, 108), c.closePath(), c.fill();
-						(c.strokeStyle = "#b8a888"), c.beginPath(), c.moveTo(62, 111), c.lineTo(68, 116), c.stroke();
+						(c.strokeStyle = "#5a3a22"), c.beginPath(), c.moveTo(62, 111), c.lineTo(68, 116), c.stroke();
 					} else if ("visitor" === kind) {
 						// the town's own visitor, as a drawing (the avatar): copper hair with its low ponytail and
 						// navy band, freckles over the cheeks, a small quiet mouth, and the indigo dress with its
@@ -11558,7 +11561,7 @@ const JGP = (() => {
 			// (owner's requests: a rabbit dressed like NAPOLEON BONAPARTE, the bicorne especially — front and
 			// centre under the star, now that the wall's battens are off — and a drawing of the town's own
 			// visitor, up on the left between the alien and the goo)
-			[0, 1.88, "rabbit", "#e8e4da", 0.04],
+			[0, 1.88, "rabbit", "#8a5a36", 0.04],
 			// (pinned over the goo poster's corner, a few millimetres proud of it so the two never flicker)
 			[-0.86, 2.22, "visitor", "#f4dcc6", -0.07, 0.006],
 		].forEach(([px, py, kind, skin, rz, dz = 0]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35 + dz], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35 + dz] })));

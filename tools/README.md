@@ -57,6 +57,7 @@ row says otherwise, run it with `shot2.js`.
 | `t_visitlive.js` | Visits and vignettes as they happen on their own for `GAME` game seconds: each visit and each vignette with the gap between the two, the pairs played and the rate per hour. `VW=320 VH=240` |
 | `t_shy.js` | ZOLLOD's shyness sub-quest played through: the shy lines, no Blossom, no shop, no visits; OVERCOMING SHYNESS clicked off its Library shelf ("book obtained", gone from the shelf); the freeing Talk; the shop and his visits after; MAMA GORBO's and GEMTOE's fourth Talk lines |
 | `t_errcopy.js` | The test modes' error tools: the desktop error counter and its copy button, or the mobile panel's (run with `mob.js` and `?mobile=1`), and the copied text |
+| `t_taps.js` | The mobile test mode's taps (no NEXT or CLOSE buttons): a tap moves a dialogue on and closes it after the last page, and a tap off the action menu or a panel closes it (run with `mob.js` and `?mobile=1`) |
 | `t_stone.js` | The GARDEN EVENT menu (Summoning Stone, Seeds, Snacks, Yes / No) and its rule: without the Summoning Stone, Yes only says the runes stay dark and nothing starts; with it, it starts |
 | `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
 | `t_misc.js` | King Dino's jazz on the floor (also while he is talked to, given a Blossom, in a battle), pickup respawn, the Blossom menu option |

@@ -405,7 +405,7 @@ Goo that runs down a body and moves like goo, without clipping:
   `exit` and `at(name, lx, lz)` points. The Post Office and the Sheriff's share the north-east corner, Garden
   Supplies has the south-east and the Library the north-west. The Sheriff's back wall carries wanted posters on
   parchment: two little green aliens, their UFO, GLOOPERNAUGHT (a big green goo creature, named under its
-  picture), a rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
+  picture), a brown rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
   with red collar and gold epaulettes, a paw tucked in) front and centre under the star, and a drawing of the
   player's own avatar (copper hair and ponytail band, freckles, the flowered indigo dress), pinned a few
   millimetres proud of the goo poster's corner so the two never flicker. Its back wall is plain: the battens
@@ -531,6 +531,12 @@ Goo that runs down a body and moves like goo, without clipping:
   Dress's suns and tiled the same); navy belt; dark trainers. Taking the Sun Dress off goes back to her own print,
   never to a bare colour. The Sun Dress's gold hem rides on the skirt itself, so it sways with it. Her walking bob
   (`dk.bobY`) goes on just before the camera and render: the player step keeps her body at y 0 for collisions.
+- **The dialogue box** (one canvas, drawn the same in every mode) shows the speaker's name tag only when there is a
+  speaker: a box with no name (a pickup's notice, such as "Overcoming Shyness book obtained") has no tag at all,
+  never an empty coloured one.
+- **Taps in the test modes** (owner's request: no NEXT or CLOSE buttons on mobile): a tap or click anywhere moves
+  a dialogue on, page by page, and closes it after the last; a tap off the action menu or a panel (the shop)
+  closes it. The panels keep their own X and LEAVE. VR is unchanged (the trigger already moves dialogue on).
 - **The test modes' error tools** count every error in one place, `vo()` (the frame loop, a click, a key, a
   button), so the desktop counter and the copied report agree; and the VR placer never runs there (a new dialogue
   or panel used to show in the wrong place for one frame).

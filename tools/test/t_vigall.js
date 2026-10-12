@@ -5,7 +5,7 @@
 // its turn. Reports the pairs side by side, what played, every wrapper back at rest, and the error count.
 //   NOSHOT=1 node shot2.js <url> x.png ./t_vigall.js
 module.exports = async (p) => {
-  await p.mouse.click(640, 360); await p.waitForTimeout(1500);
+  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   console.log(await p.evaluate(() => {
     const fn = L.find((g) => /pick\(tt\)/.test(String(g))), V = JGP.vigs;
     if (!fn || !V) return 'no vignette callback';
