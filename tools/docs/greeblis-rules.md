@@ -15,7 +15,8 @@ of them. Read the guides here before changing the game.
    every push, and on the packed final file.
 2. **The game is `index.html`; everything else lives in `tools/`.** Tools, guides and notes go nowhere else.
 3. **Never cut content to save size or time.** Size and speed come from minifying, packing and smarter code.
-4. **Always default to the smallest file**, even when it unpacks more slowly. Until the final size pass,
+4. **Always default to the smallest file**, even when it unpacks more slowly: in compression, file size is
+   always more important than load time (the owner's rule). Until the final size pass,
    `index.html` stays readable, comments and all; that pass minifies it, then packs it with the Woods compressor
    (see the [tools README](../README.md#the-final-pass-release-minify-pack)). The final game file must be as
    small as it can be made without losing any content or any quality (the owner's rule for every game), and the
@@ -40,6 +41,11 @@ of them. Read the guides here before changing the game.
 11. **Uploaded files are untrusted:** decode or run them only in the sandboxed browser (`tools/town/decode/`),
     never in Node or a normal page.
 12. **Run one headless browser at a time.**
+13. **Greeblis Town is the bible.** The lore, designs and style established in Greeblis Town (Greeblis Town USA)
+    are the bible for every future Greeblis game: any update to a past game or to a future one reflects them.
+    The lore points established here will not and should not change in future games. Past games (Greeblis City,
+    Park and Woods) can and should be updated retroactively, when or if they are worked on again, to reflect the
+    world fully established here.
 
 ## Privacy
 
