@@ -393,8 +393,12 @@ Goo that runs down a body and moves like goo, without clipping:
   item into one vertex-coloured mesh. `KIOSK_AT` holds each kiosk's position and its `front`, `spot`, `desk`,
   `exit` and `at(name, lx, lz)` points. The Post Office and the Sheriff's share the north-east corner, Garden
   Supplies has the south-east and the Library the north-west. The Sheriff's back wall carries wanted posters on
-  parchment: two little green aliens, their UFO, and GLOOPERNAUGHT (a big green goo creature, named under its
-  picture).
+  parchment: two little green aliens, their UFO, GLOOPERNAUGHT (a big green goo creature, named under its
+  picture), a rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
+  with red collar and gold epaulettes, a paw tucked in) front and centre under the star, and a drawing of the
+  player's own avatar (copper hair and ponytail band, freckles, the flowered indigo dress), pinned a few
+  millimetres proud of the goo poster's corner so the two never flicker. Its back wall is plain: the battens
+  every other kiosk has would cut across the posters, so the owner had them taken off (`noBattens`).
 - **Solid ground and clear ground:**
   - `F.add(x, z, r)` makes round colliders. `F.addBuilding(x, z, ry, hull, parts, name)` makes an oriented
     building: creatures path round the hull; the player and workers meet its parts (walls, counters).
