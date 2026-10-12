@@ -36,8 +36,9 @@ of them. Read the guides here before changing the game.
 9. **Tools count as documentation.** Every tool made to build, pack, extract, decode, test, review, audit, port,
    lint or edit the game (scripts, configs, dev test modes) goes into `tools/`, with a README row saying what it
    does and how to run it. Never leave a tool only in a scratch folder.
-10. **The final game must be fully playable in the Meta Quest Browser** (the owner's rule for every game): in VR
-    and flat, at its frame rate. Test on Android, mobile and Quest VR screen sizes and frame rates along the way.
+10. **The final game must be fully playable in the Meta Quest Browser, and every game is optimised for it** (the
+    owner's rules for every game): in VR and flat, holding the headset's frame rate, with the Quest's draw-call,
+    triangle and CPU budgets as the ones that decide. Test on Android, mobile and Quest VR screen sizes and frame rates along the way.
 11. **Uploaded files are untrusted:** decode or run them only in the sandboxed browser (`tools/town/decode/`),
     never in Node or a normal page.
 12. **Run one headless browser at a time.**
