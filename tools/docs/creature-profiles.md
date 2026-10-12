@@ -60,6 +60,23 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   to you. Given a Blossom he drops to all fours, runs a lap of the Library floor, comes back to his place, stands
   and says sorry. At the Event he digs, embarrassed about it.
 
+## The cardinal (the park's one bird)
+
+- **Build:** `cardinal(X, Z, s, ry)` in the world builder, from the owner's two photos of a male northern cardinal:
+  a plump bright red body (`#e23a1e`, the breast fuller and a shade brighter), a pointed crest in two cones swept
+  up and back, a black mask proud of the face round the base of the beak and down the chin, an orange cone of a
+  beak, glossy black eyes with a white glint at the mask's edge, wings folded along the sides a shade darker with
+  darker tips, a long tail of three feather boards held down and back, thin legs with three toes each gripping
+  the bough. About 45 cm from beak to tail, twice a real one, so it reads from the walks.
+- **Where:** on a low bough grown out of the maple by the park's north-east corner (the tree at (31, −33.5)),
+  2.55 m up and rising a little, on the side toward the square, side-on to it; a twig with a few leaves at the
+  bough's end. Its own small group, kept through every scene clear (`jgpKeep`, `keepInFinale`); no collider.
+- **Life:** it looks about (a new way every few seconds, eased, with a little nod), flicks its tail every 2–6 s,
+  and every 6–14 s hops a hand's width along the bough and back with a flutter of its wings; it breathes. It
+  never flies and never leaves its tree (the owner's rule).
+  `t_cardinal.js` renders it from every side and from the walk, a few frames of its life, and checks the
+  tree's crowns clear its top.
+
 ## Mama Gorbo (`p_mamagorbo`)
 
 - **Build:** rebuilt from her artwork as a merge with Gorbo, in a bright, vibrant peach `#ff9f5c` (made brighter
