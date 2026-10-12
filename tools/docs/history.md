@@ -88,7 +88,9 @@ decisions, with the PR that carried them.
   work as a Bitcoin ordinal (#77, a rule for every future game too). Three more rules for every game (#78): the
   final game must be fully playable as a Bitcoin ordinal, on ordinals.com and the other ordinal sites in
   particular; the final file must be as small as it can be without losing any content or quality; and the final
-  game must be fully playable in the Meta Quest Browser.
+  game must be fully playable in the Meta Quest Browser. In compression, file size always matters more than load
+  time (#79). Greeblis Town is the bible: its lore, designs and style rule every future Greeblis game, its lore
+  points never change, and the past games get updated to its world when they are worked on again (#79).
 - **Creatures:**
   - Every model is final (#43); Montgummery's screen mouth is a flat line, with a pixel smile only for a while
     after a Blossom (#40).
