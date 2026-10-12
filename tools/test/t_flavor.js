@@ -1,5 +1,5 @@
 // The owner's extra flavor Talk lines: every creature's Talk outside the Event goes through all its lines in turn,
-// the new last one included (printed in full), and SPARKAKUS's quest line and his flavor line take turns; at the
+// the new last one included (printed in full); SPARKAKUS keeps his quest Talk only (owner's call); at the
 // Garden Event each creature's Talk gives only its Event line, never a flavor line, SPARKAKUS's included (beside
 // him at his garden spot).
 //   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_flavor.js
@@ -16,12 +16,11 @@ module.exports = async (p) => {
     for (let k = 0; k < n; k++) { await p.evaluate((id) => { const e = It.all.find((q) => q.id === id || q.def.__type === id); Kt.gem = !1; te(e); }, id); r.push(await said()); }
     log(id, n, 'lines | last:', JSON.stringify(r[n - 1]), '| all distinct:', new Set(r).size === n);
   }
+  // (SPARKAKUS has no flavor line: his Talk is his quest, as before)
   const sp = [];
-  await p.evaluate(() => { Kt.artifacts = 1; Kt.talkState.keeper = 0; });
-  for (let k = 0; k < 4; k++) { await p.evaluate(() => LIB.talk()); sp.push(await said()); }
-  log('SPARKAKUS, 1 Artifact, four Talks:', JSON.stringify(sp));
-  await p.evaluate(() => { Kt.artifacts = 3; Kt.talkState.keeper = 1; LIB.talk(); });
-  log('SPARKAKUS with all three, on his flavor turn:', JSON.stringify(((await said()) || '').slice(0, 40)));
+  await p.evaluate(() => { Kt.artifacts = 1; });
+  for (let k = 0; k < 2; k++) { await p.evaluate(() => LIB.talk()); sp.push(await said()); }
+  log('SPARKAKUS, 1 Artifact, two Talks:', JSON.stringify(sp));
   // ---- the Event: the station's Talk run on each, twice
   await p.evaluate(() => { Bulb.hold = !1; Kt.rewards.seeds = Kt.rewards.stone = !0; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
   for (let k = 0; k < 40 && !(await p.evaluate(() => me.active)); k++) await W(250);

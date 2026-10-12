@@ -297,10 +297,10 @@ Goo that runs down a body and moves like goo, without clipping:
   free from shyness!"): from then on talking to him opens the shop as before, and his pairs count half in the
   visit order, so he meets the others about twice as often. MAMA GORBO's fourth Talk line hints at the book;
   GEMTOE's fourth Talk line is his own. `test/t_shy.js` plays the whole quest through.
-- Flavor lines (owner's request): every creature but the ANCIENT, NEXTESSA, BACKPACKA and ZOLLOD has one more Talk
-  line, last in its turn, a word about its own lore and design that only adds to the town. They come only outside
-  the Event (Talk there gives the Event line). SPARKAKUS's (`i.flavor`) takes turns with his quest line, after it,
-  and never stands in for his finale. `test/t_flavor.js` talks each one through and checks the Event.
+- Flavor lines (owner's request): every creature but the ANCIENT, NEXTESSA, BACKPACKA, ZOLLOD and SPARKAKUS has
+  one more Talk line, last in its turn, a word about its own lore and design that only adds to the town. They
+  come only outside the Event (Talk there gives the Event line). SPARKAKUS has none (owner's call: his Talk
+  follows his quest). `test/t_flavor.js` talks each one through and checks the Event.
 
 ### Vignettes
 
