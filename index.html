@@ -3727,21 +3727,18 @@ const ee = (function () {
 		return y;
 	})(),
 	oe = {
+		// THE GARDEN EVENT menu, at the Summoning Stone (owner's layout): the three quests with their boxes, and
+		// whether to start. It starts only with the Summoning Stone quest complete (owner's rule): without it Yes
+		// only says the runes stay dark.
 		open() {
 			const t = (t) => (t ? "☑" : "☐"),
 				e = Kt.rewards;
 			// (the runes first light up now, under the hand of a player holding the Summoning Stone)
-			JGP.garden.stoneAwake || (JGP.garden.stoneAwake = performance.now());
+			e.stone && !JGP.garden.stoneAwake && (JGP.garden.stoneAwake = performance.now());
 			_t.open({
 				kind: "campfire",
-				title: "THE SUMMONING STONE",
-				log:
-					"Seeds " +
-					t(e.seeds) +
-					"\nAncient Artifacts " +
-					(e.artifacts ? "☑" : Kt.artifacts + "/3") +
-					(e.seeds ? "" : "\nWithout Seeds nothing will grow.") +
-					"\nThe runes glow under your hand.\nStart the Garden Event?",
+				title: "GARDEN EVENT",
+				log: "Summoning Stone " + t(e.stone) + "\nSeeds " + t(e.seeds) + "\nSnacks " + t(e.snacks) + "\nStart gardening event?",
 				items: [
 					{ label: "Yes", onClick: () => this.yes() },
 					{ label: "No", onClick: () => _t.close() },
@@ -3750,7 +3747,8 @@ const ee = (function () {
 			});
 		},
 		yes() {
-			_t.close(), me.tryStart();
+			// (never without the Summoning Stone)
+			_t.close(), Kt.rewards.stone ? me.tryStart() : qt.open("SUMMONING STONE", "#7a6a5a", "The runes stay dark.|Only the Summoning Stone can wake them and start the gardening event.");
 		},
 	},
 	Eo = {
@@ -16966,7 +16964,9 @@ const JGP = (() => {
 				b = near(x1, z1);
 			if (a < 0 || b < 0) return [[x1, z1]];
 			// A* (8 ways, a binary heap)
-			const g = new Float32Array(NX * NZ).fill(1e9),
+			// (full precision: costs rounded to 32 bits can keep "improving" by a rounding step, and the search
+			// then never ends where the goal can't be reached)
+			const g = new Float64Array(NX * NZ).fill(1e9),
 				from = new Int32Array(NX * NZ).fill(-1),
 				H = [],
 				hv = (k) => Math.hypot(cx(k) - cx(b), cz(k) - cz(b)),
@@ -16995,9 +16995,15 @@ const JGP = (() => {
 					return top;
 				};
 			(g[a] = 0), push(a, hv(a));
-			while (H.length) {
+			// (every loop here is bounded, whatever the grid: a plan can never hang a frame)
+			let guard = 16 * NX * NZ,
+				// (the cell reached nearest the goal: the way goes there when the goal itself can't be reached)
+				near2 = a,
+				nd = hv(a);
+			while (H.length && guard-- > 0) {
 				const [, k] = pop();
 				if (k === b) break;
+				hv(k) < nd && ((nd = hv(k)), (near2 = k));
 				const i = k % NX,
 					j = (k / NX) | 0;
 				for (let di = -1; di <= 1; di++)
@@ -17010,9 +17016,9 @@ const JGP = (() => {
 						c2 < g[n] && ((g[n] = c2), (from[n] = k), push(n, c2 + hv(n)));
 					}
 			}
-			if (b !== a && from[b] < 0) return [[x1, z1]];
-			const cells = [];
-			for (let k = b; k >= 0 && k !== a; k = from[k]) cells.unshift([cx(k), cz(k)]);
+			const end = b === a || from[b] >= 0 ? b : near2,
+				cells = [];
+			for (let k = end, n = 0; k >= 0 && k !== a && n < NX * NZ; k = from[k], n++) cells.unshift([cx(k), cz(k)]);
 			// pulled taut: from each point on, straight on along the cells for as long as the straight line stays on
 			// open cells (checked every 0.3 m on the grid: cheap, so planning a visit never stalls a frame)
 			const clear = (ax, az, bx, bz) => {
@@ -17032,7 +17038,9 @@ const JGP = (() => {
 				for (; j + 1 < cells.length && clear(px, pz, cells[j + 1][0], cells[j + 1][1]); j++);
 				out.push(cells[j]), (px = cells[j][0]), (pz = cells[j][1]), (i = j + 1);
 			}
-			return out.length && out.pop(), out.push([x1, z1]), out;
+			// (the last cell gives way to the goal itself; short of a goal it can't reach, it walks to its nearest
+			// cell and on from there)
+			return end === b && out.length && out.pop(), out.push([x1, z1]), out;
 		},
 		roamWalk(p, x, z, r, others, own, extra) {
 			const d = Math.hypot(x - p.x, z - p.z),
@@ -17186,9 +17194,10 @@ if (
 								r: 3.4,
 								solidR: 1.2,
 								waypointR: JGP.GARDEN_R + 1.2,
-								label: () => (me.active || !Kt.rewards.stone ? null : "Use the Summoning Stone"),
+								// (always there to look at; it starts the Event only once the Summoning Stone is yours)
+								label: () => (me.active ? null : "Use the Summoning Stone"),
 								run: () => {
-									me.active || !Kt.rewards.stone || oe.open();
+									me.active || oe.open();
 								},
 							}),
 							// the one shop in town, at the Garden Supplies counter

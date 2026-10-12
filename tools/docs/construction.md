@@ -266,7 +266,10 @@ Goo that runs down a body and moves like goo, without clipping:
 
 ### The Garden Event
 
-- It starts only from the Summoning Stone, once the Stone is the player's.
+- It starts only from the Summoning Stone, and only once the Summoning Stone quest is complete (owner's rule).
+  "Use the Summoning Stone" opens the GARDEN EVENT menu (owner's layout): Summoning Stone, Seeds and Snacks with
+  their boxes, "Start gardening event?", Yes / No. Without the Stone, Yes only says the runes stay dark (and they
+  do); `oe.yes()` itself refuses. `test/t_stone.js` checks both.
 - **In order** (the Backpacka block): everyone walks into the garden and plants for 20 s once they are all there
   (or 30 s in), while Fortizmo walks slowly to the garden's edge; she raises her horn and plays "Backpacka's Rain
   Strut" (88 BPM, C minor, 24 bars timed to his visit) and everyone steps out to the ring walk and dances;
