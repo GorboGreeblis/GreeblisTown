@@ -21,7 +21,8 @@ module.exports = async (p, out) => {
   await p.evaluate(() => (Kt.blossoms = 2));
   log('Zollod before (a Blossom in hand):', JSON.stringify(await zol()));
   await p.evaluate(() => xe.run('interact')); await W(300);
-  log('  says:', JSON.stringify(await pages()), '| shop open:', await p.evaluate(() => jt.has('panel')));
+  // (the counter's own Shop prompt must not be offered past him while he is shy)
+  log('  says:', JSON.stringify(await pages()), '| shop open:', await p.evaluate(() => jt.has('panel')), '| counter prompt:', await p.evaluate(() => z.list.find((q) => q.id === 'gshop').label()));
   // (a visit asked of him, either way round, never starts)
   await p.evaluate(() => JGP.visitAt(Re.t, 'cutebex', 'm_kingdino'));
   { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 200 && (await p.evaluate(() => Re.t)) - t0 < 6; k++) await W(250); }
@@ -60,7 +61,7 @@ module.exports = async (p, out) => {
   log('  says:', JSON.stringify(await pages()), '| freed', await p.evaluate(() => Kt.shyFree));
   log('Zollod after:', JSON.stringify(await zol()));
   await p.evaluate(() => xe.run('interact')); await W(500);
-  log('  shop open:', await p.evaluate(() => jt.has('panel')));
+  log('  shop open:', await p.evaluate(() => jt.has('panel')), '| counter prompt:', await p.evaluate(() => z.list.find((q) => q.id === 'gshop').label()));
   await p.evaluate(() => { try { _t.close(); } catch (e) {} });
   // ---- the fourth lines
   for (const id of ['p_mamagorbo', 'p_gemtoe']) {
