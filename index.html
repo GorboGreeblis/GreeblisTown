@@ -15729,26 +15729,101 @@ const JGP = (() => {
 			const B = place(cx, cz, ry),
 				w = 12,
 				h = 8.5,
-				wh = "#f6f4ee",
-				roof = "#4a4a52";
+				// (after the owner's photos: grey rough stone walls with pale limestone dressings, a dark slate roof with a
+				// pale diamond lattice and iron cresting, stepped buttresses with pinnacles, a square tower with a
+				// battlemented top, corner pinnacles and clocks, pointed windows and a deep pointed-arch doorway up stone
+				// steps. The stained-glass windows and the inside are untouched.)
+				grey = "#8a8880",
+				dress = "#cdc5b4",
+				dark = "#6e6b65",
+				roof = "#3a3c44",
+				// a pointed (lancet) arch shape: w2 wide, h2 of straight side, n2 more to the point, foot at y = 0
+				arch = (w2, h2, n2) => {
+					const s2 = new THREE.Shape();
+					return s2.moveTo(-w2 / 2, 0), s2.lineTo(-w2 / 2, h2), s2.quadraticCurveTo(-w2 / 2, h2 + 0.78 * n2, 0, h2 + n2), s2.quadraticCurveTo(w2 / 2, h2 + 0.78 * n2, w2 / 2, h2), s2.lineTo(w2 / 2, 0), s2.lineTo(-w2 / 2, 0), s2;
+				},
+				// a dressed-stone frame: the outer arch with the inner cut out, dp deep (extruded toward +z)
+				frame = (wo, ho, no, wi, hi, ni, dp) => {
+					const sh = arch(wo, ho, no);
+					return sh.holes.push(new THREE.Path(arch(wi, hi, ni).getPoints(12))), new THREE.ExtrudeGeometry(sh, { depth: dp, bevelEnabled: !1, curveSegments: 6 });
+				},
+				// a pinnacle, its foot at (px, py, pz): a square shaft, a tall pyramid spire and a gilded ball
+				pinnacle = (px, py, pz, s2 = 1) =>
+					B.box("stone", dress, px, py + 0.55 * s2, pz, 0.7 * s2, 1.1 * s2, 0.7 * s2)
+						.geo("plain", upyr, dress, px, py + 1.1 * s2, pz, 0.78 * s2, 2.2 * s2, 0.78 * s2)
+						.geo("plain", usph(4), "#d8b040", px, py + 3.38 * s2, pz, 0.22 * s2, 0.22 * s2, 0.22 * s2),
+				// a stepped buttress against a wall whose outward way is the yaw a: the lower stage 0.5 m proud, the
+				// upper 0.3, each shouldered with a slope
+				buttress = (px, pz, a, hh = 7.4) => {
+					const Sd = B.sub(px, pz, a);
+					Sd.box("stone", dress, 0, 0.3 * hh, 0.25, 0.8, 0.6 * hh, 0.5).box("stone", dress, 0, 0.8 * hh, 0.15, 0.8, 0.4 * hh, 0.3);
+					// (the shoulders: a sloping slab from each stage's outer edge up to the face above it)
+					Sd.box("stone", dress, 0, 0.6 * hh + 0.17, 0.4, 0.84, 0.08, 0.44, 1.05).box("stone", dress, 0, hh + 0.25, 0.15, 0.84, 0.08, 0.6, 1.03);
+				};
 			// the walls start just inside the stone base (a floor flush with its top flickered against it). The base
 			// is a ring round the walls (it looks the same from outside), so the floor inside is at ground level
-			[-1, 1].forEach((sx) => B.box("stone", "#a89c8a", sx * (w / 2 - 0.05), 0.4, -D / 2, 0.5, 0.8, D + 0.4));
-			[-D - 0.2 + 0.25, -0.05].forEach((bz) => B.box("stone", "#a89c8a", 0, 0.4, bz, w - 0.6, 0.8, 0.5));
+			[-1, 1].forEach((sx) => B.box("stone", dark, sx * (w / 2 - 0.05), 0.4, -D / 2, 0.5, 0.8, D + 0.4));
+			[-D - 0.2 + 0.25, -0.05].forEach((bz) => B.box("stone", dark, 0, 0.4, bz, w - 0.6, 0.8, 0.5));
 			// (the walls' box reaches down below the inside floor: its bottom face shows from inside)
-			B.box("siding", wh, 0, (0.8 + h - 0.01) / 2, -D / 2, w, 0.8 + h + 0.01, D);
+			B.box("stone", grey, 0, (0.8 + h - 0.01) / 2, -D / 2, w, 0.8 + h + 0.01, D);
 			// the roof's slopes meet the tops of the side walls (the 0.6 m eaves hang below them, so no gap
 			// shows between roof and wall), and the gable ends fill up to the same slopes
 			const RH = 5.5,
-				eave = (RH * 0.6) / ((w + 1.2) / 2);
-			B.geo("shingle", GABLE.slopes, roof, 0, 0.8 + h - eave, -D / 2, D + 0.8, RH, w + 1.2, 0, Math.PI / 2, 0).geo("siding", GABLE.ends, wh, 0, 0.8 + h, -D / 2, D, RH - eave, w, 0, Math.PI / 2, 0);
+				eave = (RH * 0.6) / ((w + 1.2) / 2),
+				ye = 0.8 + h - eave,
+				LZ = D + 0.8;
+			B.geo("shingle", GABLE.slopes, roof, 0, ye, -D / 2, LZ, RH, w + 1.2, 0, Math.PI / 2, 0).geo("stone", GABLE.ends, grey, 0, 0.8 + h, -D / 2, D, RH - eave, w, 0, Math.PI / 2, 0);
+			// the pale diamond lattice over the slates (the owner's second photo): thin bars in two families crossing
+			// at right angles on each slope, each cut to the slope's edges, lying 3 cm off the slates (each bar's turn
+			// comes from its own basis: along the bar, across it in the slope, and the slope's normal)
+			{
+				const SL = Math.hypot(6.6, RH),
+					z0 = -D / 2 - LZ / 2,
+					V3 = (x1, y1, z1) => new THREE.Vector3(x1, y1, z1),
+					bar = (sx, u0, v0, u1, v1, fam) => {
+						const uc = (u0 + u1) / 2,
+							vc = (v0 + v1) / 2,
+							ln = Math.hypot(u1 - u0, v1 - v0);
+						if (ln < 0.4) return;
+						const n = V3((sx * RH) / SL, 6.6 / SL, 0),
+							A = V3((sx * 6.6) / SL, -RH / SL, 0).add(V3(0, 0, fam)).normalize(),
+							e = new THREE.Euler().setFromRotationMatrix(new THREE.Matrix4().makeBasis(A.clone().cross(n), A, n));
+						B.box("plain", "#a2a6ae", sx * 6.6 * (1 - uc / SL) + n.x * 0.03, ye + RH * (uc / SL) + n.y * 0.03, z0 + vc, 0.07, ln, 0.025, e.x, e.y, e.z);
+					};
+				[-1, 1].forEach((sx) => {
+					for (let c0 = -LZ; c0 < SL; c0 += 2.6) {
+						const v0 = Math.max(0, -c0),
+							v1 = Math.min(LZ, SL - c0);
+						v1 > v0 && bar(sx, v0 + c0, v0, v1 + c0, v1, 1);
+					}
+					for (let c0 = 0; c0 < LZ + SL; c0 += 2.6) {
+						const v0 = Math.max(0, c0 - SL),
+							v1 = Math.min(LZ, c0);
+						v1 > v0 && bar(sx, c0 - v0, v0, c0 - v1, v1, -1);
+					}
+				});
+				// iron cresting along the ridge
+				B.box("plain", "#2a2c30", 0, ye + RH + 0.05, -D / 2, 0.08, 0.1, LZ);
+				for (let zz = z0 + 0.6; zz < z0 + LZ - 0.3; zz += 1.5) B.geo("plain", ucone(4), "#2a2c30", 0, ye + RH + 0.28, zz, 0.14, 0.36, 0.14);
+			}
+			// buttresses: two along each side between the windows, one at every corner, and pinnacles over the two
+			// front corners; a dressed string course under the eaves
+			[-1, 1].forEach((sx) => {
+				[-D / 2 - 3.75, -D / 2 + 3.75, -0.45, -D + 0.45].forEach((zz) => buttress(sx * (w / 2), zz, (sx * Math.PI) / 2));
+				buttress(sx * 5.55, 0, 0), buttress(sx * 5.55, -D, Math.PI);
+				pinnacle(sx * 5.6, 0.8 + h, -0.4, 0.9);
+				B.box("stone", dress, sx * (w / 2 + 0.05), 8.55, -D / 2, 0.16, 0.22, D);
+			});
+			B.box("stone", dress, 0, 8.55, -D - 0.05, w + 0.2, 0.22, 0.16);
 			const glassC = ["#7a2a3a", "#2a3a7a", "#7a6a2a", "#2a5a4a"];
 			[-1, 1].forEach((sx) => {
 				const Sd = B.sub((sx * w) / 2, -D / 2, (sx * Math.PI) / 2);
-				// (the middle of each side wall holds a great window of THE GARDEN, below)
+				// (the middle of each side wall holds a great window of THE GARDEN, below; the two smaller windows
+				// either side keep their coloured glass and their lit diamonds, now under a pointed stone hood)
 				[-7.5, 7.5].forEach((px, k) => {
-					Sd.win(px, 2.4, 1.3, 3.6, { trim: wh, glass: glassC[k % 4] });
-					Sd.box("lit", glassC[(k + 1) % 4], px, 6.2, -0.02, 0.92, 0.92, 0.08, 0, 0, Math.PI / 4).box("plain", wh, px, 6.2, 0.02, 1.15, 1.15, 0.06, 0, 0, Math.PI / 4);
+					Sd.win(px, 2.4, 1.3, 3.6, { trim: dress, glass: glassC[k % 4] });
+					Sd.box("lit", glassC[(k + 1) % 4], px, 6.2, -0.02, 0.92, 0.92, 0.08, 0, 0, Math.PI / 4).box("plain", dress, px, 6.2, 0.02, 1.15, 1.15, 0.06, 0, 0, Math.PI / 4);
+					Sd.geo("stone", frame(2.0, 0, 1.3, 1.36, 0, 0.95, 0.14), dress, px, 6.02, 0.01);
 				});
 			});
 			// THE INSIDE, a secret play area (the player gets in through the right-hand Garden window, marked only by
@@ -16015,10 +16090,13 @@ const JGP = (() => {
 					});
 				}
 			}
-			// steeple: tower, louvred belfry, cornice, tall spire, gilded finial
-			B.box("siding", wh, 0, 6.8, 1.0, 4.4, 13.6, 4.4);
-			// (door, frame and the line between the leaves each at their own depth, none in the tower's face)
-			B.box("boards", "#8a1e24", 0, 2.3, 3.245, 2.0, 3.0, 0.1).box("plain", wh, 0, 2.4, 3.215, 2.4, 3.3, 0.06).box("plain", "#2a2a2e", 0, 2.3, 3.31, 0.04, 3.0, 0.02);
+			// the tower: square, in the same grey stone, with pale quoins up its four corners (proud of the faces)
+			B.box("stone", grey, 0, 6.8, 1.0, 4.4, 13.6, 4.4);
+			[-1, 1].forEach((sx) => [-1, 1].forEach((sz) => B.box("stone", dress, 2.05 * sx, 8.75, 1.0 + 2.05 * sz, 0.4, 17.5, 0.4)));
+			// the doorway: the red door behind a deep pointed arch in three receding orders of dressed stone (the
+			// door's square top is hidden behind the innermost), the line between its leaves at its own depth
+			B.box("boards", "#8a1e24", 0, 2.3, 3.245, 1.9, 3.0, 0.1).box("plain", "#2a2a2e", 0, 2.3, 3.31, 0.04, 3.0, 0.02);
+			B.geo("stone", frame(3.3, 2.1, 1.0, 2.1, 2.1, 0.75, 0.22), dress, 0, 0.8, 3.3).geo("stone", frame(3.9, 2.1, 1.1, 3.1, 2.1, 0.95, 0.18), dress, 0, 0.8, 3.52).geo("stone", frame(4.3, 2.1, 1.15, 3.7, 2.1, 1.05, 0.14), dark, 0, 0.8, 3.7);
 			// over the door, the tall lancet of THE TRAVELER SAVES THE ORIGINATOR (from the cathedral in
 			// Greeblis City) in a carved stone frame with a sill; the glass glows, brighter at night
 			{
@@ -16083,19 +16161,23 @@ const JGP = (() => {
 					Math.abs(k - nk) > 0.01 && ((nk = k), mats.forEach((m) => (m.emissiveIntensity = 0.32 + 0.75 * k)));
 				});
 			}
-			B.box("siding", wh, 0, 0.82 + 14.4, 1.0, 3.8, 3.16, 3.8);
+			// the belfry stage carries the tower straight up to a dressed cornice, with a string course under it and a
+			// clock on either side face; on each face a pointed, louvred opening in a stone frame
+			B.box("stone", grey, 0, 13.6 + 1.95, 1.0, 4.4, 3.9, 4.4).box("stone", dress, 0, 13.55, 1.0, 4.7, 0.24, 4.7).box("stone", dress, 0, 17.55, 1.0, 4.9, 0.3, 4.9);
+			[-1, 1].forEach((sx) => B.sign("clock", 2.22 * sx, 11.9, 1.0, 1.7, 1.7, (sx * Math.PI) / 2));
 			[0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach((a) => {
-				const px = 1.92 * Math.sin(a),
-					pz = 1.0 + 1.92 * Math.cos(a);
-				const Sd = B.sub(px, pz, a);
-				Sd.box("plain", "#2a2a2e", 0, 15.2, 0, 1.7, 2.3, 0.06);
-				for (let k = 0; k < 5; k++) Sd.box("plain", wh, 0, 14.3 + 0.42 * k, 0.06, 1.6, 0.08, 0.1, 0.5);
+				const Sd = B.sub(2.2 * Math.sin(a), 1.0 + 2.2 * Math.cos(a), a);
+				Sd.geo("stone", frame(1.5, 1.6, 0.65, 1.04, 1.6, 0.45, 0.14), dress, 0, 14.2, 0.0).box("plain", "#2a2a2e", 0, 15.2, -0.03, 1.04, 2.1, 0.06);
+				for (let k = 0; k < 4; k++) Sd.box("plain", "#4a4036", 0, 14.45 + 0.46 * k, 0.05, 0.98, 0.08, 0.12, 0.5);
 			});
-			B.box("plain", wh, 0, 16.62, 1.0, 4.6, 0.44, 4.6).geo("shingle", upyr, roof, 0, 16.84, 1.0, 3.6, 12, 3.6);
-			// a gilded ball, and on it a gold cross
-			B.geo("plain", usph(8), "#d8b040", 0, 29.0, 1.0, 0.45, 0.45, 0.45);
-			B.box("plain", "#e8c040", 0, 30.25, 1.0, 0.2, 2.1, 0.2).box("plain", "#e8c040", 0, 30.75, 1.0, 1.2, 0.2, 0.2);
-			for (let k = 0; k < 3; k++) B.box("concrete", "#c8c2b6", 0, 0.65 - 0.25 * k, 3.6 + 0.45 * k + 0.004 * k, 3.4 + 0.3 * k, 0.26 - 0.004 * k, 0.5);
+			// the battlemented top: merlons along every edge between four corner pinnacles, and the gold cross on a
+			// short dressed base in the middle
+			[-1, 1].forEach((sx) => [-1, 1].forEach((sz) => pinnacle(1.95 * sx, 17.7, 1.0 + 1.95 * sz, 0.85)));
+			[-0.9, 0, 0.9].forEach((u) => [-1, 1].forEach((sd) => B.box("stone", dress, u, 18.0, 1.0 + 2.1 * sd, 0.5, 0.6, 0.3).box("stone", dress, 2.1 * sd, 18.0, 1.0 + u, 0.3, 0.6, 0.5)));
+			B.box("stone", dress, 0, 17.9, 1.0, 0.5, 0.4, 0.5).box("plain", "#e8c040", 0, 18.9, 1.0, 0.14, 1.6, 0.14).box("plain", "#e8c040", 0, 19.35, 1.0, 0.9, 0.14, 0.14);
+			// four stone steps up to the door between low dressed cheek walls
+			for (let k = 0; k < 4; k++) B.box("concrete", "#c8c2b6", 0, 0.68 - 0.17 * k, 3.55 + 0.32 * k, 3.6 + 0.25 * k, 0.2, 0.36);
+			[-1, 1].forEach((sx) => B.box("stone", dress, 2.05 * sx, 0.5, 3.75, 0.35, 1.0, 0.75).box("stone", dress, 2.05 * sx, 0.3, 4.35, 0.35, 0.6, 0.5));
 			return B;
 		};
 		const FIRE_STATION = (cx, cz) => {
@@ -17143,12 +17225,13 @@ const JGP = (() => {
 			[50, 62, -75, -58],
 		];
 		const blocked = (X, Z, m) => FOOT.some(([x0, x1, z0, z1]) => X > x0 - m && X < x1 + m && Z > z0 - m && Z < z1 + m);
-		for (let k = 0, placed = 0; k < 900 && placed < 80 * LOD; k++) {
+		// (the trees are the town's budget: fourteen fewer pay for the church's stonework)
+		for (let k = 0, placed = 0; k < 900 && placed < 66 * LOD; k++) {
 			const X = rr(-100, 100),
 				Z = rr(-100, 100);
 			if ((Math.abs(X) < 56 && Z > -56 && Z < 56 + ZS) || Math.abs(Math.abs(X) - 45) < 8 || Math.abs(Z + 45) < 8 || Math.abs(Z - SZ) < 8 || blocked(X, Z, 4)) continue;
 			// (the farthest, seen only over the rooftops, in their lighter build: one crown each)
-			tree(X, Z, rr(0.9, 1.5), rnd() < 0.15 ? 2 : rnd() < 0.5 ? 1 : 0, Math.max(Math.abs(X), Math.abs(Z - ZS / 2)) > 84 ? 0 : 1), placed++;
+			tree(X, Z, rr(0.9, 1.5), rnd() < 0.15 ? 2 : rnd() < 0.5 ? 1 : 0, Math.max(Math.abs(X), Math.abs(Z - ZS / 2)) > 80 ? 0 : 1), placed++;
 		}
 
 		// ---- the park fence: black iron pickets between brick pillars, all the way round (the church

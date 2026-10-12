@@ -460,7 +460,8 @@ Goo that runs down a body and moves like goo, without clipping:
   All of it goes into the existing bins and atlas (24 town meshes, no new draw calls). Its triangles are paid for:
   the park fence's pickets are four-sided tubes with no end faces (never seen; a third of the fence's triangles),
   the lamp globes and marquee bulbs are coarser spheres, and the far trees use the one-crown build. The town is
-  99.5k triangles, under the 101.6k it was before any of this. `test/t_townview.js` renders the map, the views
+  101.6k triangles (101,595), right under the 101.6k it was before any of this (the trees thinned to 66 and
+  their lighter far build from 80 m out, to pay for the church's stonework). `test/t_townview.js` renders the map, the views
   out of the square, every piece close up and the fence pickets from inside, and prints the counts.
 - **The player** starts at (0, 2), just south of the Summoning Stone, facing the church (`player.spawn` and
   `player.face` in the config `t`; face 0 looks south along +z).
@@ -538,6 +539,23 @@ Goo that runs down a body and moves like goo, without clipping:
     `JGP.groundAt`.
 - **Church:** at the end of the south walk, its back to the fence. The park has no flowerbeds, benches or trash
   cans (removed at the owner's request).
+  - **The outside, after the owner's two photos of a Gothic Revival stone church** (the stained-glass windows
+    and the inside untouched; the hull, the parts and the X stay as they were): grey stone walls (the stone bin
+    tinted `#8a8880`) on a darker base ring, with pale limestone dressings `#cdc5b4` for the quoins up the
+    tower's corners, the string course under the eaves, the window frames and hoods, the buttresses and the
+    pinnacles. Two stepped buttresses along each side between the windows and one at every corner, each stage
+    0.5 and 0.3 m proud with a sloping shoulder slab; pinnacles (a square shaft, a tall pyramid spire and a
+    gilded ball) over the two front corners. The roof is dark slate (`#3a3c44` on the shingle bin) under a pale
+    diamond lattice from the second photo: thin bars in two families crossing at right angles on each slope,
+    each cut to the slope's edges (the bars' Euler angles are worked out from the slope's normal), with iron
+    cresting along the ridge. The two smaller side windows keep their coloured glass and lit diamonds under a
+    pointed stone hood. The tower runs straight up in stone to a dressed cornice and a battlemented top with
+    merlons, four corner pinnacles and the gold cross on a short base in the middle (the spire is gone, as in
+    the photo); a string course at the belfry's foot, a clock on either side face, and on each face a pointed,
+    louvred belfry opening in a stone frame. The doorway is the red door behind a deep pointed arch in three
+    receding orders of dressed stone (the door's square top hidden behind the innermost), up four stone steps
+    between low dressed cheek walls. `test/t_churchout.js` renders it from the walk, the garden, each side and
+    above.
   - **The secret room** (final; built only from the owner's photo of a slug at night): the player gets in
     through the wall under the right-hand Garden window, marked only by a small red X painted there: the
     building's parts leave a 2.6 m gap in that wall, and every mode (desktop, mobile, VR) moves the same body

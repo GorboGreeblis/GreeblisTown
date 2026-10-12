@@ -73,6 +73,7 @@ row says otherwise, run it with `shot2.js`.
 | `plantshots.js` | Renders each plant kind from four views (`JGP.plantShow`) for checking against the owner's photos. `ONLY=1,3` |
 | `t_church.js` | The church's secret room: in through the wall under the right-hand Garden window (the little X) and nowhere else, the head guard, no creature inside, and the Ancient: one Talk (no Blossom), its idle and Talk moves, never leaving its spot |
 | `churchshots.js` | Renders the way in from outside and the secret room (down the nave, the Ancient, the ceiling) |
+| `t_churchout.js` | The church from outside after the owner's photos: from the south walk, the garden, its front, door, right side (the Garden window and the X), its back and the tower top. `VW=320 VH=240` |
 | `t_battlecost.js` | A Dance battle costs a Blossom: no Blossom option (and no battle from a gift) with none in hand; with one, giving it empties the hand and opens the battle |
 | `t_phone.js` | The phone is locked (its connection to the Portal is blocked) until Mushroom has a Blossom, then calls Nextessa for the rest of the session |
 | `t_script.js` | The owner's script, the parts that move: Sparkakus's Artifacts talk and the glue bottle putting the Gem together, his Blossom lap on all fours (clear of every bookcase), and renders of the Library's face-out books and Wish Blossom and the Sheriff's posters. `VW=320 VH=240` |
