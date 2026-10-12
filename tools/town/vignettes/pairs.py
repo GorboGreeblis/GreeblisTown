@@ -1,7 +1,7 @@
 # Checks the creature-pair vignette lines: reads the game's PAIRS table (two creature codes, a gesture style, two
 # lines) and its NAMES out of index.html and prints the number of pairs, any pair of the cast missing or
 # duplicated, the longest line's length and how often each gesture style is used.
-#   python3 pairs.py [path/to/index.html]   (default: the index.html two folders up)
+#   python3 pairs.py [path/to/index.html]   (default: the repo's index.html, three folders up)
 import itertools, collections, json, os, re, sys
 src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "..", "..", "..", "index.html")
 txt = open(src, encoding="utf-8").read()

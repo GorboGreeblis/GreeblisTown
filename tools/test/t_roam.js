@@ -18,7 +18,8 @@ module.exports = async (p) => {
       r.maxStill = Math.max(r.maxStill, r.still), (r.last = [q.x, q.z, Re.t]);
       const floor = /^(p_etcher|p_glyph|w_mont)$/.test(id);
       const ok = floor ? JGP.onDance(q.x, q.z, 0.05) : JGP.roamFree(q.x, q.z, 0.25);
-      ok || r.bad.length > 5 || r.bad.push(q.x.toFixed(1) + ',' + q.z.toFixed(1));
+      // (a roamer away on a visit, in a vignette or otherwise busy is allowed off its ground: it is walking to someone)
+      ok || e.visiting || e.vig || e.busy || r.bad.length > 5 || r.bad.push(q.x.toFixed(1) + ',' + q.z.toFixed(1));
       id === 'gratelet' && (r.far = Math.max(r.far, Math.hypot(q.x - ot.x, q.z - ot.z)));
     }
     return Re.t - __t0;
