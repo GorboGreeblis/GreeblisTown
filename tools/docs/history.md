@@ -7,6 +7,11 @@ Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 
 | PR | Merged | What changed |
 | --- | --- | --- |
+| [#75](https://github.com/GorboGreeblis/GreeblisTown/pull/75) | 2026-10-12 | The church's secret room with a third look at the owner's photo: pale and rust-brown stones, shell flats, low humps, a long rim and crack in the ground, a translucent shadow band and stains (the Ancient and the room's props as they were). |
+| [#74](https://github.com/GorboGreeblis/GreeblisTown/pull/74) | 2026-10-12 | A third Wanted poster on the Sheriff's wall: a drawing of the stranger from the owner's photo, in the other posters' style. |
+| [#73](https://github.com/GorboGreeblis/GreeblisTown/pull/73) | 2026-10-12 | The avatar's default outfit is a yellow sun dress, on her and on her Wanted poster; every Shop outfit checked on her (the owner asked). |
+| [#72](https://github.com/GorboGreeblis/GreeblisTown/pull/72) | 2026-10-12 | The Ancient reworked from the photo: bigger, with more of the photo in it (its tail tip, keel and lip), its eye stalks rooted in its head, and slight resting moves (the owner asked). |
+| [#71](https://github.com/GorboGreeblis/GreeblisTown/pull/71) | 2026-10-12 | The church outside reworked after the owner's photos (grey stone with dressed quoins and buttresses, hooded windows, a three-order door, a belfry with clocks and louvred lancets, merlons, pinnacles and a gold cross), its stained glass and inside untouched; town triangles kept under budget by trimming trees. |
 | [#70](https://github.com/GorboGreeblis/GreeblisTown/pull/70) | 2026-10-12 | Creature visits twice as frequent: one starts every 22 to 32 s (the owner asked). |
 | [#69](https://github.com/GorboGreeblis/GreeblisTown/pull/69) | 2026-10-12 | One cardinal in the park's north-east maple, built from the owner's two photos, on a low bough toward the square: it looks about, flicks its tail, hops along its bough with a flutter, and never flies or leaves its tree. |
 | [#68](https://github.com/GorboGreeblis/GreeblisTown/pull/68) | 2026-10-12 | Sparkakus dances funky at the Event (paws pumping, feet stepping, ears and tail, a spin every eight beats); every readable parcel's label faces straight out of the mail heap; nothing in the town is inspired by the church's Ancient (the ring of standing stones removed). |
@@ -87,6 +92,13 @@ decisions, with the PR that carried them.
   - Mama Gorbo is a bright, vibrant peach, with colourful goo dripping out of her (animated like goo, never
     clipping, no see-through ends), and shoots goo at the player when given a Blossom (#38).
   - Vignettes play with a 15% chance.
+  - Sparkakus has the usual Talk and Blossom menu: a Blossom can be given before his quest is talked about or
+    done; at the Event no creature offers a Blossom option (#67).
+  - One bird only, a cardinal in one park tree, built from the owner's photos; it has small animations and never
+    flies or leaves its tree (#69). Creature visits start every 22 to 32 s, twice as often as before (#70).
+  - The Ancient is built from the owner's photos (bigger when that fits more of the photo), its stalks rooted in
+    its head, with slight resting moves and no dance or planting (#72, #75).
+  - The avatar's default outfit is a yellow sun dress, and her Wanted poster follows her design (#73).
 - **Quests:** the Ancient Artifacts come from Dance battles, one from each Dancer's first win (#42, #44). For a
   while the Summoning Stone was owned from the start and all three quests started complete, only for testing
   (`TEST_QUESTS`, #43); that head start was removed, so a game starts with no quest or item progress.
@@ -96,7 +108,9 @@ decisions, with the PR that carried them.
   session.
 - **The church:** a garden window on each side wall, the right one as in Greeblis City and the left a copy with the
   figure and Mama Gorbo swapped (#37); figures in the windows have no faces; the windows are final (#42). Nothing
-  is placed inside the church, and the park has no flowerbeds (#51).
+  is placed inside the church, and the park has no flowerbeds (#51). The outside is built after the owner's
+  photos of a real church, with the stained glass and the inside kept exactly as they were (#71); the inside is
+  final, and its secret room takes its details only from the owner's photo (#75).
 - **The town:**
   - Every path leads to a kiosk or a building and ends there (#36).
   - The Library is open: only rows of bookcases spaced out, the LIBRARY banner behind them, no walls or raised
@@ -108,3 +122,7 @@ decisions, with the PR that carried them.
   - Every door is wood, with a transom over storefront doors; Mistergummery's uses Montgummery's teal instead of
     yellow, has no roof burger, and its pylon is just the M (#51).
   - The player starts just south of the Summoning Stone, facing the church (#51).
+  - The billboard stands outside the park but close to it, on the corner lot across the road from the park's
+    north-west corner (#66). Nothing outside the park takes anything from the Ancient (#68).
+  - The readable parcels round the mail heap are spaced out, never stacked or made obvious, their labels always
+    facing out (#68).
