@@ -35,7 +35,8 @@ of them. Read the guides here before changing the game.
 
 - **From the owner:** this repo is public. Never put the owner's name, email, workplace, job or location in
   anything pushed: code, game text, docs, tools, comments, commit messages or PR descriptions. Refer to them only
-  as "the owner". The one exception, chosen by the owner, is the readable parcel's label in the mail pile.
+  as "the owner". The one exception, chosen by the owner, is the readable parcels' labels in the mail pile
+  ("To Clipston", "To Ormstown", "To Montreal", "To Cobourg" and "To Bangkok").
 - Keep machine paths, session links and upload file names out of pushed files too.
 
 ## Creatures and art (from the owner)
