@@ -194,20 +194,33 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Mama Gorbo and Gooward** meet every 20 to 40 s (`JGP.meetAt(t)` forces it for tests): they walk to a spot
   between them, turn face to face and throw colourful goo balls to each other, a heart over the one who catches
   each, then go back to wandering.
-- **Visits** (owner's rule): rarely (one every three to six minutes, so the player only now and then sees one)
-  one creature leaves its place to call on another, the visits made least often first, in random order, so
-  everyone visits everyone. It walks over (a worker out by its `via`, Mushroom first
-  stepping down off his desk) along `JGP.route` (a 1.2 m grid of open ground, as
-  `roamFree`, pulled taut into clear straight walks: round the garden, the pond, buildings and scenery), stops
-  beside the host on open ground facing it, the two play their pair's vignette with both lines always shown
-  (`VIGS.play`), and it walks home slowly (`walkK` 0.55; a worker back in by its `via`). King Dino (at his
-  drums), Somlet (asleep at the Post Office) and the church's slug never leave: the others come to them, the slug
-  only rarely (in one round in eight), in and out through the wall where the X is, as the player goes (the visitor
-  meets the church's walls, `inside`, and the church guard lets it be), and their exchange is seen only by a player
-  in the church too. Nextessa and Backpacka neither visit nor are visited. One at a time; the Event, a battle or a meeting calls it off (its home is put back at once); the player close by or
-  talking to the visitor holds it up. While in one, `visiting` / `hosting` keep the roams, Fortizmo's patrol, the
-  meetings, random vignettes and Somlet's lying down out of it. `JGP.visitAt(t, v, h)` forces one for tests,
-  `JGP.visits()` and `JGP.visitPlan(v, h)` report; `test/t_visits.js` checks them.
+- **Visits** (owner's rules): about once a minute (45 to 65 s apart, two at most on their way out or meeting at
+  once) one creature leaves its place to call on another, so that every pair's two vignettes play in about three
+  hours (about 200 meetings). The pair is the one whose vignette is owed most (the least played, in random order),
+  and the meeting plays whichever of its two vignettes, the animation or the lines, has played less: never both.
+  Everyone visits everyone, kiosk workers included; King Dino (at his drums), Somlet (asleep at the Post Office)
+  and the church's slug never leave, the others come to them (two of those three never meet, as intended).
+  Nextessa and Backpacka neither visit nor are visited.
+  - The way: a worker out by its `via` (Mushroom jumps down off the front of his desk first: an 0.8 s arc to the
+    first step of his way out), then `JGP.route` (a 1.2 m grid of open ground, as `roamFree`, pulled taut into
+    clear straight walks round the garden, the pond, buildings and scenery; a start off open ground, as at a door,
+    first steps to its nearest open cell, and the last cell gives way to the goal only when the line there is
+    clear; full-precision costs and bounded loops, so a plan never hangs a frame).
+  - The meeting: the visitor stops beside the host, facing it, and they play only side by side (`VIGS.beside`).
+    A host who works in a kiosk or behind the bar (Zollod, Mushroom, Fortizmo) comes out by its way out to meet it
+    and goes back in after (Mushroom jumping back up onto his desk: the last 1.3 m of his walk home is an arc clear
+    of its front edge). Sparkakus stops where he is in his open Library and the visitor comes in across its open
+    front to his side, clear of the bookcases (it meets the bookcases rather than the Library's whole ground,
+    `inside` "shop"). The slug is called on only in one round in eight, in and out through the wall where the X
+    is, as the player goes (`inside` "church"; the church guard lets it be), and that exchange is seen only by a
+    player in the church too.
+  - Home again slowly (`walkK` 0.55; a worker back in by its `via`). The Event, a battle or a meeting calls a visit
+    off (homes put back at once); the player close by or talking to the visitor holds it up. While in one,
+    `visiting` / `hosting` keep the roams, Fortizmo's patrol, the meetings, other vignettes and Somlet's lying down
+    out of it. `JGP.visitAt(t, v, h)` forces one for tests, `JGP.visits()` and `JGP.visitPlan(v, h)` report;
+    `test/t_visits.js` checks the plans and plays visits through, watching that nobody passes through anything,
+    and `test/t_visitlive.js` watches them happen on their own. Zollod has no `id`, only `def.__type` "cutebex":
+    the visits find him by that.
 - **Sparkakus** browses his Library when nobody needs him, keeping 0.8 m clear of every bookcase and the banner's
   posts. Given a Blossom (his stump station's own "Give a blossom", `st.romp`), he drops to all fours, runs a lap
   of an ellipse over the Library floor (clear of every bookcase), comes back to his place, gets up and apologises.
@@ -241,8 +254,8 @@ Goo that runs down a body and moves like goo, without clipping:
   going horizontal beats Rock out!. Each round won teaches one of the Dancer's steps; learn them all to win. The
   panel shows only the Dancer's move; the bar shows how it is going. The winner does a victory dance.
 - **The chain:** each Dancer's first win gives one Ancient Artifact (a third of one teal brilliant-cut diamond;
-  later wins get a bow). Sparkakus's talk follows the count (none, one or two, all three). With all three he walks
-  out to the front and the bulb comes on; after his first lines `ARTS.assemble` puts the diamond back together in
+  later wins get a bow). Sparkakus's talk follows the count (none, one or two, all three). With all three he stays
+  where he stands in his open Library and the bulb comes on; after his first lines `ARTS.assemble` puts the diamond back together in
   the air between him and the player: a school-glue bottle appears over the three pieces, turns upside down, glue
   drips onto them, and each piece moves to its `userData.gemOffset` with a flash (about 5 s). Then his speech, and
   the Gem flies to the player ("Ancient Gem collected!"). Gemtoe trades the Summoning Stone for it (with a happy
@@ -250,19 +263,22 @@ Goo that runs down a body and moves like goo, without clipping:
 
 ### Vignettes
 
-- Every creature has a vignette with every other, one each: the fourteen in `NAMES` (two-letter codes) make 91
-  pairs in `PAIRS`, and the church's slug has one with each of them in `SLUG_PAIRS`. Nextessa and Backpacka
-  never have vignettes (owner's rule). Each is a short animated exchange: a choreography style, both creatures'
-  signatures from `SIG` (item, colour, gesture, emote) and a seeded twist, and its two lines always show. The
+- Every creature has two vignettes with every other, an animation and an exchange of lines: the fourteen in
+  `NAMES` (two-letter codes) make 91 pairs in `PAIRS`, and the church's slug has one with each of them in
+  `SLUG_PAIRS`. Nextessa and Backpacka never have vignettes (owner's rule). The animation is a short animated
+  exchange: a choreography style, both creatures' signatures from `SIG` (item, colour, gesture, emote) and a
+  seeded twist; the lines are the pair's two lines, the two turned to each other. Never both at once
+  (`plays[AB]` and `plays[ABt]` count them). The
   lines follow the owner's script: Gooward only says Gomp, Somlet only snores, Glyph asks "don't you think?",
   Mont speaks of himself as Mont. `town/vignettes/pairs.py` checks every pair is there once.
 - Who can take part (`lineUp`): the cast standing at their own spots, not busy and not in a visit; Sparkakus in
   his Library through his stand-in `st.ent` (a marker kept at his world position whose wrapper wraps his model; he
   stops browsing for it). The slug's play only on a visit to it (`JGP.slug.ent`, its stand-in: it talks instead
   of moving), and are seen only by a player in the church too.
-- One plays every half minute or so (owner's rule: an hour's play shows every pair's animation and words): the
-  least-played pair first, in random order, any two in town (up to 90 m apart). Talking to either, or the Event,
-  stops it. King Dino and the slug never turn or spin in one.
+- They play only with the two side by side (owner's rule): two who already stand together (as the Dancers on the
+  floor) play there when theirs is owed (no more played than the least-played pair), every other pair meets by a
+  visit (see the visits), so every pair's two come round in about three hours. Talking to either, or the Event,
+  stops one. King Dino and the slug never turn or spin in one.
 
 ### The Garden Event
 
@@ -385,8 +401,8 @@ Goo that runs down a body and moves like goo, without clipping:
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
     `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
     Artifacts);
-  - one thing stands face-out in a gap on each of seven shelves (`LIB_LAYOUT.features`): four cloth hardbacks with
-    their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby) and a
+  - one thing stands face-out in a gap on each of eight shelves (`LIB_LAYOUT.features`): five cloth hardbacks with
+    their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby, OVERCOMING SHYNESS) and a
     Wish Blossom from Greeblis Park in a little pot (its pickups' model at 22%, crystal turning, halo bobbing),
     an Electric Blossom from Greeblis City (its pickups' model at 30%, head turning, halo bobbing) and an Acorn
     from Greeblis Woods (its pickups' model at 1.1x, standing tipped on the shelf);
@@ -406,7 +422,7 @@ Goo that runs down a body and moves like goo, without clipping:
     least at the ceiling), with pebbles, big flat dark stones, shell flakes, cracks and dry grass on the floor.
     `test/t_church.js` checks the way in, the walls and the head guard; `test/churchshots.js` renders it.
   - **The slug** lies across the middle of the floor and never moves from there. It has a Talk and, with one in
-    hand, a Blossom (it takes one and answers "..."); it never visits nor is visited, and its vignettes are off, and its own moves: idle (stalks swaying and pulling in, breathing, looking
+    hand, a Blossom (it takes one and answers "..."); it never leaves its place (others rarely come to it, see the visits), and its own moves: idle (stalks swaying and pulling in, breathing, looking
     round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
     `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
   - **No Blossom or Flint ever spawns inside:** every pickup spot comes from `go()`, which turns down anything within

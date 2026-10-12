@@ -48,8 +48,8 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
 - **Animation:** his tail sways, he breathes and his arms move slowly; tail and arms swing as he walks; he talks
   while his dialogue is open, and his head turns to greet the player.
 - **Role:** stands on the Library's rug at local (0, 0, −0.45) and browses the open floor when nobody needs him.
-  He gives the Ancient Artifacts quest (his talk follows how many you have); with all three he walks out to the
-  front, the light bulb comes on and the town dims, he glues the three pieces back together with a bottle of
+  He gives the Ancient Artifacts quest (his talk follows how many you have); with all three he stays where he
+  stands, the light bulb comes on and the town dims, he glues the three pieces back together with a bottle of
   school glue in the air before him, gives his speech about the Eye of the Great Sphinx, and the Ancient Gem flies
   to you. Given a Blossom he drops to all fours, runs a lap of the Library floor, comes back to his place, stands
   and says sorry. At the Event he digs, embarrassed about it.
