@@ -68,7 +68,7 @@ const t = {
 		far: window.__jgpMobile ? 260 : 310,
 		// (the player starts at the heart of the garden, just south of the Summoning Stone, facing the church:
 		// face is the heading, 0 looking south along +z)
-		player: { speed: 4.5, bodyR: 0.6, spawn: [0, 2], face: 0, hair: "#c2551f", dress: "#4a6fa8", skin: "#f4dcc6" },
+		player: { speed: 4.5, bodyR: 0.6, spawn: [0, 2], face: 0, hair: "#c2551f", dress: "#f3c43a", skin: "#f4dcc6" },
 		bodies: { solidK: 0.85, aisle: 2.6 },
 		pizza: { callDelayMs: 1800, spawnR: 75, speed: 3.2, stopDist: 2.3, exitSpeed: 3.6, giveUpS: 100 },
 		camera: { fov: 55 },
@@ -11622,8 +11622,8 @@ const JGP = (() => {
 						(c.strokeStyle = "#5a3a22"), c.beginPath(), c.moveTo(62, 111), c.lineTo(68, 116), c.stroke();
 					} else if ("visitor" === kind) {
 						// the town's own visitor, as a drawing (the avatar): copper hair with its low ponytail and
-						// navy band, freckles over the cheeks, a small quiet mouth, and the indigo dress with its
-						// little white flower print
+						// navy band, freckles over the cheeks, a small quiet mouth, and her yellow sun dress with its
+						// little white flower print (the owner's default outfit)
 						const hair = "#b84e1e";
 						(c.fillStyle = hair), c.beginPath(), c.ellipse(89, 97, 7, 19, -0.16, 0, l), c.fill();
 						c.beginPath(), c.ellipse(64, 62, 24, 21, 0, Math.PI, 0), c.fill();
@@ -11635,7 +11635,7 @@ const JGP = (() => {
 						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 8 * sd, 74, 2.6, 0, l), c.fill()));
 						(c.strokeStyle = "#8a5a3a"), (c.lineWidth = 1.5), c.beginPath(), c.arc(64, 81, 4.5, 0.25 * Math.PI, 0.75 * Math.PI), c.stroke();
 						(c.fillStyle = "#dca47f"), [[54, 79], [58, 81], [62, 78], [66, 81], [70, 78], [74, 80], [50, 77]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 1.1, 0, l), c.fill()));
-						(c.fillStyle = "#4a6fa8"), c.beginPath(), c.moveTo(33, 126), c.quadraticCurveTo(35, 102, 52, 97), c.lineTo(76, 97), c.quadraticCurveTo(93, 102, 95, 126), c.closePath(), c.fill();
+						(c.fillStyle = "#f3c43a"), c.beginPath(), c.moveTo(33, 126), c.quadraticCurveTo(35, 102, 52, 97), c.lineTo(76, 97), c.quadraticCurveTo(93, 102, 95, 126), c.closePath(), c.fill();
 						(c.fillStyle = "#f6f4ee");
 						[[48, 108], [62, 104], [78, 110], [42, 120], [57, 118], [72, 121], [87, 117]].forEach(([px, py]) => { for (let k = 0; k < 6; k++) c.beginPath(), c.arc(px + 2.4 * Math.cos((k / 6) * l), py + 2.4 * Math.sin((k / 6) * l), 1.1, 0, l), c.fill(); c.beginPath(), c.arc(px, py, 1, 0, l), c.fill(); });
 						[[52, 115], [68, 113], [83, 124], [44, 103], [88, 104], [60, 124]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 0.9, 0, l), c.fill()));

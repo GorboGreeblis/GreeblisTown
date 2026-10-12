@@ -473,7 +473,7 @@ Goo that runs down a body and moves like goo, without clipping:
   parchment: two little green aliens, their UFO, GLOOPERNAUGHT (a big green goo creature, named under its
   picture), a brown rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
   with red collar and gold epaulettes, a paw tucked in) front and centre under the star, and a drawing of the
-  player's own avatar (copper hair and ponytail band, freckles, the flowered indigo dress), pinned a few
+  player's own avatar (copper hair and ponytail band, freckles, the flowered yellow sun dress), pinned a few
   millimetres proud of the goo poster's corner so the two never flicker. Its back wall is plain: the battens
   every other kiosk has would cut across the posters, so the owner had them taken off (`noBattens`).
   Garden Supplies' wheelbarrow of flowers out front stands on its wheel: two fork rails run from under the tray's
@@ -629,7 +629,7 @@ Goo that runs down a body and moves like goo, without clipping:
 - **The avatar's look** (from the owner's reference, always cartoony, never a likeness): copper hair gathered low
   at the nape — the two strand groups hang together as one low ponytail, keeping the old pigtails' swing — with a
   navy tie and a small navy bow riding it; pale warm skin with seven flat freckle dots over her nose and cheeks;
-  an indigo dress wearing its own print of small white batik flowers (`userData.baseTex`, drawn like the Sun
+  a yellow sun dress (`#f3c43a`, the owner's default outfit) wearing its own print of small white batik flowers (`userData.baseTex`, drawn like the Sun
   Dress's suns and tiled the same); navy belt; dark trainers. Taking the Sun Dress off goes back to her own print,
   never to a bare colour. The Sun Dress's gold hem rides on the skirt itself, so it sways with it. Her walking bob
   (`dk.bobY`) goes on just before the camera and render: the player step keeps her body at y 0 for collisions.
