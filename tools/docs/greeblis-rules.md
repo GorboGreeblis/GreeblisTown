@@ -74,6 +74,10 @@ of them. Read the guides here before changing the game.
   asked, and ask before guessing what an ambiguous shape is (Mama Gorbo's pink-and-purple octagons are her eyes).
 - No cartoony smiles. Faces are expressive but understated.
 - Nothing clips (into the body, the ground or another part) from any angle, including from inside buildings in VR.
+- **No flickering and no z-fighting, ever** (the owner's rule for these VR games): no two faces share a plane where
+  both can show (keep a clear gap, a centimetre or more, or move them apart so they don't overlap at all), no
+  thin, high-contrast lines that shimmer as the head moves, and VR renders at the headset's full resolution unless
+  the frame rate needs a step down. Check with `tools/test/t_zfight.js` and close renders before every push.
 - Every creature has at least three animations: talking, planting and dancing (the church's Ancient excepted: it
   never dances or plants). Planting and dancing are creature
   animations, never menu options: a creature's menu holds only Talk, plus "Give a blossom" while the player has

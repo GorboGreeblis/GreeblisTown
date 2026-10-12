@@ -88,7 +88,7 @@ decisions, with the PR that carried them.
   work as a Bitcoin ordinal (#77, a rule for every future game too). Three more rules for every game (#78): the
   final game must be fully playable as a Bitcoin ordinal, on ordinals.com and the other ordinal sites in
   particular; the final file must be as small as it can be without losing any content or quality; and the final
-  game must be fully playable in the Meta Quest Browser, and every game is optimised for it (#82). Performance is always optimised, never at the expense of quality (#83). In compression, file size always matters more than load
+  game must be fully playable in the Meta Quest Browser, and every game is optimised for it (#82). Performance is always optimised, never at the expense of quality (#83). In these VR games nothing may ever flicker or z-fight (#85). In compression, file size always matters more than load
   time (#79). Greeblis Town is the bible: its lore, designs and style rule every future Greeblis game, its lore
   points never change, and the past games get updated to its world when they are worked on again (#79).
 - **Creatures:**
