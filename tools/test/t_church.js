@@ -51,12 +51,12 @@ module.exports = async (p) => {
   const idle = [await pose()];
   await p.waitForTimeout(1500), idle.push(await pose());
   await p.evaluate(() => xe.run('interact'));
-  await p.waitForTimeout(2500);
-  const talk = await p.evaluate(() => ({ open: qt.isOpen, name: document.getElementById('dlgName').textContent, hy: +JGP.slug.head.rotation.y.toFixed(2), hx: +JGP.slug.head.rotation.x.toFixed(2), pos: JGP.slug.body.position.toArray().map((v) => +v.toFixed(3)) }));
+  // (wait 2 s of game time, not wall time: headless game time runs about ten times slower)
+  { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 600 && (await p.evaluate(() => Re.t)) - t0 < 2; k++) await p.waitForTimeout(100); }
+  const talk = await p.evaluate(() => ({ mode: JGP.slug.mode(), open: qt.isOpen, name: document.getElementById('dlgName').textContent, hy: +JGP.slug.head.rotation.y.toFixed(2), hx: +JGP.slug.head.rotation.x.toFixed(2), pos: JGP.slug.body.position.toArray().map((v) => +v.toFixed(3)) }));
   log('slug: target', sl.target, '| options', JSON.stringify(sl.actions), sl.target === 'slug' && sl.actions.length === 1 && sl.actions[0] === 'Talk' ? 'ok' : 'FAIL');
   log('slug idle pose', idle.join(' -> '), idle[0] !== idle[1] ? 'animates' : 'FAIL: still');
-  log('slug mode while talking', await p.evaluate(() => JGP.slug.mode()));
-  log('slug talking: open', talk.open, talk.name, '| head yaw (stays at -0.45)', talk.hy, 'lift', talk.hx, '| body at', JSON.stringify(talk.pos), talk.open && talk.hx < -0.1 && Math.abs(talk.hy + 0.45) < 0.05 && talk.pos.every((v) => v === 0) ? 'ok' : 'FAIL');
+  log('slug talking: mode', talk.mode, '| open', talk.open, talk.name, '| head yaw (stays at -0.45)', talk.hy, 'lift', talk.hx, '| body at', JSON.stringify(talk.pos), talk.mode === 'talk' && talk.open && talk.hx < -0.1 && Math.abs(talk.hy + 0.45) < 0.05 && talk.pos.every((v) => v === 0) ? 'ok' : 'FAIL');
   // no Blossom or Flint spawns in the secret room: sample the spawner and check every pickup now in town
   const pk = await p.evaluate(() => {
     const B = F.buildings.find((b) => b.name === 'church'), inside = (q) => q && F.inHull(B, q.x, q.z);
