@@ -20,13 +20,22 @@ module.exports = async (p, out) => {
   await shot('sw', [-12, 1.6, 22], [-40, 8, 110]);
   await shot('e', [12, 1.6, 5], [100, 9, 5]);
   await shot('w', [-12, 1.6, 12], [-100, 8, 18]);
-  // close-ups of the lore pieces (<out>_c*.png: the video store, the water tower, the Consortium's office and dish,
-  // the goo burger, ZOLLOD's nursery, GEMTOE's crystals, the Ancients' ring), each from 14 m in front of it toward the square
-  const close = [[56, 8, -60, 18], [84, 24, -4, 30], [-26, 8, -72, 16], [88, 14, -38, 14], [40, 12, 96, 30], [-42, 3, 94, 10], [-97, 2, -50, 14]];
+  // close-ups (<out>_c*.png): Main Street east and west store by store, the north side, the south street's homes,
+  // the lore pieces out past them, and the park fence's pickets from inside (their open tops must never show)
+  const close = [
+    [52.6, 6, -11, 15], [52.6, 5, -1, 13], [52.6, 6, 9, 15], [52.6, 6, 20, 15], [52.6, 6, 30.5, 15], [52.6, 6, 41.5, 15],
+    [-52.6, 6, 40.2, 15], [-52.6, 6, 26.6, 15], [-52.6, 5, 14.7, 13], [-52.6, 6, 2.8, 15], [-52.6, 4, -9.1, 13], [-52.6, 6, -20.4, 15], [-52.6, 5, -31.8, 13],
+    [0, 9, -62, 34], [29, 4, -58, 18], [-70, 7, -55, 20], [72, 4, -62, 16], [56, 7, -60, 18], [-34, 2, -86, 16, -34, -104], [-26, 8, -72, 16],
+    [-64, 5, 70, 16], [-32, 5, 70, 16], [-16, 4, 70, 16], [0, 4, 70, 16], [16, 4, 70, 16], [32, 5, 70, 16], [66, 5, 70, 16], [84, 5, 70, 16],
+    [-55, 9, -55, 26], [84, 24, -4, 30], [88, 14, -38, 14], [40, 12, 96, 30], [-33, 3, 96, 10], [-97, 2, -50, 14],
+  ];
   for (let k = 0; k < close.length; k++) {
-    const [x, y, z, d] = close[k], a = Math.atan2(-x, -z + 8);
-    await shot('c' + k, [x + d * Math.sin(a), Math.max(1.6, y - 2), z + d * Math.cos(a)], [x, y, z]);
+    const [x, y, z, d, fx, fz] = close[k], a = Math.atan2(-x, -z + 8);
+    await shot('c' + k, fx === undefined ? [x + d * Math.sin(a), Math.max(1.6, y - 2), z + d * Math.cos(a)] : [fx, Math.max(1.6, y + 2), fz], [x, y, z]);
   }
+  // the fence from inside the park: at a stroll's distance and right up at it, looking down at the pickets
+  await shot('fence1', [0, 1.6, -30], [0, 1.0, -37.6]);
+  await shot('fence2', [0.3, 1.6, -36.2], [0.3, 0.9, -37.6]);
   // the Library's rug from above, SPARKAKUS hidden (<out>_rug.png)
   const rq = await p.evaluate(() => { const B0 = F.buildings.find((b) => b.name === 'shop'); return [B0.x, B0.z, B0.ry || 0]; });
   await p.evaluate(() => (st.group.visible = !1));
