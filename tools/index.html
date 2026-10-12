@@ -15916,9 +15916,12 @@ const JGP = (() => {
 				ye = 0.8 + h - eave,
 				LZ = D + 0.8;
 			B.geo("shingle", GABLE.slopes, roof, 0, ye, -D / 2, LZ, RH, w + 1.2, 0, Math.PI / 2, 0).geo("stone", GABLE.ends, grey, 0, 0.8 + h, -D / 2, D, RH - eave, w, 0, Math.PI / 2, 0);
-			// the pale diamond lattice over the slates (the owner's second photo): thin bars in two families crossing
-			// at right angles on each slope, each cut to the slope's edges, lying 3 cm off the slates (each bar's turn
-			// comes from its own basis: along the bar, across it in the slope, and the slope's normal)
+			// the pale diamond lattice over the slates (the owner's second photo): bars in two families crossing at
+			// right angles on each slope, each cut to the slope's edges, lying off the slates (each bar's turn comes
+			// from its own basis: along the bar, across it in the slope, and the slope's normal). For VR (the owner
+			// found the roof's sides hard to look at): the bars are a softer grey and a little wider, so they no
+			// longer shimmer as thin bright lines at a slant, and the two families lie at different heights (3 and
+			// 4.5 cm off), so their crossings never flicker
 			{
 				const SL = Math.hypot(6.6, RH),
 					z0 = -D / 2 - LZ / 2,
@@ -15931,7 +15934,8 @@ const JGP = (() => {
 						const n = V3((sx * RH) / SL, 6.6 / SL, 0),
 							A = V3((sx * 6.6) / SL, -RH / SL, 0).add(V3(0, 0, fam)).normalize(),
 							e = new THREE.Euler().setFromRotationMatrix(new THREE.Matrix4().makeBasis(A.clone().cross(n), A, n));
-						B.box("plain", "#a2a6ae", sx * 6.6 * (1 - uc / SL) + n.x * 0.03, ye + RH * (uc / SL) + n.y * 0.03, z0 + vc, 0.07, ln, 0.025, e.x, e.y, e.z);
+						const off = fam > 0 ? 0.03 : 0.045;
+						B.box("plain", "#868a94", sx * 6.6 * (1 - uc / SL) + n.x * off, ye + RH * (uc / SL) + n.y * off, z0 + vc, 0.11, ln, 0.02, e.x, e.y, e.z);
 					};
 				[-1, 1].forEach((sx) => {
 					for (let c0 = -LZ; c0 < SL; c0 += 2.6) {
