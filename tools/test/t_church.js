@@ -1,6 +1,6 @@
 // The church's secret room: the player walks in through the right-hand Garden window (and only there), no
 // creature ever stays inside, the VR head guard leaves the inside clear but darkens inside a wall, and the
-// slug offers Talk and, with Blossoms in hand, a Blossom (taking one, answered with "..."), lifts its head while talking (not turning to the player),
+// the ANCIENT offers Talk and, with Blossoms in hand, a Blossom (taking one, answered with "..."), lifts its head while talking (not turning to the player),
 // keeps breathing and waving its stalks, and never leaves its spot; and no Blossom or Flint ever spawns in the room
 // (2,000 spawn spots sampled for each, plus every one in the town now).
 // Walking uses the game's own player collision (F.solid on the player's position), step by step, as every
@@ -40,7 +40,7 @@ module.exports = async (p) => {
   log('walking at the wall elsewhere stops at x', r.throughWallFront, '/', r.throughWallBack, r.throughWallFront > 6 && r.throughWallBack > 6 ? 'blocked' : 'FAIL: got through');
   log('head guard distance: in the nave', r.headInNave, '| in the window gap', r.headInGap, '| in a wall', r.headInWall, r.headInNave > 0.2 && r.headInGap > 0.2 && r.headInWall < 0 ? 'ok' : 'FAIL');
   log('a creature dropped inside: inside before', r.creature.before, '| inside after', r.creature.after);
-  // the slug: stand beside it inside, Blossoms in hand
+  // the ANCIENT: stand beside it inside, Blossoms in hand
   const sl = await p.evaluate(() => {
     const B = F.buildings.find((b) => b.name === 'church'), [x, z2] = F.world(B, 1.8, -10.5);
     Kt.blossoms = 3, At.position.set(x, 0, z2), xe.scan();
@@ -54,15 +54,15 @@ module.exports = async (p) => {
   // (wait 2 s of game time, not wall time: headless game time runs about ten times slower)
   { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 600 && (await p.evaluate(() => Re.t)) - t0 < 2; k++) await p.waitForTimeout(100); }
   const talk = await p.evaluate(() => ({ mode: JGP.slug.mode(), open: qt.isOpen, name: document.getElementById('dlgName').textContent, hy: +JGP.slug.head.rotation.y.toFixed(2), hx: +JGP.slug.head.rotation.x.toFixed(2), pos: JGP.slug.body.position.toArray().map((v) => +v.toFixed(3)) }));
-  log('slug: target', sl.target, '| options', JSON.stringify(sl.actions), sl.target === 'slug' && sl.actions.length === 2 && sl.actions[0] === 'Talk' && /blossom/i.test(sl.actions[1]) ? 'ok' : 'FAIL');
+  log('the Ancient: target', sl.target, '| options', JSON.stringify(sl.actions), sl.target === 'slug' && sl.actions.length === 2 && sl.actions[0] === 'Talk' && /blossom/i.test(sl.actions[1]) ? 'ok' : 'FAIL');
   // its Blossom: one taken from the hand, and its answer
   const gift = await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} const b0 = Kt.blossoms; xe.scan(); xe.run('give'); return { took: b0 - Kt.blossoms, open: qt.isOpen }; });
   // (its words once typed out)
   await p.waitForTimeout(1500), (gift.says = await p.evaluate(() => (qt.isOpen ? document.getElementById('dlgText').textContent : null)));
   await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });
-  log('slug Blossom: took', gift.took, '| says', JSON.stringify(gift.says), gift.took === 1 && gift.says === '...' ? 'ok' : 'FAIL');
-  log('slug idle pose', idle.join(' -> '), idle[0] !== idle[1] ? 'animates' : 'FAIL: still');
-  log('slug talking: mode', talk.mode, '| open', talk.open, talk.name, '| head yaw (stays at -0.45)', talk.hy, 'lift', talk.hx, '| body at', JSON.stringify(talk.pos), talk.mode === 'talk' && talk.open && talk.hx < -0.1 && Math.abs(talk.hy + 0.45) < 0.05 && talk.pos.every((v) => v === 0) ? 'ok' : 'FAIL');
+  log('the Ancient Blossom: took', gift.took, '| says', JSON.stringify(gift.says), gift.took === 1 && gift.says === '...' ? 'ok' : 'FAIL');
+  log('the Ancient idle pose', idle.join(' -> '), idle[0] !== idle[1] ? 'animates' : 'FAIL: still');
+  log('the Ancient talking: mode', talk.mode, '| open', talk.open, talk.name, '| head yaw (stays at -0.45)', talk.hy, 'lift', talk.hx, '| body at', JSON.stringify(talk.pos), talk.mode === 'talk' && talk.open && talk.hx < -0.1 && Math.abs(talk.hy + 0.45) < 0.05 && talk.pos.every((v) => v === 0) ? 'ok' : 'FAIL');
   // no Blossom or Flint spawns in the secret room: sample the spawner and check every pickup now in town
   const pk = await p.evaluate(() => {
     const B = F.buildings.find((b) => b.name === 'church'), inside = (q) => q && F.inHull(B, q.x, q.z);

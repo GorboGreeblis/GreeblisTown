@@ -1,4 +1,4 @@
-// The Garden Event from start to finish, logged every few seconds of game time (and what the church's slug is doing).
+// The Garden Event from start to finish, logged every few seconds of game time (and what the church's Ancient is doing).
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
   await p.mouse.click(Math.min(640, (+process.env.VW || 1280) / 2), 60); await W(1500);

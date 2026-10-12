@@ -200,7 +200,7 @@ Goo that runs down a body and moves like goo, without clipping:
   pair meets a second time before every pair has met once),
   and the meeting plays whichever of its two vignettes, the animation or the lines, has played less: never both.
   Everyone visits everyone, kiosk workers included; King Dino (at his drums), Somlet (asleep at the Post Office)
-  and the church's slug never leave, the others come to them (two of those three never meet, as intended).
+  and the church's Ancient never leave, the others come to them (two of those three never meet, as intended).
   Nextessa and Backpacka neither visit nor are visited.
   - The way: a worker out by its `via` (Mushroom jumps down off the front of his desk first: an 0.8 s arc to the
     first step of his way out), then `JGP.route` (a 1.2 m grid of open ground, as `roamFree`, pulled taut into
@@ -213,13 +213,17 @@ Goo that runs down a body and moves like goo, without clipping:
     and goes back in after (Mushroom jumping back up onto his desk: the last 1.3 m of his walk home is an arc clear
     of its front edge). Sparkakus stops where he is in his open Library and the visitor comes in across its open
     front to his side, clear of the bookcases (it meets the bookcases rather than the Library's whole ground,
-    `inside` "shop"). The slug is called on only in one round in eight, in and out through the wall where the X
+    `inside` "shop"). The Ancient is called on only in one round in eight, in and out through the wall where the X
     is, as the player goes (`inside` "church"; the church guard lets it be), and that exchange is seen only by a
-    player in the church too.
+    player in the church too. On the way in, at the open ground outside the X, every visitor stops for a
+    moment, puzzled — its own "?", in its own colour, over its head (Sparkakus too, between his two legs of the
+    walk) — and then goes on in: the way through the wall, played out as a hint.
   - Home again slowly (`walkK` 0.55; a worker back in by its `via`). The Event, a battle or a meeting calls a visit
     off (homes put back at once); the player close by or talking to the visitor holds it up. While in one,
     `visiting` / `hosting` keep the roams, Fortizmo's patrol, the meetings, other vignettes and Somlet's lying down
-    out of it. `JGP.visitAt(t, v, h)` forces one for tests, `JGP.visits()` and `JGP.visitPlan(v, h)` report;
+    out of it. `JGP.visitAt(t, v, h)` begins the named visit at once (past the pacing and the two-at-once cap; `forced` keeps it
+    first in `JGP.visits().now` while it lives); called with no pair, t is the next natural visit's time, so a time
+    far in the future silences them for a test run. It reports through `JGP.visits()` and `JGP.visitPlan(v, h)` report;
     `test/t_visits.js` checks the plans and plays visits through, watching that nobody passes through anything,
     and `test/t_visitlive.js` watches them happen on their own. Zollod has no `id`, only `def.__type` "cutebex":
     the visits find him by that.
@@ -262,11 +266,19 @@ Goo that runs down a body and moves like goo, without clipping:
   drips onto them, and each piece moves to its `userData.gemOffset` with a flash (about 5 s). Then his speech, and
   the Gem flies to the player ("Ancient Gem collected!"). Gemtoe trades the Summoning Stone for it (with a happy
   spin), and the Stone starts the Garden Event.
+- **The shyness sub-quest:** ZOLLOD starts too shy to keep shop: one Talk ("…|…|I'm shy…"), no Blossom option, no
+  shop, and he neither visits nor is visited (`Kt.shyFree` false). OVERCOMING SHYNESS stands face-out on a Library
+  shelf and is taken by pointing at it and selecting (a mouse click, a tap on a phone, the caster in VR — the same
+  pointer pick as everything else; `Kt.shyBook`): it leaves the shelf, "Overcoming Shyness book obtained", and its
+  station stops offering it. The first Talk with the book in hand frees him ("…|That book…|Let me see..|Wow I'm
+  free from shyness!"): from then on talking to him opens the shop as before, and his pairs count half in the
+  visit order, so he meets the others about twice as often. MAMA GORBO's fourth Talk line hints at the book;
+  GEMTOE's fourth Talk line is his own. `test/t_shy.js` plays the whole quest through.
 
 ### Vignettes
 
 - Every creature has two vignettes with every other, an animation and an exchange of lines: the fourteen in
-  `NAMES` (two-letter codes) make 91 pairs in `PAIRS`, and the church's slug has one with each of them in
+  `NAMES` (two-letter codes) make 91 pairs in `PAIRS`, and the church's Ancient has one with each of them in
   `SLUG_PAIRS`. Nextessa and Backpacka never have vignettes (owner's rule). The animation is a short animated
   exchange: a choreography style, both creatures' signatures from `SIG` (item, colour, gesture, emote) and a
   seeded twist; the lines are the pair's two lines, the two turned to each other. Never both at once
@@ -275,12 +287,13 @@ Goo that runs down a body and moves like goo, without clipping:
   Mont speaks of himself as Mont. `town/vignettes/pairs.py` checks every pair is there once.
 - Who can take part (`lineUp`): the cast standing at their own spots, not busy and not in a visit; Sparkakus in
   his Library through his stand-in `st.ent` (a marker kept at his world position whose wrapper wraps his model; he
-  stops browsing for it). The slug's play only on a visit to it (`JGP.slug.ent`, its stand-in: it talks instead
+  stops browsing for it). The Ancient's play only on a visit to it (`JGP.slug.ent`, its stand-in: it talks instead
   of moving), and are seen only by a player in the church too.
 - They play only with the two side by side (owner's rule): two who already stand together (as the Dancers on the
-  floor) play there when theirs is owed (no more played than the least-played pair), every other pair meets by a
-  visit (see the visits), so every pair's two come round in about three hours. Talking to either, or the Event,
-  stops one. King Dino and the slug never turn or spin in one.
+  floor) play there, fair among the pairs standing together just then (none plays again before each of those has
+  had its turn); every other pair meets by a visit (see the visits), so every pair's two come round in about
+  three hours. Talking to either, or the Event,
+  stops one. King Dino and the Ancient never turn or spin in one.
 
 ### The Garden Event
 
@@ -403,8 +416,8 @@ Goo that runs down a body and moves like goo, without clipping:
   - the LIBRARY banner on two posts behind the back row, high enough to show over it (the kiosks' sign painter,
     `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
     Artifacts);
-  - one thing stands face-out in a gap on each of eight shelves (`LIB_LAYOUT.features`): five cloth hardbacks with
-    their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby, OVERCOMING SHYNESS) and a
+  - one thing stands face-out in a gap on each of nine shelves (`LIB_LAYOUT.features`): six cloth hardbacks with
+    their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby, OVERCOMING SHYNESS, RANGER BOBERT) and a
     Wish Blossom from Greeblis Park in a little pot (its pickups' model at 22%, crystal turning, halo bobbing),
     an Electric Blossom from Greeblis City (its pickups' model at 30%, head turning, halo bobbing) and an Acorn
     from Greeblis Woods (its pickups' model at 1.1x, standing tipped on the shelf);
@@ -422,8 +435,13 @@ Goo that runs down a body and moves like goo, without clipping:
     building's parts leave a 2.6 m gap in that wall, and every mode (desktop, mobile, VR) moves the same body
     through it. Inside, floor, walls and ceiling are one gritty olive-grey ground texture (lit best at the floor,
     least at the ceiling), with pebbles, big flat dark stones, shell flakes, cracks and dry grass on the floor.
+    A second look at the photo added (additions only, the room and the ANCIENT untouched): a clustered patch of
+    flat slate-dark chips beside its head; four bigger stones half sunk in their own shadowed pits; six more
+    strands of dry grass, two crossed by a second straw; little white curls of shell; a long shallow crack along
+    the front corner; and a faint glossy ribbon of damp trailing from its tail toward the back wall (its own
+    thin transparent mesh, never under the body).
     `test/t_church.js` checks the way in, the walls and the head guard; `test/churchshots.js` renders it.
-  - **The slug** lies across the middle of the floor and never moves from there. It has a Talk and, with one in
+  - **The Ancient** (the slug creature; its name on screen is ANCIENT, its id in code stays `slug`) lies across the middle of the floor and never moves from there. It has a Talk and, with one in
     hand, a Blossom (it takes one and answers "..."); it never leaves its place (others rarely come to it, see the visits), and its own moves: idle (stalks swaying and pulling in, breathing, looking
     round), Talk (head lifted, not turned to the player, nodding), Dance and Planting at the Event (it follows
     `JGP.eventMove`, which the Event's dance and plant loop sets each frame). `JGP.slug` exposes it for tests.
@@ -464,8 +482,14 @@ Goo that runs down a body and moves like goo, without clipping:
   ball (its cross was removed at the owner's request). The UFO crosses the sky every
   10 minutes, never during the Event.
 - **The avatar in the test modes:** `dkAnim` strides her legs, swings her arms against them (held 0.21 rad out so
-  the hands clear the skirt), bobs her on each step, sways the skirt and bounces the pigtails a beat behind; still,
+  the hands clear the skirt), bobs her on each step, sways the skirt and bounces her ponytail a beat behind; still,
   she breathes, glances about and blinks. Desktop and mobile only (in VR the player has no body).
+- **The avatar's look** (from the owner's reference, always cartoony, never a likeness): copper hair gathered low
+  at the nape — the two strand groups hang together as one low ponytail, keeping the old pigtails' swing — with a
+  navy tie and a small navy bow riding it; pale warm skin with seven flat freckle dots over her nose and cheeks;
+  an indigo dress wearing its own print of small white batik flowers (`userData.baseTex`, drawn like the Sun
+  Dress's suns and tiled the same); navy belt; dark trainers. Taking the Sun Dress off goes back to her own print,
+  never to a bare colour.
 
 ## Performance
 

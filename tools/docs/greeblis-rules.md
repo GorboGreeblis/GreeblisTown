@@ -18,7 +18,7 @@ of them. Read the guides here before changing the game.
    (see the [tools README](../README.md#the-final-pass-release-minify-pack)).
 5. **Creature models and their characteristics are protected.** Never change a creature's shape, palette,
    signature parts or personality without asking. Every model is now final (its builder says so in a comment),
-   and so are the five plants and the church's secret room with its slug; animation changes on request are fine.
+   and so are the five plants and the church's secret room with its Ancient (the slug creature); animation changes on request are fine.
 6. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
    Once the previous PR is merged, restart the branch from `main`.
 7. **Write down how the creatures and environments were built**, in [`construction.md`](construction.md) and
@@ -45,7 +45,7 @@ of them. Read the guides here before changing the game.
   totality from the images the owner uploaded for it, and only from those (its shape, colours, leaves, buds and
   how it branches; nothing the photos don't show), render it from several angles next to the photos, and refine
   until it matches. The same goes for anything else the owner asks to be built from an image (the inside of the
-  church is built only from the photo of the slug).
+  church is built only from the photo of the Ancient).
 - Only one batch of flowers ever grows at the Garden Event: the first Event's. A repeated Event never makes more
   plants appear (the creatures still plant, at the same spots).
 - No bones anywhere: no skeletal rigs and no bone props.

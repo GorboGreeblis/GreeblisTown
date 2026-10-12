@@ -1,6 +1,6 @@
-// Renders the church's secret inside for checking against the owner's slug photo, and the way in from outside:
+// Renders the church's secret inside for checking against the owner's photo of the Ancient, and the way in from outside:
 // outside at the right-hand Garden window (only the small red X under it marks the way in), inside from just past it, down the nave
-// both ways, the slug close up, and the ceiling. Views are in the church's own frame (F.local / F.world).
+// both ways, the Ancient close up, and the ceiling. Views are in the church's own frame (F.local / F.world).
 // Writes <out>_<view>.png. Run: NOSHOT=1 node shot2.js <url> church.png ./churchshots.js
 module.exports = async (p, out) => {
   const fs = require('fs');
