@@ -410,6 +410,24 @@ Goo that runs down a body and moves like goo, without clipping:
 - **No far scenery:** the fields, farmsteads, turbines, windmills, railroad, telephone poles, water tower and grain
   elevator were removed for performance (about 48k triangles and 8 draw calls, and no spinners to turn each
   frame). The town ring round the square, the trees between its buildings and Mistergummery's stay. No cars.
+- **The town's lore, shown not told** (owner's rules: as interesting as possible, from the park's own lore,
+  style and design; no words or signs to carry it; nothing from creatures not of the town, such as Hennrick;
+  no flint knapping; no extra cost). All of it goes into the existing bins and atlas (still 24 town meshes):
+  - a water tower east of Main Street in Mama Gorbo's peach, her goo running down from its roof in her four
+    colours and her lime tail wound round the tank, tall enough to show over the rooftops;
+  - Mama Gorbo's goo burger: a giant roadside burger on a pole behind Mistergummery's, her goo dripping out;
+  - the Consortium's field office (a trailer with the sheriff's gold star) and its listening dish on a lattice
+    mast, turned to the sky, on the empty lot beside the Town Hall;
+  - Montgummery's video store on the north-east corner lot: his teal storefront, his pixel face on a teal TV on
+    the roof beside a giant cassette (blank label), and two of his pots by the door;
+  - Zollod's nursery behind the south houses: a glass greenhouse with one of his flowers grown giant through
+    its roof;
+  - Gemtoe's hoard: amethyst crystals pushing up out of a fenced lot behind the south-west houses;
+  - the Ancients' ring of standing stones at the end of the road west;
+  - the Gorbos' house on the south street, in Mama Gorbo's peach with magenta and cyan.
+  The far trees (more than 84 m out) use the one-crown build, which paid for all of it: the town went from
+  101.6k to about 99k triangles. `test/t_townview.js` renders the map, the views out of the square and each
+  piece close up, and prints the triangle count.
 - **The player** starts at (0, 2), just south of the Summoning Stone, facing the church (`player.spawn` and
   `player.face` in the config `t`; face 0 looks south along +z).
 - **Kiosks:** `kioskFrame(o, {sign, ink, wall, wall2, tin})` builds the shared shell (deck, back wall, half side
@@ -476,11 +494,14 @@ Goo that runs down a body and moves like goo, without clipping:
     from Greeblis Woods (its pickups' model at 1.1x, standing tipped on the shelf);
   - its colliders are the bookcases and posts; it is kept explicitly when the engine's scenery is cleared
     (it is wider than the 12 m that rule spares);
-  - a rug (`LIB_LAYOUT.rug`, 11 × 7.8 m) woven from the Buns' clothes in Greeblis Woods: Miss Bun's red floral
-    print for the field, edged with her lace and gold-dotted braid; a border, corner pieces and a medallion in
-    Mr Bun's jacket green with his shirt's specks; her cream bow in the middle; a cream fringe at each end. The
-    prints are the Woods 128-pixel tiles (same seeds and colours) drawn seamlessly at 0.6 scale. It is a 4 cm slab
-    with its top 3 cm up (1 cm over a walk, 5 cm over the lawn), part of `JGP.groundAt`.
+  - a rug (`LIB_LAYOUT.rug`, 11 × 7.8 m) after the owner's paisley fabric: a deep crimson field printed with
+    paisleys (mustard-gold outlines, navy bands dotted white, teal and red hearts with little flowers), small
+    red flowers with white eyes and gold fern sprigs; a border of the fabric's stripes (a navy band of red
+    flowers and white dots, a teal band of red flowers, white and gold lines); a medallion of two paisleys curled
+    round each other; cream lace round the field and a cream fringe at each end. The print is one seamless
+    128-pixel tile at 0.75 scale, and the material is toned down (`0xa29a98`) so the open sky doesn't wash its
+    colours out. It is a 4 cm slab with its top 3 cm up (1 cm over a walk, 5 cm over the lawn), part of
+    `JGP.groundAt`.
 - **Church:** at the end of the south walk, its back to the fence. The park has no flowerbeds, benches or trash
   cans (removed at the owner's request).
   - **The secret room** (final; built only from the owner's photo of a slug at night): the player gets in

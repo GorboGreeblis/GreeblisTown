@@ -10996,12 +10996,14 @@ const JGP = (() => {
 			},
 		};
 		LIB_LAYOUT.cases.forEach(bookcase);
-		// THE RUG over the reading ground, under the bookcases and the table, woven from the Buns' clothes in
-		// Greeblis Woods: Miss Bun's red floral print for the field, edged with her lace and her gold-dotted
-		// braid, and a border, corner pieces and a medallion in Mr Bun's jacket green sprinkled with the
-		// specks of his shirt, her cream bow in the middle, and a cream fringe at each end. It is a slab 4 cm
-		// thick with its top 3 cm up (1 cm over a walk and 5 cm over the lawn, so it never flickers against
-		// either); creatures stand on it (JGP.groundAt) and no lawn tufts grow through it.
+		// THE RUG over the reading ground, under the bookcases and the table, after the owner's paisley fabric:
+		// a deep red field printed with paisley teardrops (mustard-gold outlines, a navy band dotted white, teal
+		// and red hearts with little flowers), small red flowers with white eyes and gold fern sprigs between; a
+		// border of the fabric's stripes (a navy band of red flowers and white dots, a teal band of red flowers,
+		// thin white and gold lines); a great paisley medallion in the middle, a pair of paisleys curled round
+		// each other; cream lace round the field and a cream fringe at each end. It is a slab 4 cm thick with
+		// its top 3 cm up (1 cm over a walk and 5 cm over the lawn, so it never flickers against either);
+		// creatures stand on it (JGP.groundAt) and no lawn tufts grow through it.
 		{
 			const [r0, r1, r2, r3] = LIB_LAYOUT.rug,
 				RW = r2 - r0,
@@ -11011,101 +11013,127 @@ const JGP = (() => {
 				H = 512 / K,
 				B = 40,
 				CREAM = "#f3eee2",
-				FIELD = "#a8202a",
-				GOLD = "#c9a13a",
-				// a Woods print: a 128-pixel tile of n little ellipses (and a bud beside each in Miss Bun's), each
-				// drawn again across the tile's edges so the print repeats without a seam
-				print = (base, seed, n, cols, size, ry, bud) => {
+				RED = "#8a1822",
+				DEEP = "#64101a",
+				GOLD = "#9a7a24",
+				NAVY = "#161c28",
+				TEAL = "#137a52",
+				WHITE = "#e8e2d2",
+				// a paisley (boteh) of body radius r, scaled by k: a teardrop whose tip curls over
+				paisleyPath = (c, r, k) => {
+					c.moveTo(0, r * k);
+					c.bezierCurveTo(-1.45 * r * k, r * k, -1.3 * r * k, -1.3 * r * k, 0.15 * r * k, -2.05 * r * k);
+					c.quadraticCurveTo(0.95 * r * k, -2.45 * r * k, 0.78 * r * k, -1.72 * r * k);
+					c.bezierCurveTo(1.75 * r * k, -0.6 * r * k, 1.3 * r * k, r * k, 0, r * k);
+				},
+				flower = (c, x0, y0, r, col, eye) => {
+					c.fillStyle = col;
+					for (let k = 0; k < 5; k++) {
+						const a = (k * l) / 5;
+						c.beginPath(), c.arc(x0 + 0.55 * r * Math.cos(a), y0 + 0.55 * r * Math.sin(a), 0.45 * r, 0, l), c.fill();
+					}
+					(c.fillStyle = eye), c.beginPath(), c.arc(x0, y0, 0.3 * r, 0, l), c.fill();
+				},
+				// one paisley at (x0, y0), body radius r, turned by a
+				paisley = (c, x0, y0, r, a) => {
+					c.save(), c.translate(x0, y0), c.rotate(a);
+					const fill = (k, col) => ((c.fillStyle = col), c.beginPath(), paisleyPath(c, r, k), c.fill());
+					// the navy band dotted white, the gold outline, the red heart, a teal inner drop and its flower
+					fill(1.32, NAVY);
+					(c.strokeStyle = WHITE), (c.lineWidth = 0.12 * r), (c.lineCap = "round"), c.setLineDash([0.01, 0.26 * r]), c.beginPath(), paisleyPath(c, r, 1.2), c.stroke(), c.setLineDash([]), (c.lineCap = "butt");
+					fill(1.08, GOLD), fill(0.96, RED), fill(0.66, TEAL), fill(0.5, DEEP);
+					flower(c, 0, -0.1 * r, 0.42 * r, RED, WHITE);
+					// gold feathering up into the tip
+					(c.strokeStyle = GOLD), (c.lineWidth = Math.max(1, 0.06 * r));
+					for (let k = 0; k < 4; k++) c.beginPath(), c.moveTo(0.1 * r, -0.6 * r - 0.25 * k * r), c.quadraticCurveTo(0.5 * r, -0.8 * r - 0.25 * k * r, 0.55 * r, -1.1 * r - 0.2 * k * r), c.stroke();
+					c.restore();
+				},
+				sprig = (c, x0, y0, s, a) => {
+					c.save(), c.translate(x0, y0), c.rotate(a), (c.strokeStyle = GOLD), (c.fillStyle = GOLD), (c.lineWidth = 1.4);
+					c.beginPath(), c.moveTo(0, 0), c.quadraticCurveTo(0.3 * s, -0.6 * s, 0, -1.2 * s), c.stroke();
+					for (let k = 1; k < 5; k++) [-1, 1].forEach((sd) => (c.beginPath(), c.ellipse(sd * 0.18 * s + 0.1 * s, -0.25 * k * s, 0.16 * s, 0.06 * s, sd * 0.6, 0, l), c.fill()));
+					c.restore();
+				},
+				// the field's print: a 128-pixel tile of paisleys, flowers and sprigs, each drawn again across the
+				// tile's edges so it repeats without a seam
+				PRINT = (() => {
 					const k = document.createElement("canvas");
 					k.width = k.height = 128;
-					const q = k.getContext("2d"),
-						rn = srand(seed);
-					(q.fillStyle = base), q.fillRect(0, 0, 128, 128);
-					for (let j = 0; j < n; j++) {
-						const px = 128 * rn(),
-							py = 128 * rn(),
-							sz = size(rn),
-							ro = 3 * rn();
-						q.fillStyle = cols[j % cols.length];
-						for (const ox of [-128, 0, 128])
-							for (const oy of [-128, 0, 128]) {
-								q.beginPath(), q.ellipse(px + ox, py + oy, sz, ry * sz, ro, 0, l), q.fill();
-								bud && (q.beginPath(), q.arc(px + ox + 0.8 * sz, py + oy - 0.4 * sz, 0.35 * sz, 0, l), q.fill());
-							}
-					}
+					const q = k.getContext("2d");
+					(q.fillStyle = RED), q.fillRect(0, 0, 128, 128);
+					const wrap = (fn) => {
+						for (const ox of [-128, 0, 128]) for (const oy of [-128, 0, 128]) fn(ox, oy);
+					};
+					[[30, 42, 0.5, 13], [96, 98, 3.6, 13], [96, 26, 2.1, 8], [28, 104, -1.1, 8]].forEach(([px, py, a, r]) => wrap((ox, oy) => paisley(q, px + ox, py + oy, r, a)));
+					[[64, 64], [62, 10], [6, 62], [122, 70]].forEach(([px, py]) => wrap((ox, oy) => flower(q, px + ox, py + oy, 5, "#b02a2c", WHITE)));
+					[[70, 40, 0.8], [52, 92, -0.6], [118, 48, 2.4], [60, 120, 1.6], [8, 30, 2.8]].forEach(([px, py, a]) => wrap((ox, oy) => sprig(q, px + ox, py + oy, 11, a)));
+					q.fillStyle = TEAL;
+					for (const [px, py] of [[56, 46], [12, 20], [110, 120]]) wrap((ox, oy) => (q.beginPath(), q.ellipse(px + ox, py + oy, 4, 2, 0.7, 0, l), q.fill()));
 					return k;
-				},
-				MISS = print(FIELD, 29, 34, ["#2e8a5a", "#e8b94a", "#f2e6d2", "#1f2f5a", "#e05a3a"], (rn) => 3 + 5 * rn(), 0.55, !0),
-				MR = print("#2f4a2c", 11, 26, ["#2e8a5a", "#e8c14a", "#f2e6d2", "#7a1414"], () => 6, 0.58, !1),
+				})(),
 				tex = b(
 					512,
 					512,
 					(c) => {
 						c.scale(1, K);
-						// fill a shape with a print, at 0.6 of its size
-						const paint = (img, path) => {
-								c.save(), c.beginPath(), path(), c.clip(), c.scale(0.6, 0.6), (c.fillStyle = c.createPattern(img, "repeat")), c.fillRect(0, 0, W / 0.6, H / 0.6), c.restore();
+						const fillPrint = (path) => {
+								c.save(), c.beginPath(), path(), c.clip(), c.scale(0.75, 0.75), (c.fillStyle = c.createPattern(PRINT, "repeat")), c.fillRect(0, 0, W / 0.75, H / 0.75), c.restore();
 							},
-							// Miss Bun's gold-dotted braid along a path
-							braid = (path) => {
-								(c.strokeStyle = CREAM), (c.lineWidth = 6), c.beginPath(), path(), c.stroke();
-								(c.strokeStyle = GOLD), (c.lineWidth = 2), c.setLineDash([3, 3]), c.beginPath(), path(), c.stroke(), c.setLineDash([]);
-							},
-							// a run of Miss Bun's lace, len long, from (x0, y0) along angle a, its scallops to the left of
-							// the way it runs (into the field), with its holes showing the field through
+							// a run of cream lace, len long, from (x0, y0) along angle a, its scallops to the left of the
+							// way it runs (into the field), with its holes showing the field through
 							lace = (x0, y0, a, len) => {
 								c.save(), c.translate(x0, y0), c.rotate(a), c.scale(0.6, 0.6);
 								(c.fillStyle = CREAM), c.fillRect(0, 0, len / 0.6, 10);
 								for (let e = 0; e < len / 0.6 - 8; e += 16) c.beginPath(), c.arc(e + 8, 14, 9, 0, l), c.fill();
-								c.fillStyle = FIELD;
+								c.fillStyle = RED;
 								for (let e = 0; e < len / 0.6 - 8; e += 16) c.beginPath(), c.arc(e + 8, 15, 3, 0, l), c.fill(), c.beginPath(), c.arc(e + 3, 6, 1.6, 0, l), c.fill();
 								c.restore();
 							},
 							rect = (d) => () => c.rect(d, d, W - 2 * d, H - 2 * d),
+							line = (d, col, w) => ((c.strokeStyle = col), (c.lineWidth = w), c.beginPath(), rect(d)(), c.stroke()),
 							mx = W / 2,
 							my = H / 2;
-						// the binding, then the field in her floral print, its lace round the edge
-						(c.fillStyle = "#1f2f5a"), c.fillRect(0, 0, W, H);
-						paint(MISS, rect(B));
+						// the border: the fabric's stripes from the edge in, a navy band of red flowers and white dots,
+						// then a teal band of red flowers, with white and gold lines between
+						(c.fillStyle = NAVY), c.fillRect(0, 0, W, H), (c.fillStyle = TEAL), c.fillRect(17, 17, W - 34, H - 34);
+						fillPrint(rect(B));
+						const along = (d, step, fn) => {
+							for (let px = d; px <= W - d; px += step) fn(px, d), fn(px, H - d);
+							for (let py = d + step; py <= H - d - step / 2; py += step) fn(d, py), fn(W - d, py);
+						};
+						along(8.5, 14, (px, py) => flower(c, px, py, 4.2, "#b02a2c", WHITE));
+						c.fillStyle = WHITE;
+						along(8.5, 14, (px, py) => (c.beginPath(), c.arc(px + 7, py, 1.2, 0, l), c.fill()));
+						along(B - 11.5, 17, (px, py) => flower(c, px, py, 4.8, RED, GOLD));
+						line(16, WHITE, 1.6), line(18, GOLD, 1.4), line(B - 2, GOLD, 2.4), line(B - 4.5, WHITE, 1.2);
+						// a paisley curled into each corner of the field
+						[[B + 26, B + 26, 2.4], [W - B - 26, B + 26, -2.4], [W - B - 26, H - B - 26, -0.75], [B + 26, H - B - 26, 0.75]].forEach(([px, py, a]) => paisley(c, px, py, 13, a));
+						// the medallion: a gold-rimmed oval, its band of the navy stripe dotted white, and inside on teal
+						// a pair of great paisleys curled round each other, sprigs and flowers between
+						const ring = (rx, ry) => () => c.ellipse(mx, my, rx, ry, 0, 0, l);
+						(c.fillStyle = GOLD), c.beginPath(), ring(104, 74)(), c.fill();
+						(c.fillStyle = NAVY), c.beginPath(), ring(99, 69)(), c.fill();
+						c.fillStyle = WHITE;
+						for (let k = 0; k < 48; k++) {
+							const a = (k / 48) * l;
+							c.beginPath(), c.arc(mx + 93 * Math.cos(a), my + 63 * Math.sin(a), 1.8, 0, l), c.fill();
+						}
+						(c.fillStyle = GOLD), c.beginPath(), ring(87, 57)(), c.fill(), (c.fillStyle = TEAL), c.beginPath(), ring(84, 54)(), c.fill();
+						(c.fillStyle = RED), c.beginPath(), ring(76, 47)(), c.fill();
+						paisley(c, mx - 16, my + 6, 20, 0.35), paisley(c, mx + 16, my - 6, 20, 0.35 + Math.PI);
+						[[mx - 58, my - 14, -1.2], [mx + 58, my + 14, 1.9], [mx - 30, my - 34, 0.2], [mx + 30, my + 34, 3.3]].forEach(([px, py, a]) => sprig(c, px, py, 13, a));
+						[[mx - 52, my + 22], [mx + 52, my - 22]].forEach(([px, py]) => flower(c, px, py, 6, "#b02a2c", WHITE));
+						// its cream lace round the field
 						lace(B, B, 0, W - 2 * B), lace(W - B, B, Math.PI / 2, H - 2 * B), lace(W - B, H - B, Math.PI, W - 2 * B), lace(B, H - B, -Math.PI / 2, H - 2 * B);
-						// a quarter medallion in each corner of the field, rimmed with braid
-						[[B, B], [W - B, B], [W - B, H - B], [B, H - B]].forEach(([cx, cy]) => {
-							const arc = () => c.ellipse(cx, cy, 44, 36, 0, 0, l);
-							c.save(), c.beginPath(), rect(B)(), c.clip(), paint(MR, arc), braid(arc), c.restore();
-						});
-						// the border in his print between two braids
-						paint(MR, () => (c.rect(4, 4, W - 8, H - 8), c.rect(B, H - B, W - 2 * B, 2 * B - H)));
-						braid(rect(8)), braid(rect(B - 3));
-						// the medallion: a ring of lace round it, his print, a braid round its rim and another inside
-						const ring = (rx, ry) => () => c.ellipse(mx, my, rx, ry, 0, 0, l),
-							N = 44;
-						c.fillStyle = CREAM;
-						for (let k = 0; k < N; k++) {
-							const a = (k / N) * l;
-							c.beginPath(), c.arc(mx + 99 * Math.cos(a), my + 69 * Math.sin(a), 5.4, 0, l), c.fill();
-						}
-						(c.strokeStyle = CREAM), (c.lineWidth = 7), c.beginPath(), ring(94, 64)(), c.stroke();
-						c.fillStyle = FIELD;
-						for (let k = 0; k < N; k++) {
-							const a = ((k + 0.5) / N) * l;
-							c.beginPath(), c.arc(mx + 100 * Math.cos(a), my + 70 * Math.sin(a), 1.8, 0, l), c.fill();
-						}
-						paint(MR, ring(92, 62)), braid(ring(92, 62)), braid(ring(62, 40));
-						// her cream chest bow in the middle: two loops, two tails and the knot
-						c.save(), c.translate(mx, my), (c.fillStyle = "#f2e6d2"), (c.strokeStyle = "#c8b890"), (c.lineWidth = 1.5);
-						[-1, 1].forEach((sd) => {
-							c.beginPath(), c.moveTo(0, 0), c.lineTo(sd * 14, 24), c.lineTo(sd * 6, 26), c.closePath(), c.fill(), c.stroke();
-							c.beginPath(), c.ellipse(sd * 15, -2, 15, 9, sd * 0.25, 0, l), c.fill(), c.stroke();
-						});
-						c.beginPath(), c.arc(0, 0, 6, 0, l), c.fill(), c.stroke(), c.restore();
 						// a soft weave over it all
 						const rn = srand(808);
 						for (let k = 0; k < 5000; k++) (c.fillStyle = rn() < 0.5 ? "rgba(0,0,0,.07)" : "rgba(255,255,255,.05)"), c.fillRect(W * rn(), H * rn(), 1.2, 0.9);
 					},
 					{ smooth: !0 },
 				),
-				edge = x.world("#1f2f5a");
-			R(T.box(RW, 0.04, RD), [edge, edge, new THREE.MeshLambertMaterial({ map: tex }), edge, edge, edge], o, [(r0 + r2) / 2, LIB_LAYOUT.rugTop - 0.02, (r1 + r3) / 2]);
+				edge = x.world("#1f2a3a");
+			// (toned down under the open sky, to the fabric's deep crimson, mustard and dark teal)
+			R(T.box(RW, 0.04, RD), [edge, edge, new THREE.MeshLambertMaterial({ map: tex, color: 0xa29a98 }), edge, edge, edge], o, [(r0 + r2) / 2, LIB_LAYOUT.rugTop - 0.02, (r1 + r3) / 2]);
 			// the fringe: cream tassels lying on the lawn at each end, tucked 2 cm under the slab
 			[-1, 1].forEach((sd) => {
 				for (let pz = r1 + 0.07; pz < r3 - 0.05; pz += 0.09) {
@@ -14897,6 +14925,28 @@ const JGP = (() => {
 			["s_mgum", "Mistergummery's", "#c8282a", "#ffffff", { edge: "#55b8c6", face: SANS, shadow: "rgba(0,0,0,.25)" }],
 		].forEach(([key, txt, bg, fg, o2]) => slot(key, 384, 96, board(txt, bg, fg, o2)));
 		slot("s_bank", 640, 96, board("FIRST BANK OF GREEBLIS", "#e8dcc4", "#4a3c2c", { shadow: "rgba(255,255,255,.6)", fill: 0.9 }));
+		// ---- the town's own lore, out past the park (the background pass): shown, not told, so only the video
+		// store's name, a blank cassette label and the Consortium's star go on the sign atlas
+		slot("s_video", 384, 96, board("VIDEO RENTAL", "#1e3c8a", "#ffd23a", { edge: "#ffd23a", face: SANS }));
+		// the label on the video store's giant cassette: blank, a few pencilled lines
+		slot("s_vhs", 256, 64, (cx, w, h) => {
+			(cx.fillStyle = "#f4f0e0"), cx.fillRect(0, 0, w, h), (cx.strokeStyle = "#8a8478"), (cx.lineWidth = 3);
+			[22, 40].forEach((y0) => (cx.beginPath(), cx.moveTo(30, y0), cx.lineTo(y0 < 30 ? 200 : 150, y0), cx.stroke()));
+		});
+		// the Consortium's emblem on its trailer: the sheriff's gold star on navy
+		slot("s_star", 128, 128, (cx, w, h) => {
+			(cx.fillStyle = "#1c2440"), cx.beginPath(), cx.arc(64, 64, 62, 0, l), cx.fill(), (cx.strokeStyle = "#e8b830"), (cx.lineWidth = 5), cx.beginPath(), cx.arc(64, 64, 55, 0, l), cx.stroke();
+			(cx.fillStyle = "#e8b830"), cx.beginPath();
+			for (let k = 0; k < 10; k++) cx.lineTo(64 + (k % 2 ? 17 : 42) * Math.sin((k * Math.PI) / 5), 66 - (k % 2 ? 17 : 42) * Math.cos((k * Math.PI) / 5));
+			cx.fill();
+		});
+		// MONTGUMMERY's own screen face, as the video store's rooftop sign: pixel eyes and a flat mouth on a dark
+		// screen with scanlines
+		slot("s_montface", 192, 144, (cx, w, h) => {
+			(cx.fillStyle = "#1d2a23"), cx.fillRect(0, 0, w, h), (cx.fillStyle = "rgba(61,178,214,.12)");
+			for (let y0 = 0; y0 < h; y0 += 6) cx.fillRect(0, y0, w, 3);
+			(cx.fillStyle = "#ffffff"), cx.fillRect(48, 40, 22, 30), cx.fillRect(122, 40, 22, 30), cx.fillRect(60, 100, 72, 10);
+		});
 		[
 			// the streets around the square are named after creatures of Greeblis Park
 			["st_main", "SEALIO ST"],
@@ -15746,7 +15796,7 @@ const JGP = (() => {
 				const pz = 4.4 + 2.2 * k;
 				B.box("plain", red, px, 0.95, pz, 0.6, 1.5, 0.45).box("plain", wh, px, 1.8, pz, 0.62, 0.22, 0.47).box("lit", "#f8f4d0", px, 1.25, pz + 0.235, 0.4, 0.3, 0.02).box("plain", "#1a1a1e", px + 0.33, 1.1, pz, 0.05, 0.7, 0.05);
 			});
-			B.box("plain", "#5a6a7a", 5.4, 3.0, 8.0, 0.25, 6, 0.25).box("plain", red, 5.4, 6.3, 8.0, 1.8, 1.2, 0.3).sign("s_gas", 5.4, 6.3, 8.16, 1.6, 0.4).sign("s_gas", 5.4, 6.3, 7.84, 1.6, 0.4, Math.PI);
+			B.box("plain", "#5a6a7a", 5.4, 3.0, 8.0, 0.25, 6, 0.25).box("plain", red, 5.4, 6.3, 8.0, 1.8, 1.2, 0.3).sign("s_gas", 5.4, 6.3, 8.16, 1.6, 0.4).sign("s_gas", 5.4, 6.3, 7.84, 1.6, 0.4, Math.PI)
 			B.box("asphalt", "#5c5c60", 0, -0.04, 6, 12, 0.08, 9);
 			return B;
 		};
@@ -16106,7 +16156,8 @@ const JGP = (() => {
 			[-32, { col: "#f4f2ea", roof: "#4a4a52", door: "#8a2a2a", shutter: "#2a4a3a" }],
 			[-16, { col: "#f2df9a", roof: "#5a4a3a", door: "#2a4a8a", shutter: "#f6f4ee" }],
 			[0, { col: "#a8c8e0", roof: "#4a4a52", door: "#c8282a", shutter: "#22325a" }],
-			[16, { col: "#a8c0a0", roof: "#5a3a2a", door: "#5a3a24", shutter: "#3a3a3e" }],
+			// (the Gorbos' house: MAMA GORBO's peach with her goo colours on the door and shutters)
+			[16, { col: "#ffb486", roof: "#5a3a2a", door: "#e8409e", shutter: "#36d0e8" }],
 			[32, { col: "#e8c4c0", roof: "#4a4a52", door: "#2a5a4a", shutter: "#f6f4ee" }],
 			[66, { col: "#f4f2ea", roof: "#3a4a5a", door: "#2a4a3a", shutter: "#22325a", w: 9 }],
 			[84, { col: "#d8b88a", roof: "#4a4a52", door: "#8a2a2a", shutter: "#5a3a24", w: 9 }],
@@ -16115,6 +16166,152 @@ const JGP = (() => {
 		SCHOOL(-82, 60 + ZS, Math.PI);
 		// north-east: the gas station on the corner
 		GAS_STATION(72, -62);
+		// ---- the town's own lore, out past the park (the background pass) ------------------------------
+		// Tall enough to be seen over the rooftops from the square, and built into the town's merged meshes
+		// with its existing materials and sign atlas: no draw call of its own (the trees thinned a little to
+		// pay for the triangles: see the tree count below).
+		// the town's water tower, painted MAMA GORBO's peach with her goo running down from its roof (cyan,
+		// magenta, violet and lime) and her lime goo tail wound round its middle, on four steel legs
+		const WATER_TOWER = (X, Z) => {
+			const B = place(X, Z, faceIn(X, Z)),
+				y0 = 20,
+				steel = "#7a8088";
+			[-1, 1].forEach((sx) =>
+				[-1, 1].forEach((sz) => B.geo("plain", ucyl(6), steel, 2.55 * sx, y0 / 2, 2.55 * sz, 0.5, y0, 0.5)),
+			);
+			// ties at two heights round the legs, and an X brace on each face between them
+			[4.5, 9.5, 14.5].forEach((yy) => [-1, 1].forEach((s2) => B.box("plain", steel, 0, yy, 2.55 * s2, 5.1, 0.18, 0.18).box("plain", steel, 2.55 * s2, yy, 0, 0.18, 0.18, 5.1)));
+			[7, 12].forEach((yb) =>
+				[-1, 1].forEach((s2) =>
+					[-1, 1].forEach((d) => B.box("plain", steel, 0, yb, 2.55 * s2, 7.1, 0.12, 0.12, 0, 0, d * 0.775).box("plain", steel, 2.55 * s2, yb, 0, 0.12, 0.12, 7.1, d * 0.775, 0, 0)),
+				),
+			);
+			B.geo("plain", ucyl(8), steel, 0, y0 / 2, 0, 0.7, y0, 0.7);
+			// the tank, its bowl under it and its roof over it, a catwalk with a rail round it
+			B.geo("plain", ucyl(14), "#ff9f5c", 0, y0 + 3, 0, 8.4, 6, 8.4).geo("plain", ucone(14), "#ff9f5c", 0, y0 - 0.8, 0, 8.4, 1.6, 8.4, Math.PI, 0, 0);
+			B.geo("plain", ucone(14), "#e8884a", 0, y0 + 7.2, 0, 9, 2.4, 9).geo("plain", usph(8), steel, 0, y0 + 8.5, 0, 0.5, 0.5, 0.5);
+			B.geo("plain", ucyl(14), steel, 0, y0 + 0.05, 0, 10.6, 0.12, 10.6).geo("plain", ucyl(14, 0.5, !0), steel, 0, y0 + 1.05, 0, 10.6, 0.08, 10.6);
+			for (let k = 0; k < 8; k++) B.box("plain", steel, 5.25 * Math.sin((k * l) / 8), y0 + 0.55, 5.25 * Math.cos((k * l) / 8), 0.07, 1.0, 0.07);
+			// her lime tail, wound once round the tank and tipped up over the roof's edge
+			B.geo("plain", ucyl(14, 0.5, !0), "#c8e040", 0, y0 + 2.4, 0, 8.5, 0.7, 8.5, 0.05, 0, -0.06).geo("plain", ucyl(14, 0.5, !0), "#e8f070", 0, y0 + 2.62, 0, 8.52, 0.14, 8.52, 0.05, 0, -0.06);
+			// the goo, running down from under the roof's edge
+			[
+				["#36d0e8", 0.5, 2.6],
+				["#e8409e", 1.25, 1.6],
+				["#9a52e0", 2.1, 3.1],
+				["#c8e040", 2.9, 1.9],
+				["#36d0e8", 3.7, 2.3],
+				["#e8409e", 4.5, 2.9],
+				["#9a52e0", 5.3, 1.4],
+				["#c8e040", 5.95, 2.5],
+			].forEach(([c, a, len]) => {
+				const px = 4.24 * Math.sin(a),
+					pz = 4.24 * Math.cos(a);
+				B.geo("plain", ucyl(5), c, px, y0 + 6 - len / 2, pz, 0.34, len, 0.34).geo("plain", usph(6), c, px, y0 + 6 - len, pz, 0.48, 0.6, 0.48);
+			});
+			B.box("plain", steel, 0, y0 / 2 + 0.5, 3.0, 0.5, y0 + 1, 0.06);
+		};
+		// MUSHROOM's Consortium in town: its field office (a trailer with the sheriff's gold star on its side) and a listening dish on a
+		// lattice mast, turned up to the sky for the UFOs it is investigating
+		const FIELD_OFFICE = (X, Z) => {
+			const B = place(X, Z, faceIn(X, Z)),
+				steel = "#7a8088";
+			B.box("siding", "#d8dce0", 0, 1.95, 0, 8, 2.5, 3).box("plain", "#9aa0a8", 0, 3.25, 0, 8.2, 0.12, 3.2).box("plain", "#2a2e34", 0, 0.35, 0, 7.4, 0.7, 2.6);
+			B.sign("s_star", -0.6, 1.95, 1.52, 1.5, 1.5).box("boards", "#5a3a22", 2.9, 1.65, 1.52, 0.9, 2.0, 0.06).win(-2.9, 1.35, 1.1, 0.8, { z: 1.5 });
+			B.box("concrete", "#c8c2b6", 2.9, 0.3, 2.0, 1.2, 0.6, 1.0);
+			const mx = -7;
+			[-1, 1].forEach((sx) => [-1, 1].forEach((sz) => B.box("plain", steel, mx + 0.7 * sx, 6, 0.7 * sz, 0.14, 12, 0.14)));
+			for (let yy = 1.5; yy < 12; yy += 2.5) [-1, 1].forEach((s2) => B.box("plain", steel, mx, yy, 0.7 * s2, 1.4, 0.1, 0.1).box("plain", steel, mx + 0.7 * s2, yy, 0, 0.1, 0.1, 1.4));
+			const dish = B.sub(mx, 0, 0, 12.4);
+			dish.geo("plain", usph(12, !0), "#e8eaee", 0, 0, 0, 6, 1.8, 6, -2.5, 0, 0).geo("plain", ucyl(5), steel, 0, 1.1, 0.6, 0.12, 2.6, 0.12, -0.6, 0, 0).geo("plain", usph(6), steel, 0, 2.2, 1.2, 0.4, 0.4, 0.4);
+			dish.box("plain", steel, 0, -0.3, 0, 1.6, 0.6, 1.6);
+		};
+		// the town's video store, on the corner lot north-east of the square (MONTGUMMERY's favourite shop: he
+		// eats the tapes), a giant VHS cassette on its roof
+		STORE(56, -60, 0, 10, 8, {
+			col: "#8a9ab0",
+			sign: "s_video",
+			awn: "aw_yellow",
+			// (in MONTGUMMERY's teal, his own face on a TV on the roof, a giant cassette beside it and two of his
+			// pots by the door: it is plainly his shop)
+			front: "#2a7a8a",
+			extra: (B, w, h) => {
+				B.box("plain", "#1a1a1e", -2.2, h + 1.5, -1.2, 4.6, 2.6, 0.5).sign("s_vhs", -2.2, h + 2.05, -0.94, 3.4, 0.85);
+				[-3.1, -1.3].forEach((px) => B.geo("plain", ucyl(12), "#e8e8ec", px, h + 1.0, -0.94, 0.9, 0.04, 0.9, Math.PI / 2, 0, 0).geo("plain", ucyl(8), "#3a3a42", px, h + 1.0, -0.92, 0.3, 0.04, 0.3, Math.PI / 2, 0, 0));
+				[-3.8, -0.6].forEach((px) => B.box("plain", "#3a3a42", px, h + 0.1, -1.2, 0.2, 0.5, 0.2));
+				// the TV: a teal set on a stand, his face on its screen, rabbit-ear aerials
+				B.box("plain", "#3a3a42", 2.6, h + 0.2, -1.6, 1.2, 0.4, 1.2).box("plain", "#55b8c6", 2.6, h + 1.75, -1.6, 3.2, 2.7, 2.0).box("plain", "#3db2d6", 2.6, h + 1.75, -0.58, 2.9, 2.4, 0.06);
+				B.sign("s_montface", 2.6, h + 1.75, -0.54, 2.6, 1.95).geo("plain", usph(6), "#e2521f", 3.95, h + 0.65, -0.55, 0.22, 0.22, 0.1);
+				[-1, 1].forEach((sd) => B.box("plain", "#3a3a42", 2.6 + 0.45 * sd, h + 3.6, -1.6, 0.05, 1.3, 0.05, 0, 0, -0.45 * sd));
+				// his pots by the door, a little fern in each
+				[-1.6, 1.6].forEach((px) => B.geo("plain", ucyl(8, 0.62), "#b8603a", px, 0.35, 0.75, 0.6, 0.7, 0.6).geo("plain", ucone(5), "#3a7a3a", px, 0.95, 0.75, 0.5, 0.6, 0.5));
+			},
+		});
+		// the Ancients' ring at the end of the road west: standing stones, older than the town, one pair still
+		// carrying its lintel (SPARKAKUS's Ancient texts mention it)
+		{
+			const B = place(-97, -50, Math.PI / 2);
+			for (let k = 0; k < 7; k++) {
+				const a = (k / 7) * l + 0.3,
+					hh = 2.4 + 0.6 * Math.sin(3 * k);
+				B.box("plain", ["#8a857c", "#7e7a72", "#96907f"][k % 3], 3.4 * Math.sin(a), hh / 2 - 0.1, -2 + 3.4 * Math.cos(a), 0.9, hh, 0.55, 0.06 * Math.sin(k), a, 0.05 * Math.cos(2 * k));
+			}
+			B.box("plain", "#8e897e", 0, 3.25, 1.4, 3.0, 0.5, 0.65).box("plain", "#837e74", -1.1, 1.5, 1.4, 0.8, 3.0, 0.6).box("plain", "#8a857c", 1.1, 1.5, 1.4, 0.8, 3.0, 0.6);
+			B.geo("plain", usph(6, !0), "#8a847a", 0, -0.2, -2, 1.6, 0.8, 1.2);
+		}
+		// MAMA GORBO's goo burger, the Gorbos' recipe: a giant roadside burger up on a pole behind Mistergummery's,
+		// her goo running out of it (cyan, magenta, violet and lime)
+		{
+			const B = place(88, -38, faceIn(88, -38)),
+				y0 = 12;
+			B.geo("plain", ucyl(8), "#5a6068", 0, y0 / 2, 0, 0.5, y0, 0.5).geo("plain", ucyl(8), "#5a6068", 0, y0 + 0.2, 0, 1.4, 0.4, 1.4);
+			B.geo("plain", ucyl(14), "#d8902e", 0, y0 + 0.75, 0, 4.4, 0.7, 4.4).geo("plain", ucyl(14), "#5a3420", 0, y0 + 1.35, 0, 4.6, 0.55, 4.6).geo("plain", ucyl(14, 0.5), "#7ac83a", 0, y0 + 1.68, 0, 4.9, 0.12, 4.9);
+			B.geo("plain", ucyl(14), "#ffd23a", 0, y0 + 1.8, 0, 4.7, 0.14, 4.7).geo("plain", usph(14, !0), "#e09a48", 0, y0 + 1.88, 0, 4.5, 3.0, 4.5);
+			// (sesame seeds sitting on the bun's dome)
+			for (let k = 0; k < 9; k++) {
+				const r = 1.5 * (0.4 + 0.07 * k);
+				B.geo("plain", usph(4), "#f6f0dc", r * Math.sin(k * 2.4), y0 + 1.88 + 1.5 * Math.sqrt(1 - (r / 2.25) ** 2), r * Math.cos(k * 2.4), 0.16, 0.08, 0.3, 0, k, 0);
+			}
+			[["#36d0e8", 0.3, 1.6], ["#e8409e", 1.5, 2.4], ["#9a52e0", 2.7, 1.3], ["#c8e040", 3.9, 2.0], ["#36d0e8", 5.1, 1.1]].forEach(([c, a, len]) =>
+				B.geo("plain", ucyl(5), c, 2.3 * Math.sin(a), y0 + 1.4 - len / 2, 2.3 * Math.cos(a), 0.36, len, 0.36).geo("plain", usph(6), c, 2.3 * Math.sin(a), y0 + 1.4 - len, 2.3 * Math.cos(a), 0.5, 0.62, 0.5),
+			);
+		}
+		// ZOLLOD's nursery (bringing plants to life is his life's work): a glass greenhouse behind the houses south of
+		// the square, one of his flowers grown so big it has pushed up through the roof and towers over the town
+		{
+			const B = place(40, 96, faceIn(40, 96)),
+				fr = "#f2efe6";
+			B.box("glass", "#a8d8d0", 0, 1.6, 0, 8, 3.2, 5).box("concrete", "#c8c2b6", 0, 0.12, 0, 8.3, 0.24, 5.3);
+			[-4, -2, 0, 2, 4].forEach((px) => [-2.5, 2.5].forEach((pz) => B.box("plain", fr, px, 1.6, pz, 0.1, 3.2, 0.1)));
+			[-1, 1].forEach((sd) => B.box("glass", "#b8e0d8", 0, 3.85, 1.25 * sd, 8, 0.06, 2.75, sd * 0.45, 0, 0));
+			B.box("plain", fr, 0, 4.42, 0, 8.1, 0.12, 0.12).box("boards", "#7a5232", 0, 1.1, 2.52, 1.0, 2.2, 0.06);
+			// the flower: its stalk out through a broken pane, two leaves, and a bloom of the Garden Supplies kind,
+			// magenta petals round a yellow heart, nodding toward the square
+			B.geo("plain", ucyl(7, 0.6), "#4f8a36", 1.2, 9, 0.4, 0.7, 18, 0.7, 0.04, 0, -0.03);
+			[[6, 1], [10.5, -1]].forEach(([yy, sd]) => B.geo("plain", usph(8), "#5aa83a", 1.2 + 1.6 * sd, yy, 0.4, 3.4, 0.25, 1.3, 0, 0, sd * 0.4));
+			const bl = B.sub(1.6, 0.8, 0, 18.2);
+			for (let k = 0; k < 8; k++) {
+				const a = (k / 8) * l;
+				bl.geo("plain", usph(8), k % 2 ? "#e8409e" : "#d0307e", 1.9 * Math.sin(a), 0.2 + 0.5 * Math.cos(a), 1.9 * Math.cos(a), 1.3, 0.35, 2.4, -0.25, a, 0);
+			}
+			bl.geo("plain", usph(10), "#ffd23a", 0, 0.45, 0, 1.8, 1.0, 1.8, 0.25, 0, 0).geo("plain", usph(8), "#e8a028", 0, 0.8, 0.15, 1.0, 0.5, 1.0, 0.25, 0, 0);
+		}
+		// GEMTOE's hoard: amethyst crystals pushing up out of the ground in the lot behind the south-west houses,
+		// fenced round
+		{
+			const B = place(-33, 96, faceIn(-33, 96));
+			[[0, 0, 5.2, 0, 0], [1.3, 0.4, 3.8, 0.35, 0.2], [-1.2, 0.3, 4.2, -0.3, 0.1], [0.4, -1.2, 3.0, 0.1, -0.35], [-0.6, 1.3, 2.6, -0.15, 0.4], [1.9, -0.8, 2.2, 0.5, -0.2]].forEach(([px, pz, hh, rz, rx], k) => {
+				const c = k % 2 ? "#7a3ab8" : "#9a5ad0";
+				B.geo("plain", ucyl(6), c, px, hh * 0.38, pz, 0.9 + 0.08 * hh, hh * 0.8, 0.9 + 0.08 * hh, rx, 0, rz).geo("plain", ucone(6), "#c8a0f0", px - Math.sin(rz) * hh * 0.4, hh * 0.78 + 0.3, pz + Math.sin(rx) * hh * 0.4, 0.9 + 0.08 * hh, 0.9, 0.9 + 0.08 * hh, rx, 0, rz);
+			});
+			for (let k = 0; k < 10; k++) {
+				const a = (k / 10) * l;
+				B.box("boards", "#6a4a2a", 3.8 * Math.sin(a), 0.6, 3.8 * Math.cos(a), 0.12, 1.2, 0.12);
+			}
+			[0.35, 0.95].forEach((yy) => B.geo("plain", ucyl(10, 0.5, !0), "#8a8a90", 0, yy, 0, 7.6, 0.05, 7.6));
+		}
+		WATER_TOWER(84, -4);
+		FIELD_OFFICE(-26, -72);
 		// lamp posts along Main Street's far sidewalks
 		[-32, -16, 0, 16, 32].forEach((Z) => (lampPost(50.6, ZS / 2 + Z * MK), lampPost(-50.6, ZS / 2 + Z * MK)));
 
@@ -16131,13 +16328,22 @@ const JGP = (() => {
 			[-90, -74, 52 + ZS, 76 + ZS],
 			[62, 82, -72, -52],
 			[52, 77, -38, -16],
+			// (the lore pieces: the water tower, the Consortium's field office and dish, the billboards)
+			[77, 91, -11, 3],
+			[-42, -14, -78, -56],
+			[83, 93, -42, -34],
+			[-38, -28, 91, 101],
+			[34, 46, 92, 100],
+			[50, 62, -75, -58],
+			[-102, -92, -56, -44],
 		];
 		const blocked = (X, Z, m) => FOOT.some(([x0, x1, z0, z1]) => X > x0 - m && X < x1 + m && Z > z0 - m && Z < z1 + m);
 		for (let k = 0, placed = 0; k < 900 && placed < 80 * LOD; k++) {
 			const X = rr(-100, 100),
 				Z = rr(-100, 100);
 			if ((Math.abs(X) < 56 && Z > -56 && Z < 56 + ZS) || Math.abs(Math.abs(X) - 45) < 8 || Math.abs(Z + 45) < 8 || Math.abs(Z - SZ) < 8 || blocked(X, Z, 4)) continue;
-			tree(X, Z, rr(0.9, 1.5), rnd() < 0.15 ? 2 : rnd() < 0.5 ? 1 : 0, 1), placed++;
+			// (the farthest, seen only over the rooftops, in their lighter build: one crown each)
+			tree(X, Z, rr(0.9, 1.5), rnd() < 0.15 ? 2 : rnd() < 0.5 ? 1 : 0, Math.max(Math.abs(X), Math.abs(Z - ZS / 2)) > 84 ? 0 : 1), placed++;
 		}
 
 		// ---- the park fence: black iron pickets between brick pillars, all the way round (the church
