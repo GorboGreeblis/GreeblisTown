@@ -16652,7 +16652,8 @@ const JGP = (() => {
 		// seeing the inside of a wall or a bookcase is disorienting. So when the headset comes within 20 cm of
 		// a solid structure the view darkens, and it is fully black from 8 cm (the near plane is at 15 cm);
 		// it clears again as the head comes back out. Solids: every building's parts (in its own frame, each
-		// as tall as what stands there) and the round colliders (the Summoning Stone, the portal's pillars).
+		// as tall as what stands there) and any round collider the player meets (walking through the Summoning
+		// Stone or a portal pillar never darkens the view).
 		{
 			// how tall each part is ([part index] → top, by building), and how far in a rough-edged one starts
 			const TOPS = {
@@ -16690,7 +16691,9 @@ const JGP = (() => {
 					});
 				}
 				for (const f of F.list) {
-					if (f.keep || f.r > 2) continue; // (the test plants and the pond are not solid at head height)
+					// (only what the player can't walk through: not the test plants or the pond, nor what the player walks
+					// right through, as the Summoning Stone and the portal's pillars)
+					if (f.keep || f.r > 2 || !f.stage) continue;
 					const dh = Math.hypot(x - f.x, z - f.z) - 0.55 * f.r,
 						dy = Math.max(y - 3, 0);
 					best = Math.min(best, dh > 0 || dy > 0 ? Math.hypot(Math.max(dh, 0), dy) : dh);

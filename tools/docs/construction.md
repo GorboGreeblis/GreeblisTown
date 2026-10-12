@@ -491,8 +491,9 @@ plane.
   shows which really flicker (the near plane nudged with nothing moving). Moving the camera instead, even by
   millimetres, reports fine textures as flicker, and an eye straight below a point makes `lookAt` spin.
 - **The head guard (VR):** a head can lean into what the body can't walk into. `JGP.headGuard` darkens the view
-  from 20 cm off any solid structure (building parts at their real heights, the portal's pillars, the Summoning
-  Stone) to fully black at 8 cm (the near plane is at 15 cm), and clears as the head comes out.
+  from 20 cm off any solid structure (building parts at their real heights, and round colliders only where the
+  player meets them) to fully black at 8 cm (the near plane is at 15 cm), and clears as the head comes out. The
+  player walks right through the Summoning Stone and the portal's pillars, so they never darken it (owner's rule).
 - **The sky dome fits inside the far plane** (`0.85 · t.far`; far is 310 m, 260 m on mobile), or its middle is
   cut away and a pale disc turns with the view.
 
