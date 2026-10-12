@@ -4685,9 +4685,9 @@ const le = (() => {
 			},
 		};
 	})(),
-	// THE ANCIENT ARTIFACTS: the three pieces of one teal diamond, hidden around town, each floating
-	// over a faint ring of light. Walk into one to pick it up; bring all three to SPARKAKUS at the
-	// Library. The diamond is a brilliant cut (a flat table, a crown sloping out to the girdle and a
+	// THE ANCIENT ARTIFACTS: the three pieces of one teal diamond, each won from one of the three Dancers
+	// the first time you beat them in a Dance battle; bring all three to SPARKAKUS, who glues them back
+	// together. The diamond is a brilliant cut (a flat table, a crown sloping out to the girdle and a
 	// pavilion down to a point) split from top to bottom into three equal wedges: each piece has its
 	// faceted outside and two flat, softly glowing break faces where it meets the other two.
 	// (Each of the three Dancers gives one piece the first time you win a Dance battle with them, and
@@ -14007,12 +14007,12 @@ const JGP = (() => {
 			["KD", "FZ", 5, "Put one more carrot juice on my tab?", "Play off the last forty first, lounge lizard."],
 			["KD", "ET", 4, "Etch my solos, baby! For history!", "I etch them as you play. Your hi-hat too."],
 			["KD", "GT", 9, "I'll trade you a royal coin for that gem.", "You stamp those yourself. Nice try."],
-			["KD", "GL", 11, "What's the symbol for 'more cowbell'?", "This one. Joy, rhythm and cowbell, all in one."],
+			["KD", "GL", 11, "What's the symbol for a bigger beat, baby?", "This one. Joy and rhythm in one stroke... don't you think?"],
 			["GW", "ZL", 10, "Gomp? Gomp gomp?", "Yes, Gooward. A little goo is good for the soil."],
-			["GW", "SM", 7, "(softly) gomp... gomp...", "Zzz..."],
+			["GW", "SM", 7, "gomp... gomp...", "Zzz..."],
 			["GW", "FZ", 5, "Gomp gomp gomp!", "Goo is not currency, sweetie. Nice try."],
 			["GW", "ET", 1, "Gooomp?", "Yes, I etched your goo too. It's archived."],
-			["GW", "GT", 9, "Gomp! (a goo ball for you)", "Goo isn't gems. ...Fine. I'll keep it anyway."],
+			["GW", "GT", 9, "Gomp! GOMP!", "Goo isn't gems. ...Fine. I'll keep it anyway."],
 			["GW", "GL", 11, "Gomp?", "'Gomp' is a fine symbol... don't you think?"],
 			["ZL", "SM", 7, "Shh. My seedlings are napping too.", "Zzz..."],
 			["ZL", "FZ", 10, "Fresh mint for your bar, cut this morning.", "Mint like that, I'd almost take flint for it."],
@@ -14027,8 +14027,8 @@ const JGP = (() => {
 			["FZ", "GT", 9, "Settle up in Blossoms, honey. Not gems.", "Gems are worth countless flint! Your loss."],
 			["FZ", "GL", 11, "What's that symbol on my menu mean?", "'Fresh'. Juice is symbols too... don't you think?"],
 			["ET", "GT", 4, "I am etching the age of your Avarice.", "Etch it bigger. Avarice deserves big letters."],
-			["ET", "GL", 11, "Without your symbols I'd have nothing to etch.", "And without your etching, they'd blow away."],
-			["GT", "GL", 11, "Is there a symbol for 'all mine'?", "There's one for 'shared'... try that one."],
+			["ET", "GL", 11, "Without your symbols I'd have nothing to etch.", "And without your etching they'd blow away... don't you think?"],
+			["GT", "GL", 11, "Is there a symbol for 'all mine'?", "There's one for 'shared'. Try that one... don't you think?"],
 			["HN", "MG", 0, "I hear you've studied this era's films.", "Mont eats many VHS. Mont knows much of humans."],
 			["MU", "MG", 7, "Have you seen a human in this town?", "Mont has seen no human. Mont is very busy."],
 			["AN", "MG", 8, "Your SCREEN shows faces. Mine shows the PAST.", "Mont's screen shows robot. Robot is happy."],
@@ -14070,9 +14070,9 @@ const JGP = (() => {
 			// owner's script: it never leaves the church, and its vignettes are gated off). [code, the ANCIENT's line, reply]
 			SLUG_VIGNETTES = !1,
 			SLUG_PAIRS = [
-				["HN", "Your era and mine are one, traveller.", "Fascinating. Which era would that be?"],
+				["HN", "You are far from your own time, visitor.", "Fascinating. And you? Which era is yours?"],
 				["MU", "No Portal can hold the one reborn.", "Th-the consortium will be informed."],
-				["AN", "Anomalee. You still look for me in the glass.", "ORIGINATOR...? You WERE... WITHIN?"],
+				["AN", "Anomalee. The glass remembers more than it shows.", "The WINDOW REMEMBERS... WHAT does it REMEMBER?"],
 				["KD", "Even the reborn feel the beat.", "That's right, baby. Everybody feels it."],
 				["GW", "Little goo. You were made with love.", "Gomp... gomp."],
 				["ZL", "All that grows, grows again.", "Then my work is never done. Good."],
@@ -15289,6 +15289,109 @@ const JGP = (() => {
 			(cx.fillStyle = "#e8e2d0");
 			for (let k = 0; k < 3; k++) cx.fillRect(16, 128 + 20 * k, 150, 7), (cx.fillStyle = "#55b8c6"), cx.fillRect(196, 128 + 20 * k, 44, 7), (cx.fillStyle = "#e8e2d0");
 		});
+		// ---- the minor-details pass (the owner asked for more small things in the town): small paintings, no words
+		// GEMTOE's trader's scales on her band: an amethyst on the high pan, coins spilling off the low one (Avarice)
+		slot("scales", 384, 96, (cx, w, h) => {
+			(cx.fillStyle = "#3a1a2a"), cx.fillRect(0, 0, w, h), (cx.strokeStyle = "#d8b040"), (cx.lineWidth = 5), (cx.lineCap = "round");
+			cx.beginPath(), cx.moveTo(192, 86), cx.lineTo(192, 24), cx.moveTo(156, 88), cx.lineTo(228, 88), cx.stroke();
+			cx.save(), cx.translate(192, 24), cx.rotate(0.16), cx.beginPath(), cx.moveTo(-120, 0), cx.lineTo(120, 0), cx.stroke(), cx.restore();
+			(cx.lineWidth = 2), cx.beginPath(), cx.moveTo(74, 5), cx.lineTo(74, 48), cx.moveTo(310, 43), cx.lineTo(310, 74), cx.stroke();
+			(cx.fillStyle = "#d8b040"), [[74, 48], [310, 74]].forEach(([x, y]) => (cx.beginPath(), cx.arc(x, y, 34, 0, Math.PI), cx.fill()));
+			// the amethyst: a hexagon with a lit top facet
+			(cx.fillStyle = "#9a5ad0"), cx.beginPath(), [[74, 20], [86, 28], [86, 42], [74, 48], [62, 42], [62, 28]].forEach(([x, y], k) => (k ? cx.lineTo(x, y) : cx.moveTo(x, y))), cx.closePath(), cx.fill();
+			(cx.fillStyle = "#c8a0f0"), cx.beginPath(), cx.moveTo(74, 20), cx.lineTo(86, 28), cx.lineTo(74, 34), cx.lineTo(62, 28), cx.closePath(), cx.fill();
+			// the coins: three stacks of four, two slipping past the rim
+			(cx.lineWidth = 1.5), (cx.strokeStyle = "#d8b040");
+			[[288, 70], [310, 72], [332, 70], [352, 82], [268, 84]].forEach(([x, y], k) => {
+				for (let j = 0; j < (k < 3 ? 4 : 1); j++) (cx.fillStyle = "#f2c21a"), cx.beginPath(), cx.ellipse(x, y - 5 * j, 14, 4, k > 2 ? 0.4 : 0, 0, l), cx.fill(), cx.stroke();
+			});
+		});
+		// a row of MONTGUMMERY's cassettes on the video store's band, the last one bitten (he eats them)
+		slot("bitten", 384, 96, (cx, w, h) => {
+			(cx.fillStyle = "#1a1a1e"), cx.fillRect(0, 0, w, h);
+			[30, 118, 206, 294].forEach((x0, k) => {
+				(cx.fillStyle = "#2a2a30"), cx.fillRect(x0, 24, 70, 46), (cx.strokeStyle = "#e8e8ec"), (cx.lineWidth = 3);
+				[20, 50].forEach((dx) => (cx.beginPath(), cx.arc(x0 + dx, 50, 8, 0, l), cx.stroke()));
+				(cx.fillStyle = "#f4f0e0"), cx.fillRect(x0 + 8, 60, 54, 8), (cx.fillStyle = "#8a8478"), cx.fillRect(x0 + 14, 63, 30, 2);
+				if (3 === k) {
+					// two scallops out of the top-right corner, tooth marks along the bite, crumbs
+					(cx.fillStyle = "#1a1a1e"), [[x0 + 70, 24, 18], [x0 + 56, 20, 12]].forEach(([x, y, r]) => (cx.beginPath(), cx.arc(x, y, r, 0, l), cx.fill()));
+					(cx.fillStyle = "#2a2a30"), [76, 79, 82].forEach((y, j) => cx.fillRect(x0 + 40 + 9 * j, y, 3, 3)), [[x0 + 30, 78], [x0 + 52, 86]].forEach(([x, y]) => cx.fillRect(x, y, 4, 4));
+				}
+			});
+		});
+		// GOOWARD's winged cone on the parlour's band: three goo scoops over a waffle cone, crystal wings either side
+		slot("wings", 384, 96, (cx, w, h) => {
+			(cx.fillStyle = "#3a2a20"), cx.fillRect(0, 0, w, h);
+			(cx.fillStyle = "#d8a860"), cx.beginPath(), cx.moveTo(172, 52), cx.lineTo(212, 52), cx.lineTo(192, 92), cx.closePath(), cx.fill();
+			cx.save(), cx.beginPath(), cx.moveTo(172, 52), cx.lineTo(212, 52), cx.lineTo(192, 92), cx.closePath(), cx.clip(), (cx.strokeStyle = "#b8884a"), (cx.lineWidth = 1.5);
+			for (let j = -2; j < 3; j++) cx.beginPath(), cx.moveTo(150 + 12 * j, 92), cx.lineTo(192 + 12 * j, 50), cx.moveTo(234 - 12 * j, 92), cx.lineTo(192 - 12 * j, 50), cx.stroke();
+			cx.restore();
+			[-1, 1].forEach((sd) => {
+				for (let j = 0; j < 3; j++) {
+					(cx.fillStyle = "rgba(205,240,255,.85)"), (cx.strokeStyle = "#ffffff"), (cx.lineWidth = 2), cx.beginPath();
+					cx.moveTo(192 + sd * 22, 36), cx.lineTo(192 + sd * (70 + 30 * j), 14 + 10 * j), cx.lineTo(192 + sd * (130 + 22 * j), 30 + 6 * j), cx.lineTo(192 + sd * (60 + 24 * j), 48), cx.closePath(), cx.fill(), cx.stroke();
+					(cx.strokeStyle = "#8af0ff"), (cx.lineWidth = 1), cx.beginPath(), cx.moveTo(192 + sd * 22, 36), cx.lineTo(192 + sd * (130 + 22 * j), 30 + 6 * j), cx.stroke();
+				}
+			});
+			(cx.fillStyle = "#36d0e8"), cx.beginPath(), cx.arc(192, 38, 26, 0, l), cx.fill();
+			[["#e8409e", 180, 30, 8], ["#9a52e0", 202, 44, 7], ["#c8e040", 190, 50, 6]].forEach(([c, x, y, r]) => ((cx.fillStyle = c), cx.beginPath(), cx.arc(x, y, r, 0, l), cx.fill()));
+		});
+		// ZOLLOD's five pots on the florist's band, seed to flower
+		slot("sprout", 384, 96, (cx, w, h) => {
+			(cx.fillStyle = "#2a4a2a"), cx.fillRect(0, 0, w, h);
+			[40, 116, 192, 268, 344].forEach((x0, k) => {
+				(cx.fillStyle = "#b8603a"), cx.beginPath(), cx.moveTo(x0 - 20, 62), cx.lineTo(x0 + 20, 62), cx.lineTo(x0 + 15, 90), cx.lineTo(x0 - 15, 90), cx.closePath(), cx.fill();
+				(cx.fillStyle = "#c8703a"), cx.fillRect(x0 - 22, 58, 44, 7), (cx.fillStyle = "#4a3020"), cx.fillRect(x0 - 16, 60, 32, 4);
+				if (0 === k) (cx.fillStyle = "#5a3a1e"), [-8, 0, 8].forEach((dx) => (cx.beginPath(), cx.ellipse(x0 + dx, 62, 3, 2, 0, 0, l), cx.fill()));
+				else {
+					(cx.strokeStyle = "#4f9a2a"), (cx.lineWidth = 3), cx.beginPath(), cx.moveTo(x0, 60), cx.lineTo(x0, 60 - 14 * k), cx.stroke();
+					(cx.fillStyle = "#5aa83a");
+					for (let j = 1; j <= k; j++) [-1, 1].forEach((sd) => (cx.beginPath(), cx.ellipse(x0 + 6 * sd, 60 - 12 * j, 5, 2, sd * 0.5, 0, l), cx.fill()));
+				}
+				if (3 === k) (cx.fillStyle = "#d0307e"), cx.beginPath(), cx.ellipse(x0, 18, 4, 6, 0, 0, l), cx.fill();
+				if (4 === k) {
+					(cx.fillStyle = "#e8409e");
+					for (let j = 0; j < 6; j++) cx.beginPath(), cx.ellipse(x0 + 9 * Math.cos((j * l) / 6), 18 + 9 * Math.sin((j * l) / 6), 4.5, 7, (j * l) / 6 + Math.PI / 2, 0, l), cx.fill();
+					(cx.fillStyle = "#ffd23a"), cx.beginPath(), cx.arc(x0, 18, 6, 0, l), cx.fill();
+				}
+			});
+		});
+		// ANOMALEE's workbench on her band: a set turned round with its tubes glowing, tools, and her dinner on a plate
+		slot("repair", 384, 96, (cx, w, h) => {
+			(cx.fillStyle = "#2a2a36"), cx.fillRect(0, 0, w, h), (cx.fillStyle = "#c8c0b0"), cx.fillRect(70, 14, 120, 66), (cx.fillStyle = "#141418"), cx.fillRect(84, 24, 92, 48);
+			[96, 124, 152].forEach((x) => ((cx.fillStyle = "rgba(255,200,120,.35)"), cx.beginPath(), cx.ellipse(x + 7, 49, 16, 22, 0, 0, l), cx.fill(), (cx.fillStyle = "#ffb347"), cx.fillRect(x, 34, 14, 30)));
+			cx.save(), cx.translate(210, 50), cx.rotate(0.35), (cx.fillStyle = "#a8a098"), cx.fillRect(-8, -30, 16, 60), cx.restore();
+			(cx.fillStyle = "#ffd23a"), cx.fillRect(20, 80, 40, 8), (cx.fillStyle = "#9aa0a8"), cx.fillRect(60, 82, 40, 4);
+			(cx.strokeStyle = "#9aa0a8"), (cx.lineWidth = 3), cx.beginPath(), cx.moveTo(44, 70), cx.lineTo(68, 92), cx.moveTo(68, 70), cx.lineTo(44, 92), cx.stroke();
+			(cx.fillStyle = "#f6f4ee"), cx.beginPath(), cx.ellipse(312, 70, 48, 18, 0, 0, l), cx.fill();
+			(cx.fillStyle = "#e8b848"), cx.beginPath(), cx.moveTo(284, 72), cx.lineTo(340, 72), cx.lineTo(312, 32), cx.closePath(), cx.fill();
+			(cx.strokeStyle = "#c88a30"), (cx.lineWidth = 4), cx.beginPath(), cx.moveTo(284, 72), cx.lineTo(340, 72), cx.stroke();
+			(cx.fillStyle = "#c8282a"), [[306, 58], [318, 50], [312, 66]].forEach(([x, y]) => (cx.beginPath(), cx.arc(x, y, 5, 0, l), cx.fill()));
+		});
+		// the sighting painted on the Consortium's trailer: a saucer over a scorched ring under the stars
+		slot("saucer", 192, 128, (cx, w, h) => {
+			(cx.fillStyle = "#1c2440"), cx.fillRect(0, 0, w, h), (cx.fillStyle = "#ffffff");
+			[[14, 12], [40, 30], [78, 8], [120, 20], [150, 10], [176, 34], [30, 70], [170, 66]].forEach(([x, y]) => cx.fillRect(x, y, 2, 2));
+			(cx.fillStyle = "rgba(255,240,160,.16)"), cx.beginPath(), cx.moveTo(76, 52), cx.lineTo(116, 52), cx.lineTo(150, 116), cx.lineTo(42, 116), cx.closePath(), cx.fill();
+			(cx.fillStyle = "#3a3028"), cx.beginPath(), cx.ellipse(96, 110, 48, 9, 0, 0, l), cx.fill(), (cx.fillStyle = "#2a241e"), cx.beginPath(), cx.ellipse(96, 110, 40, 6, 0, 0, l), cx.fill();
+			(cx.fillStyle = "#c8ccd4"), cx.beginPath(), cx.ellipse(96, 46, 60, 11, 0, 0, l), cx.fill(), (cx.fillStyle = "#e8eaee"), cx.beginPath(), cx.ellipse(96, 36, 26, 16, 0, Math.PI, l), cx.fill();
+			(cx.fillStyle = "#ffd23a"), [66, 96, 126].forEach((x) => (cx.beginPath(), cx.arc(x, 54, 4, 0, l), cx.fill()));
+		});
+		// a Blossom stencilled on the grocer's crates (transparent round it: the crate's wood shows)
+		slot("blossom", 96, 96, (cx, w, h) => {
+			cx.clearRect(0, 0, w, h);
+			const petal = (c, s, rot) => {
+				for (let k = 0; k < 7; k++) cx.save(), cx.translate(48, 52), cx.rotate(rot + (k * l) / 7), cx.scale(s, s), (cx.fillStyle = c), cx.beginPath(), cx.moveTo(0, -10), cx.bezierCurveTo(10, -22, 6, -40, 0, -44), cx.bezierCurveTo(-6, -40, -10, -22, 0, -10), cx.fill(), cx.restore();
+			};
+			petal("#e8301e", 1, 0), petal("#ff6a1a", 0.6, 0.4);
+			(cx.fillStyle = "#a8200e"), cx.beginPath(), cx.arc(48, 52, 9, 0, l), cx.fill(), (cx.fillStyle = "#ffb347"), cx.beginPath(), cx.arc(48, 44, 4, 0, l), cx.fill();
+		});
+		// SPARKAKUS's paw print, set in the sidewalk (transparent round it)
+		slot("paw", 64, 64, (cx) => {
+			cx.clearRect(0, 0, 64, 64), (cx.fillStyle = "#6a655c"), cx.beginPath(), cx.ellipse(32, 42, 14, 11, 0, 0, l), cx.fill();
+			[[13, 26, 6], [25, 13, 7], [39, 13, 7], [51, 26, 6]].forEach(([x, y, r]) => (cx.beginPath(), cx.ellipse(x, y, r, 1.2 * r, 0, 0, l), cx.fill()));
+		});
 		shelf.y + shelf.h > ATH && vo(new Error("sign atlas overflow"), "jgp-town");
 		const atlasTx = b(
 			ATW,
@@ -15587,6 +15690,13 @@ const JGP = (() => {
 			B.geo("plain", usph(10), "#d8dce0", px, 3.35, 0.35, 0.26, 0.26, 0.26).geo("plain", ucyl(10), "#d8dce0", px, 2.0, 0.35, 0.26, 0.1, 0.26);
 			B.box("plain", "#d8dce0", px, 2.7, 0.18, 0.06, 0.06, 0.34);
 		};
+		// a premiere searchlight on a flat roof: a yoked drum on a post, its lens in the lamp bin so it lights at night
+		const searchlight = (B, px, py, pz) => {
+			const gr = "#5a6068";
+			B.box("plain", "#3a3e44", px, py + 0.11, pz, 0.7, 0.24, 0.7).geo("plain", ucyl(6), gr, px, py + 0.63, pz, 0.12, 0.82, 0.12).box("plain", gr, px, py + 1.06, pz, 0.8, 0.06, 0.06);
+			[-1, 1].forEach((sx) => B.box("plain", gr, px + 0.34 * sx, py + 1.41, pz, 0.06, 0.66, 0.06).box("plain", gr, px + 0.31 * sx, py + 1.74, pz, 0.08, 0.05, 0.05));
+			B.geo("plain", ucyl(8), "#8a8e96", px, py + 1.74, pz, 0.56, 1.0, 0.56, 0.5, 0, 0).geo("lamp", usph(6, !0), "#fff2b8", px, py + 2.184, pz + 0.242, 0.5, 0.12, 0.5, 0.5, 0, 0);
+		};
 		// the picture house: a marquee of bulbs over the doors carrying tonight's bill, KING DINO (his crown, plume
 		// and drumsticks painted, no words), and a blade sign of gold stars up the corner
 		const marquee = (B, w) => {
@@ -15633,7 +15743,7 @@ const JGP = (() => {
 			[-1, 1].forEach((sx) => B.box("plain", "#7a5a3a", px + 1.15 * sx, 0.2, pz, 0.08, 0.4, 0.7));
 			["#ff8a1a", "#ffd23a", "#8ad83a", "#ff5a7a"].forEach((c, k) => {
 				const x0 = px - 0.9 + 0.6 * k;
-				B.box("boards", "#c8a070", x0, 0.62, pz, 0.56, 0.32, 0.6);
+				B.box("boards", "#c8a070", x0, 0.62, pz, 0.56, 0.32, 0.6).sign("blossom", x0, 0.64, pz + 0.31, 0.26, 0.26);
 				for (let j = 0; j < 3; j++) B.geo("plain", usph(4), c, x0 - 0.16 + 0.16 * j, 0.84, pz + 0.12 * (j % 2 ? 1 : -1), 0.17, 0.15, 0.17);
 			});
 		};
@@ -15745,6 +15855,11 @@ const JGP = (() => {
 				.geo("plain", usph(8), "#d8b040", 0, h + 17.4, -D / 2, 0.3, 0.3, 0.3);
 			// foundation shrubs
 			for (let k = -4; k <= 4; k++) Math.abs(k) > 1 && B.geo("plain", crownGeo(k & 3, 1), "#3a6e30", 3 * k, 0.7, 0.8, 1.3, 0.9, 0.9);
+			// the seal's five garden flowers planted in two beds flanking the steps, on the lawn either side of the walk
+			[-1, 1].forEach((sx) => {
+				B.box("plain", "#5a4030", 6.3 * sx, 0.14, 6.0, 2.6, 0.28, 0.9);
+				["#e8409e", "#ffd23a", "#9a52e0", "#36d0e8", "#e8301e"].forEach((c, k) => B.geo("plain", flowerGeo, c, 6.3 * sx - 1.0 + 0.5 * k, 0.29, 6.0 + (k % 2 ? 0.08 : -0.08), 0.3, 0.3, 0.3, 0, k, 0));
+			});
 			return B;
 		};
 		const CHURCH = (cx, cz, ry = 0, D = 22) => {
@@ -16467,7 +16582,7 @@ const JGP = (() => {
 					const t2 = k / 18;
 					pts.push([a0 + MW * t2, PY + 0.3 + MH * (1 - (2 * t2 - 1) ** 2), pz0]);
 				}
-				B.geo("plain", ao(pts, 0.4, 0.4, 44, 10), gold);
+				B.geo("plain", ao(pts, 0.4, 0.4, 24, 8), gold);
 			});
 			// drive-thru menu board and speaker post beside the lane
 			[-1.1, 1.1].forEach((pz) => B.box("plain", "#3a3a3e", 9.3, 1.1, -3 + pz, 0.12, 2.2, 0.12));
@@ -16614,9 +16729,9 @@ const JGP = (() => {
 		};
 		const lampPost = (X, Z) => {
 			const iron = "#1e2226";
-			put("plain", ucyl(8), iron, S(X, 0.25, Z, 0, 0, 0, 0.42, 0.5, 0.42)), put("plain", ucyl(8), iron, S(X, 2.25, Z, 0, 0, 0, 0.15, 4.0, 0.15));
-			put("plain", ucyl(8), iron, S(X, 4.3, Z, 0, 0, 0, 0.34, 0.12, 0.34)), put("lamp", usph(8), "#f6f0dc", S(X, 4.66, Z, 0, 0, 0, 0.62, 0.66, 0.62));
-			put("plain", ucone(8), iron, S(X, 5.06, Z, 0, 0, 0, 0.26, 0.2, 0.26)), E.add(X, Z, 0.6, "scenery");
+			put("plain", ucyl(6), iron, S(X, 0.25, Z, 0, 0, 0, 0.42, 0.5, 0.42)), put("plain", ucyl(6), iron, S(X, 2.25, Z, 0, 0, 0, 0.15, 4.0, 0.15));
+			put("plain", ucyl(6), iron, S(X, 4.3, Z, 0, 0, 0, 0.34, 0.12, 0.34)), put("lamp", usph(8), "#f6f0dc", S(X, 4.66, Z, 0, 0, 0, 0.62, 0.66, 0.62));
+			put("plain", ucone(6), iron, S(X, 5.06, Z, 0, 0, 0, 0.26, 0.2, 0.26)), E.add(X, Z, 0.6, "scenery");
 		};
 		const gazebo = (X, Z) => {
 			const B = place(X, Z, faceIn(X, Z)),
@@ -16714,6 +16829,9 @@ const JGP = (() => {
 				}
 			}),
 		);
+		// GOOWARD's drips across the north-east crosswalk, one on the sidewalk (a goo trail in his four colours)
+		put("plain", ucyl(5), "#36d0e8", S(39.0, -0.04, -46.5, 0, 0.4, 0, 0.44, 0.04, 0.36)), put("plain", ucyl(5), "#e8409e", S(39.6, -0.04, -44.5, 0, 1.1, 0, 0.36, 0.04, 0.3));
+		put("plain", ucyl(5), "#9a52e0", S(39.2, -0.04, -42.5, 0, 2.0, 0, 0.4, 0.04, 0.34)), put("plain", ucyl(5), "#c8e040", S(39.9, 0.03, -39.4, 0, 0.7, 0, 0.3, 0.04, 0.26));
 		// mowed stripes on the green
 		for (let k = 0; k < 26; k++) put("lawn", UHs(1, 8), k % 2 ? "#4a7a2c" : "#3f6c26", S(-38 + (k + 0.5) * (76 / 26), -0.02, ZS / 2, 0, 0, 0, 76 / 26, 1, 76 + ZS));
 		// walks: a ring around the garden and a walk out to each place there is to go: the Library
@@ -16770,6 +16888,25 @@ const JGP = (() => {
 		// furnishings on the square (kept clear of the line-ups, the stations and the spawn point)
 		[-30, -15, 0, 15, 30].forEach((u) => (u && lampPost(u, 40.6 + ZS), lampPost(u, -40.6)));
 		[-30, -15, 0, 15, 30, 45].forEach((u) => (lampPost(40.6, u), lampPost(-40.6, u)));
+		// ZOLLOD's hanging baskets on the four posts behind the line-up: an iron arm, a chain, a coir basket and a
+		// dome of pinks, hung out over the sidewalk toward the fence
+		[-15, 0, 15, 30].forEach((u, k) => {
+			const B = place(40.6, u, -Math.PI / 2);
+			B.box("plain", "#1e2226", 0, 3.3, 0.3, 0.05, 0.05, 0.6)
+				.box("plain", "#1e2226", 0, 3.1, 0.5, 0.025, 0.36, 0.025)
+				.geo("plain", ucone(6), "#6a4a32", 0, 2.84, 0.5, 0.42, 0.26, 0.42, Math.PI, 0, 0)
+				.geo("plain", usph(5, !0), k % 2 ? "#ff7ab8" : "#e8409e", 0, 2.955, 0.5, 0.5, 0.3, 0.5);
+		});
+		// SOMLET's mail cart left at the kerb opposite the Post Office, its sack slumped, two letters dropped beside it
+		{
+			const B = place(39.4, -21.5, -Math.PI / 2);
+			[-1, 1].forEach((sx) => B.geo("plain", ucyl(6), "#2a2a2e", sx * 0.62, 0.32, 0, 0.72, 0.06, 0.72, 0, 0, Math.PI / 2));
+			B.box("plain", "#3a3a3e", 0, 0.33, 0, 1.36, 0.04, 0.04).box("boards", "#8a6a4a", 0, 0.59, 0, 1.1, 0.5, 0.7);
+			[-1, 1].forEach((sz) => B.box("plain", "#3a3a3e", -0.78, 0.92, sz * 0.25, 0.56, 0.04, 0.04, 0, 0, 0.3));
+			B.geo("plain", usph(6), "#8a94a8", 0.05, 0.98, 0, 0.8, 0.5, 0.6).box("plain", "#5a6478", 0.05, 1.2, 0, 0.3, 0.06, 0.62);
+			B.box("plain", "#f6f0dc", 0.95, 0.015, 0.45, 0.24, 0.014, 0.16, 0, 0.4, 0).box("plain", "#f6f0dc", 1.1, 0.015, -0.3, 0.24, 0.014, 0.16, 0, -0.7, 0).box("plain", "#c8282a", 1.02, 0.03, 0.5, 0.04, 0.012, 0.04, 0, 0.4, 0);
+			E.add(39.4, -21.5, 0.9, "scenery");
+		}
 		gazebo(GAZEBO[0], GAZEBO[1]);
 		[
 			[22, 34 + ZS, 1.2, 0],
@@ -16807,6 +16944,11 @@ const JGP = (() => {
 			put("plain", ucyl(6), "#7a8088", S(X - 0.9 * sx, 1.25, Z + 0.4 * sz, 0, 0, 0, 0.08, 2.5, 0.08));
 			place(X - 0.9 * sx, Z + 0.4 * sz, faceIn(X, Z)).sign("stop", 0, 2.35, 0.05, 0.8, 0.8);
 		});
+		// SPARKAKUS's paw prints set in the north sidewalk by the Library's corner, a lope heading east (flat quads, face up)
+		{
+			const P = place(-34, -39.7, -Math.PI / 2);
+			[[-36.6, -40.2], [-35.5, -39.2], [-34.4, -40.2], [-33.3, -39.2], [-32.2, -40.2], [-31.1, -39.2]].forEach(([wx, wz]) => P.sign("paw", wz + 39.7, 0.012, -34 - wx, 0.26, 0.28, 0, -Math.PI / 2));
+		}
 
 		// ---- the buildings ----------------------------------------------------------------------------
 		// Main Street, east side (fronts face the square): Mistergummery's drive-in on the north end, its
@@ -16827,16 +16969,27 @@ const JGP = (() => {
 						pier: "#6a1e22",
 						front: "#3a1a2a",
 						lintel: "#d8b040",
+						band: "scales",
 						crest: !0,
 						extra: (B, w2, h2) => {
 							crystals(B, 0, h2 + 1.2, -0.15, 2.6), bracket(B, -w2 / 2 + 1.0, 5.9, 1.3), gem(B, "#9a5ad0", -w2 / 2 + 1.0, 5.1, 1.15, 0.62, Math.PI / 4);
+							// iron bars over her display windows (the one store that keeps gems): three uprights and a rail
+							// on each pane, in front of the frame's rails (which reach z 0.12), between the sill and head rails
+							const a0 = 0.75,
+								a1 = (w2 - 1.0) / 2 - 0.07,
+								pw = a1 - a0;
+							[-1, 1].forEach((sx) => {
+								const cx = (sx * (a0 + a1)) / 2;
+								[-0.27, 0, 0.27].forEach((f) => B.box("plain", "#1e2226", cx + f * pw, 1.84, 0.17, 0.05, 2.26, 0.05));
+								B.box("plain", "#1e2226", cx, 1.84, 0.21, pw - 0.1, 0.05, 0.05);
+							});
 						},
 					}),
 			],
 			// the barber's, by its pole (a trade sign everybody reads)
-			[8 * NARROW, 8, (X, Z, w, h) => FRONTIER(X, Z, -Math.PI / 2, w, h, { col: "#a8c4d8", front: "#22325a", shutter: "#22325a", extra: (B, w2) => barberPole(B, w2 / 2 - 0.45) })],
+			[8 * NARROW, 8, (X, Z, w, h) => FRONTIER(X, Z, -Math.PI / 2, w, h, { col: "#a8c4d8", front: "#22325a", awn: "aw_blue", shutter: "#22325a", extra: (B, w2) => barberPole(B, w2 / 2 - 0.3) })],
 			// the picture house, billing KING DINO
-			[12 * NARROW, 10.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#7a3a2a", front: "#1a1a1e", signBg: "#1a1a1e", extra: (B, w2) => marquee(B, w2) })],
+			[12 * NARROW, 10.5, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { col: "#7a3a2a", front: "#1a1a1e", signBg: "#1a1a1e", extra: (B, w2, h2) => (marquee(B, w2), searchlight(B, -3.2, h2 + 0.06, -1.3)) })],
 			// the diner, ridged chrome under a red front, MAMA GORBO's goo shake up on its roof
 			[10 * NARROW, 9, (X, Z, w, h) => STORE(X, Z, -Math.PI / 2, w, h, { bin: "siding", col: "#d8dce0", pier: "#c8282a", front: "#c8282a", awn: "aw_red", trim: "#c8ccd4", lintel: "#c8ccd4", extra: (B, w2, h2) => gooShake(B, 0, h2, -1.5, 2.4) })],
 			// GLYPH's sign shop: porcelain blue, gold filigree on its band, his red trident on a gold shield over the door,
@@ -16860,6 +17013,12 @@ const JGP = (() => {
 							const n = Math.floor((w2 - 1) / 0.6);
 							for (let k = 0; k < n; k++) B.geo("plain", ucyl(6), ["#1e2a5a", "#d8b040", "#3ac8c0"][k % 3], -((n - 1) * 0.6) / 2 + 0.6 * k, h2 - 0.8, 0.22, 0.72, 0.06, 0.72, Math.PI / 2, 0, 0);
 							[-1, 1].forEach((sx) => B.box("plain", "#6a2aa0", 0.75 * sx, h2 + 1.7, -0.15, 0.9, 0.9, 0.12).geo("plain", ucyl(10), "#d8b040", 0.75 * sx, h2 + 1.7, -0.06, 0.5, 0.06, 0.5, Math.PI / 2, 0, 0));
+							// his A-board out on the walk: two leaning boards under a gold cap, a teal hex plate with a gold coin on
+							// the face toward the street (its ridge 0.95 m off the facade, feet 2 mm over the walk)
+							[[2.0375, -0.3], [1.7125, 0.3]].forEach(([pz, rx]) => B.box("boards", "#1e2a5a", 2.9, 0.532, pz, 0.8, 1.1, 0.03, rx, 0, 0));
+							B.box("plain", "#d8b040", 2.9, 1.06, 1.875, 0.82, 0.05, 0.14)
+								.geo("plain", ucyl(6), "#3ac8c0", 2.9, 0.542, 2.07, 0.7, 0.03, 0.7, Math.PI / 2 - 0.3, 0, 0)
+								.geo("plain", ucyl(8), "#d8b040", 2.9, 0.549, 2.094, 0.4, 0.012, 0.4, Math.PI / 2 - 0.3, 0, 0);
 						},
 					}),
 			],
@@ -16893,7 +17052,7 @@ const JGP = (() => {
 			// the grocer's: fruit in crates on the walk (the Juice Bar's colours), a giant carrot on the crest
 			[12, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#c49a6a", awn: "aw_green", front: "#2a4a2a", crest: !0, extra: (B, w2, h2) => (produce(B, -2.6, 1.2), carrot(B, 0, h2 + 1.45, -0.15, 1.4, 0)) })],
 			// the ice cream parlour: three scoops of goo flavour on a cone over its false front
-			[9, 7.5, (X, Z, w, h) => FRONTIER(X, Z, Math.PI / 2, w, h, { col: "#f0dc9a", awn: "aw_pink", front: "#3a2a20", shutter: "#e87aa0", extra: (B, w2, h2) => iceCream(B, 0, h2 + 1.1, -0.2, 0.95) })],
+			[9, 7.5, (X, Z, w, h) => FRONTIER(X, Z, Math.PI / 2, w, h, { col: "#f0dc9a", awn: "aw_pink", band: "wings", front: "#3a2a20", shutter: "#e87aa0", extra: (B, w2, h2) => iceCream(B, 0, h2 + 1.1, -0.2, 0.95) })],
 			// ETCHER's archive: blue-teal stone, his etched data in a row of panels over the door, his green gem on the
 			// crest, and his purple tails draped down the piers and the sides
 			[
@@ -16912,6 +17071,12 @@ const JGP = (() => {
 						extra: (B, w2, h2) => {
 							B.box("plain", "#2a8a9e", 0, h2 + 1.3, -0.15, 1.2, 0.14, 0.6), gem(B, "#3ad880", 0, h2 + 2.1, -0.15, 0.8, Math.PI / 4);
 							[-1, 1].forEach((sx) => (tentacle(B, sx * (w2 / 2 - 0.25), h2 - 0.3, 0.3, 4.4, sx), tentacle(B, sx * (w2 / 2 + 0.22), h2 - 0.3, -2.2, 3.6, 0)));
+							// a half-etched slab leaning on the south pier, its foot on the walk, his mallet and chisel dropped at its foot
+							B.box("stone", "#6a8a9a", -6.725, 0.945, 0.52, 1.2, 1.9, 0.14, -0.2, 0, 0)
+								.sign("etch", -6.725, 0.961, 0.6, 1.0, 1.0, 0, -0.2)
+								.geo("plain", ucyl(6), "#5a4030", -6.0, 0.08, 1.15, 0.16, 0.3, 0.16, 0, 0, Math.PI / 2)
+								.box("plain", "#b8a070", -5.76, 0.05, 1.15, 0.4, 0.04, 0.04)
+								.box("plain", "#9aa0a8", -6.3, 0.02, 1.3, 0.35, 0.03, 0.03, 0, 0.4, 0);
 						},
 					}),
 			],
@@ -16939,6 +17104,7 @@ const JGP = (() => {
 						col: "#7aa86a",
 						trim: "#f4f0e6",
 						front: "#2a4a2a",
+						band: "sprout",
 						shutter: "#e8301e",
 						extra: (B, w2, h2) => {
 							giantBlossom(B, 0, h2 + 1.1, -0.2, 0.95), blossomBed(B, -w2 / 2 + 1.7, 1.15, 2.4), blossomBed(B, w2 / 2 - 1.7, 1.15, 2.4);
@@ -16947,7 +17113,7 @@ const JGP = (() => {
 			],
 			// ANOMALEE's television repair: moulded plastic grey, a rabbit-ear aerial on the roof, old sets stacked
 			// by the door with her magenta glow in their screens
-			[9, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { bin: "siding", col: "#c8ccd2", pier: "#9aa0a8", front: "#2a2a36", lintel: "#9aa0a8", extra: (B, w2, h2) => (aerial(B, 1.4, h2, -3.0, 1.7), tvStack(B, -w2 / 2 + 1.6, 0.75, 0)) })],
+			[9, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { bin: "siding", col: "#c8ccd2", pier: "#9aa0a8", front: "#2a2a36", lintel: "#9aa0a8", band: "repair", extra: (B, w2, h2) => (aerial(B, 1.4, h2, -3.0, 1.7), tvStack(B, -w2 / 2 + 1.6, 0.75, 0)) })],
 		].forEach(([w, h, mk]) => (mk(-52.6, ZS - (zc + (w * MK) / 2), w * MK, h), (zc += w * MK)));
 		// north: courthouse with a flagpole and the fire station; a hotel on the corner (the church is in
 		// the square now)
@@ -16992,6 +17158,15 @@ const JGP = (() => {
 						for (let k = 0; k < 5; k++) B.geo("plain", ucone(4), "#38b8b0", 0.42 * Math.sin((k * l) / 5), ry0 + 0.5 + (k ? 0.3 : 0.45), -d / 2 + 0.42 * Math.cos((k * l) / 5), 0.28, k ? 0.6 : 0.9, 0.28);
 						B.geo("plain", usph(4), "#ffd23a", 0, ry0 + 1.1, -d / 2 + 0.42, 0.18, 0.18, 0.18);
 						B.geo("plain", ucyl(10), "#c8282a", w / 2 - 2.0, f0 + 0.32, pd / 2, 1.0, 0.64, 1.0).geo("plain", ucyl(10), "#f6f0dc", w / 2 - 2.0, f0 + 0.66, pd / 2, 1.0, 0.04, 1.0);
+						// his ride cymbal on its stand beside the drum, tipped toward the square
+						const cx = w / 2 - 3.4,
+							cz = pd / 2,
+							cy = f0 + 1.0;
+						B.geo("plain", ucyl(5), "#1e2226", cx, f0 + 0.02, cz, 0.44, 0.04, 0.44)
+							.geo("plain", ucyl(5), "#1e2226", cx, f0 + 0.485, cz, 0.06, 0.93, 0.06)
+							.geo("plain", ucyl(4), "#3a3a3e", cx, cy - 0.047, cz - 0.017, 0.08, 0.12, 0.08, 0.35, 0, 0)
+							.geo("plain", ucyl(10), "#d8b040", cx, cy, cz, 0.9, 0.03, 0.9, 0.35, 0, 0)
+							.geo("plain", usph(4, !0), "#c8a030", cx, cy + 0.014, cz + 0.005, 0.2, 0.1, 0.2, 0.35, 0, 0);
 					},
 				},
 			],
@@ -17008,6 +17183,18 @@ const JGP = (() => {
 						[[-0.8, 0.4], [0.6, -0.5], [0.2, 0.9]].forEach(([dx, dz]) => B.geo("plain", ucyl(8), "#4f9a2a", w / 4 + dx, 0.08, 5.0 + dz, 0.9, 0.04, 0.9));
 						B.geo("plain", usph(5), "#ff6a90", w / 4 + 0.6, 0.18, 5.0 - 0.5, 0.3, 0.22, 0.3);
 						B.geo("plain", ucone(8), "#d8b040", -w / 3, f0 + 0.26, pd / 2, 0.6, 0.9, 0.6, 0, 0, -Math.PI / 2 + 0.3).geo("plain", ucyl(6), "#d8b040", -w / 3 - 0.55, f0 + 0.2, pd / 2 - 0.05, 0.12, 0.5, 0.12, 0, 0, Math.PI / 2 - 0.3);
+						// her carrot patch on the yard's other side (the Juice Bar's carrots), one pulled carrot dropped on the walk
+						const bx = -3.4,
+							bz = 5.4;
+						B.box("plain", "#5a4030", bx, 0.14, bz, 3.4, 0.28, 1.1);
+						for (let k = 0; k < 6; k++) {
+							const x0 = bx - 1.25 + 0.5 * k,
+								z0 = bz + (k % 2 ? 0.25 : -0.25),
+								sh = k % 2 === 0;
+							sh && B.geo("plain", ucyl(5), "#f08a2a", x0, 0.31, z0, 0.14, 0.08, 0.14);
+							B.geo("plain", ucone(4), "#4f9a2a", x0, sh ? 0.54 : 0.46, z0, 0.22, 0.4, 0.22, 0, 0.4 * k, 0);
+						}
+						B.geo("plain", ucone(4), "#f08a2a", 0.15, 0.115, 5.6, 0.14, 0.5, 0.14, 0, 0.3, Math.PI / 2 - 0.1).geo("plain", ucone(4), "#4f9a2a", 0.42, 0.09, 5.62, 0.1, 0.25, 0.1, 0, 0.3, Math.PI / 2 + 0.3);
 					},
 				},
 			],
@@ -17055,6 +17242,13 @@ const JGP = (() => {
 					shutter: "#d0600e",
 					extra: (B, w, d, h, f0, pd) => {
 						[[-3.6, 5.2, 0.9], [-2.9, 5.9, 0.6], [3.4, 5.4, 0.75]].forEach(([px, pz, s2]) => B.geo("plain", ucyl(6, 0.42), "#f6eed4", px, 0.35 * s2, pz, 0.26 * s2, 0.7 * s2, 0.26 * s2).geo("plain", usph(6, !0), "#c82a24", px, 0.62 * s2, pz, 0.9 * s2, 0.5 * s2, 0.9 * s2));
+						// his porch telescope on a tripod, trained up at the sky over the square (the Consortium's deputy keeps watch)
+						const P = B.sub(-3.3, 1.3);
+						[0, 2.1, 4.2].forEach((a) => P.box("plain", "#5a4632", 0.19 * Math.sin(a), f0 + 0.63, 0.19 * Math.cos(a), 0.05, 1.3, 0.05, -0.29 * Math.cos(a), 0, 0.29 * Math.sin(a)));
+						P.box("plain", "#3a3e44", 0, f0 + 1.28, 0, 0.16, 0.18, 0.16)
+							.geo("plain", ucyl(6), "#22325a", 0, f0 + 1.52, 0.24, 0.14, 0.85, 0.14, 0.7, 0, 0)
+							.geo("plain", ucyl(6, 0.5, !0), "#d8b040", 0, f0 + 1.843, 0.512, 0.17, 0.08, 0.17, 0.7, 0, 0)
+							.geo("plain", ucyl(5), "#1e2226", 0, f0 + 1.17, -0.055, 0.06, 0.1, 0.06, 0.7, 0, 0);
 					},
 				},
 			],
@@ -17103,6 +17297,19 @@ const JGP = (() => {
 						B.box("plain", "#5a4030", 0, 0.25, pd + 0.62, w - 1.4, 0.4, 0.5).box("plain", "#4f9a2a", 0, 0.47, pd + 0.62, w - 1.5, 0.06, 0.42);
 						for (let k = 0; k < 9; k++) B.geo("plain", usph(4), "#f2c21a", -w / 2 + 1.2 + 0.8 * k, 0.68, pd + 0.62 + (k % 2 ? 0.1 : -0.1), 0.3, 0.26, 0.3);
 						B.box("plain", "#1e2226", 0, f0 + h + 3.5, -d / 2 + 1.5, 0.05, 0.6, 0.05).sign("gstar", 0, f0 + h + 4.1, -d / 2 + 1.53, 0.8, 0.8).sign("gstar", 0, f0 + h + 4.1, -d / 2 + 1.47, 0.8, 0.8, Math.PI);
+						// his rocking chair in the railed bay of the porch, an open book left on the seat (the librarian reads at home)
+						const cx = 2.6,
+							cz = 1.2,
+							wd = "#6a4a2a";
+						B.box("plain", wd, cx, f0 + 0.42, cz, 0.6, 0.05, 0.55)
+							.box("plain", wd, cx, f0 + 0.79, cz - 0.3, 0.6, 0.7, 0.05, -0.15, 0, 0)
+							.box("plain", wd, cx - 0.3, f0 + 0.24, cz, 0.05, 0.4, 0.7)
+							.box("plain", wd, cx + 0.3, f0 + 0.24, cz, 0.05, 0.4, 0.7)
+							.box("plain", wd, cx - 0.3, f0 + 0.02, cz, 0.05, 0.04, 0.85)
+							.box("plain", wd, cx + 0.3, f0 + 0.02, cz, 0.05, 0.04, 0.85);
+						B.box("plain", "#2c4cc0", cx, f0 + 0.45, cz + 0.02, 0.5, 0.01, 0.19)
+							.box("plain", "#f6f0dc", cx - 0.111, f0 + 0.483, cz + 0.02, 0.23, 0.02, 0.18, 0, 0, -0.25)
+							.box("plain", "#f6f0dc", cx + 0.111, f0 + 0.483, cz + 0.02, 0.23, 0.02, 0.18, 0, 0, 0.25);
 					},
 				},
 			],
@@ -17189,7 +17396,7 @@ const JGP = (() => {
 			const B = place(X, Z, faceIn(X, Z)),
 				steel = "#7a8088";
 			B.box("siding", "#d8dce0", 0, 1.95, 0, 8, 2.5, 3).box("plain", "#9aa0a8", 0, 3.25, 0, 8.2, 0.12, 3.2).box("plain", "#2a2e34", 0, 0.35, 0, 7.4, 0.7, 2.6);
-			B.sign("s_star", -0.6, 1.95, 1.52, 1.5, 1.5).box("boards", "#5a3a22", 2.9, 1.65, 1.52, 0.9, 2.0, 0.06).win(-2.9, 1.35, 1.1, 0.8, { z: 1.5 });
+			B.sign("s_star", -0.6, 1.95, 1.52, 1.5, 1.5).sign("saucer", 1.3, 2.05, 1.52, 1.35, 0.9).box("boards", "#5a3a22", 2.9, 1.65, 1.52, 0.9, 2.0, 0.06).win(-2.9, 1.35, 1.1, 0.8, { z: 1.5 });
 			B.box("concrete", "#c8c2b6", 2.9, 0.3, 2.0, 1.2, 0.6, 1.0);
 			const mx = -7;
 			[-1, 1].forEach((sx) => [-1, 1].forEach((sz) => B.box("plain", steel, mx + 0.7 * sx, 6, 0.7 * sz, 0.14, 12, 0.14)));
@@ -17197,12 +17404,16 @@ const JGP = (() => {
 			const dish = B.sub(mx, 0, 0, 12.4);
 			dish.geo("plain", usph(12, !0), "#e8eaee", 0, 0, 0, 6, 1.8, 6, -2.5, 0, 0).geo("plain", ucyl(5), steel, 0, 1.1, 0.6, 0.12, 2.6, 0.12, -0.6, 0, 0).geo("plain", usph(6), steel, 0, 2.2, 1.2, 0.4, 0.4, 0.4);
 			dish.box("plain", steel, 0, -0.3, 0, 1.6, 0.6, 1.6);
+			// the Consortium's standard: a navy flag with the star both sides, hung from a yardarm off the mast
+			B.box("plain", steel, mx + 1.32, 10.3, 0, 1.2, 0.08, 0.08).box("plain", "#1c2440", mx + 1.37, 9.72, 0, 1.1, 1.1, 0.03);
+			B.sign("s_star", mx + 1.37, 9.72, 0.02, 0.8, 0.8).sign("s_star", mx + 1.37, 9.72, -0.02, 0.8, 0.8, Math.PI);
 		};
 		// the town's video store, on the corner lot north-east of the square (MONTGUMMERY's favourite shop: he
 		// eats the tapes), a giant VHS cassette on its roof
 		STORE(56, -60, 0, 10, 8, {
 			col: "#8a9ab0",
 			awn: "aw_yellow",
+			band: "bitten",
 			// (in MONTGUMMERY's teal, his own face on a TV on the roof, a giant cassette beside it and two of his
 			// pots by the door: it is plainly his shop)
 			front: "#2a7a8a",
@@ -17216,6 +17427,12 @@ const JGP = (() => {
 				[-1, 1].forEach((sd) => B.box("plain", "#3a3a42", 2.6 + 0.45 * sd, h + 3.6, -1.6, 0.05, 1.3, 0.05, 0, 0, -0.45 * sd));
 				// his pots by the door, a little fern in each
 				[-1.6, 1.6].forEach((px) => B.geo("plain", ucyl(8, 0.62), "#b8603a", px, 0.35, 0.75, 0.6, 0.7, 0.6).geo("plain", ucone(5), "#3a7a3a", px, 0.95, 0.75, 0.5, 0.6, 0.5));
+				// a tape-return bin on a post right of the door, and on the lawn two cassettes somebody chewed,
+				// one bitten into an L, its ribbon pulled out in a ring
+				B.box("plain", "#3a3a42", 3.4, 0.505, 1.6, 0.12, 1.0, 0.12).box("plain", "#2a7a8a", 3.4, 1.35, 1.6, 0.8, 0.7, 0.5).box("plain", "#1a1a1e", 3.4, 1.55, 1.855, 0.5, 0.07, 0.03);
+				B.box("plain", "#1a1a1e", 4.1, 0.055, 2.3, 0.6, 0.1, 0.36, 0, 0.5, 0);
+				B.sub(2.8, 2.55, -0.9).box("plain", "#1a1a1e", 0, 0.055, -0.08, 0.6, 0.1, 0.2).box("plain", "#1a1a1e", -0.12, 0.055, 0.1, 0.36, 0.1, 0.16);
+				B.geo("plain", ucyl(6, 0.5, !0), "#2a2420", 3.5, 0.03, 2.9, 0.5, 0.05, 0.36);
 			},
 		});
 		// MAMA GORBO's goo burger, the Gorbos' recipe: a giant roadside burger up on a pole behind Mistergummery's,
@@ -17293,6 +17510,9 @@ const JGP = (() => {
 		}
 		// lamp posts along Main Street's far sidewalks
 		[-32, -16, 0, 16, 32].forEach((Z) => (lampPost(50.6, ZS / 2 + Z * MK), lampPost(-50.6, ZS / 2 + Z * MK)));
+		// the picture house's bills (KING DINO's, no words) hung from iron arms on the east side's lamps, facing the square
+		// (not the post in front of the picture house itself: its marquee hangs right over that one)
+		[-32, -16, 16, 32].forEach((Z) => place(50.6, ZS / 2 + Z * MK, -Math.PI / 2).box("plain", "#1e2226", 0.45, 3.7, 0, 0.9, 0.04, 0.04).sign("marq", 0.5, 3.59, 0, 0.8, 0.2));
 
 		// trees behind and between the buildings (kept off the footprints)
 		const FOOT = [
