@@ -17416,9 +17416,9 @@ const JGP = (() => {
 				// everyone, the visits made least often first. KING DINO never leaves his drums, SOMLET sleeps on at
 				// the Post Office and the church's ANCIENT never leaves its room: the others come to them (the ANCIENT only
 				// rarely, in and out through the wall where the X is, as the player does, and their exchange is seen
-				// only by a player in the church too). NEXTESSA and BACKPACKA neither visit nor are visited. Rare: one
-				// visit at a time, every three to six minutes; the Event, a battle or a meeting calls it off (everyone goes home as usual), and the
-				// player close by or talking to the visitor holds it up.
+				// only by a player in the church too). NEXTESSA and BACKPACKA neither visit nor are visited. One visit
+				// starts every 22 to 32 s (the owner asked for twice the old 45 to 65); the Event, a battle or a meeting
+				// calls it off (everyone goes home as usual), and the player close by or talking to the visitor holds it up.
 				{
 					const WHO = ["gratelet", "drifter", "blinker", "m_kingdino", "gorbo", "cutebex", "m_somlet", "frog", "p_etcher", "p_gemtoe", "p_glyph", "w_mont", "p_mamagorbo", "keeper", "slug"],
 						STAYS = ["m_kingdino", "m_somlet", "slug"],
@@ -17474,7 +17474,7 @@ const JGP = (() => {
 								return { key: pk[0] + pk[1], slug: "slug" === a || "slug" === b, ways: [STAYS.includes(a) ? null : [a, b], STAYS.includes(b) ? null : [b, a]].filter(Boolean) };
 							})
 							.filter((w) => w.ways.length);
-					let next = 25 + 20 * Math.random(),
+					let next = 12 + 10 * Math.random(),
 						want = null,
 						forced = null;
 					// (for the tests: a visit of h by v, begun at once whatever the pacing or the cap; with no pair,
@@ -17762,7 +17762,7 @@ const JGP = (() => {
 						const q = begin(t2, best[0], best[1]);
 						// (one setting off about every minute, 45 to 65 s apart: with the pairs side by side, every pair's two
 						// vignettes, its animation and its lines, in about three hours)
-						q && (q.text = kind), q && (want ? ((forced = q), (want = null)) : (next = t2 + 45 + 20 * Math.random()));
+						q && (q.text = kind), q && (want ? ((forced = q), (want = null)) : (next = t2 + 22 + 10 * Math.random()));
 					});
 				}
 			}
