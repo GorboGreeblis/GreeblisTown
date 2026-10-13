@@ -1201,6 +1201,22 @@ function De(t, e, o, a) {
 		i && (t.gcNavHome = !0);
 }
 let Oe = null;
+// (a per-instance opacity for qe's instanced meshes: the mesh's userData.gcOp rides in the spare slot of its
+// instance matrix (element 3, unused by the transform) and the material, patched with this, multiplies its alpha
+// by it. The Flint's glints pulse one by one this way in one draw.)
+// (the slot sits in the matrix's bottom row, which the instancing multiplies into the position's w: the
+// projection chunk is replaced to read the slot and put w back to 1 before the view transform)
+function gcOpPatch(t) {
+	(t.vertexShader = t.vertexShader
+		.replace("#include <common>", "#include <common>\nvarying float vGcOp;")
+		.replace(
+			"#include <project_vertex>",
+			"vec4 mvPosition = vec4( transformed, 1.0 );\n#ifdef USE_INSTANCING\nmvPosition = instanceMatrix * mvPosition;\nvGcOp = instanceMatrix[0][3];\nmvPosition.w = 1.0;\n#else\nvGcOp = 1.0;\n#endif\nmvPosition = modelViewMatrix * mvPosition;\ngl_Position = projectionMatrix * mvPosition;",
+		)),
+		(t.fragmentShader = t.fragmentShader
+			.replace("#include <common>", "#include <common>\nvarying float vGcOp;")
+			.replace("#include <color_fragment>", "#include <color_fragment>\ndiffuseColor.a *= vGcOp;"));
+}
 function qe(t) {
 	const e = (t) => {
 		const e = [];
@@ -1212,31 +1228,31 @@ function qe(t) {
 		);
 	};
 	if (!t.length) return;
-	const o = e(t[0]);
-	if (
-		!o.length ||
-		t.some((t) => {
-			const a = e(t);
-			return a.length !== o.length || a.some((t, e) => t.material !== o[e].material);
-		})
-	)
-		return;
-	const a = o.map((e) => {
-			const o = new THREE.InstancedMesh(e.geometry, e.material, t.length);
+	const o = e(t[0]),
+		n = t.map(e);
+	if (!o.length || n.some((t) => t.length !== o.length)) return;
+	// (a mesh whose material is one and the same across every item is instanced; one with a material of its own,
+	// as the Flint's glint, whose opacity pulses stone by stone, stays as it is. The Flint used to be left out
+	// whole for that glint: 33 stones at two draws each in a view of the south gate.)
+	const i = o.map((t, e) => n.every((o) => o[e].material === t.material));
+	if (!i.some(Boolean)) return;
+	const a = o.map((e, o) => {
+			if (!i[o]) return null;
+			const n = new THREE.InstancedMesh(e.geometry, e.material, t.length);
 			return (
-				(o.frustumCulled = !1),
-				(o.renderOrder = e.renderOrder),
-				o.instanceMatrix.setUsage(35048),
-				(o.matrixAutoUpdate = !1),
-				C.add(o),
-				o
+				(n.frustumCulled = !1),
+				(n.renderOrder = e.renderOrder),
+				n.instanceMatrix.setUsage(35048),
+				(n.matrixAutoUpdate = !1),
+				C.add(n),
+				n
 			);
 		}),
-		n = t.map(e),
-		r = new THREE.Matrix4().makeScale(0, 0, 0);
+		r = new THREE.Matrix4().makeScale(0, 0, 0),
+		c = new THREE.Matrix4();
 	n.forEach((t) =>
-		t.forEach((t) => {
-			t.visible = !1;
+		t.forEach((t, e) => {
+			i[e] && (t.visible = !1);
 		}),
 	);
 	const s = () => {
@@ -1247,10 +1263,15 @@ function qe(t) {
 					o = !1;
 					break;
 				}
-			o && t.updateMatrixWorld(!0), n[e].forEach((t, n) => a[n].setMatrixAt(e, o ? t.matrixWorld : r));
+			o && t.updateMatrixWorld(!0),
+				n[e].forEach((t, n) => {
+					if (!i[n]) return;
+					const s = o ? t.matrixWorld : r;
+					void 0 === t.userData.gcOp ? a[n].setMatrixAt(e, s) : (c.copy(s), (c.elements[3] = t.userData.gcOp), a[n].setMatrixAt(e, c));
+				});
 		}),
 			a.forEach((t) => {
-				t.instanceMatrix.needsUpdate = !0;
+				t && (t.instanceMatrix.needsUpdate = !0);
 			});
 	};
 	s(), L.push(s);
@@ -4062,7 +4083,9 @@ const le = (() => {
 	})(),
 	ce = (() => {
 		const e = [],
-			o = new THREE.MeshPhongMaterial({ color: "#ffffff", vertexColors: !0, shininess: 110, specular: 8947848 });
+			o = new THREE.MeshPhongMaterial({ color: "#ffffff", vertexColors: !0, shininess: 110, specular: 8947848 }),
+			gl = x.basic("#dff0ff", { transparent: !0, opacity: 1, unique: !0 });
+		gl.onBeforeCompile = gcOpPatch;
 		return {
 			list: e,
 			build() {
@@ -4093,12 +4116,10 @@ const le = (() => {
 							o,
 							n,
 						);
-					const r = R(
-						T.sphere(0.024, 6, 5),
-						x.basic("#dff0ff", { transparent: !0, opacity: 0.8, unique: !0 }),
-						n,
-						[0.03, 0.11, 0.05],
-					);
+					// (one material for every glint, so qe instances them with the stones: each stone's pulse rides in
+					// its instance matrix, see qe, where the glint's own material and opacity used to cost a draw a stone)
+					const r = R(T.sphere(0.024, 6, 5), gl, n, [0.03, 0.11, 0.05]);
+					r.userData.gcOp = 0.8;
 					a.userData = { taken: !1, regrowAt: 0, phase: Math.random() * l, body: n, glint: r };
 					{
 						const t = [];
@@ -4129,7 +4150,7 @@ const le = (() => {
 						}
 					} else
 						(a.body.position.y = 0.2 + 0.04 * Math.abs(Math.sin(1.6 * t + a.phase))),
-							(a.glint.material.opacity = 0.4 + 0.5 * Math.max(0, Math.sin(2.3 * t + a.phase))),
+							(a.glint.userData.gcOp = 0.4 + 0.5 * Math.max(0, Math.sin(2.3 * t + a.phase))),
 							"playing" === jt.top &&
 								Math.hypot(At.position.x - o.position.x, At.position.z - o.position.z) < 1.1 &&
 								this.take(o, t);
@@ -7214,7 +7235,7 @@ const JGP = (() => {
 			campfire: "Sometimes worry that doing these things will alter the timeline…",
 		},
 		frog: {
-			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Fire Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice."],
+			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Fire Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice.", "I’ve been practicing a song for the coming of the legendary Backpacka."],
 			gift: "Add it to the tip jar.",
 		},
 		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },

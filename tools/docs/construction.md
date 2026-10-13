@@ -726,6 +726,16 @@ Goo that runs down a body and moves like goo, without clipping:
   whose matrix, colour and on-state are unchanged as it is (its last values kept at full precision in `p.k`, the
   array itself holding them rounded to 32 bits) and recomputes a batch's bounds only when something in it changed.
   `test/t_matrix.js` counts the matrix work; `test/t_static.js` lists the batches and which parts ever move.
+- **Pickups are instanced** (`qe`, #90): the Blossoms and the Flint are lists of identical objects, so each of
+  their meshes becomes one `InstancedMesh` (a taken one is scaled to nothing). A mesh whose material is one and
+  the same across every item is instanced; one with a material of its own stays as it is. The Flint's glint
+  used to have a material of its own, its opacity pulsing stone by stone, which kept the whole stone out of the
+  instancing: 33 stones at two draws each in a view of the south gate. Now the glints share one material and each
+  stone's pulse rides in the spare slot of its instance matrix (`userData.gcOp` → element 3, which the transform
+  never reads), and `gcOpPatch` on that material reads it in the vertex shader and multiplies the alpha by it.
+  The slot sits in the matrix's bottom row, which the instancing would multiply into the position's `w`, so the
+  patch replaces the projection chunk and puts `w` back to 1 (left as it was, the glints drew as long white
+  blades). The south gate view went from 400 to 323 draws.
 - **Keep per-frame work tiny:** search on from last frame's answer (Somlet's tentacles take a step or two),
   repaint textures a few times a second at most, and never allocate in loops.
 - **Compile early:** anything that first shows mid-game (the bulb, Backpacka, his water) is built and compiled

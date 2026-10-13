@@ -735,6 +735,15 @@ there is fewer objects. Batching across creatures and props (by material signatu
 built, measured and dropped: the signatures differ too much (14 draws fewer of 400 at the south gate) and the
 wider batches cull less (3% more triangles per view).
 
+**Part two (#90), the pickups.** The Flint stones were not instanced (their glints had a material each, for a
+pulse of opacity stone by stone), so a view of the south gate drew 33 stones at two draws each. With the glints
+sharing one material and each stone's pulse carried in a spare slot of its instance matrix (read by a patched
+shader that also puts the position's `w` back to 1), the stones are two draws in all: south gate 400 → 323
+draws, spawn 215 → 186, garden edge 216 → 182, dance floor 344 → 280, Library 284 → 222, Post Office 218 → 172,
+plant row 279 → 231, Juice Bar 345 → 277; triangles per view unchanged. Gooward's 37 draws are his 22 bubbles
+and drips, transparent and depth-written: merging them would change what blends behind what where they overlap,
+so they stay.
+
 **What is left, in order of likely worth:** (1) fewer objects: the batched creature parts (~850 hidden meshes)
 and the scenery's small props are the bulk of the 2,122 nodes the two per-frame passes walk; (2) the GPU's
 triangles per view (360k to 540k, drawn twice in VR): the 52.8k-triangle Garden Supplies kiosk and the 46k Post
