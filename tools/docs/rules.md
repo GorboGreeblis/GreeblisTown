@@ -99,9 +99,11 @@ Contents: [The game](#the-game) · [Working on it](#working-on-it) · [Locks and
   creator's name, workplace and location are never in it.
 - **Nothing pushed carries the owner's name, email, workplace, job or location:** not code, game text, docs,
   tools, comments, commit messages or PR descriptions. Refer to them only as "the owner".
-- **The parcel labels are the one exception the owner chose.** The readable labels on the Post Office's mail heap
-  are part of the game, so they also appear in the readable copy, `tools/index.html`. They are never repeated
-  anywhere else in the tools folder.
+- **The owner chose two exceptions:**
+  - **The parcel labels.** The readable labels on the Post Office's mail heap are part of the game, so they also
+    appear in the readable copy, `tools/index.html`. They are never repeated anywhere else in the tools folder.
+  - **"Walter Bigsby",** the author's name on the Library's STAPLERS cover. It may appear anywhere, the bible
+    included.
 - Keep machine paths, session links and upload file names out of everything pushed.
 
 ## Creatures and art
