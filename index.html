@@ -7396,7 +7396,7 @@ const JGP = (() => {
 		},
 		// (HENNRICK is from the far past: to him, paradoxically, this small American town is the far future)
 		gratelet: {
-			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until he decides to reopen the Portal.", "In my era, the towers of Greeblis City reach the clouds.|I never imagined the far future would have… picket fences.", "I have catalogued every Blossom in this park.|They grow back faster than my notes can keep up."],
+			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until the Consortium decides to reopen the Portal.", "In my era, the towers of Greeblis City reach the clouds.|I never imagined the far future would have… picket fences.", "I have catalogued every Blossom in this park.|They grow back faster than my notes can keep up."],
 			gift: "Adding to a collection jar.",
 			campfire: "Sometimes worry that doing these things will alter the timeline…",
 		},
@@ -15646,6 +15646,210 @@ const JGP = (() => {
 				(cx.fillStyle = "#f6f0dc"), cx.beginPath(), cx.arc(x0, y0, 3.5, 0, l), cx.fill();
 			});
 		});
+		// the mural of the Garden Event on the schoolhouse's long wall, facing the square, painted as a painting (soft
+		// light, layered brushwork, no outlines and no words): BACKPACKA as the real dinosaur he is, a sauropod painted the
+		// way KING DINO is on his billboard, spraying pond water out of his four feet, his teal leaf wings up, his long neck
+		// reaching back toward the duck pond; a rainbow fading into the sky
+		// behind him, the sun's warm haze, hills in a blue distance, and the garden's five flowers blooming in the wet
+		// grass where the water lands. (Its own seeded random, so it paints the same every time.)
+		slot("mural", 896, 352, (cx, w, h) => {
+			const R = srand(2341),
+				rr = (a, b) => a + (b - a) * R(),
+				mix = (c0, c1, t) => "rgb(" + [0, 1, 2].map((i) => Math.round(c0[i] + (c1[i] - c0[i]) * t)).join(",") + ")",
+				dab = (x, y, rx, ry, a, c, al = 1) => ((cx.globalAlpha = al), (cx.fillStyle = c), cx.beginPath(), cx.ellipse(x, y, rx, ry, a, 0, l), cx.fill(), (cx.globalAlpha = 1)),
+				// short brush strokes scattered over a box, each in a colour picked by its height, at a slant
+				brush = (x0, y0, x1, y1, n, col, len, wd, al, ang = 0) => {
+					cx.lineCap = "round";
+					for (let k = 0; k < n; k++) {
+						const x = rr(x0, x1),
+							y = rr(y0, y1),
+							a = ang + rr(-0.35, 0.35),
+							ln = len * rr(0.6, 1.2);
+						(cx.globalAlpha = al * rr(0.5, 1)), (cx.strokeStyle = col(x, y)), (cx.lineWidth = wd * rr(0.6, 1.3));
+						cx.beginPath(), cx.moveTo(x - (Math.cos(a) * ln) / 2, y - (Math.sin(a) * ln) / 2), cx.lineTo(x + (Math.cos(a) * ln) / 2, y + (Math.sin(a) * ln) / 2), cx.stroke();
+					}
+					cx.globalAlpha = 1;
+				},
+				radial = (x, y, r0, r1, stops) => {
+					const g = cx.createRadialGradient(x, y, r0, x, y, r1);
+					return stops.forEach(([t, c]) => g.addColorStop(t, c)), g;
+				},
+				// a point along a quadratic curve
+				qp = (p0, p1, p2, t) => [(1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0], (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]];
+			cx.save(), cx.scale(w / 640, h / 256);
+			// the sky, deep blue overhead to a pale haze on the hills, warm where the sun sits, laid in with brushwork
+			let g = cx.createLinearGradient(0, 0, 0, 200);
+			g.addColorStop(0, "#4f8fcf"), g.addColorStop(0.65, "#a9cfe6"), g.addColorStop(1, "#e9eedf"), (cx.fillStyle = g), cx.fillRect(0, 0, 640, 256);
+			(cx.fillStyle = radial(70, 46, 4, 170, [[0, "rgba(255,250,225,1)"], [0.18, "rgba(255,236,170,.85)"], [0.5, "rgba(255,226,160,.25)"], [1, "rgba(255,226,160,0)"]])), cx.fillRect(0, 0, 640, 256);
+			brush(0, 0, 640, 200, 900, (x, y) => mix([70, 130, 200], [225, 236, 225], Math.min(1, y / 190 + 0.15 * Math.sin(x / 60))), 18, 4, 0.22, -0.15);
+			// clouds, soft and lit from the sun's side
+			[[200, 40, 1.2], [520, 30, 1], [600, 92, 0.7], [330, 20, 0.6]].forEach(([x, y, s]) => {
+				for (let k = 0; k < 26; k++) dab(x + rr(-46, 46) * s, y + rr(-9, 9) * s, rr(10, 22) * s, rr(6, 12) * s, 0, k % 3 ? "#ffffff" : "#d6dfe8", 0.16);
+			});
+			// the rainbow, laid thin over the sky and fading into it
+			cx.filter = "blur(1.6px)";
+			["#e8402a", "#ff9a2a", "#ffe04a", "#6ac84a", "#3a8ae8", "#5a4ac8", "#9a5ae0"].forEach((c, k) => ((cx.globalAlpha = 0.5), (cx.strokeStyle = c), (cx.lineWidth = 8.5), cx.beginPath(), cx.arc(430, 232, 186 - 8 * k, 1.03 * Math.PI, 1.97 * Math.PI), cx.stroke()));
+			(cx.globalAlpha = 1), (cx.filter = "none");
+			// far hills in a blue haze, a line of trees on them, then the near meadow
+			const hill = (pts, c0, c1, y0, y1) => {
+				const gg = cx.createLinearGradient(0, y0, 0, y1);
+				gg.addColorStop(0, c0), gg.addColorStop(1, c1), (cx.fillStyle = gg), cx.beginPath(), cx.moveTo(0, 256), pts.forEach(([x, y]) => cx.lineTo(x, y)), cx.lineTo(640, 256), cx.closePath(), cx.fill();
+			};
+			hill([[0, 176], [90, 166], [190, 174], [300, 160], [420, 170], [540, 158], [640, 168]], "#8fb0a0", "#7f9f78", 158, 200);
+			for (let k = 0; k < 40; k++) {
+				const x = rr(0, 640);
+				dab(x, 170 - 6 * Math.sin(x / 90) + rr(-3, 3), rr(4, 9), rr(5, 9), 0, R() < 0.5 ? "#5f7f60" : "#6f8f68", 0.55);
+			}
+			hill([[0, 196], [120, 188], [260, 194], [380, 198], [500, 190], [640, 194]], "#79ad4a", "#3f7a2a", 188, 256);
+			brush(0, 186, 640, 256, 1100, (x, y) => mix([120, 176, 70], [40, 96, 30], (y - 186) / 70 + rr(-0.15, 0.15)), 7, 2.2, 0.45, -1.45);
+			// the duck pond he drank from: dark at its banks, the sky in it, reeds and a duck
+			(cx.fillStyle = radial(118, 224, 4, 80, [[0, "#cfe8f2"], [0.45, "#7fb6d6"], [1, "#2f5f86"]])), cx.save(), cx.translate(118, 224), cx.scale(1, 0.24), cx.beginPath(), cx.arc(0, 0, 78, 0, l), cx.fill(), cx.restore();
+			brush(64, 219, 172, 230, 34, () => "#eef8ff", 9, 1.2, 0.22, 0);
+			brush(36, 210, 60, 228, 30, () => "#4f6f2a", 12, 1.6, 0.7, -1.5), brush(176, 212, 198, 228, 26, () => "#4f6f2a", 12, 1.6, 0.7, -1.6);
+			dab(152, 219, 8, 4.5, 0, "#f2e8c8", 0.95), dab(158, 214, 3.6, 3.4, 0, "#f2e8c8", 0.95), dab(161, 214.5, 2.2, 1.1, 0, "#e09a3a", 1), dab(152, 221, 9, 1.2, 0, "#ffffff", 0.3);
+			// his shadow on the grass
+			cx.filter = "blur(3px)", dab(344, 210, 84, 8, 0, "#1e3a14", 0.38), (cx.filter = "none");
+			// the spray: four arcs of pond water from his feet, mist where they land, drops catching the light
+			[[300, -1, 128], [314, -1, 76], [372, 1, 76], [386, 1, 128]].forEach(([x0, s, r]) => {
+				const p0 = [x0, 206],
+					p1 = [x0 + s * r * 0.45, 128],
+					p2 = [x0 + s * r, 222];
+				cx.filter = "blur(0.6px)";
+				for (let k = 0; k < 110; k++) {
+					const t = k / 110,
+						[x, y] = qp(p0, p1, p2, t);
+					dab(x + rr(-1.5, 1.5), y + rr(-1.5, 1.5), rr(1.2, 2.6) * (1 + t), rr(1, 2), 0, R() < 0.3 ? "#ffffff" : "#bfe2f6", 0.5 * (1 - 0.5 * t));
+				}
+				(cx.filter = "blur(2px)");
+				for (let k = 0; k < 14; k++) dab(p2[0] + rr(-16, 16), p2[1] + rr(-10, 2), rr(4, 10), rr(2, 4), 0, "#e8f6ff", 0.2);
+				cx.filter = "none";
+			});
+			// BACKPACKA painted as the real dinosaur he is (as KING DINO is on his billboard): a sauropod in tan hide, lit
+			// from the sun's side, the far legs first, then wings, body, neck and head as one shape, then the near legs
+			const rn = srand(77),
+				leg = (x, top, far) => {
+					const lg = cx.createLinearGradient(x - 9, 0, x + 9, 0);
+					lg.addColorStop(0, far ? "#4a3418" : "#5e4222"), lg.addColorStop(0.3, far ? "#86683e" : "#b08a58"), lg.addColorStop(1, far ? "#2e2010" : "#3e2a12"), (cx.fillStyle = lg);
+					const leg0 = () => (cx.beginPath(), cx.moveTo(x - 11, top), cx.bezierCurveTo(x - 12, top + 12, x - 8, 188, x - 8.5, 196), cx.quadraticCurveTo(x - 11, 202, x - 10, 204.5), cx.lineTo(x + 10, 204.5), cx.quadraticCurveTo(x + 11, 202, x + 8.5, 196), cx.bezierCurveTo(x + 8, 188, x + 12, top + 12, x + 11, top), cx.closePath());
+					leg0(), cx.fill(), cx.save(), leg0(), cx.clip();
+					for (let k = 0; k < 70; k++) dab(x + (rn() - 0.5) * 22, top + (204 - top) * rn(), 0.6 + 1.2 * rn(), 0.5 + rn(), 0.3, rn() < 0.6 ? "#2a1a08" : "#f0d8a8", 0.18);
+					(cx.strokeStyle = "rgba(40,25,8,.4)"), (cx.lineWidth = 0.8);
+					[192, 197].forEach((yy) => (cx.beginPath(), cx.moveTo(x - 9, yy + rn()), cx.quadraticCurveTo(x - 1, yy + 2.5, x + 9, yy - rn()), cx.stroke()));
+					cx.restore();
+					// (the open foot the water comes out of)
+					dab(x, 204.5, 8.5, 2.6, 0, "#3a2810", 0.95), dab(x, 204.2, 5.5, 1.5, 0, "#120c06", 0.95), dab(x, 203.5, 4, 0.8, 0, "#bfe2f6", 0.7);
+				};
+			leg(300, 168, 1), leg(372, 170, 1);
+			// a leaf wing: a dragonfly's, veined in a net, translucent teal, lighter at its tip
+			const wing = (x, y, a, len, wd, al) => {
+				cx.save(), cx.translate(x, y), cx.rotate(a);
+				const wg = cx.createLinearGradient(0, 0, 0, -len);
+				wg.addColorStop(0, "rgba(30,110,100," + al + ")"), wg.addColorStop(1, "rgba(160,235,220," + al * 0.8 + ")"), (cx.fillStyle = wg);
+				const leaf = () => (cx.beginPath(), cx.moveTo(0, 0), cx.bezierCurveTo(wd, -len * 0.3, wd * 0.8, -len * 0.8, 0, -len), cx.bezierCurveTo(-wd * 0.8, -len * 0.8, -wd, -len * 0.3, 0, 0));
+				leaf(), cx.fill(), cx.save(), leaf(), cx.clip(), (cx.strokeStyle = "rgba(20,70,62,.45)"), (cx.lineWidth = 0.6), cx.beginPath();
+				for (let k = 1; k < 9; k++) cx.moveTo(0, (-len * k) / 9), cx.quadraticCurveTo(wd * 0.4, (-len * k) / 9 - 3, wd, (-len * k) / 9 - 8), cx.moveTo(0, (-len * k) / 9), cx.quadraticCurveTo(-wd * 0.4, (-len * k) / 9 - 3, -wd, (-len * k) / 9 - 8);
+				for (let k = 0; k < 40; k++) {
+					const vx = (rn() - 0.5) * wd * 1.6,
+						vy = -rn() * len;
+					cx.moveTo(vx, vy), cx.lineTo(vx + (rn() - 0.5) * 5, vy - 4);
+				}
+				cx.stroke(), cx.restore(), (cx.strokeStyle = "rgba(15,60,52,.7)"), (cx.lineWidth = 1.2), cx.beginPath(), cx.moveTo(0, -1), cx.lineTo(0, -len + 2), cx.stroke();
+				(cx.strokeStyle = "rgba(255,255,255,.3)"), (cx.lineWidth = 2), cx.beginPath(), cx.moveTo(-wd * 0.3, -len * 0.2), cx.quadraticCurveTo(-wd * 0.55, -len * 0.6, -wd * 0.12, -len * 0.88), cx.stroke(), cx.restore();
+			};
+			// (the far pair of wings, behind his back)
+			wing(334, 112, 0.8, 74, 20, 0.55), wing(326, 112, 0.3, 62, 17, 0.55);
+			// his hide: the body, the long neck reaching back toward the pond, the small head, the stubby tail, as one shape
+			const hide = () => {
+				cx.beginPath(), cx.moveTo(296, 186), cx.bezierCurveTo(282, 178, 274, 160, 278, 146), cx.bezierCurveTo(262, 128, 244, 106, 232, 80);
+				cx.bezierCurveTo(226, 76, 214, 74, 200, 74), cx.bezierCurveTo(190, 74, 186, 68, 190, 64), cx.bezierCurveTo(196, 56, 208, 50, 220, 50), cx.bezierCurveTo(232, 50, 240, 56, 244, 66);
+				cx.bezierCurveTo(254, 86, 272, 104, 302, 112), cx.bezierCurveTo(330, 100, 372, 102, 392, 120), cx.bezierCurveTo(408, 132, 426, 146, 440, 162);
+				cx.bezierCurveTo(428, 164, 414, 162, 404, 168), cx.bezierCurveTo(398, 182, 384, 190, 362, 192), cx.bezierCurveTo(338, 196, 312, 194, 296, 186), cx.closePath();
+			};
+			let sk = cx.createLinearGradient(240, 60, 400, 200);
+			sk.addColorStop(0, "#f2dcaa"), sk.addColorStop(0.45, "#c8a06a"), sk.addColorStop(1, "#6a4a26"), hide(), (cx.fillStyle = sk), cx.fill();
+			cx.save(), hide(), cx.clip();
+			// (scales and the crackle of his hide, folds across the neck and under the belly, the light on his back and the
+			// shadow under him)
+			for (let k = 0; k < 900; k++) {
+				const x0 = 186 + 256 * rn(),
+					y0 = 48 + 150 * rn(),
+					r = 0.8 + 1.8 * rn();
+				(cx.fillStyle = rn() < 0.65 ? "rgba(80,55,20,.22)" : "rgba(255,240,200,.2)"), cx.beginPath(), cx.ellipse(x0, y0, r, 0.7 * r, 0.5, 0, l), cx.fill();
+			}
+			(cx.strokeStyle = "rgba(70,45,15,.3)"), (cx.lineWidth = 0.6);
+			for (let k = 0; k < 120; k++) {
+				let x = 270 + 140 * rn(),
+					y = 110 + 80 * rn();
+				cx.beginPath(), cx.moveTo(x, y);
+				for (let j = 0; j < 3; j++) (x += (rn() - 0.5) * 9), (y += (rn() - 0.5) * 9), cx.lineTo(x, y);
+				cx.stroke();
+			}
+			(cx.strokeStyle = "rgba(70,45,15,.45)"), (cx.lineWidth = 1.1);
+			[[244, 92], [252, 102], [260, 112], [236, 80], [268, 122]].forEach(([x, y]) => (cx.beginPath(), cx.moveTo(x - 6, y + 8), cx.quadraticCurveTo(x + 2, y + 2, x + 12, y - 4), cx.stroke()));
+			[[310, 186], [330, 190], [350, 190], [370, 186]].forEach(([x, y]) => (cx.beginPath(), cx.moveTo(x - 8, y - 2), cx.quadraticCurveTo(x, y + 2, x + 8, y - 2), cx.stroke()));
+			(cx.fillStyle = radial(316, 112, 4, 90, [[0, "rgba(255,246,214,.5)"], [1, "rgba(255,246,214,0)"]])), cx.fillRect(186, 40, 260, 160);
+			g = cx.createLinearGradient(0, 140, 0, 196), g.addColorStop(0, "rgba(40,20,0,0)"), g.addColorStop(1, "rgba(40,20,0,.55)"), (cx.fillStyle = g), cx.fillRect(186, 140, 260, 60);
+			// (the green stripe up his neck's crest, from his shoulders to his head)
+			(cx.strokeStyle = "rgba(70,130,40,.75)"), (cx.lineWidth = 3), cx.beginPath(), cx.moveTo(300, 115), cx.bezierCurveTo(270, 106, 252, 88, 240, 64), cx.stroke();
+			// (his glassy patches, set in his hide like scutes on cream rims, along his back and flank)
+			[[316, 128, "#ff8a1a", 1], [346, 120, "#ffd23a", 1.1], [374, 134, "#e8409e", 0.95], [330, 156, "#c8902a", 0.9], [362, 162, "#ff8a1a", 0.85], [292, 150, "#e8409e", 0.7], [396, 148, "#ffd23a", 0.7]].forEach(([x, y, c, s]) => {
+				(s *= 0.85), dab(x + 0.8, y + 1.6, 9 * s, 6.6 * s, 0.2, "rgba(40,25,5,1)", 0.22), dab(x, y, 9 * s, 6.6 * s, 0.2, "#e6d4aa", 0.75);
+				(cx.globalAlpha = 0.85), (cx.fillStyle = radial(x - 2.5 * s, y - 2.5 * s, 0.5, 8 * s, [[0, "#fff6e0"], [0.35, c], [1, "rgba(70,40,10,1)"]])), cx.beginPath(), cx.ellipse(x, y, 6.6 * s, 4.8 * s, 0.2, 0, l), cx.fill(), (cx.globalAlpha = 1);
+				dab(x - 2.4 * s, y - 2 * s, 1.6 * s, 0.9 * s, -0.4, "#ffffff", 0.65);
+			});
+			cx.restore();
+			// his crest, a row of green spines along his skull; his big eye under its brow, a glint in it; nostril and mouth
+			for (let k = 0; k < 6; k++) {
+				const x = 204 + 6.5 * k,
+					y = 50 + 0.35 * (k - 2.5) * (k - 2.5);
+				(cx.fillStyle = radial(x - 1, y - 4, 0.5, 8, [[0, "#a8e078"], [1, "#2f6a1f"]])), cx.beginPath(), cx.moveTo(x - 3.5, y + 2), cx.quadraticCurveTo(x - 1, y - 9, x + 3.5, y + 2), cx.fill();
+			}
+			dab(219, 59, 7, 3.6, -0.15, "#4a2e12", 0.55);
+			(cx.fillStyle = radial(219, 61, 0.5, 4.5, [[0, "#e0a030"], [0.6, "#8a5014"], [1, "#1a0c04"]])), cx.beginPath(), cx.ellipse(219, 61.5, 4, 3.4, 0, 0, l), cx.fill();
+			dab(219.3, 61.5, 0.9, 3, 0, "#0a0402", 0.95), dab(217.6, 60.2, 1, 0.8, 0, "#ffffff", 0.9), dab(219, 58.4, 5, 1.1, -0.1, "#3a2410", 0.6);
+			dab(194, 64, 1.8, 1.1, -0.3, "#3a2410", 0.85), (cx.strokeStyle = "rgba(60,30,10,.7)"), (cx.lineWidth = 1.1), cx.beginPath(), cx.moveTo(190, 68), cx.quadraticCurveTo(200, 72, 212, 71), cx.stroke();
+			// (a little pond water still dripping from his chin)
+			[[198, 78], [199, 86], [197, 95]].forEach(([x, y], k) => dab(x, y, 1.3 - 0.2 * k, 2 - 0.3 * k, 0, "#cfeaf8", 0.75));
+			// (the near pair of wings, over his back)
+			wing(318, 112, -0.85, 76, 21, 0.72), wing(326, 112, -0.35, 64, 18, 0.72);
+			// (the near legs, in front of his belly)
+			leg(314, 172, 0), leg(386, 168, 0);
+			// the garden's five flowers blooming in the wet grass where the water lands, nearest ones biggest
+			const FL = ["#e8409e", "#ffd23a", "#9a52e0", "#36d0e8", "#e8301e"],
+				bloom = (x, y, s, c) => {
+					(cx.strokeStyle = "#2f6a1f"), (cx.lineWidth = 1.4 * s), (cx.globalAlpha = 0.85), cx.beginPath(), cx.moveTo(x, y + 16 * s), cx.quadraticCurveTo(x + 2 * s, y + 8 * s, x, y), cx.stroke(), (cx.globalAlpha = 1);
+					dab(x + 4 * s, y + 9 * s, 4 * s, 1.6 * s, -0.5, "#3f8a2a", 0.85);
+					for (let j = 0; j < 7; j++) {
+						const a = (j / 7) * l + rr(-0.2, 0.2);
+						dab(x + 4.2 * s * Math.cos(a), y + 3.2 * s * Math.sin(a), 3.6 * s, 2 * s, a, c, 0.85), dab(x + 3 * s * Math.cos(a), y + 2.2 * s * Math.sin(a) - 0.6 * s, 1.8 * s, 1 * s, a, "#ffffff", 0.25);
+					}
+					dab(x, y, 1.9 * s, 1.6 * s, 0, "#f6c02a", 1), dab(x - 0.5 * s, y - 0.5 * s, 0.8 * s, 0.6 * s, 0, "#fff6d0", 0.9);
+				};
+			for (let k = 0; k < 46; k++) {
+				const x = rr(10, 630),
+					y = rr(204, 246);
+				if (x > 40 && x < 200 && y < 236) continue;
+				bloom(x, y, 0.55 + (y - 204) / 34, FL[k % 5]);
+			}
+			// the grain of the painted wall over all of it, and the paint a touch darker toward the edges
+			for (let k = 0; k < 2600; k++) dab(rr(0, 640), rr(0, 256), rr(0.4, 1.2), rr(0.4, 1.2), 0, R() < 0.5 ? "#ffffff" : "#000000", 0.05);
+			(cx.fillStyle = radial(320, 128, 140, 380, [[0, "rgba(0,0,0,0)"], [1, "rgba(30,20,10,.28)"]])), cx.fillRect(0, 0, 640, 256);
+			cx.restore();
+		});
+		// the fire station's weathervane: BACKPACKA cut out of copper gone green, wings up and neck out, standing on the
+		// arrow (transparent round him: the sky shows)
+		slot("vane", 160, 112, (cx, w, h) => {
+			const vg = "#4a9a86";
+			cx.clearRect(0, 0, w, h), (cx.fillStyle = cx.strokeStyle = vg), (cx.lineCap = "round");
+			cx.fillRect(14, 93, 128, 6), cx.beginPath(), cx.moveTo(4, 96), cx.lineTo(20, 84), cx.lineTo(20, 108), cx.fill();
+			cx.beginPath(), cx.moveTo(130, 96), cx.lineTo(156, 82), cx.lineTo(150, 96), cx.lineTo(156, 110), cx.fill();
+			(cx.lineWidth = 7), [72, 82, 96, 106].forEach((x) => (cx.beginPath(), cx.moveTo(x, 66), cx.lineTo(x, 94), cx.stroke()));
+			[[82, 44, -0.5, 26], [92, 44, -0.15, 22], [96, 44, 0.5, 26], [88, 44, 0.15, 22]].forEach(([x, y, a, len]) => (cx.save(), cx.translate(x, y), cx.rotate(a), cx.beginPath(), cx.ellipse(0, -len / 2, 8, len / 2, 0, 0, l), cx.fill(), cx.restore()));
+			cx.beginPath(), cx.ellipse(89, 64, 32, 19, 0, 0, l), cx.fill(), cx.beginPath(), cx.moveTo(118, 60), cx.lineTo(134, 66), cx.lineTo(118, 72), cx.fill();
+			(cx.lineWidth = 9), cx.beginPath(), cx.moveTo(66, 58), cx.quadraticCurveTo(46, 44, 38, 22), cx.stroke();
+			cx.beginPath(), cx.ellipse(34, 20, 12, 8, -0.2, 0, l), cx.fill();
+			[[26, 13], [32, 11], [38, 11]].forEach(([x, y]) => (cx.beginPath(), cx.arc(x, y, 3.5, 0, l), cx.fill()));
+		});
 		// a gold star on its own (SPARKAKUS's tail-tip star, as a finial)
 		slot("gstar", 96, 96, (cx, w, h) => {
 			cx.clearRect(0, 0, w, h), (cx.fillStyle = "#f2c21a"), cx.beginPath();
@@ -16257,6 +16461,18 @@ const JGP = (() => {
 				B.box("plain", "#5a4030", 6.3 * sx, 0.14, 6.0, 2.6, 0.28, 0.9);
 				["#e8409e", "#ffd23a", "#9a52e0", "#36d0e8", "#e8301e"].forEach((c, k) => B.geo("plain", flowerGeo, c, 6.3 * sx - 1.0 + 0.5 * k, 0.29, 6.0 + (k % 2 ? 0.08 : -0.08), 0.3, 0.3, 0.3, 0, k, 0));
 			});
+			// past the east bed, BACKPACKA clipped out of a hedge, side on to the square: a fat body on four stubby legs, his
+			// wings up as four leaves, his neck reaching out with his head on the end, a stub of a tail, in a bed of mulch
+			{
+				const tx = 10.8,
+					tz = 6.4,
+					hg = "#3a6e30";
+				B.box("plain", "#5a4030", tx, 0.07, tz, 3.6, 0.14, 1.8);
+				[[-0.6, -0.3], [-0.2, 0.3], [0.2, -0.3], [0.6, 0.3]].forEach(([px, pz]) => B.geo("plain", ucyl(6), hg, tx + px, 0.4, tz + pz, 0.3, 0.6, 0.3));
+				B.geo("plain", usph(8), hg, tx, 1.25, tz, 1.9, 1.3, 1.25).geo("plain", usph(5), hg, tx + 1.05, 1.3, tz, 0.5, 0.35, 0.35);
+				[-0.3, 0.3].forEach((pz) => [[-0.55, 0.6], [0.35, -0.6]].forEach(([px, rz]) => B.geo("plain", usph(6), "#4a8a3a", tx + px, 2.4, tz + pz, 0.6, 1.25, 0.18, 0, 0, rz)));
+				B.geo("plain", ucyl(6), hg, tx - 1.15, 2.05, tz, 0.4, 1.6, 0.4, 0, 0, 0.75).geo("plain", usph(6), hg, tx - 1.75, 2.75, tz, 0.75, 0.5, 0.5);
+			}
 			return B;
 		};
 		const CHURCH = (cx, cz, ry = 0, D = 22) => {
@@ -16812,6 +17028,9 @@ const JGP = (() => {
 			B.box("brick", brick, -w / 2 - 1.6, 7, -3, 3.4, 14, 3.4).box("plain", tr, -w / 2 - 1.6, 14.15, -3, 3.8, 0.3, 3.8);
 			for (let k = 0; k < 3; k++) B.win(-w / 2 - 1.6, 4 + 3.2 * k, 0.8, 1.4, { trim: tr, z: -1.3, dark: !0 });
 			B.geo("plain", ucyl(10), "#c8c8cc", -w / 2 - 1.6, 14.8, -3, 0.5, 1.0, 0.5).geo("plain", ucyl(10), "#c8282a", -w / 2 - 1.6, 15.4, -3, 0.8, 0.5, 0.8);
+			// over the siren, a weathervane: BACKPACKA on the arrow, side on to the square, over the four arms of the compass
+			B.box("plain", "#2a2a2e", -w / 2 - 1.6, 16.5, -3, 0.06, 1.8, 0.06).box("plain", "#2a2a2e", -w / 2 - 1.6, 16.1, -3, 1.3, 0.05, 0.05).box("plain", "#2a2a2e", -w / 2 - 1.6, 16.1, -3, 0.05, 0.05, 1.3);
+			B.sign("vane", -w / 2 - 1.6, 17.55, -3, 1.9, 1.33);
 			B.box("concrete", "#cdc7bb", 0, -0.04, 3, w, 0.12, 6);
 			return B;
 		};
@@ -16869,7 +17088,7 @@ const JGP = (() => {
 		const SCHOOL = (cx, cz, ry) => {
 			const B = place(cx, cz, ry),
 				w = 9,
-				d = 14,
+				d = 12,
 				h = 5.2,
 				red = "#a8382e",
 				tr = "#f6f4ee",
@@ -16879,10 +17098,24 @@ const JGP = (() => {
 			[-1, 1].forEach((sx) => [0, -d].forEach((zz) => B.box("plain", tr, (sx * w) / 2, 0.8 + h / 2, zz, 0.22, h, 0.22)));
 			B.box("plain", tr, 0, 2.2, 0.04, 2.2, 2.9, 0.08).box("boards", "#7a5232", 0, 2.05, 0.08, 1.9, 2.5, 0.06).box("plain", "#3a2a1e", 0, 2.05, 0.12, 0.03, 2.5, 0.02).box("lit", "#56646e", 0, 3.6, 0.1, 1.9, 0.5, 0.04);
 			for (let k = 0; k < 3; k++) B.box("concrete", "#c8c0b4", 0, 0.65 - 0.22 * k, 0.4 + 0.4 * k, 2.6, 0.22, 0.4);
-			[-1, 1].forEach((sx) => {
-				const Sd = B.sub((sx * w) / 2, -d / 2, (sx * Math.PI) / 2);
-				[-4.5, -1.5, 1.5, 4.5].forEach((px) => Sd.win(px, 1.8, 1.1, 2.4, { trim: tr, dark: rnd() < 0.5 }));
-			});
+			// (its long side to the square carries the mural of the Garden Event in place of windows: the
+			// whole wall's length, big enough to read from across the park)
+			// (hung in a gilded picture frame: four bars standing out from the siding, a bright fillet along their inner edge)
+			{
+				const M = B.sub(-w / 2, -d / 2, -Math.PI / 2),
+					mw = d - 1.0,
+					mh = 4.3,
+					my = 3.4,
+					gold = "#b8902e",
+					lip = "#e8c860";
+				M.sign("mural", 0, my, 0.03, mw, mh);
+				// (sized so that no face of one piece lies in the plane of another's: the side bars end inside the top and
+				// bottom ones and stop a centimetre short of their ends and their fronts, and each fillet ends inside the
+				// pieces it meets)
+				[1, -1].forEach((sy) => M.box("plain", gold, 0, my + sy * (mh / 2 + 0.1), 0.05, mw + 0.5, 0.3, 0.14).box("plain", lip, 0, my + sy * (mh / 2 - 0.05), 0.1, mw - 0.12, 0.06, 0.16));
+				[1, -1].forEach((sx) => M.box("plain", gold, sx * (mw / 2 + 0.095), my, 0.045, 0.29, mh - 0.04, 0.13).box("plain", lip, sx * (mw / 2 - 0.05), my, 0.095, 0.06, mh - 0.12, 0.15));
+			}
+			[-4.5, -1.5, 1.5, 4.5].forEach((px) => B.sub(w / 2, -d / 2, Math.PI / 2).win(px, 1.8, 1.1, 2.4, { trim: tr, dark: rnd() < 0.5 }));
 			// bell cupola on the front of the ridge
 			const bz = -1.6,
 				ry0 = top + 3.4;
@@ -16890,8 +17123,8 @@ const JGP = (() => {
 			[-1, 1].forEach((sx) => [-1, 1].forEach((sz) => B.box("plain", tr, 0.65 * sx, ry0 + 0.9, bz + 0.65 * sz, 0.14, 1.2, 0.14)));
 			B.geo("plain", ucone(10), "#8a6a2a", 0, ry0 + 0.85, bz, 0.6, 0.6, 0.6).geo("shingle", upyr, "#4a4a50", 0, ry0 + 1.5, bz, 2.0, 1.3, 2.0);
 			B.box("plain", "#2a2a2e", 0, ry0 + 3.1, bz, 0.04, 0.6, 0.04);
-			// swing set in the yard
-			const sw = B.sub(7.5, 3.5, Math.PI / 2);
+			// swing set in the back yard
+			const sw = B.sub(7.5, -d / 2, Math.PI / 2);
 			[-1.6, 1.6].forEach((px) => [-0.9, 0.9].forEach((pz) => sw.box("plain", "#5a6a7a", px, 1.25, pz * 0.5, 0.1, 2.6, 0.1, pz > 0 ? 0.35 : -0.35, 0, 0)));
 			sw.box("plain", "#5a6a7a", 0, 2.45, 0, 3.4, 0.1, 0.1);
 			[-0.6, 0.6].forEach((px) => sw.box("plain", "#3a3a3e", px - 0.2, 1.6, 0, 0.02, 1.7, 0.02).box("plain", "#3a3a3e", px + 0.2, 1.6, 0, 0.02, 1.7, 0.02).box("plain", "#c8282a", px, 0.75, 0, 0.5, 0.05, 0.22));
@@ -17617,6 +17850,9 @@ const JGP = (() => {
 		// north: the courthouse and the fire station; a hotel on the corner (the church is in
 		// the square now)
 		COURTHOUSE(0, -62), FIRE_STATION(29, -58);
+		// the schoolhouse beside the courthouse, its long side to the square (and its mural with it), its door toward the
+		// courthouse steps
+		SCHOOL(-22, -64.5, Math.PI / 2);
 		STORE(-70, -55, 0, 14, 12.5, {
 			col: "#8a3a2c",
 			awn: "aw_green",
@@ -17640,9 +17876,10 @@ const JGP = (() => {
 		put("concrete", UB, WALK, S(0, -0.05, -53.6, 0, 0, 0, 3, 0.12, 3.2));
 		// south: porch houses facing the square, more on the side streets, the schoolhouse
 		[
-			// KING DINO's: lemon yellow with turquoise trim, his crown on the ridge, a drum on the porch
+			// KING DINO's: lemon yellow with turquoise trim, his crown on the ridge, a drum on the porch (on the corner past
+			// the schoolhouse)
 			[
-				-32,
+				-82,
 				{
 					col: "#f2d84a",
 					roof: "#2a7a7a",
@@ -17810,7 +18047,6 @@ const JGP = (() => {
 				},
 			],
 		].forEach(([X, o2]) => HOUSE(X, 60 + ZS, Math.PI, o2));
-		SCHOOL(-82, 60 + ZS, Math.PI);
 		// north-east: the gas station on the corner
 		GAS_STATION(72, -62);
 		// ---- the town's own lore, out past the park (the background pass) ------------------------------
@@ -17889,8 +18125,8 @@ const JGP = (() => {
 		};
 		// MUSHROOM's Consortium in town: its field office (a trailer with the sheriff's gold star on its side) and a listening dish on a
 		// lattice mast, turned up to the sky for the UFOs it is investigating
-		const FIELD_OFFICE = (X, Z) => {
-			const B = place(X, Z, faceIn(X, Z)),
+		const FIELD_OFFICE = (X, Z, ry = faceIn(X, Z)) => {
+			const B = place(X, Z, ry),
 				steel = "#7a8088";
 			B.box("siding", "#d8dce0", 0, 1.95, 0, 8, 2.5, 3).box("plain", "#9aa0a8", 0, 3.25, 0, 8.2, 0.12, 3.2).box("plain", "#2a2e34", 0, 0.35, 0, 7.4, 0.7, 2.6);
 			B.sign("s_star", -0.6, 1.95, 1.52, 1.5, 1.5).sign("saucer", 1.3, 2.05, 1.52, 1.35, 0.9).box("boards", "#5a3a22", 2.9, 1.65, 1.52, 0.9, 2.0, 0.06).win(-2.9, 1.35, 1.1, 0.8, { z: 1.5 });
@@ -17984,11 +18220,13 @@ const JGP = (() => {
 		// (on the empty corner lot across the road from the park's north-west corner, turned to face the square
 		// diagonally: close enough to read from the garden, the Library's low shelves the only thing before it)
 		BILLBOARD(-55, -55, "bb_dino", 10, "bb_ban");
-		FIELD_OFFICE(-26, -72);
+		// (the Consortium's field office in the south row's west lot, its front to the square, its mast and dish on the
+		// side away from FORTIZMO's house)
+		FIELD_OFFICE(-33.5, 61.5 + ZS, Math.PI);
 		// the Consortium's find: a scorched ring in the field behind its office, taped off between orange posts, two
 		// floodlights trained on it (the UFO sightings MUSHROOM is investigating, shown)
 		{
-			const B = place(-34, -86, 0);
+			const B = place(-29, 73 + ZS, 0);
 			B.geo("plain", ucyl(12), "#2a241e", 0, 0.01, 0, 6.4, 0.04, 6.4).geo("plain", ucyl(12, 0.5, !0), "#3a3028", 0, 0.03, 0, 7.4, 0.06, 7.4);
 			for (let k = 0; k < 6; k++) {
 				const a = (k / 6) * l,
@@ -18024,7 +18262,7 @@ const JGP = (() => {
 			// (the lore pieces: the water tower, the Consortium's field office and dish, the billboards)
 			[77, 91, -11, 3],
 			[-42, -14, -78, -56],
-			[-42, -26, -94, -78],
+			[-36, -22, 67 + ZS, 79 + ZS],
 			[-63, -47, -63, -47],
 			[83, 93, -42, -34],
 			[-38, -28, 91, 101],

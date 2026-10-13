@@ -200,17 +200,30 @@ strands of dry grass and damp stains lie about. **THE ANCIENT** lies across the 
 
 **North of the square**
 - **The courthouse (Town Hall):** a portico with the **town seal** in its entablature, a wreath round the garden's
-  five flowers (1.3), the same five flowers in beds by its steps, and a clock tower with a copper dome. The town flies
+  five flowers (1.3), the same five flowers in beds by its steps, BACKPACKA clipped out of a hedge on the lawn past the
+  east bed (side on to the square, his leaf wings up, his neck reaching out), and a clock tower with a copper dome. The town flies
   no flag: the Consortium's flag flies over the Sheriff's kiosk in the park, never at the courthouse.
-- **The fire station** (one bay open with the engine's nose in it, a brass bell, a hose-drying tower with a siren),
+- **The fire station** (one bay open with the engine's nose in it, a brass bell, a hose-drying tower with a siren and,
+  over the siren, a verdigris weathervane of BACKPACKA standing on the arrow),
   **a hotel** with iron balconies and a brass luggage cart, and **the gas station** on the north-east corner. The gas
   station is the far-future kind (HENNRICK's paradox: small-town America ahead of its time): its pumps are charging
   posts with glowing ports and coiled cables, its canopy is MONTGUMMERY's teal, and a lightning bolt stands where a
   brand name would be.
 
 **South of the square: the creatures' houses.** Porch houses face the square, each with a picket-fenced yard, a
-walk, a mailbox and shrubs. More houses stand on the side streets, with the schoolhouse (a bell cupola and a swing
-set).
+walk, a mailbox and shrubs. More houses stand on the side streets.
+
+**The schoolhouse and its mural.** The schoolhouse stands north of the square beside the courthouse, on the far side
+of the park from the church, turned so its long red wall faces the square and its door opens toward the courthouse
+steps (a bell cupola, a swing set in the back yard). That wall carries a mural of the Garden Event, 11 m by 4.3 m, in
+a gilded picture frame. It is painted as a painting, not a cartoon: soft light and layered brushwork, no outlines and
+no words. BACKPACKA stands in the middle as the real dinosaur he is, a sauropod painted the way KING DINO is on his
+billboard: tan hide lit from the sun's side, scaled and crackled, his glassy patches set in it like scutes, a green
+stripe up his long neck, a crest of green spines, veined teal leaf wings up over his back, pond water still dripping
+from his chin as his neck reaches back toward the duck pond (a duck on it), and the water spraying from his four feet
+in misty arcs. A rainbow fades into the sky behind him, the sun's warm haze sits in the corner, hills lie in a blue
+distance, and the garden's five flowers bloom in the wet grass where the water lands. The Consortium's field office
+took the schoolhouse's old lot in the south row, and KING DINO's house the corner lot west of it.
 
 | House | Canon |
 | --- | --- |
@@ -249,18 +262,40 @@ The world has a deep history of three ages, and its beings know it:
 | Age | Canon |
 | --- | --- |
 | **The Ancients** | Came first. They left Artifacts and "the Ancient texts", which SPARKAKUS studies. "I like to think the Ancients created us for our purposes." (ETCHER) |
-| **The Synthetics** | Followed: beings of code, machines with minds. In the Ancient texts, the Great Sphinx asked Synthetics riddles before letting them into the Computer Core. |
-| **The Organics** | Are to come, and belong to growing things. ETCHER etches ZOLLOD's seed catalogue ("Each one a word in the age of Organics.") and MAMA GORBO's burger menu ("Every topping. For the age of Organics."). |
+| **The Synthetics** | Followed: beings of code, machines with minds; four live in the park (MONTGUMMERY, GLYPH, ETCHER, FORTIZMO). In the Ancient texts, the Great Sphinx asked Synthetics riddles before letting them into the Computer Core. |
+| **The Organics** | Their age is still to be etched; they belong to growing things, and every other creature in the park is one. ETCHER etches ZOLLOD's seed catalogue ("Each one a word in the age of Organics.") and MAMA GORBO's burger menu ("Every topping. For the age of Organics."). |
 
 > "The age of the Ancients has been etched. The age of the Synthetics is being etched. Soon I will etch the age of
 > the Organics." (ETCHER)
+
+**The three kinds of creature.** Every creature in the game is one of the three:
+
+| Kind | Creatures |
+| --- | --- |
+| **Ancients** | **THE ANCIENT**, the last of the Ancients on Greeblis. |
+| **Synthetics** | **MONTGUMMERY**, **GLYPH**, **ETCHER** and **FORTIZMO**. |
+| **Organics** | Every other creature in the game: **SPARKAKUS**, **MAMA GORBO**, **GOOWARD**, **GEMTOE**, **KING DINO**, **SOMLET**, **MUSHROOM**, **ZOLLOD**, **ANOMALEE**, **HENNRICK**, **NEXTESSA** and **BACKPACKA**. |
+
+- **KING DINO and BACKPACKA are both dinosaurs** (Organics): KING DINO a theropod (his billboard paints him as the
+  real dinosaur), BACKPACKA a sauropod (the schoolhouse mural paints him as one).
+- **Not creatures:** humans, Earth animals and aliens live on Greeblis too, but none of them is one of the game's
+  creatures (NPCs).
+  - **Humans:** the player is a human woman (2.19).
+  - **Earth animals:** the cardinal and the robin in the park's trees (2.18).
+  - **Visitors from a world like Earth, where rabbits take the place of humans:** the rabbit dressed as Napoleon on the
+    Sheriff's wall is one.
+  - **Aliens:** others have come through the Portal or by UFO, such as the little green aliens and their saucer on the
+    Sheriff's wall, and the UFO that crosses the sky.
+- Lines keep to this: KING DINO calls MONTGUMMERY "robot"; ETCHER etches the Organics (HENNRICK, ZOLLOD's seeds,
+  MAMA GORBO's menu) "into the age of Organics"; the Synthetics speak of being made ("I like to think the Ancients
+  created us for our purposes.").
 
 **Canon**
 - The Ancient texts are incomplete: SPARKAKUS still seeks "news of the Ancients' era", and THE ANCIENT tells him
   "Librarian. Your texts are missing a page."
 - Code underlies everything: "GOO... is also a kind of CODE."; "ROOTS run like CODE beneath the soil." (ANOMALEE);
   "Mont would remain motionless without symbols to translate in binary electrical signals." (GLYPH).
-- **THE ANCIENT**, "the one reborn", lies in the church's secret room. It speaks of rebirth and first things: "I was
+- **THE ANCIENT**, "the one reborn", the last of the Ancients on Greeblis, lies in the church's secret room. It speaks of rebirth and first things: "I was
   the first symbol."; "Etch this: I have returned."; "No Portal can hold the one reborn."; "Play the old song. The
   first one." Which era is its own, it never says (2.17).
 
@@ -301,7 +336,7 @@ The world has a deep history of three ages, and its beings know it:
   Consortium will be inspecting your bar."), the town records, the gems, the goo on public property.
 - **It is investigating UFOs:** "We’re investigating UFO sightings in this area." "See anything glowing in the sky,
   you report it to this office. Directly."
-- **Its presence in town:** a field office (a trailer with the sheriff's gold star on navy), a painting of the
+- **Its presence in town** (at the west end of the south row): a field office (a trailer with the sheriff's gold star on navy), a painting of the
   sighting (a saucer over a scorched ring under the stars), a listening dish on a lattice mast turned to the sky,
   and **its find**: a scorched ring in the field behind the office, taped off between orange posts under two floodlights. MUSHROOM's porch telescope is trained on the sky.
 - **It can be bought:** a Blossom bribes its deputy into opening the Portal; a goo burger nearly does too ("A
@@ -521,25 +556,25 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
   signature **messengers** to each other. THE ANCIENT has an exchange with each of the fourteen, played only when one
   calls on it in the secret room with the player there.
 
-| Creature | Role | Post | Tag colour | Messenger |
-| --- | --- | --- | --- | --- |
-| **SPARKAKUS** | The librarian | The LIBRARY | orange | a card |
-| **MAMA GORBO** | Runs the goo-burger joint | Roams the park | `#ff9f5c` | goo |
-| **GOOWARD** | Her husband | Roams the park | `#30b4e4` | goo |
-| **GEMTOE** | Gem trader; inventor of Avarice | Roams the park | `#c870d0` | a gem |
-| **MONTGUMMERY** | A Dancer (the robot) | The dance floor | `#55b8c6` | a coin |
-| **ETCHER** | A Dancer (the tentacle dance); data preservation | The dance floor | `#9ee09a` | a card |
-| **GLYPH** | A Dancer (the macarena); Master of symbols | The dance floor | `#e88a8a` | a tile |
-| **KING DINO** | The King of Jazz, on drums | His drum kit | `#e8c020` | a crown |
-| **FORTIZMO** | The bartender | Behind the Juice Bar | `#e8742a` | a note |
-| **SOMLET** | The mail carrier | Asleep before the POST OFFICE | `#ecd8b6` | a letter |
-| **MUSHROOM** | The sheriff | His raised desk at the SHERIFF'S | `#e8862a` | a spore |
-| **ZOLLOD** | Garden Supplies keeper | GARDEN SUPPLIES | `#3cbe94` | a sprout |
-| **ANOMALEE** | The one who remembers | Before the church window | `#2fd4e6` | a pixel |
-| **HENNRICK** | A researcher from the far past | Round the Portal | `#c85ac8` | a cube |
-| **NEXTESSA** | Far-future pizza courier | Comes through the Portal | `#ef7536` | — |
-| **BACKPACKA** | The legendary creature | The Garden Event | — | — |
-| **THE ANCIENT** | The one reborn | The church's secret room | `#9a7a5a` | a spore |
+| Creature | Kind | Role | Post | Tag colour | Messenger |
+| --- | --- | --- | --- | --- | --- |
+| **SPARKAKUS** | Organic | The librarian | The LIBRARY | orange | a card |
+| **MAMA GORBO** | Organic | Runs the goo-burger joint | Roams the park | `#ff9f5c` | goo |
+| **GOOWARD** | Organic | Her husband | Roams the park | `#30b4e4` | goo |
+| **GEMTOE** | Organic | Gem trader; inventor of Avarice | Roams the park | `#c870d0` | a gem |
+| **MONTGUMMERY** | Synthetic | A Dancer (the robot) | The dance floor | `#55b8c6` | a coin |
+| **ETCHER** | Synthetic | A Dancer (the tentacle dance); data preservation | The dance floor | `#9ee09a` | a card |
+| **GLYPH** | Synthetic | A Dancer (the macarena); Master of symbols | The dance floor | `#e88a8a` | a tile |
+| **KING DINO** | Organic (a dinosaur) | The King of Jazz, on drums | His drum kit | `#e8c020` | a crown |
+| **FORTIZMO** | Synthetic | The bartender | Behind the Juice Bar | `#e8742a` | a note |
+| **SOMLET** | Organic | The mail carrier | Asleep before the POST OFFICE | `#ecd8b6` | a letter |
+| **MUSHROOM** | Organic | The sheriff | His raised desk at the SHERIFF'S | `#e8862a` | a spore |
+| **ZOLLOD** | Organic | Garden Supplies keeper | GARDEN SUPPLIES | `#3cbe94` | a sprout |
+| **ANOMALEE** | Organic | The one who remembers | Before the church window | `#2fd4e6` | a pixel |
+| **HENNRICK** | Organic | A researcher from the far past | Round the Portal | `#c85ac8` | a cube |
+| **NEXTESSA** | Organic | Far-future pizza courier | Comes through the Portal | `#ef7536` | — |
+| **BACKPACKA** | Organic (a dinosaur) | The legendary creature | The Garden Event | — | — |
+| **THE ANCIENT** | Ancient (the last on Greeblis) | The one reborn | The church's secret room | `#9a7a5a` | a spore |
 
 ### 2.1 SPARKAKUS
 
@@ -728,6 +763,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.8 KING DINO
 
+- **Kind:** an Organic, and a dinosaur (a theropod, as his billboard paints him).
 - **Look:** an upright lemon-yellow gummy dino with citrus-peel skin, a rounded muzzle, glossy navy bead eyes and a
   quiet smile line. **Signature:** a glossy turquoise crown under a great feathered plume, purple down the back and
   orange down the front; three square turquoise buttons with green lights down each side, turquoise ball joints,
@@ -882,7 +918,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 - **Dance and planting:** his own dance, rolling side to side with his arms flung out; plants with a **pat**.
 - **Lines:**
   - Talk: "Good to see you again, Human!" / "Much research is still needed in this era." / "I am an unwilling guest
-    of the Sheriff, until he decides to reopen the Portal." / flavour: "In my era, the towers of Greeblis City reach
+    of the Sheriff, until the Consortium decides to reopen the Portal." / flavour: "In my era, the towers of Greeblis City reach
     the clouds. I never imagined the far future would have… picket fences." / "I have catalogued every Blossom in
     this park. They grow back faster than my notes can keep up."
   - Blossom: "Adding to a collection jar."
@@ -895,7 +931,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 - **Look:** an orange, caterpillar-like stack of round segments, each with two little spines, on a base of three
   merged spheres, with a round head, a box snout and glossy yellow eyes. **Signature:** she carries the pizza box on
   her head, its lid marked with a red ring and a slice.
-- **Home and post:** runs Nextessa's inter-temporal pizza shop in the far future. She is never in the park except to
+- **Home and post:** runs Nextessa’s inter-temporal pizza shop in the far future. She is never in the park except to
   deliver, never at the Event, and never in a vignette or a visit.
 - **Personality and voice:** a cheerful professional: "I love my job!"
 - **Quests and Events:** the **SNACKS** quest. The player calls from the phone booth ("Call for pizza"; the tag reads
@@ -906,6 +942,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.16 BACKPACKA
 
+- **Kind:** an Organic, and a dinosaur (a sauropod, as the schoolhouse mural paints him).
 - **Look:** a tan, crackle-skinned pear of a body set with glassy coloured patches (orange, yellow, ochre, magenta) on
   cream rims. **Signature:** two pairs of veined teal dragonfly wings shaped like leaves; a long banded neck with a
   green stripe up to a little open-mouthed head with a big eye on each side of a green crest; a stubby tail; four tube
@@ -947,16 +984,18 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
   yellow beak) on a bough of the oak by the north fence. Both are about twice life size.
 - They look about with little nods, flick their tails and hop a hand's width along their boughs and back with a
   flutter; the robin cocks its head to listen. They never fly, never leave their trees, and have no lines.
+- They are Earth animals, not creatures: neither Ancient, Synthetic nor Organic (1.8).
 
 ### 2.19 The player
 
+- The player is **a human woman**: not a creature, but one of the humans who live on Greeblis (1.8).
 - The creatures call the player **"Human"**: "Good to see you again, Human!"; "Well done, Human!"
 - In VR the player has only hands (three fingers and a thumb, a white cuff and a sleeve in the dress's colour). In the
   desktop and mobile test modes the player appears as a cartoony avatar: copper hair in a low ponytail with a navy
   bow, freckles, a small quiet mouth, and the default outfit, a yellow sun dress with a little white flower print.
 - The player can buy and wear the Flower Hat, the Sun Dress and the Frog Shoes (1.13).
-- The player is a suspect: their drawing hangs on the Sheriff's wanted wall, the Sheriff asks after "a human", and
-  Mont hides them.
+- The player is a suspect: her drawing hangs on the Sheriff's wanted wall, the Sheriff asks after "a human", and
+  Mont hides her.
 
 ### 2.20 Relationships
 
@@ -1227,10 +1266,10 @@ delight) and some are **character** (a line that says who the creature is).
 | Creature | Blossom line | Reaction | Kind |
 | --- | --- | --- | --- |
 | MUSHROOM | "A bribe? …Portal is now open to your use." | The phone can reach the Portal for the rest of the session | Key |
-| MONTGUMMERY, ETCHER, GLYPH | "Let's dance!" | A **Dance battle** starts when the line closes (if the player is still close and the Event has not begun). MONT's screen shows his robot face. | Key |
+| MONTGUMMERY, ETCHER, GLYPH | "Let’s dance!" | A **Dance battle** starts when the line closes (if the player is still close and the Event has not begun). MONT's screen shows his robot face. | Key |
 | GOOWARD | "GOOMP" | **Goo shower:** eight volleys 0.35 s apart, each of three or four goo balls arcing at the player's head; each lands a moment later as coloured splats on the view, which slide down and fade over about 4 s | Spectacle |
 | MAMA GORBO | "Gooooooom!" | The same goo shower, in her colours | Spectacle |
-| SPARKAKUS (at home) | "…sorry I don't know what got into me." | Drops to all fours, gallops one lap round his Library floor at about 4 m/s, comes back, stands up, then apologises | Spectacle |
+| SPARKAKUS (at home) | "…sorry I don’t know what got into me." | Drops to all fours, gallops one lap round his Library floor at about 4 m/s, comes back, stands up, then apologises | Spectacle |
 | SPARKAKUS (away from home) | "A Blossom! …I must resist the urge to run.\|Not out here, in front of everyone." | No lap: the lap belongs to the Library | Character |
 | SOMLET | "Thank you" | **Her eyes open, the only time they ever do,** while the line is up | Spectacle |
 | ANOMALEE | "* Munch *" | She turns to face the player for it | Character |
@@ -1273,7 +1312,7 @@ delight) and some are **character** (a line that says who the creature is).
    pizza" gives only "PHONE: *connection to the Portal seems blocked*".
 3. **The bribe.** A Blossom given to MUSHROOM ("A bribe? …Portal is now open to your use.") unlocks the phone **for
    the rest of the session**. That is its only effect: the Portal opens only when someone is coming through.
-4. **The call.** The handset lifts and the call plays: "*Ring Ring* This is Nextessa's inter-temporal pizza shop!|One
+4. **The call.** The handset lifts and the call plays: "*Ring Ring* This is Nextessa’s inter-temporal pizza shop!|One
    pie on your way." When it closes, **the Portal opens** (its blue swirl grows in over 0.75 s with rising notes and a
    cyan light).
 5. **The arrival.** **30 s later** NEXTESSA steps through the Portal, a pizza box on her head. If the Event has
@@ -1294,13 +1333,13 @@ delight) and some are **character** (a line that says who the creature is).
 
 ### 3.9 SEEDS: ZOLLOD's shyness and the shop
 
-1. **Shy.** ZOLLOD keeps Garden Supplies but is too shy for it. Every Talk gives "…|…|I'm shy…". He has no Blossom
+1. **Shy.** ZOLLOD keeps Garden Supplies but is too shy for it. Every Talk gives "…|…|I’m shy…". He has no Blossom
    option and no shop, the counter offers nothing, and he neither visits nor is visited.
 2. **The hint.** MAMA GORBO's fourth line: "I hear there is a book that can help anyone overcome shyness."
 3. **The book.** OVERCOMING SHYNESS stands face-out on a side case in the Library, at eye level, the biggest hardback
    there. It is taken **only by pointing at it and selecting** ("Take OVERCOMING SHYNESS"), never by walking near it.
    A chime, and the notice "Overcoming Shyness book obtained".
-4. **Freed.** The first Talk with the book in hand: "…|That book…|Let me see..|Wow I'm free from shyness!"
+4. **Freed.** The first Talk with the book in hand: "…|That book…|Let me see..|Wow I’m free from shyness!"
 5. **After.** His Talk becomes "Shop at Garden Supplies", which opens the shop at once wherever he is; he holds still
    while it is open. The counter's own prompt appears. He joins the visits, counting half, so he visits and is
    visited about twice as often as anyone else.
@@ -1341,7 +1380,7 @@ delight) and some are **character** (a line that says who the creature is).
    | Moment | What happens |
    | --- | --- |
    | Talk | **A light bulb** fades in 1.5 m over his head (1.2 s): a glowing bulb with a screw base, a warm halo and a soft cone of light. **The town dims 70% of the way to night**: the sky goes navy, stars and the moon come out, shop windows, street lamps and stained glass glow. |
-   | Page set 1 | "You've found all three Artifacts!\|Amazing!\|Let me see those…\|Ah…" |
+   | Page set 1 | "You’ve found all three Artifacts!\|Amazing!\|Let me see those…\|Ah…" |
    | 0–0.6 s | **The glue.** In the air between him and the player, a school-glue bottle (white, a red GLUE label) grows in over the three pieces, which turn slowly apart. |
    | 0.6–1.6 s | The bottle turns upside down. |
    | 1.6–3.6 s | Glue drips onto the pieces, each drip soaking in with a blorp. |
@@ -1352,8 +1391,8 @@ delight) and some are **character** (a line that says who the creature is).
    | On close | The Gem flies to the player, with a chime: "* Ancient Gem collected! *" The bulb fades out (1.5 s) and the town brightens. |
 
    From the first page until the Gem is collected, SPARKAKUS offers nothing else and is never sent visiting.
-4. **The trade.** With the Gem in hand, GEMTOE's Talk becomes: "That Gem you have… It's worthless… trust me.|I'll trade
-   this rock I found for it. You're better off!" A jingle, **a happy spin** (one full turn with a hop), and
+4. **The trade.** With the Gem in hand, GEMTOE's Talk becomes: "That Gem you have… It’s worthless… trust me.|I’ll trade
+   this rock I found for it. You’re better off!" A jingle, **a happy spin** (one full turn with a hop), and
    "* Summoning Stone obtained! *": **SUMMONING STONE is complete.**
 
 **Conventions**
@@ -1364,7 +1403,7 @@ delight) and some are **character** (a line that says who the creature is).
 
 **Rules**
 - Only the three **Dancers** battle: MONTGUMMERY, ETCHER and GLYPH. **Each battle costs one Blossom**: it starts only
-  from a Blossom given to a Dancer, when its "Let's dance!" closes. A battle takes the Dancer away from any visit or
+  from a Blossom given to a Dancer, when its "Let’s dance!" closes. A battle takes the Dancer away from any visit or
   scene it was in.
 - **Rock, paper, scissors as dance:** "Rock out!" beats "Do the splits like scissors!", which beats "Go horizontal
   like paper!", which beats "Rock out!".
@@ -1476,7 +1515,7 @@ a crackle, FORTIZMO "♪" with a toot, ZOLLOD "≈" with a bubble blip), then a 
 - A creature starts a move only when standing still, eases in and out of it, and stops for anyone talking to it.
 
 **Talking at the Event:** "Talk to NAME" gives the Event line and the creature stands still for it (MONTGUMMERY's
-screen shows a pixel shovel). KING DINO ("Can't stop the beat!") and SOMLET ("Zzz") answer from their posts. THE
+screen shows a pixel shovel). KING DINO ("Can’t stop the beat!") and SOMLET ("Zzz") answer from their posts. THE
 ANCIENT says "Hello".
 
 **What the Event blocks (rules)**
@@ -2028,7 +2067,7 @@ drive-in burger place. Open prairie runs from the last street to the hazy horizo
 | Mistergummery's (drive-in) | red `#c8282a` and cream `#fbf1dc`, teal `#55b8c6` | Big teal "M" arches, a red mansard roof, a drive-thru menu of pictures, umbrella tables, a small slide |
 | Town Hall | brick `#a8503a`, stone, white | The town's seal (a wreath round the garden's five flowers), a clock tower with a copper-green dome `#5aa890` |
 | Filling station | white `#f4f2ec`, teal `#55b8c6` | Charging posts with glowing ports, a teal lightning bolt |
-| Barber's, fire station, hotel, schoolhouse | pale blue; red brick; brick and green; red siding | A barber pole; a red engine's nose in an open bay and a brass bell; iron balconies; a bell cupola and a swing set |
+| Barber's, fire station, hotel, schoolhouse | pale blue; red brick; brick and green; red siding | A barber pole; a red engine's nose in an open bay, a brass bell and a BACKPACKA weathervane; iron balconies; a bell cupola, a swing set and the Garden Event mural on its long wall |
 
 **The creatures' homes** (porch houses on the south street)
 - Two storeys of siding in the creature's colour on a concrete foundation, white trim `#f6f4ee`, a porch with
@@ -2353,7 +2392,7 @@ The town's music is jazz, played live by the cast. Every built-in dance keeps wh
 | GEMTOE | Greedy, scheming, half-learning to share | "I’ve invented a new concept.\|I call it “Avarice”." |
 | MONTGUMMERY | Third person, short plain sentences, polite | "Mont always rewinds tape before eating.\|Mont is polite monster." |
 | ETCHER | Grave and archival | "Every scale on my body holds a backup of a backup.\|One can never be too careful." |
-| GLYPH | Every thought ends "…don’t you think?"; finds a symbol in everything | "Even a single footprint is a symbol… don’t you think?" |
+| GLYPH | Every thought ends "… don’t you think?"; finds a symbol in everything | "Even a single footprint is a symbol… don’t you think?" |
 | KING DINO | Jazz cool, "baby", prehistoric puns | "These drums have been in the family since the Cretaceous, baby!" |
 | FORTIZMO | A bartender's warmth and sass: "sugar", "honey", house rules about Blossoms | "We only accept Blossoms at this establishment." |
 | SOMLET | Only "Zzz"; "Thank you" for a Blossom | "Zzz" |

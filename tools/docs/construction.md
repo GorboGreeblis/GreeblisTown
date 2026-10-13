@@ -602,13 +602,12 @@ share one atlas. The town is about 101.6k triangles in 24 meshes; `test/t_townvi
   television repair (moulded plastic grey, a rabbit-ear aerial, old sets by the door with her glow in their screens, her
   workbench and pizza on its band).
 - **North:** the Town Hall with the town's seal (a wreath round the garden's five flowers) and the clock, the seal's
-  five flowers in beds at its steps; the fire station with its right bay open and the engine's nose in it; the hotel
+  five flowers in beds at its steps and BACKPACKA as a topiary past the east bed; the fire station with its right bay
+  open and the engine's nose in it, a BACKPACKA weathervane over the siren (`vane`, a cut-out on the sign atlas); the hotel
   (balconies, a canopy, a brass luggage cart, a tank on the roof); MONTGUMMERY's video store (his teal, his face on a TV
   on the roof beside a giant blank cassette, his pots by the door, a tape-return bin and two chewed cassettes, a band of
   cassettes with the last one bitten); the filling station of the far future (charging posts with glowing ports, the
-  canopy in his teal, a lightning bolt on the pylon); the Consortium's field office (the sheriff's star on its side), its
-  listening dish, the sighting painted on its trailer, and its find behind them: a scorched
-  ring taped off between orange posts under two floodlights.
+  canopy in his teal, a lightning bolt on the pylon); the schoolhouse beside the courthouse (below).
 - **Mistergummery's:** MONTGUMMERY's teal (`#55b8c6`) wherever a burger chain would have its yellow (the building,
   trim, lot and menu); the pylon is just the big teal M on a beam, about as tall as the Main Street rooftops, beside the
   restaurant's front corner, meant to show over the rooftops from the square.
@@ -619,6 +618,18 @@ share one atlas. The town is about 101.6k triangles in 24 meshes; `test/t_townvi
   kerb opposite the Post Office), the Gorbos (peach, goo dripping off the porch roof, puddles on the lawn), MUSHROOM
   (cream, his spotted cap for a roof, toadstools, a porch telescope trained on the sky), ANOMALEE (plastic grey, her
   glow in the upstairs window, an aerial), MONTGUMMERY (teal, stacks of his pots for porch posts, his tapes by the door).
+- **The south row's west lot:** the Consortium's field office (`FIELD_OFFICE(-33.5, 61.5 + ZS, Math.PI)`, the sheriff's
+  star on its side, its front to the square, its mast and listening dish on the side away from FORTIZMO's house), the
+  sighting painted on its trailer, and its find behind it (`place(-29, 73 + ZS)`, clear of GEMTOE's hoard): a scorched
+  ring taped off between orange posts under two floodlights. KING DINO's house stands on the corner lot west of it
+  (x −82).
+- **The schoolhouse** stands north of the square beside the courthouse (`SCHOOL(-22, -64.5, Math.PI / 2)`), on the far
+  side of the park from the church, its long wall turned to the square and its door toward the courthouse. The long
+  wall carries the mural of the Garden Event (`mural`, 896 × 352 in the sign atlas, 11 × 4.3 m on the wall, 3 cm off
+  the siding) in a gilded frame (four bars 30 cm wide standing 12 cm out, a bright fillet on their inner edge), painted
+  as a painting with its own seeded random so it is the same every load. BACKPACKA is painted as a sauropod in the
+  billboard's realistic manner (gradient-lit hide, scale dabs and crackle clipped to his shape, folds, scutes for his
+  patches), never as a cartoon.
 - **Out past them:** the water tower in MAMA GORBO's peach with her goo and lime tail; her goo burger on a pole behind
   Mistergummery's; ZOLLOD's greenhouse with one of his flowers grown giant through its roof (and his hanging baskets on
   the lamps); GEMTOE's amethysts in a fenced lot; GOOWARD's drips across the north-east crosswalk.
