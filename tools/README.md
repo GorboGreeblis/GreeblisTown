@@ -41,7 +41,7 @@ scan. Every line should end with
 | --- | --- |
 | `test/battery.sh` | The battery above (`URL` overrides the page) |
 | `test/shot2.js <url> <out.png> <scene.js>` | Loads the page on desktop (1280×720; `VW`, `VH` change it), waits `WAIT` ms (default 6000), runs the scene script, then screenshots unless `NOSHOT=1` |
-| `test/mob.js <url> <out.png> <scene.js>` | The same as an iPhone 13 (`EXTRA` adds browser flags) |
+| `test/mob.js <url> <out.png> <scene.js>` | The same as a Pixel 7 in Chrome, the one kind of phone the game runs on (`EXTRA` adds browser flags) |
 | `test/copycheck.sh` | The readable copy: `tools/index.html` must be the root `index.html` byte for byte until the final pass packs the root, and after that the root must be the packed page (exit 1 when the copy is missing or stale). The battery runs it first |
 | `test/ordtest.js <index.html> <out.png>` | The game as an ordinal: served from memory inside `<iframe sandbox="allow-scripts">` with ord's CSP, every other request blocked and listed (`MOBILE=1` for an Android phone). A pass shows every creature, 0 errors and `blocked: []` |
 
@@ -207,6 +207,10 @@ swapping the result in:
 1. Nothing to switch off: the game starts with no quest or item progress (the testing head start, `TEST_QUESTS`,
    was removed; the tests give themselves what they need, e.g. `Kt.rewards.stone = Kt.rewards.seeds = !0`).
 2. Cut the game script (the last `<script>` in `index.html`) out to `game.js`.
+   **Strip all labels and comments from it first** (the owner's rule for the final pre-compression build): every
+   comment and section banner, every object name and test-only label or hook (the `window.__jgp…` hooks, the
+   test modes' text) that the game does not need to run. At that point the code is only what runs the game. The
+   readable copy in `tools/index.html` keeps all of it.
 3. Minify it: `node pack/woods-build/min.js game.js game.min.js` (terser 5, `toplevel` mangling, 2 passes). The
    test scripts rely on the global names, so test the unminified page and ship the minified one.
 4. Put `game.min.js` back in place of the game script and boot-test that page (`test/ordtest.js`, both modes).

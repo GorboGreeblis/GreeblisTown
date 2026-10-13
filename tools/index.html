@@ -36,13 +36,31 @@
 </script>
 <script>
 "use strict";
-// JGP mobile test mode flag (temporary): phones (not Quest) or ?mobile=1; ?mobile=0 forces it off
+// JGP mobile test mode flag (temporary): Android phones (not Quest) or ?mobile=1; ?mobile=0 forces it off
 window.__jgpMobile = (() => {
 	const q = location.search;
 	if (/[?&]mobile=0/.test(q)) return !1;
 	if (/[?&]mobile=1/.test(q)) return !0;
 	const ua = navigator.userAgent || "";
-	return /Android|iPhone|iPad|Mobile/i.test(ua) && !/OculusBrowser|Quest/i.test(ua);
+	return /Android/i.test(ua) && !/OculusBrowser|Quest/i.test(ua);
+})();
+// THE OWNER'S RULES FOR WHERE THE GAME RUNS: Chrome is the only browser ever supported, on desktop and on a
+// phone; a phone is only ever an Android phone (no iPhone or any other phone); Mac computers are never
+// supported (a Mac's Chrome included); and in VR only the Meta Quest line in the Meta Quest Browser (the game
+// offers VR only there, see isQuest). Anything else gets a plain
+// notice in place of the game (the boot is skipped): the text here, or nothing when the game may run. The
+// Quest's browser (Chromium) is always allowed. No query switch opens a blocked device: the test overrides
+// above only pick the mode.
+window.__jgpBlocked = (() => {
+	const ua = navigator.userAgent || "";
+	if (/OculusBrowser|Quest/i.test(ua)) return "";
+	if (/PicoBrowser|PICO \d|Wolvic|Vive/i.test(ua)) return "In VR, Greeblis Town USA plays only in the Meta Quest Browser on a Meta Quest headset.";
+	const phone = /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(ua),
+		chrome = /Chrome\//.test(ua) && !/SamsungBrowser|Edg[A-Za-z]*\/|OPR|OPT|Firefox|UCBrowser|YaBrowser|MiuiBrowser|HuaweiBrowser|Vivaldi|DuckDuckGo|; wv\)/i.test(ua);
+	if (phone && !/Android/i.test(ua)) return "Greeblis Town USA plays on Android phones (in Chrome), in Chrome on desktop and in the Meta Quest.\nIt does not run on this phone.";
+	if (/Macintosh/.test(ua)) return "Greeblis Town USA does not run on Mac computers.\nPlay it in Chrome on a Windows or Linux computer, in Chrome on an Android phone, or in the Meta Quest.";
+	if (!chrome) return phone ? "On a phone, Greeblis Town USA plays only in Chrome.\nOpen it in Chrome on this phone." : "Greeblis Town USA plays only in Chrome (and in the Meta Quest).\nOpen it in Chrome.";
+	return "";
 })();
 // count shader compile/link failures (shown in the mobile diagnostics panel)
 (() => {
@@ -6422,9 +6440,7 @@ const xe = (() => {
 				"#jgpTouch .btns{position:absolute;right:14px;bottom:22px;display:grid;grid-template-columns:repeat(2,74px);gap:10px;pointer-events:auto}" +
 				"#jgpTouch button{height:52px;border-radius:14px;border:3px solid #0d0d1a;background:#8a3ffc;color:#fff;font:bold 14px 'Courier New',monospace;touch-action:manipulation}" +
 				"#jgpTouch button:active{background:#a8e830;color:#0d0d1a}" +
-				"#jgpTouch .zoom{position:absolute;right:14px;top:14px;display:flex;flex-direction:column;gap:8px;pointer-events:auto}" +
-				"#jgpTouch .zoom button{width:46px;height:46px;font-size:22px;background:rgba(32,32,74,.85)}" +
-				"#jgpDiag{position:absolute;left:50%;top:8px;transform:translateX(-50%);max-width:62vw;padding:6px 8px;border-radius:8px;background:rgba(13,13,26,.72);color:#e8e8ff;font:11px/1.35 'Courier New',monospace;white-space:pre;pointer-events:auto}" +
+				"#jgpDiag{position:absolute;left:8px;top:8px;max-width:62vw;padding:6px 8px;border-radius:8px;background:rgba(13,13,26,.72);color:#e8e8ff;font:11px/1.35 'Courier New',monospace;white-space:pre;pointer-events:auto}" +
 				"#jgpDiag b{color:#a8e830}#jgpDiag .bad{color:#ff5fb0}#jgpDiag button{height:28px;margin-top:4px;font-size:11px;border-width:2px;border-radius:8px;padding:0 8px}";
 			document.head.appendChild(css);
 			const root = document.createElement("div");
@@ -6432,7 +6448,6 @@ const xe = (() => {
 			root.innerHTML =
 				'<div class="pad"><div class="knob"></div></div>' +
 				'<div class="btns"><button data-k="talk">TALK</button><button data-k="give">GIVE</button></div>' +
-				'<div class="zoom"><button data-k="zin">+</button><button data-k="zout">−</button></div>' +
 				'<div id="jgpDiag" class="min"></div>';
 			document.body.appendChild(root);
 			// the GIVE button shows only when the creature in front of you can be given a Blossom (you have one)
@@ -6473,8 +6488,6 @@ const xe = (() => {
 					try {
 						if ("talk" === k) ae.open ? ae.options[0] && ae.options[0].run() : "playing" === jt.top && xe.run("interact");
 						else if ("give" === k) "playing" === jt.top && !ae.open && xe.run("give");
-						else if ("zin" === k) dk.dist = u(dk.dist - 1.2, 3, 16);
-						else if ("zout" === k) dk.dist = u(dk.dist + 1.2, 3, 16);
 					} catch (err) {
 						vo(err, "mobile-btn");
 					}
@@ -6766,8 +6779,8 @@ const xe = (() => {
 					off = dk.hudOff || (dk.hudOff = new c(0, 0.05, 0.06).applyEuler(dk.grip.rotation)),
 					k2 = (0.62 - off.z) / 0.62, // the HUD is nearer the camera than the grip, so less of it fits
 					m = 0.012;
-				// on phones the HUD sits just below the fps / quality chip at the top of the screen
-				dk.grip.position.set(-hw * k2 + 0.075 + m - off.x, (MOB ? hh * k2 * 0.9 - 0.0516 - m : -hh * k2 + 0.0516 + m) - off.y, -0.62);
+				// on phones the HUD sits top right (the fps / quality chip has the top left); on desktop bottom left
+				dk.grip.position.set((MOB ? hw * k2 - 0.075 - m : -hw * k2 + 0.075 + m) - off.x, (MOB ? hh * k2 - 0.0516 - m : -hh * k2 + 0.0516 + m) - off.y, -0.62);
 			}
 		}
 		// screen-aligned placement of the dialogue / panel (VR places them in the world instead)
@@ -19259,6 +19272,12 @@ const JGP = (() => {
 		},
 	};
 })();
+// a browser or phone the game may not run on (the owner's rules: Chrome only, Android phones only) gets the
+// notice on the start screen and nothing else: no scene, no frame loop
+function blockedGate() {
+	const g = mo("gate");
+	(mo("gateTitle").textContent = "-Greeblis Town USA-"), (mo("gateText").textContent = window.__jgpBlocked), (mo("gateVer").textContent = ""), (g.style.cursor = "default"), g.classList.add("on");
+}
 function vo(t, e) {
 	// (every error is counted here, wherever it came from — the frame loop, a click, a key, a button — so the
 	// desktop counter and the copied report agree; on its own guard, as Re may not exist yet during boot)
@@ -19289,7 +19308,9 @@ if (
 	!0)
 )
 	try {
-		!(function () {
+		window.__jgpBlocked
+			? blockedGate()
+			: !(function () {
 			(function () {
 				// the cast's own sounds: ZOLLOD's bubble blip and FORTIZMO's toot
 				(G.bubbleBlip = () => {
