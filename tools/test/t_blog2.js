@@ -18,7 +18,8 @@ module.exports = async (p) => { await p.mouse.click(p.viewportSize().width / 2, 
     out.push('err ' + Re.errors); return out.join('\n'); }));
   await p.waitForTimeout(1000);
   // with all three, SPARKAKUS's finale runs
-  console.log(await p.evaluate(() => { try { LIB.talk(); } catch (x) { return 'LIB err ' + x.message; } return 'LIB top ' + jt.top + ' text ' + JSON.stringify((document.getElementById('dlgText').textContent || '').slice(0, 60)); }));
+  // (from in front of his counter, as the player talks to him)
+  console.log(await p.evaluate(() => { const s = z.list.find((q) => q.id === 'stump'); s && (At.position.set(s.x, 0, s.z + 3.2), xe.scan()); try { LIB.talk(); } catch (x) { return 'LIB err ' + x.message; } return 'LIB top ' + jt.top + ' text ' + JSON.stringify((document.getElementById('dlgText').textContent || '').slice(0, 60)); }));
   // (the finale's pages, then the three pieces glued together in the air for a few seconds, then the Gem speech:
   // its pages are skipped as they open, for up to 15 s, until the rewards are given)
   let res = '';
