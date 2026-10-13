@@ -132,8 +132,8 @@ and any game after them.
 - **The town outside the park** gets time and care: make it as interesting as possible, drawn from the park's
   lore, style and design (its creatures, the Consortium, the Portal and Greeblis City, goo and VHS; never flint
   knapping, and nothing inspired by the church's Ancient: no element of the background outside the park comes
-  from it), at no extra performance cost (built into the town's merged meshes and sign atlas,
-  paid for in trees).
+  from it), built into the town's merged meshes and sign atlas. Since the performance passes, small increases in
+  the background's complexity are allowed (the owner, #97): small, measured, and still merged.
 - **Show, don't tell:** lore comes into the environment through visual elements, never through text (words on
   signs don't count as visual). Keep words and signs in the background to a minimum. Only creatures of the town
   give the town its design: Hennrick (from the far past) and Nextessa (from the far future, which is why she
