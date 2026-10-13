@@ -722,7 +722,10 @@ Goo that runs down a body and moves like goo, without clipping:
 - **The mobile test mode's screen** (owner's choices): the fps / resolution chip (`#jgpDiag`, tap it for the
   diagnostics panel) sits top left, the game's HUD (the quest checklist on `dk.grip`) top right, the joystick
   bottom left and TALK / GIVE bottom right; there are no zoom buttons (removed on request; the desktop mode keeps
-  its wheel). On desktop the HUD sits bottom left.
+  its wheel).
+- **The desktop test mode's screen** (owner's choices, #99): the game's HUD (the quest checklist on `dk.grip`)
+  sits top left, and the frame rate and the error count sit bottom left (`#jgpDeskErr`) with a `copy errors`
+  button that copies the error report to paste anywhere. Nothing sits top right.
 - **Where the game runs** (the owner's platform rules, in [`greeblis-rules.md`](greeblis-rules.md#platforms-and-browsers-from-the-owner-for-this-and-every-greeblis-game)):
   `window.__jgpBlocked`, computed from the user agent at the top of the game script, holds a notice for any
   browser or device the game is not for (a phone that is not Android, a Mac, a browser that is not Chrome, a VR
@@ -853,8 +856,7 @@ plane.
   shows which really flicker (the near plane nudged with nothing moving). Moving the camera instead, even by
   millimetres, reports fine textures as flicker, and an eye straight below a point makes `lookAt` spin.
 - **The head guard (VR):** a head can lean into what the body can't walk into. `JGP.headGuard` darkens the view
-  from 20 cm off any solid structure (building parts at their real heights, and round colliders only where the
-  player meets them) to fully black at 8 cm (the near plane is at 15 cm), and clears as the head comes out. The
+  from 20 cm off any solid structure (building parts at their real heights) to fully black at 8 cm (the near plane is at 15 cm), and clears as the head comes out. The
   player walks right through the Summoning Stone and the portal's pillars, so they never darken it (owner's rule).
   Its `TOPS` table lists each building's parts in order: the Library's are its eight bookcases then the banner's
   two posts; the Sheriff's desk top is `SHERIFF_DESK` (raised), not the other counters' 1.12. The ANCIENT is
