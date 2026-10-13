@@ -301,7 +301,7 @@ Goo that runs down a body and moves like goo, without clipping:
   `test/t_phone.js` checks both.
 - **Dance battles** (Greeblis City's panel and bar) with the three Dancers: rock, paper, scissors. The Dancer goes
   first and shows its move with its own animation; Rock out! beats the splits, the splits beat going horizontal,
-  going horizontal beats Rock out!. Each round won teaches one of the Dancer's ten steps; learn all ten to win (three before #97: the owner asked for longer battles). The bar counts the steps left down from ten. The
+  going horizontal beats Rock out!. Each round won teaches one of the Dancer's ten steps; learn all ten to win (three before #98: the owner asked for longer battles). The bar counts the steps left down from ten. The
   panel shows only the Dancer's move; the bar shows how it is going. The winner does a victory dance.
 - **The chain:** each Dancer's first win gives one Ancient Artifact (a third of one teal brilliant-cut diamond;
   later wins get a bow). Sparkakus's talk follows the count (none, one or two, all three). With all three he stays
@@ -835,7 +835,7 @@ plane.
   the far faces level and they fight), and not at all when both are only a few millimetres thick. Up to three
   passes. It moves about 5,900 parts in about 0.5 s (`JGP.unfightParts.moved` / `.ms`). Merged faces lying flat on
   the ground facing down are dropped (no eye goes below the ground).
-- **A part its animation changes only in a rare state must be kept out of the merges** (#97): a creature's build
+- **A part its animation changes only in a rare state must be kept out of the merges** (#98): a creature's build
   plays its animation at a handful of sample times (`KIT.animated`, and the spawn-time test that feeds `io`), and
   merges every part that never changed in them. A part moved, hidden or rescaled only in a state those samples
   never reach (GOOWARD's squint every 4.3 s, SOMLET's lids hiding when her eyes open for a Blossom) was baked into
