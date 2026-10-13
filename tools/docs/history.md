@@ -7,6 +7,7 @@ Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 
 | PR | Merged | What changed |
 | --- | --- | --- |
+| [#94](https://github.com/GorboGreeblis/GreeblisTown/pull/94) | 2026-10-13 | The park's second bird: an American robin built from the owner's two photos (upright, near-black head with white eye rings and a streaked white throat, yellow beak, rusty orange breast, grey-brown back and wings, dark tail with white corners, long thin legs) on a low bough out of the north-west oak, toward the square. It looks about, cocks its head to listen, flicks its tail, hops along its bough and breathes; it never flies or leaves its tree. `t_cardinal.js` takes `AT=x,z` to render either bird. |
 | [#93](https://github.com/GorboGreeblis/GreeblisTown/pull/93) | 2026-10-13 | The pond's effects removed (the owner asked): the two expanding ripple rings on the water and the drifting light points rising out of it (the "ambient" frame hook) are gone; the water only breathes in colour. Backpacka's drinking ripples at the Event are untouched. |
 | [#92](https://github.com/GorboGreeblis/GreeblisTown/pull/92) | 2026-10-13 | The owner's platform rules, for this and every game we make: Chrome is the only browser ever supported (desktop and phone), a phone is only ever an Android phone, Mac computers are never supported, in VR only the Meta Quest line in the Meta Quest Browser, and the game is only ever optimised for those; anything else gets a plain notice on the start screen and no game (`__jgpBlocked`, `blockedGate()`). The mobile test mode's zoom buttons removed, its fps chip moved top left and the HUD top right (the owner asked). The rule that the final pre-compression build has every label and comment stripped. `mob.js` and `cov.js` emulate a Pixel 7 in Chrome. |
 | [#91](https://github.com/GorboGreeblis/GreeblisTown/pull/91) | 2026-10-13 | In-world text readable in VR (the owner's rule): the Library's face-out hardbacks are 40 cm tall (OVERCOMING SHYNESS 44), their cover titles fitted bigger to the cover's width, and the five readable parcels' labels run across most of each parcel's face with the name as big as the label allows; the rows' books are bigger with them (the owner asked). The owner's rule that a finished creature model is locked down, and the Ancient locked (the owner: perfect). `t_shelf.js` renders each shelf item. |
@@ -119,8 +120,8 @@ decisions, with the PR that carried them.
   - Vignettes play with a 15% chance.
   - Sparkakus has the usual Talk and Blossom menu: a Blossom can be given before his quest is talked about or
     done; at the Event no creature offers a Blossom option (#67).
-  - One bird only, a cardinal in one park tree, built from the owner's photos; it has small animations and never
-    flies or leaves its tree (#69). Creature visits start every 22 to 32 s, twice as often as before (#70).
+  - Birds in the park's trees, one to a tree, built from the owner's photos: a cardinal (#69) and a robin (#94);
+    each has small animations and never flies or leaves its tree. Creature visits start every 22 to 32 s, twice as often as before (#70).
   - The Ancient is built from the owner's photos (bigger when that fits more of the photo), its stalks rooted in
     its head, with slight resting moves and no dance or planting (#72, #75).
   - The avatar's default outfit is a yellow sun dress, and her Wanted poster follows her design (#73).

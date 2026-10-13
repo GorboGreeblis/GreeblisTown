@@ -60,7 +60,7 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   to you. Given a Blossom he drops to all fours, runs a lap of the Library floor, comes back to his place, stands
   and says sorry. At the Event he digs, embarrassed about it.
 
-## The cardinal (the park's one bird)
+## The cardinal and the robin (the park's two birds)
 
 - **Build:** `cardinal(X, Z, s, ry)` in the world builder, from the owner's two photos of a male northern cardinal:
   a plump bright red body (`#e23a1e`, the breast fuller and a shade brighter), a pointed crest in two cones swept
@@ -76,6 +76,18 @@ climax. Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)}
   never flies and never leaves its tree (the owner's rule).
   `t_cardinal.js` renders it from every side and from the walk, a few frames of its life, and checks the
   tree's crowns clear its top.
+- **The robin** (`robin(X, Z, s, ry)`), the park's second bird, from the owner's two photos of an American robin:
+  an upright grey-brown bird (`#5c5248` back, wings a shade darker with darker tips), its head near black with a
+  white ring round each glossy eye, a small white throat patch streaked dark under a slim yellow cone of a beak,
+  a rusty orange breast (`#c85a26`) full and forward from the throat to the belly, white under the tail, a longish
+  dark tail of three feather boards with white corners proud of the outer two, and long thin legs with three toes
+  gripping the bough. Its body stands up at the front (a robin's stance), and it is a little bigger than the
+  cardinal, as a robin is (about 50 cm from beak to tail tip, twice a real one).
+- **Where:** on the same kind of low bough (its fork and leaves on the other side) out of the oak by the north
+  fence's west half (the tree at (−17, −34)), on the side toward the square, side-on to it. One bird to a tree.
+- **Life:** it looks about, cocks its head to one side and holds it there a few seconds (a robin listening for a
+  worm), flicks its tail every 3–8 s, hops a hand's width along the bough and back every 7–16 s with a flutter,
+  and breathes. It never flies and never leaves its tree (the owner's rule). `AT=-17,-34 t_cardinal.js` renders it.
 
 ## Mama Gorbo (`p_mamagorbo`)
 
