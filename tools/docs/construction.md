@@ -693,6 +693,17 @@ Goo that runs down a body and moves like goo, without clipping:
   never an empty coloured one.
 - **No X in the top right of any menu** (owner's rule): every panel closes by its own button at the bottom (LEAVE,
   DONE, No) or, in the test modes, a tap off it. A Dance battle has LEAVE from its first round.
+- **The action menu's place in the test modes** (`placeMenu`): right over the creature's head, at the creature's own
+  distance from the camera, facing it and placed again every frame while open, since the camera there swings and
+  eases behind the avatar. It used to be placed once, VR-fashion, from the avatar's head (`n` is the avatar's head
+  in the test modes, not the camera): 11.5 m out along the avatar's line to the creature, lifted to the angle of
+  the creature's top as seen from the avatar's eyes. Seen from the camera 7 m behind and above, that sat too high
+  (the closer and taller the creature, the higher: 87 to 99 px over the head at 4.5 m on an 800 x 600 window, out
+  of the view at times), and any camera orbit or step after that added parallax (a quarter turn by drag: 108 to
+  125 px up and 128 px to the side). Now 17 to 19 px over the head, 0 to 1 px sideways, before and after an orbit
+  and a step (`test/t_menupos.js`). A station's `top` is a set height; one with a body of its own (SPARKAKUS)
+  gives the real top of his head from its `pickObj`. VR is unchanged: there the menu is placed once from the
+  head, and the player's head moves freely.
 - **Taps in the test modes** (owner's request: no NEXT or CLOSE buttons on mobile): a tap or click anywhere moves
   a dialogue on, page by page, and closes it after the last; a tap off the action menu or a panel (the shop)
   closes it. The panels keep their own X and LEAVE. VR is unchanged (the trigger already moves dialogue on).
