@@ -40,7 +40,10 @@ of them. Read the guides here before changing the game.
    builder, parts, proportions or palette, by anyone, for any reason short of the owner asking for that creature
    to be reopened. A fix that would touch a locked model (a clip, a flicker) is made around it (its placement,
    its animation, the thing it clips into) or put to the owner first. Locked so far: every creature whose builder
-   says its model is final, and the Ancient (the owner: "perfect"). (The owner reopened GOOWARD and SOMLET for the
+   says its model is final, the Ancient (the owner: "perfect"), the design of the church's secret room (the
+   owner, #99), and **the Event flowers** (the owner, #99): the five plant models the Garden Event grows, and only
+   those. **A locked model or design can still change, but only with the owner's approval first** (the
+   owner's rule, for every game we make): ask before touching it, and wait for a yes. (The owner reopened GOOWARD and SOMLET for the
    bug pass's two fixes, #98: their squint and their eyes opening for a Blossom, baked into merged meshes, were kept
    apart from the merges; their shapes, parts and palettes are unchanged. Both are locked again.)
 7. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
@@ -142,10 +145,12 @@ and any game after them.
 - **A finished environment is locked down** (the owner's rule, for every game we make): once the general
   environment (the town, the park, the buildings and their props, the scenery) is done, it is locked against any
   direct change, as finished creature models are. A fix that would touch it (a flicker, a clip, a creature's
-  footing) is made around it or put to the owner first. The owner says when an environment is done; Greeblis
-  Town USA's is not marked done yet (the church's inside already is, below).
-- **The inside of the church is final:** never change or update it (its room, the Ancient's corner, its props,
-  the secret way in) from now on.
+  footing) is made around it or put to the owner first, and any change to it needs the owner's approval first. The
+  owner says when an environment is done; Greeblis Town's is not marked done yet (the church's inside and its
+  secret room already are, below).
+- **The inside of the church is final, and the secret room's design is locked down** (the owner, #99): never
+  change or update it (its room, the Ancient's corner, its props, the secret way in) without the owner's approval
+  first.
 
 ## Where things are
 

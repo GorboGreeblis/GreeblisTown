@@ -457,6 +457,8 @@ The old tools went with their repos unless a Town path is given.
   is seen, never in text; words and signs kept to a minimum.
 - **A finished environment is locked down** (every game we make): when the general environment is done, no more
   direct changes to it, as with finished creature models; the owner says when it is done.
+- **Locked models and designs can still change, with the owner's approval first** (every game we make): a
+  finished creature, a locked room or a locked environment is never changed on our own; ask, and wait for a yes.
 - **Platforms, for every game we make** (Town, 13 Oct 2026; all Greeblis games past and future, and any game
   after them): Chrome is the only browser ever supported, on
   desktop and on a phone; a phone is only ever an Android phone (no iPhone or any other); Mac computers are
