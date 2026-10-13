@@ -710,6 +710,17 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Taps in the test modes** (owner's request: no NEXT or CLOSE buttons on mobile): a tap or click anywhere moves
   a dialogue on, page by page, and closes it after the last; a tap off the action menu or a panel (the shop)
   closes it. The panels keep their own X and LEAVE. VR is unchanged (the trigger already moves dialogue on).
+- **The mobile test mode's screen** (owner's choices): the fps / resolution chip (`#jgpDiag`, tap it for the
+  diagnostics panel) sits top left, the game's HUD (the quest checklist on `dk.grip`) top right, the joystick
+  bottom left and TALK / GIVE bottom right; there are no zoom buttons (removed on request; the desktop mode keeps
+  its wheel). On desktop the HUD sits bottom left.
+- **Where the game runs** (the owner's platform rules, in [`greeblis-rules.md`](greeblis-rules.md#platforms-and-browsers-from-the-owner-for-this-and-every-greeblis-game)):
+  `window.__jgpBlocked`, computed from the user agent at the top of the game script, holds a notice for any
+  browser or device the game is not for (a phone that is not Android, a Mac, a browser that is not Chrome, a VR
+  browser that is not the Quest's); the boot then calls `blockedGate()`, which puts the notice on the start
+  screen, and builds nothing. The Quest's browser always passes, and so does headless Chromium (its UA carries
+  `Chrome/`). `__jgpMobile` (the mobile test mode) is Android only now; `?mobile=1` still turns it on in desktop
+  Chrome for testing.
 - **The test modes' error tools** count every error in one place, `vo()` (the frame loop, a click, a key, a
   button), so the desktop counter and the copied report agree; and the VR placer never runs there (a new dialogue
   or panel used to show in the wrong place for one frame).

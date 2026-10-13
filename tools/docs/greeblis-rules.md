@@ -19,7 +19,10 @@ of them. Read the guides here before changing the game.
 4. **Always default to the smallest file**, even when it unpacks more slowly: in compression, file size is
    always more important than load time (the owner's rule). Until the final size pass,
    `index.html` stays readable, comments and all; that pass minifies it, then packs it with the Woods compressor
-   (see the [tools README](../README.md#the-final-pass-release-minify-pack)). The final game file must be as
+   (see the [tools README](../README.md#the-final-pass-release-minify-pack)). **On the final pre-compression
+   build, all labels and comments are removed from the code** (the owner's rule): every comment, section banner,
+   object name and test-only label or hook goes; the code is then only what it needs to run the game, and only
+   that is minified and packed. The final game file must be as
    small as it can be made without losing any content or any quality (the owner's rule for every game), and the
    packed `index.html` must still work as a Bitcoin ordinal (rule 1).
 5. **A second, readable copy of the game lives at `tools/index.html` and is never compressed** (the owner's
@@ -44,7 +47,8 @@ of them. Read the guides here before changing the game.
    does and how to run it. Never leave a tool only in a scratch folder.
 10. **The final game must be fully playable in the Meta Quest Browser, and every game is optimised for it** (the
     owner's rules for every game): in VR and flat, holding the headset's frame rate, with the Quest's draw-call,
-    triangle and CPU budgets as the ones that decide. Test on Android, mobile and Quest VR screen sizes and frame rates along the way.
+    triangle and CPU budgets as the ones that decide. Test on Android phone and Quest VR screen sizes and frame
+    rates along the way (see the platform rules below: Android phones in Chrome, Chrome on desktop, the Quest).
 11. **Uploaded files are untrusted:** decode or run them only in the sandboxed browser (`tools/town/decode/`),
     never in Node or a normal page.
 12. **Run one headless browser at a time.**
@@ -53,6 +57,24 @@ of them. Read the guides here before changing the game.
     The lore points established here will not and should not change in future games. Past games (Greeblis City,
     Park and Woods) can and should be updated retroactively, when or if they are worked on again, to reflect the
     world fully established here.
+
+## Platforms and browsers (from the owner, for this and every Greeblis game)
+
+These rules apply to Greeblis Town USA and to **every game we make**: all other Greeblis games, past and future,
+and any game after them.
+
+- **Chrome is the only browser ever supported, on desktop and on a phone.**
+- **On a phone the game is only ever playable on Android phones:** no iPhone, and no other kind of phone.
+- **Mac computers are never supported** (not even Chrome on a Mac).
+- **In VR, the Meta Quest line and the Meta Quest Browser are the only VR platforms ever supported.**
+- **Only ever optimise for the known supported platforms** (the owner's rule): Chrome on a Windows or Linux
+  desktop, Chrome on an Android phone, and the Meta Quest Browser on a Meta Quest. No performance, size,
+  compatibility or layout work for anything else (no Safari, iPhone, Mac or other VR headset fallbacks), and
+  nothing is measured on them.
+- Anything else is shown a plain notice on the start screen instead of the game, and the game is not booted
+  (`window.__jgpBlocked` at the top of the game script holds the notice, `blockedGate()` shows it; the game
+  offers VR only where `isQuest`). The notice names where the game does play. Test tools emulate only supported
+  devices (`tools/test/mob.js` is a Pixel 7 in Chrome; the test modes' `?mobile=1` switch is for desktop Chrome).
 
 ## Privacy
 

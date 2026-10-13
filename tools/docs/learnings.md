@@ -452,7 +452,13 @@ The old tools went with their repos unless a Town path is given.
 
 ### Owner decisions that recurred
 
-- VR only in the final build; test modes are temporary (Town also targets Android and mobile).
+- VR only in the final build; test modes are temporary (Town also targets Android phones).
+- **Platforms, for every game we make** (Town, 13 Oct 2026; all Greeblis games past and future, and any game
+  after them): Chrome is the only browser ever supported, on
+  desktop and on a phone; a phone is only ever an Android phone (no iPhone or any other); Mac computers are
+  never supported; in VR only the Meta Quest line in the Meta Quest Browser. Anything else gets a notice, not
+  the game (Town's `__jgpBlocked`). Only ever optimise for those supported platforms, never for anything else.
+- The final pre-compression build has every label and comment stripped: only what runs the game is packed.
 - Only `index.html` is pushed; every game is fully playable as an ordinal.
 - Smallest file over load time, with no content cut.
 - Keep a ported creature exactly the same (Hennrick in all four games).

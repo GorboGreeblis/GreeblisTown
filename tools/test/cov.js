@@ -1,11 +1,11 @@
 // Records precise JS coverage (call counts) over a whole play session made of test modules run in turn.
-// node cov.js <url> <out.json> mod1.js mod2.js ...   (MOBILE=1 for an iPhone context)
+// node cov.js <url> <out.json> mod1.js mod2.js ...   (MOBILE=1 for a Pixel 7 Chrome context)
 const { chromium, devices } = require('playwright');
 const path = require('path'), fs = require('fs');
 (async () => {
   const [url, out, ...mods] = process.argv.slice(2);
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
-  const ctx = await b.newContext(process.env.MOBILE ? { ...devices['iPhone 13'] } : { viewport: { width: 1280, height: 720 } });
+  const ctx = await b.newContext(process.env.MOBILE ? { ...devices['Pixel 7'] } : { viewport: { width: 1280, height: 720 } });
   const p = await ctx.newPage();
   const cdp = await ctx.newCDPSession(p);
   await cdp.send('Profiler.enable'); await cdp.send('Profiler.startPreciseCoverage', { callCount: true, detailed: true });
