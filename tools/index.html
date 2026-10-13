@@ -322,8 +322,18 @@ function b(e, o, a, n = {}) {
 	(r.width = e), (r.height = o);
 	const s = r.getContext("2d");
 	n.smooth && (s.imageSmoothingEnabled = !0), a(s, e, o);
-	const i = new THREE.CanvasTexture(r);
+	const i = new THREE.CanvasTexture(r),
+		// (WebGL2, which every supported platform has, mipmaps any size of texture: a sign, a poster or a wall seen
+		// from across the park then averages down instead of shimmering as the head moves; only WebGL1 can't)
+		w2 = (() => {
+			try {
+				return !!O.capabilities.isWebGL2;
+			} catch (e) {
+				return !1;
+			}
+		})();
 	(y(e) && y(o)) ||
+		(w2 && !n.noMip) ||
 		((i.generateMipmaps = !1), (i.minFilter = THREE.LinearFilter), t.debug && console.warn("NPOT canvas", e, o)),
 		n.nearest && (i.magFilter = THREE.NearestFilter),
 		n.noMip && (i.__gbNoMip = !0);
@@ -5722,7 +5732,7 @@ const xe = (() => {
 							const a = new THREE.CanvasTexture(t);
 							(a.__gbNoMip = !0),
 								(F.vignette = new THREE.Mesh(
-									new THREE.PlaneGeometry(1.1, 1.1),
+									new THREE.PlaneGeometry(1.76, 1.76),
 									new THREE.MeshBasicMaterial({
 										map: a,
 										transparent: !0,
@@ -5732,7 +5742,7 @@ const xe = (() => {
 										fog: !1,
 									}),
 								)),
-								F.vignette.position.set(0, 0, -0.2),
+								F.vignette.position.set(0, 0, -0.32),
 								(F.vignette.renderOrder = 10003),
 								(F.vignette.frustumCulled = !1),
 								(F.vignette.visible = !1),
@@ -6476,7 +6486,7 @@ const xe = (() => {
 		function errorText() {
 			const lg = window.__jgpErrLog || new Map(),
 				rows = [...lg].map(([k, q]) => "x" + q.n + " (first at " + q.at + " s)\n" + k);
-			return ["Greeblis Town USA errors", "game errors " + Re.errors + ", shader errors " + (window.__jgpShaderErrors || 0) + ", game time " + Math.round(Re.t) + " s", (MOB ? "mobile" : "desktop") + " | " + navigator.userAgent, "", rows.length ? rows.join("\n\n") : "(none)"].join("\n");
+			return ["Greeblis Town USA errors", "game errors " + Re.errors + ", shader errors " + (window.__jgpShaderErrors || 0) + ", game time " + Math.round(Re.t) + " s", (MOB ? "mobile" : "desktop") + " | " + navigator.userAgent, "depth bits " + (window.__jgpDepthBits || "?") + (window.__jgpDepthXr ? ", in VR " + window.__jgpDepthXr : ""), "", rows.length ? rows.join("\n\n") : "(none)"].join("\n");
 		}
 		function copyErrors(btn) {
 			const txt = errorText(),
@@ -6547,7 +6557,7 @@ const xe = (() => {
 				"<b>MOBILE TEST MODE</b>\n" +
 				"fps " + mob.fps + "  res x" + mob.pr + "\n" +
 				"calls " + info.render.calls + "  tris " + Math.round(info.render.triangles / 1e3) + "k\n" +
-				"tex " + info.memory.textures + "  geo " + info.memory.geometries + "\n" +
+				"tex " + info.memory.textures + "  geo " + info.memory.geometries + "  depth " + (window.__jgpDepthBits || "?") + " bits\n" +
 				(O.capabilities.isWebGL2 ? "WebGL2" : '<span class="bad">WebGL1</span>') +
 				"  vUniforms " + gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS) + "\n" +
 				"batching " + (gcEB.off ? '<span class="bad">OFF</span>' : "ON x" + gcEB.N) + "\n" +
@@ -6560,7 +6570,9 @@ const xe = (() => {
 			if (o.presenting || !At) return;
 			buildUI(), deskErrors();
 			C.add(B), C.add(f), C.add(dk.ray);
-			(B.near = 0.1), (B.far = t.far), B.updateProjectionMatrix();
+			// (a near plane of 0.2 m, not 0.1: the depth buffer's precision doubles with it, and nothing of the test
+			// modes comes nearer the camera than the vignette at 0.32 m)
+			(B.near = 0.2), (B.far = t.far), B.updateProjectionMatrix();
 			dk.offRay.position.set(0, -1e4, 0), dk.offRay.rotation.set(-Math.PI / 2, 0, 0);
 			dk.grip.position.set(-0.42, -0.17, -0.62), dk.grip.rotation.set(1, 0, 0), B.add(dk.grip);
 			F.ctrls.forEach((c, i) => {
@@ -6887,6 +6899,16 @@ const Re = (() => {
 				Ho.contextLost || i("render", () => O.render(C, B)),
 				a++,
 				t - n > 500 && ((r = Math.round((1e3 * a) / (t - n))), (a = 0), (n = t));
+			// (the depth buffer's bits, read once a second from whatever is being drawn into: the page's canvas, or the
+			// headset's VR layer while presenting, whose buffer may be coarser; shown by the test modes' error tools.
+			// A 16-bit buffer resolves only centimetres at 30 m: surfaces that close together then flicker there)
+			if (t - (s.depthAt || 0) > 1e3)
+				try {
+					s.depthAt = t;
+					const gl = O.getContext(),
+						bits = gl.getParameter(gl.DEPTH_BITS);
+					O.xr && O.xr.isPresenting ? (window.__jgpDepthXr = bits) : (window.__jgpDepthBits = bits);
+				} catch (e) {}
 		}
 		return (
 			(s.start = () => {
@@ -14920,7 +14942,12 @@ const JGP = (() => {
 				cc.multiplyScalar(0.94 + 0.12 * nz), (gc[3 * k] = cc.r), (gc[3 * k + 1] = cc.g), (gc[3 * k + 2] = cc.b);
 			}
 			gg.setAttribute("color", new THREE.BufferAttribute(gc, 3)), gg.computeVertexNormals();
-			R(gg, new THREE.MeshLambertMaterial({ vertexColors: !0, map: KIT.surf("grass", "#ffffff", { rep: 110 }).map }), grp);
+			// (the ground is pushed back in the depth buffer by a few of its steps, and the park's lawn by fewer: the
+			// roads 2 cm over the ground, the walks and the dance floor a few centimetres over the lawn, always win,
+			// however coarse the depth buffer (a 16-bit one, as a phone or a headset's VR layer may have) and however
+			// far off they are. Steps only, no slope factor: a slope factor at a grazing angle would push the ground
+			// back by metres and let whatever is sunk into it show through)
+			R(gg, new THREE.MeshLambertMaterial({ vertexColors: !0, map: KIT.surf("grass", "#ffffff", { rep: 110 }).map, polygonOffset: !0, polygonOffsetFactor: 0, polygonOffsetUnits: 4 }), grp);
 		}
 
 		// ---- tiling textures, painted in greys and tinted per vertex ----------------------------
@@ -15563,9 +15590,9 @@ const JGP = (() => {
 
 		// ---- material bins: everything is merged per bin at the end -----------------------------
 		const lam = (o2) => new THREE.MeshLambertMaterial(Object.assign({ vertexColors: !0 }, o2)),
-			glassM = () => new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 90, specular: 0x7a8a9a });
+			glassM = () => new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 90, specular: 0x7a8a9a, polygonOffset: !0, polygonOffsetFactor: 0, polygonOffsetUnits: -2 });
 		const BIN = {
-			lawn: { m: lam({ map: TX.lawn }), tile: 4 },
+			lawn: { m: lam({ map: TX.lawn, polygonOffset: !0, polygonOffsetFactor: 0, polygonOffsetUnits: 2 }), tile: 4 },
 			concrete: { m: lam({ map: TX.concrete }), tile: 1.6 },
 			asphalt: { m: lam({ map: TX.asphalt }), tile: 6 },
 			brick: { m: lam({ map: TX.brick }), tile: 1.3, shade: !0 },
@@ -15575,6 +15602,11 @@ const JGP = (() => {
 			boards: { m: lam({ map: TX.boards }), tile: 2.2, shade: !0 },
 			metal: { m: lam({ map: TX.metal }), tile: 1.4, shade: !0 },
 			plain: { m: lam({ side: THREE.DoubleSide }) },
+			// (the roads' markings, 3 to 5 cm over the asphalt, pulled two depth steps forward: no street line ever
+			// flickers against its road, at any distance or depth precision)
+			mark: { m: lam({ side: THREE.DoubleSide, polygonOffset: !0, polygonOffsetFactor: 0, polygonOffsetUnits: -2 }) },
+			// (the window panes stand 2 cm proud of their walls; two depth steps forward keep them in front of the wall
+			// at any distance, on a coarse depth buffer too)
 			glass: { m: glassM() },
 			lit: { m: glassM() }, // windows that glow at night
 			lamp: { m: lam({}) },
@@ -16160,7 +16192,7 @@ const JGP = (() => {
 				for (let k = 0; k < 4; k++) {
 					const [px, pz] = spot(0.7), r0 = 0.15 + 0.08 * rnd2(), a = l * rnd2(), ring = [];
 					for (let j = 0; j < 8; j++) ring.push([px + 1.5 * r0 * Math.cos((j / 8) * l + a), pz + 1.35 * r0 * Math.sin((j / 8) * l + a)]);
-					for (let j = 1; j < 7; j++) peb.push({ ...flat([ring[0], ring[j], ring[j + 1]], 0.031), color: "#262722", matrix: S(0, 0, 0) });
+					for (let j = 1; j < 7; j++) peb.push({ ...flat([ring[0], ring[j], ring[j + 1]], 0.041), color: "#262722", matrix: S(0, 0, 0) });
 					peb.push({ geo: T.dodeca(1, 0), color: k % 2 ? "#a8a294" : "#b08050", matrix: S(px, 0.03 + 0.3 * r0, pz, rnd2() * 3, rnd2() * 3, 0, r0, 0.6 * r0, 1.15 * r0) });
 				}
 				for (let k = 0; k < 6; k++) {
@@ -16206,7 +16238,7 @@ const JGP = (() => {
 				}
 				for (let k = 0; k < 24; k++) {
 					const [px, pz] = spot(0.2), a = l * rnd2(), r0 = 0.012 + 0.03 * rnd2(), c0 = Math.cos(a) * r0, s0 = Math.sin(a) * r0;
-					peb.push({ ...flat([[px - c0, pz - s0], [px + s0 * 0.8, pz - c0 * 0.8], [px + c0 * 0.9, pz + s0 * 0.9]], 0.0335), color: k % 4 ? "#eae6dc" : "#f4f0e6", matrix: S(0, 0, 0) });
+					peb.push({ ...flat([[px - c0, pz - s0], [px + s0 * 0.8, pz - c0 * 0.8], [px + c0 * 0.9, pz + s0 * 0.9]], 0.0435), color: k % 4 ? "#eae6dc" : "#f4f0e6", matrix: S(0, 0, 0) });
 				}
 				for (let k = 0; k < 5; k++) {
 					const [px, pz] = spot(0.9);
@@ -16221,7 +16253,7 @@ const JGP = (() => {
 						rim.push([px, pz - w1], [px, pz + w1], [nx, nz], [px, pz - w1], [nx, nz], [nx, nz - w1]);
 						crk.push([px, pz - w0], [px, pz + w0], [nx, nz], [px, pz - w0], [nx, nz], [nx, nz - w0]), (px = nx), (pz = nz);
 					}
-					peb.push({ ...flat(rim, 0.031), color: "#8a8870", matrix: S(0, 0, 0) }), peb.push({ ...flat(crk, 0.0325), color: "#16160f", matrix: S(0, 0, 0) });
+					peb.push({ ...flat(rim, 0.041), color: "#8a8870", matrix: S(0, 0, 0) }), peb.push({ ...flat(crk, 0.0425), color: "#16160f", matrix: S(0, 0, 0) });
 				}
 				R(v(peb), new THREE.MeshLambertMaterial({ vertexColors: !0, color: 11579568, side: THREE.DoubleSide }), inner);
 				// the damp sheen the ANCIENT leaves: a faint glossy ribbon trailing from its tail toward the back
@@ -16929,7 +16961,8 @@ const JGP = (() => {
 			const B = place(X, Z, faceIn(X, Z)),
 				wh = "#f6f4ee";
 			// the floor sits on the ground (a low board deck you can walk straight onto)
-			B.geo("boards", ucyl(8), "#c8b49a", 0, 0.035, 0, 7.4, 0.07, 7.4, 0, Math.PI / 8, 0).geo("plain", ucyl(8), wh, 0, 0.03, 0, 7.6, 0.06, 7.6, 0, Math.PI / 8, 0);
+			// (the deck's top 2 cm over the white rim's; its underside inside the rim, not level with its bottom)
+			B.geo("boards", ucyl(8), "#c8b49a", 0, 0.045, 0, 7.4, 0.07, 7.4, 0, Math.PI / 8, 0).geo("plain", ucyl(8), wh, 0, 0.03, 0, 7.6, 0.06, 7.6, 0, Math.PI / 8, 0);
 			for (let k = 0; k < 8; k++) {
 				const a = Math.PI / 2 + Math.PI / 8 + (k * Math.PI) / 4;
 				B.box("plain", wh, 3.3 * Math.cos(a), 1.8, 3.3 * Math.sin(a), 0.24, 3.6, 0.24);
@@ -16999,16 +17032,16 @@ const JGP = (() => {
 		].forEach(([cz, cx]) => {
 			put("asphalt", UHs(64, 1), ROAD, S(0, -0.1, cz, 0, 0, 0, 640, 1, 8)), put("asphalt", UHs(1, 64), ROAD, S(cx, -0.12, 0, 0, 0, 0, 8, 1, 640));
 			for (let u = -318; u < 318; u += 9) {
-				Math.abs(u + 1.5 - 45) > 6 && Math.abs(u + 1.5 + 45) > 6 && put("plain", UH, "#e8c030", S(u + 1.5, -0.07, cz, 0, 0, 0, 3, 1, 0.18));
-				Math.abs(u + 1.5 - SZ) > 6 && Math.abs(u + 1.5 + 45) > 6 && put("plain", UH, "#e8c030", S(cx, -0.07, u + 1.5, 0, 0, 0, 0.18, 1, 3));
+				Math.abs(u + 1.5 - 45) > 6 && Math.abs(u + 1.5 + 45) > 6 && put("mark", UH, "#e8c030", S(u + 1.5, -0.07, cz, 0, 0, 0, 3, 1, 0.18));
+				Math.abs(u + 1.5 - SZ) > 6 && Math.abs(u + 1.5 + 45) > 6 && put("mark", UH, "#e8c030", S(cx, -0.07, u + 1.5, 0, 0, 0, 0.18, 1, 3));
 			}
 			[-1, 1].forEach((sd) => {
 				SEGS.forEach(([a0, a1]) => put("concrete", UBs(segs(a1 - a0), 1), WALK, S((a0 + a1) / 2, -0.1, cz + 5.5 * sd, 0, 0, 0, a1 - a0, 0.2, 3)));
 				SEGZ.forEach(([a0, a1]) => put("concrete", UBs(1, segs(a1 - a0)), WALK, S(cx + 5.5 * sd, -0.1, (a0 + a1) / 2, 0, 0, 0, 3, 0.2, a1 - a0)));
 				// gravel shoulders once the road leaves town
 				[-1, 1].forEach((dir) => {
-					put("plain", UHs(22, 1), "#a89a7a", S(dir * 210, -0.07, cz + 4.6 * sd, 0, 0, 0, 220, 1, 1.2));
-					put("plain", UHs(1, 22), "#a89a7a", S(cx + 4.6 * sd, -0.07, dir * 210, 0, 0, 0, 1.2, 1, 220));
+					put("mark", UHs(22, 1), "#a89a7a", S(dir * 210, -0.07, cz + 4.6 * sd, 0, 0, 0, 220, 1, 1.2));
+					put("mark", UHs(1, 22), "#a89a7a", S(cx + 4.6 * sd, -0.07, dir * 210, 0, 0, 0, 1.2, 1, 220));
 				});
 			});
 		});
@@ -17016,8 +17049,8 @@ const JGP = (() => {
 		[-1, 1].forEach((sx) =>
 			[-1, 1].forEach((sz) => {
 				for (let k = 0; k < 7; k++) {
-					put("plain", UH, "#f2f0ea", S(39.5 * sx, -0.07, (sz > 0 ? SZ : 45 * sz) + sz * (k - 3.5), 0, 0, 0, 3, 1, 0.5));
-					put("plain", UH, "#f2f0ea", S(sx * (41.5 + k), -0.07, sz > 0 ? SZ - 5.5 : -39.5, 0, 0, 0, 0.5, 1, 3));
+					put("mark", UH, "#f2f0ea", S(39.5 * sx, -0.07, (sz > 0 ? SZ : 45 * sz) + sz * (k - 3.5), 0, 0, 0, 3, 1, 0.5));
+					put("mark", UH, "#f2f0ea", S(sx * (41.5 + k), -0.07, sz > 0 ? SZ - 5.5 : -39.5, 0, 0, 0, 0.5, 1, 3));
 				}
 			}),
 		);
@@ -17067,7 +17100,8 @@ const JGP = (() => {
 					cz = d.z0 + d.uz * s0,
 					half = 7.2;
 				WALKS.push({ x0: cx + d.uz * half, z0: cz - d.ux * half, ux: -d.uz, uz: d.ux, wl: 2 * half });
-				put("concrete", UBs(segs(2 * half), 1), WALK, S(cx, -0.045, cz, 0, Math.atan2(d.ux, d.uz), 0, 2 * half, 0.12, 2.6));
+				// (its top 2 cm over the diagonal walk's, so the two never fight where they cross)
+				put("concrete", UBs(segs(2 * half), 1), WALK, S(cx, -0.03, cz, 0, Math.atan2(d.ux, d.uz), 0, 2 * half, 0.12, 2.6));
 			}
 		});
 		// the south walk, to the church steps

@@ -782,6 +782,31 @@ plane.
   (`test/t_ground.js`), and lift the body by what a tilt dips its footprint.
 - **Z-fighting:** any two faces in one plane flicker; offset them by 1 cm or more. That includes faces seen only
   from inside a building, because double-sided bins show both sides of a wall.
+- **Design for a coarse depth buffer (the anti-flicker pass, #95).** A 24-bit depth buffer with the near plane at
+  0.15 m tells 4 mm apart at 100 m; a 16-bit one, which a phone's canvas or a headset's VR layer may give the
+  page, tells only 1 mm at 3 m, 1.5 cm at 10 m and 9 cm at 30 m. That one buffer explains every flicker the
+  owner reported: the secret room's floor details (1 to 3.5 mm over the floor), the street lines (3 to 5 cm over
+  the roads, in the distance on a phone) and distance flicker in general (the roads 2 cm over the ground, the
+  walks 3 to 5 cm over the lawn, window panes 2 cm proud of their walls). So:
+  - the ground sits 4 depth steps back (`polygonOffsetUnits` 4, no slope factor), the park's lawn 2 back, the
+    roads' markings (the `mark` bin: dashes, crosswalk stripes, gravel shoulders) 2 forward, the window panes
+    (`glassM`) 2 forward: whatever lies on the ground or the lawn, and whatever stands on a wall, always wins,
+    however far off and however coarse the buffer. Steps only: a slope factor at a grazing angle would push the
+    ground back by metres and let whatever is sunk into it show through;
+  - gaps are 2 cm where a surface lies on another over a large area (the cross walk over the diagonal walk, the
+    gazebo's deck over its rim), and the secret room's flat details sit 1 cm over its floor;
+  - the test modes' near plane is 0.2 m (it was 0.1: the precision doubles with it; the vignette moved out to
+    0.32 m to stay in front of it); VR keeps 0.15 m for the hands;
+  - every canvas texture gets mipmaps on WebGL2 (`b()`), whatever its size, so signs, posters and the church's
+    walls average down in the distance instead of shimmering;
+  - the error report (`copy errors`) and the mobile panel show the depth buffer's bits, flat and in VR
+    (`window.__jgpDepthBits`, `__jgpDepthXr`): the number to read off a device that flickers.
+  `test/t_shimmer.js` simulates a headset's shimmer (the view re-rendered with the head nudged a millimetre and a
+  hundredth of a degree; pixels that change a lot are flicker, named by what they land on). Two artefacts of the
+  headless renderer to know: at a pitch of exactly 0° a frame differs from the next for no reason (the probe
+  pitches every level spot 0.3° down), and a road triangle whose vertices straddle the near plane loses its depth
+  to the ground beneath it in a big patch (a real GPU clips exactly): asphalt "flicker" next to the camera is
+  the renderer, not the game.
 - **Single-sided planes** disappear from behind. Use thin boxes or double-sided materials.
 - **Merged scenery fixes itself at load:** `unfightParts()` (Greeblis Park's fix) runs on the town's bins and every
   `goods()` merge (kiosks, Library, Juice Bar, drum kit), never on a creature. Wherever two parts' faces share a

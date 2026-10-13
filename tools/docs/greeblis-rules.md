@@ -26,7 +26,8 @@ of them. Read the guides here before changing the game.
    small as it can be made without losing any content or any quality (the owner's rule for every game), and the
    packed `index.html` must still work as a Bitcoin ordinal (rule 1).
 5. **A second, readable copy of the game lives at `tools/index.html` and is never compressed** (the owner's
-   rule, for this and every future game). Every change to `index.html` is copied there before the push
+   rule, for this and every game we make: **an uncompressed copy of every game is kept in its tools folder at
+   all times, in that game's repo**). Every change to `index.html` is copied there before the push
    (`cp index.html tools/index.html`; `tools/test/copycheck.sh` checks, and the battery runs it first). Before
    the final pass compresses the root `index.html`, the copy must hold the uncompressed page; from then on only
    the copy is readable.
@@ -102,7 +103,8 @@ and any game after them.
 - No cartoony smiles. Faces are expressive but understated.
 - Nothing clips (into the body, the ground or another part) from any angle, including from inside buildings in VR.
 - **No flickering and no z-fighting, ever** (the owner's rule for these VR games): no two faces share a plane where
-  both can show (keep a clear gap, a centimetre or more, or move them apart so they don't overlap at all), no
+  both can show (keep a clear gap, a centimetre or more, two where one surface lies on another over a wide area,
+  or move them apart so they don't overlap at all; design for a 16-bit depth buffer, see construction.md), no
   thin, high-contrast lines that shimmer as the head moves, and VR renders at the headset's full resolution unless
   the frame rate needs a step down. Check with `tools/test/t_zfight.js` and close renders before every push.
 - **Every creature stops a while for the player coming near, on any walk it is on** (out on a visit, home from one,
