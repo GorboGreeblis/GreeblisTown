@@ -66,9 +66,12 @@ const t = {
 		fog: { near: 70, far: window.__jgpMobile ? 230 : 300 },
 		// (the fog is complete at 300 m, so nothing further away can be seen: the far plane stops just past it)
 		far: window.__jgpMobile ? 260 : 310,
-		// (the player starts at the heart of the garden, just south of the Summoning Stone, facing the church:
-		// face is the heading, 0 looking south along +z)
-		player: { speed: 4.5, bodyR: 0.6, spawn: [0, 2], face: 0, hair: "#c2551f", dress: "#f3c43a", skin: "#f4dcc6" },
+		// (the player starts at the edge of the park, just inside the west fence north of the Juice Bar, facing KING
+		// DINO's billboard across the road (at -55, -55: the owner wants it to be the first thing seen, above all in
+		// VR, and the whole park a surprise behind them when they turn round; from here nothing of the park is in
+		// the way, and the street lamp that stood in front of the board is gone): face is the heading, 0 looking
+		// south along +z, so this one looks north-north-west)
+		player: { speed: 4.5, bodyR: 0.6, spawn: [-36.3, -20], face: Math.atan2(-55 + 36.3, -55 + 20), hair: "#c2551f", dress: "#f3c43a", skin: "#f4dcc6" },
 		bodies: { solidK: 0.85, aisle: 2.6 },
 		pizza: { callDelayMs: 1800, spawnR: 75, speed: 3.2, stopDist: 2.3, exitSpeed: 3.6, giveUpS: 100 },
 		camera: { fov: 55 },
@@ -6306,7 +6309,8 @@ const xe = (() => {
 		const dk = {
 			on: !1,
 			yaw: 0,
-			pitch: 0.38,
+			// (a near-level start, so the billboard the player faces at the spawn is in the first frame here too)
+			pitch: 0.2,
 			dist: 7,
 			keys: new Set(),
 			mx: 0,
@@ -15156,13 +15160,13 @@ const JGP = (() => {
 			fitFont(cx, "Jazz!", 160, 62, SERIF), (cx.fillStyle = "#1a1a1e"), cx.fillText("Jazz!", 423, 176), (cx.fillStyle = "#ffd23a"), cx.fillText("Jazz!", 420, 173);
 		});
 		// the banner hung under it, the owner's second line in one row of big letters on cream, red-edged
-		slot("bb_ban", 512, 80, (cx, w, h) => {
+		slot("bb_ban", 640, 192, (cx, w, h) => {
 			(cx.fillStyle = "#f4ecd8"), cx.fillRect(0, 0, w, h);
 			// the weave: fine threads both ways, a little uneven
 			const rn = srand(63);
 			cx.fillStyle = "rgba(120,100,70,.09)";
-			for (let k = 0; k < 900; k++) cx.fillRect(w * rn(), h * rn(), 1 + 3 * rn(), 1);
-			for (let k = 0; k < 500; k++) cx.fillRect(w * rn(), h * rn(), 1, 1 + 3 * rn());
+			for (let k = 0; k < 2400; k++) cx.fillRect(w * rn(), h * rn(), 1 + 3 * rn(), 1);
+			for (let k = 0; k < 1400; k++) cx.fillRect(w * rn(), h * rn(), 1, 1 + 3 * rn());
 			// the fold along the top where it hangs from its ties, the hem along the bottom
 			const fg = cx.createLinearGradient(0, 0, 0, 22);
 			fg.addColorStop(0, "rgba(60,40,20,.28)"), fg.addColorStop(1, "rgba(60,40,20,0)"), (cx.fillStyle = fg), cx.fillRect(0, 0, w, 22);
@@ -15173,8 +15177,16 @@ const JGP = (() => {
 			[9, h - 14].forEach((y0) => {
 				for (let x0 = 0; x0 < w; x0 += 4) cx.fillRect(x0, y0 + 0.6 * Math.sin(x0 / 7), 4, 5);
 			});
-			const t2 = "Let King Dino take you to the Jurassic Greeblis Park!";
-			fitFont(cx, t2, w - 30, 40, SANS), (cx.textAlign = "center"), (cx.textBaseline = "middle"), (cx.fillStyle = "rgba(40,20,20,.35)"), cx.fillText(t2, w / 2 + 1, h / 2 + 3), (cx.fillStyle = "#a8242e"), cx.fillText(t2, w / 2, h / 2 + 1);
+			// (the owner's words on three lines, as big as the cloth's width and the room between the stripes let
+			// them: one size for all three)
+			const lines = ["Let King Dino take you", "to the Jurassic", "Greeblis Park!"];
+			let fs = 48;
+			lines.forEach((t2) => (fitFont(cx, t2, w - 40, fs, SANS), (fs = Math.min(fs, parseInt(cx.font) || fs))));
+			(cx.font = SANS.replace("#", fs)), (cx.textAlign = "center"), (cx.textBaseline = "middle");
+			lines.forEach((t2, k) => {
+				const yy = h / 2 + (k - 1) * 1.1 * fs + 1;
+				(cx.fillStyle = "rgba(40,20,20,.35)"), cx.fillText(t2, w / 2 + 1, yy + 3), (cx.fillStyle = "#a8242e"), cx.fillText(t2, w / 2, yy);
+			});
 		});
 		// GLYPH's filigree: gold swirls over dark porcelain blue, a tiny gem at each curl
 		slot("filig", 384, 96, (cx, w, h) => {
@@ -16911,8 +16923,10 @@ const JGP = (() => {
 		}
 
 		// furnishings on the square (kept clear of the line-ups, the stations and the spawn point)
+		// (no lamp at the west sidewalk's north end: it stood right in front of KING DINO's billboard as seen from
+		// the spawn by the west fence, and the owner asked for it to go)
 		[-30, -15, 0, 15, 30].forEach((u) => (u && lampPost(u, 40.6 + ZS), lampPost(u, -40.6)));
-		[-30, -15, 0, 15, 30, 45].forEach((u) => (lampPost(40.6, u), lampPost(-40.6, u)));
+		[-30, -15, 0, 15, 30, 45].forEach((u) => (lampPost(40.6, u), -30 !== u && lampPost(-40.6, u)));
 		// ZOLLOD's hanging baskets on the four posts behind the line-up: an iron arm, a chain, a coir basket and a
 		// dome of pinks, hung out over the sidewalk toward the fence
 		[-15, 0, 15, 30].forEach((u, k) => {
@@ -17351,10 +17365,11 @@ const JGP = (() => {
 		const BILLBOARD = (X, Z, name, y0, banner, W = 10, H = 5) => {
 			const B = place(X, Z, faceIn(X, Z));
 			// (a cloth banner hung under the board, its top corners tied by rope to the board's bottom corners: the
-			// cloth sags between them and bellies out; a second line of the owner's words printed on it)
+			// cloth sags between them and bellies out; the owner's second line printed on it, big: the banner is
+			// wider than the board and three lines tall so it reads from the park's far side, the owner asked)
 			if (banner) {
-				const bw = 0.9 * W,
-					bh = 1.5,
+				const bw = 1.1 * W,
+					bh = 3.3,
 					ty = y0 - 0.95;
 				B.geo("sign", onSlot(banner, drape), "#ffffff", 0, ty - bh / 2 + 0.08, 0.34, bw, bh, 1);
 				[-1, 1].forEach((sx) => {

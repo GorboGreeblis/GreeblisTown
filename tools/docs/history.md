@@ -7,6 +7,7 @@ Midwest town, and with #31 it was renamed **Greeblis Town USA**. Newest first.
 
 | PR | Merged | What changed |
 | --- | --- | --- |
+| [#87](https://github.com/GorboGreeblis/GreeblisTown/pull/87) | 2026-10-13 | The player starts at the edge of the park, just inside the west fence north of the Juice Bar, facing King Dino's billboard across the road: the first thing seen, above all in VR, with the whole park a surprise behind them (the owner asked). The billboard's banner is wider than the board and three lines tall, its words big enough to read from the park (the owner asked), and the street lamp that stood in front of the board from there is gone (the owner asked). `t_firstview.js` shows the first frame; `t_detail.js` can hide the avatar. |
 | [#86](https://github.com/GorboGreeblis/GreeblisTown/pull/86) | 2026-10-13 | Visits that always end at home, and the owner's rules for them: every creature's home ground is fixed (`JGP.homeGround`) and never settles elsewhere (a Dancer stalled at Garden Supplies or in the corner behind the Shop after a battle used to stay there); off its ground it plans a way back (`JGP.sendHome`), a visit called off by a battle plans its walk home, and a guard sends home anyone left standing off its ground. Visits chosen fairly by how often each creature has been out (Glyph and Montgummery hardly ever went). Zollod freed from shyness opens the Shop wherever he is (out visiting, walking home, being visited); shy, he neither visits nor is visited. Every creature stops a while for the player coming near on any walk home too (the owner's rule) and goes on with what it was doing after (the owner's rule): the visit's clocks wait, a planned way home is kept. Probes `t_stuck.js`, `t_visitlong.js`, `t_zollod.js`, `t_nearstop.js`. |
 | [#85](https://github.com/GorboGreeblis/GreeblisTown/pull/85) | 2026-10-12 | VR renders at the headset's full resolution with no foveation unless the frame rate needs a step down; the owner's rule that nothing may ever flicker or z-fight in these VR games. |
 | [#84](https://github.com/GorboGreeblis/GreeblisTown/pull/84) | 2026-10-12 | The church roof's lattice calmer in VR: softer in colour, a little wider, its two layers set apart (the roof's sides were hard to look at). |
@@ -139,7 +140,11 @@ decisions, with the PR that carried them.
     Stone (#51).
   - Every door is wood, with a transom over storefront doors; Mistergummery's uses Montgummery's teal instead of
     yellow, has no roof burger, and its pylon is just the M (#51).
-  - The player starts just south of the Summoning Stone, facing the church (#51).
+  - The player started just south of the Summoning Stone, facing the church (#51); from #87 they start at the
+    edge of the park, just inside the west fence north of the Juice Bar, facing King Dino's billboard across the
+    road, so it is the first thing seen (above all in VR) and the park is a surprise behind them when they turn
+    round. The billboard's banner is wide and three lines tall so it reads from there, and the street lamp that
+    stood in front of the board from the spawn is gone (#87).
   - The billboard stands outside the park but close to it, on the corner lot across the road from the park's
     north-west corner (#66). Nothing outside the park takes anything from the Ancient (#68).
   - The readable parcels round the mail heap are spaced out, never stacked or made obvious, their labels always
