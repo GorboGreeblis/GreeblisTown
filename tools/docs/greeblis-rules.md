@@ -135,6 +135,11 @@ and any game after them.
   give the town its design: Hennrick (from the far past) and Nextessa (from the far future, which is why she
   comes through the Portal) are not from here, and the town takes nothing from either.
   (The one exception is the billboard the owner asked for, with the words they gave it.)
+- **A finished environment is locked down** (the owner's rule, for every game we make): once the general
+  environment (the town, the park, the buildings and their props, the scenery) is done, it is locked against any
+  direct change, as finished creature models are. A fix that would touch it (a flicker, a clip, a creature's
+  footing) is made around it or put to the owner first. The owner says when an environment is done; Greeblis
+  Town USA's is not marked done yet (the church's inside already is, below).
 - **The inside of the church is final:** never change or update it (its room, the Ancient's corner, its props,
   the secret way in) from now on.
 
