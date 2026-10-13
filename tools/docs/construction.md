@@ -301,7 +301,7 @@ Goo that runs down a body and moves like goo, without clipping:
   `test/t_phone.js` checks both.
 - **Dance battles** (Greeblis City's panel and bar) with the three Dancers: rock, paper, scissors. The Dancer goes
   first and shows its move with its own animation; Rock out! beats the splits, the splits beat going horizontal,
-  going horizontal beats Rock out!. Each round won teaches one of the Dancer's steps; learn them all to win. The
+  going horizontal beats Rock out!. Each round won teaches one of the Dancer's six steps; learn all six to win (three before #97: the owner asked for longer battles). The
   panel shows only the Dancer's move; the bar shows how it is going. The winner does a victory dance.
 - **The chain:** each Dancer's first win gives one Ancient Artifact (a third of one teal brilliant-cut diamond;
   later wins get a bow). Sparkakus's talk follows the count (none, one or two, all three). With all three he stays

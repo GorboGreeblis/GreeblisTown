@@ -266,12 +266,13 @@ const t = {
 		bowed: "You take a bow.",
 		stuck: "The beat won't let you go!",
 		// you can battle each Dancer as often as you like, but their Ancient Artifact is given only the
-		// first time you win
+		// first time you win. Each Dancer has six steps to learn, so a battle is won in six winning rounds
+		// (it was three; the owner asked for longer battles)
 		award: (name) => name + " awards you an Ancient Artifact!",
 		bowOut: (name) => name + " takes a bow.",
-		w_mont: { title: "DANCE BATTLE: MONTGUMMERY", stamina: 3, bar: "Robot steps left", barColor: "#55b8c6", hitSound: "drumSnare" },
-		p_etcher: { title: "DANCE BATTLE: ETCHER", stamina: 3, bar: "Tentacle twists left", barColor: "#7a4ab8", hitSound: "drumTom" },
-		p_glyph: { title: "DANCE BATTLE: GLYPH", stamina: 3, bar: "Macarena moves left", barColor: "#e88a8a", hitSound: "drumKick" },
+		w_mont: { title: "DANCE BATTLE: MONTGUMMERY", stamina: 6, bar: "Robot steps left", barColor: "#55b8c6", hitSound: "drumSnare" },
+		p_etcher: { title: "DANCE BATTLE: ETCHER", stamina: 6, bar: "Tentacle twists left", barColor: "#7a4ab8", hitSound: "drumTom" },
+		p_glyph: { title: "DANCE BATTLE: GLYPH", stamina: 6, bar: "Macarena moves left", barColor: "#e88a8a", hitSound: "drumKick" },
 	},
 	l = 2 * Math.PI,
 	c = THREE.Vector3,

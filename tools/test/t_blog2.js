@@ -1,4 +1,4 @@
-// Dance battles and the Library finale, played through the panel: against w_mont a tie, a loss and three wins (an
+// Dance battles and the Library finale, played through the panel: against w_mont a tie, a loss and a full set of wins, one per step (an
 // Artifact for the first win only), a second full win, wins against p_etcher and p_glyph, then bowing out; then
 // LIB.talk() with all three Artifacts and the rewards after its dialogue. Prints each battle's text and the Artifacts.
 // Run: NOSHOT=1 node shot2.js <url> x.png ./t_blog2.js
@@ -10,10 +10,10 @@ module.exports = async (p) => { await p.mouse.click(p.viewportSize().width / 2, 
     Dbt.start(e); out.push('OPEN: ' + JSON.stringify(_t.state.log) + ' sub ' + JSON.stringify(_t.state.sub) + ' bar ' + JSON.stringify(_t.state.bar && _t.state.bar.label));
     pick(lbl(Dbt.state.mv)); out.push('TIE: ' + JSON.stringify(_t.state.log));
     pick(lbl(T.beats[Dbt.state.mv])); out.push('LOSE: ' + JSON.stringify(_t.state.log));
-    for (let k = 0; k < 3; k++) { pick(lbl(win(Dbt.state.mv))); out.push('WIN ' + k + ': ' + JSON.stringify(_t.state.log) + ' items ' + _t.state.items.length); }
+    for (let k = 0; k < Dbt.state.def.stamina; k++) { pick(lbl(win(Dbt.state.mv))); out.push('WIN ' + k + ': ' + JSON.stringify(_t.state.log) + ' items ' + _t.state.items.length); }
     out.push('artifacts ' + Kt.artifacts); _t.close();
-    Dbt.start(e); for (let k = 0; k < 3; k++) pick(lbl(win(Dbt.state.mv))); out.push('AGAIN: ' + JSON.stringify(_t.state.log) + ' artifacts ' + Kt.artifacts); _t.close();
-    for (const id of ['p_etcher', 'p_glyph']) { Dbt.start(It.byId[id]); for (let k = 0; k < 3; k++) pick(lbl(win(Dbt.state.mv))); out.push(id + ': ' + JSON.stringify(_t.state.log) + ' artifacts ' + Kt.artifacts); _t.close(); }
+    Dbt.start(e); for (let k = 0; k < Dbt.state.def.stamina; k++) pick(lbl(win(Dbt.state.mv))); out.push('AGAIN: ' + JSON.stringify(_t.state.log) + ' artifacts ' + Kt.artifacts); _t.close();
+    for (const id of ['p_etcher', 'p_glyph']) { Dbt.start(It.byId[id]); for (let k = 0; k < Dbt.state.def.stamina; k++) pick(lbl(win(Dbt.state.mv))); out.push(id + ': ' + JSON.stringify(_t.state.log) + ' artifacts ' + Kt.artifacts); _t.close(); }
     Dbt.start(e); let n = 0; while (Dbt.state && !Dbt.state.over && n++ < 20) { pick(T.bow); out.push('BOW: ' + JSON.stringify(_t.state.log)); } _t.close();
     out.push('err ' + Re.errors); return out.join('\n'); }));
   await p.waitForTimeout(1000);

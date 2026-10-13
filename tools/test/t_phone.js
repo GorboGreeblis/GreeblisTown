@@ -12,7 +12,9 @@ module.exports = async (p) => {
     xe.run('interact');
     return { label, unlocked: Kt.phone };
   });
-  const said = () => p.evaluate(() => { const t = document.getElementById('dlgText').textContent; for (let i = 0; i < 10 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} return t; });
+  // (the line types out letter by letter: it is read once it has stopped growing, not partway)
+  const said = async () => { let a = null, b = ''; for (let k = 0; k < 20 && a !== b; k++) (a = b), await W(250), (b = await p.evaluate(() => document.getElementById('dlgText').textContent)); return closeDlg(); };
+  const closeDlg = () => p.evaluate(() => { const t = document.getElementById('dlgText').textContent; for (let i = 0; i < 10 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} return t; });
   const before = await usePhone(); await W(2500);
   const b1 = await said();
   await W(1500);
