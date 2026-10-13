@@ -104,7 +104,7 @@ Scene scripts export `async (page, out) => {}` and drive the game through its gl
 | `t_zfight.js` | Z-fighting scan: overlapping near-coplanar faces (`TOL` 6 mm, `MINA` 2 cm²) a player's eye can see, each named by its colours, with a 4 m area for unnamed scenery. `VISALL=1` skips the visibility test; `CREATURES=0` leaves creatures out. |
 | `t_zcheck.js` | Which scan clashes really flicker: `POINTS` rendered three times with the near plane nudged; changed pixels are fighting surfaces (under about 10 is edge noise). `SHOTS=1` writes the pairs for `tile.py diff`. |
 | `t_shimmer.js` | A headset's shimmer, simulated: the view re-rendered with the head nudged a millimetre and a hundredth of a degree; pixels that change are flicker, named by what they land on (`SPOTS`, `THRESH`, `PX`, `RAYS`). |
-| `t_perf.js` | Performance: draw calls, triangles and the biggest draws from 8 spots; totals of programs, textures and geometries; a CPU profile and an allocation profile over `FRAMES` frames (`EVENT=1` during an Event). |
+| `t_perf.js` | Performance: draw calls, triangles and the biggest draws from 8 spots, seen from a VR player's eyes (`EYE`, default 3.12 m, with the game's far versions switched as they would be there); totals of programs, textures and geometries; a CPU profile and an allocation profile over `FRAMES` frames, with the GPU drained before each run (`EVENT=1` during an Event). |
 | `t_townview.js` | The town outside the park: a top-down map, the views out of the square, every building close up, and the town's triangle and mesh counts. |
 
 ## Render and measuring tools

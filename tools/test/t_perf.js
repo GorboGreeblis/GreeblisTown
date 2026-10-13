@@ -1,5 +1,6 @@
 // Performance profile of the game, for an optimisation pass:
-//  1. what each view costs the GPU: draw calls and triangles from a player's eyes (1.6 m up, a 100° VR-like
+//  1. what each view costs the GPU: draw calls and triangles from a VR player's eyes (EYE m up, default 3.12: a 1.62 m eye
+//     plus the game's 1.5 m VR lift; a 100° VR-like
 //     lens) at fixed spots round the park, the biggest draws in each, and the totals of programs, textures,
 //     geometries and meshes;
 //  2. where the CPU time per frame goes: the game's frame run FRAMES times (default 300) back to back under a
@@ -17,7 +18,7 @@ module.exports = async (p) => {
   await p.reload(); await W(+(process.env.WAIT || 6000));
   { const vs = p.viewportSize(); await p.mouse.click(vs.width / 2, vs.height / 2); } await W(2500);
   // ---- 1. views
-  const views = await p.evaluate(() => {
+  const views = await p.evaluate((EYE) => {
     const SPOTS = { spawn: [0, 2, Math.PI], garden_edge: [0, 17, Math.PI], dance_floor: [-28, 10, Math.PI / 2], library: [-18, -18, -3 * Math.PI / 4], post_office: [18, -18, 3 * Math.PI / 4], plant_row: [30, 0, -Math.PI / 2], south_gate: [0, 45, 0], juice_bar: [-30, -2, Math.PI / 2] };
     const cam = new THREE.PerspectiveCamera(100, 1, 0.15, B.far), out = {}, info = O.info;
     // who a mesh belongs to: a creature, a named part (the town's bins), the building or station it stands in,
@@ -34,11 +35,15 @@ module.exports = async (p) => {
     };
     // (render to a small target: the counts don't depend on resolution)
     O.setSize(256, 256, !1);
+    let tick = 0;
     for (const [name, [x, z, yaw]] of Object.entries(SPOTS)) {
       let calls = 0, tris = 0;
       const per = [];
       for (const dy of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) {
-        cam.position.set(x, 1.6, z); cam.rotation.set(-0.08, yaw + dy, 0, 'YXZ'); cam.updateMatrixWorld(!0);
+        cam.position.set(x, EYE, z); cam.rotation.set(-0.08, yaw + dy, 0, 'YXZ'); cam.updateMatrixWorld(!0);
+        // (the game's camera stands here too, and the per-frame callbacks run once, so whatever the game shows or
+        // hides by the camera's distance, as fine detail drawn only from close by, is as it would be here)
+        B.matrixWorld.copy(cam.matrixWorld); for (const f of L) try { f(1e6 + (tick += 1), 1 / 60); } catch (e) {}
         info.autoReset = !1; info.reset(); O.render(C, cam);
         calls = Math.max(calls, info.render.calls); tris = Math.max(tris, info.render.triangles);
       }
@@ -72,7 +77,7 @@ module.exports = async (p) => {
     info.autoReset = !0; O.setSize(innerWidth, innerHeight);
     let meshes = 0, mats = new Set(); C.traverse((o) => { if (o.isMesh) { meshes++; (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => mats.add(m)); } });
     return { views: out, programs: info.programs.length, textures: info.memory.textures, geometries: info.memory.geometries, meshes, materials: mats.size };
-  });
+  }, +(process.env.EYE || 3.12));
   log('== views (max over 4 headings; draw calls / triangles; the draws of the forward view itemised)');
   log('== the whole scene by owner (meshes/triangles), top 30: ' + views.views.__scene); delete views.views.__scene;
   for (const [k, v] of Object.entries(views.views)) log(`  ${k.padEnd(12)} ${String(v.calls).padStart(4)} draws ${String(v.tris).padStart(8)} tris ${String(v.meshesInView).padStart(4)} meshes   biggest: ${v.top}\n      draws by owner (draws/triangles): ${v.by}\n      'elsewhere' draws at: ${v.where}`);
@@ -89,6 +94,8 @@ module.exports = async (p) => {
     const f = window.__frame, r0 = O.render;
     if (!f) return null;
     stub && (O.render = () => {});
+    // (the GPU first finishes what earlier frames queued, so none of it is waited for, and counted, in this run)
+    O.getContext().finish();
     const t0 = performance.now();
     for (let k = 0; k < n; k++) f(performance.now());
     const ms = (performance.now() - t0) / n;
