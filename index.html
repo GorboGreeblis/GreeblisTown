@@ -2281,7 +2281,12 @@ function Dt(t) {
 function Xt(t) {
 	return t.def && "cutebex" === t.def.__type ? t.def.__type : t.id;
 }
-const st = { join() {}, leave() {}, romp(d) { d && d(); }, romping: () => !1, away: () => !1, pos: () => ({ x: 0, z: 0 }), talking: !1, dancing: 0 };
+// (a creature held by the player: its dialogue open, or ZOLLOD's shop opened from him)
+function heldBy(e) {
+	return !!e && xe.lastTarget === e && ("dialogue" === jt.top || ("panel" === jt.top && "shop" === _t.kind));
+}
+const CFG = t;
+const st = { join() {}, leave() {}, romp(d) { d && d(); }, romping: () => !1, held: () => !1, away: () => !1, pos: () => ({ x: 0, z: 0 }), talking: !1, dancing: 0 };
 function to(
 	t,
 	{ y: e, z: o, sep: a, r: n = 0.09, pupil: r = 0.56, white: s = !0, color: i = M.nearblack, spread: l = 0.22 },
@@ -2884,15 +2889,20 @@ function Lt(e, o, a, n) {
 			)
 		);
 	c > t.greetClear && ((e.greeted = !1), (e.nearSince = 0));
-	const h = "dialogue" === jt.top && xe.lastTarget === e,
+	// (held where it is while its dialogue is open, or ZOLLOD's shop opened from him)
+	const h = heldBy(e),
 		p = e.nearPlayer && (e.nearSince ? o - e.nearSince < t.proximityFreezeS : ((e.nearSince = o), !0));
 	// (ANOMALEE, gazing up at the church window, keeps looking at it while the player is near and through
 	// her Talk lines; she turns to the player only for her Blossom line, and for any line during the Event)
 	// (SOMLET asleep on her side doesn't turn to the player either)
 	const gazer = (e.def && e.def.gazeUp && !(h && (e.gifting || me.active))) || (e.lieK || 0) > 0.5;
-	if (n || h || (p && !e.goHome))
+	// (EVERY creature stops for the player coming near, a while, on whatever walk it is on: out on a visit, home
+	// from one, home after a battle or a Talk; and nothing keeps it from going on with it after: a planned way
+	// home waits as long as it is held (`held` tells the visits to hold their clocks too))
+	if ((e.held = !!(n || h || p)))
 		(e.gcWant = 0),
 			(e.moving = !1),
+			e.goHome && (e.wanderAt += a),
 			gazer && e.pattern
 				? co(r, e.pattern[1].face, a, 4)
 				: (e.nearPlayer || h) && (e.greeted || (e.greeted = !0), co(r, Math.atan2(At.position.x - s.x, At.position.z - s.z), a));
@@ -17706,6 +17716,28 @@ const JGP = (() => {
 			// with the player close by. One that has not got there in good time (the player or another
 			// creature in its way) settles where it is and picks again from there, so it never stays stuck.
 			{
+				// HOME GROUND (the owner's rules: a creature's home never changes, and nothing the player does or it meets
+				// on the way may leave it stuck away from home). Each creature's own place is fixed, where it was set
+				// down (def.at), and so is the ground it belongs on: the dance floor for the three Dancers, the open park
+				// for GEMTOE and the Gorbos, round the Portal for HENNRICK, the aisle behind the bar for FORTIZMO, and its
+				// spot for everyone else. Its `home` is only where it is walking to now; it always comes back to this.
+				JGP.homeGround = (h) => {
+					if (!h || !h.group || !h.def || !h.def.at) return !0;
+					const p = h.group.position,
+						id = h.id,
+						a = h.def.at;
+					if (FLOOR_ROAMERS.includes(id)) return JGP.onDance(p.x, p.z, 0.05);
+					if ("gratelet" === id) return Math.hypot(p.x - ot.x, p.z - ot.z) < 9;
+					if ("p_gemtoe" === id || "p_mamagorbo" === id || "gorbo" === id) return JGP.roamFree(p.x, p.z, 0.25);
+					if ("frog" === id) return Math.abs(p.x - JGP.barSpot(0)[0]) < 0.8 && Math.abs(p.z) < 8.5;
+					return Math.hypot(p.x - a[0], p.z - a[1]) < 1.2;
+				};
+				// (sent home to its own place by a planned way round everything: a worker by its way in)
+				JGP.sendHome = (h, t2) => {
+					const a = h.def.at;
+					h.home.set(a[0], h.home.y, a[1]);
+					h.def.via && h.def.via.length ? (h.vbk = -1) : (Be(h, a[0], a[1], t2), (h.gcNavHome = !0));
+				};
 				// (no Flint or Blossoms where HENNRICK strolls)
 				E.add(ot.x, ot.z, 7.4, "still");
 				const roam = (id, pick, w0, w1) => {
@@ -17726,12 +17758,16 @@ const JGP = (() => {
 							// (no headway for 2.5 s, another creature in the way, or not there in good time: it settles,
 							// dropping any detour the engine planned round the blockage)
 							Math.hypot(p.x - px, p.z - pz) > 0.3 && ((px = p.x), (pz = p.z), (pt = t2));
-							giveUp && (t2 > giveUp || t2 - pt > 2.5) && (h.home.set(p.x, h.home.y, p.z), (h.goHome = h.gcNavHome = !1), (h.gcNav = null), (giveUp = 0));
+							// (only on its own ground: anywhere else it heads back to its own place instead)
+							giveUp && (t2 > giveUp || t2 - pt > 2.5) && (JGP.homeGround(h) ? (h.home.set(p.x, h.home.y, p.z), (h.goHome = h.gcNavHome = !1), (h.gcNav = null)) : JGP.sendHome(h, t2), (giveUp = 0));
 							return void (waitTo = -1);
 						}
 						if (((giveUp = 0), waitTo < 0)) return void (waitTo = t2 + w0 + w1 * Math.random());
 						if (t2 < waitTo) return;
 						waitTo = -1;
+						// (off its own ground, after a visit, a battle or anything else, it goes back to its own place first:
+						// a Dancer's spots are picked only 3 to 12 m off, so from anywhere further it would never find one)
+						if (!JGP.homeGround(h)) return void (JGP.sendHome(h, t2), (giveUp = t2 + Math.hypot(h.def.at[0] - p.x, h.def.at[1] - p.z) + 30), (px = p.x), (pz = p.z), (pt = t2));
 						const sp = pick(p, h.bodyR || 1, h.def.at, h);
 						if (sp) (fails = 0), h.home.set(sp[0], h.home.y, sp[1]), (giveUp = t2 + Math.hypot(sp[0] - p.x, sp[1] - p.z) + 6), (px = p.x), (pz = p.z), (pt = t2), h.pattern && (h.pattern[1].face = sp[2]);
 						// (boxed in somewhere with no clear walk out, it heads back to the spot it started from, and
@@ -17745,6 +17781,32 @@ const JGP = (() => {
 				};
 				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.parkRoam, 3, 5);
 				FLOOR_ROAMERS.forEach((id) => roam(id, JGP.floorRoam, 3, 4));
+				// THE WAY HOME, GUARDED: any creature left standing off its own ground (a visit called off by a Dance
+				// battle, a Talk or a Blossom on the way, a walk home blocked by a building, anything at all) is sent
+				// back to its own place by a planned way after 4 s, or after 20 s if it is still trying to walk. Not
+				// while it has somewhere to be: busy, in a vignette, on a visit or hosting one, meeting, dancing a
+				// victory, at the Event, with the player beside it or talking to it.
+				{
+					const away = new Map();
+					let tick = 0;
+					L.push((t2) => {
+						if (t2 < tick) return;
+						if (((tick = t2 + 0.5), me.active)) return void away.clear();
+						for (const h of It.all) {
+							if (!h.def || !h.def.at || !h.group.visible || h.busy || h.vig || h.visiting || h.hosting || h.meeting || h.battleDance || h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h) || JGP.homeGround(h)) {
+								away.delete(h);
+								continue;
+							}
+							const since = away.get(h);
+							if (null == since) {
+								away.set(h, t2);
+								continue;
+							}
+							if (t2 - since < (h.moving ? 20 : 4)) continue;
+							away.delete(h), JGP.sendHome(h, t2);
+						}
+					});
+				}
 				// MAMA GORBO and GOOWARD wander the park, and every half minute or so they find each other: each
 				// walks to a meeting spot between them (clear ground both can walk straight to), they turn face
 				// to face and lob colourful goo balls back and forth, a heart over each as a ball lands, then go
@@ -18046,7 +18108,9 @@ const JGP = (() => {
 							}
 							// (SPARKAKUS: already sent to the garden by the Event with Seeds; without them nobody gathers, so he
 							// walks home, by a way he plans himself, see st.leave)
-							isSP(v) ? (me.active && bt.seeds) || st.leave() : (q.pat && Object.assign(v.pattern[1], q.pat), q.home && v.home.copy(q.home), (v.walkK = 0));
+							// (anyone else: its place back, and a planned way there round everything, not a straight walk that a
+							// building in the way would stop; at the Event the Event takes it instead)
+							isSP(v) ? (me.active && bt.seeds) || st.leave() : (q.pat && Object.assign(v.pattern[1], q.pat), q.home && v.home.copy(q.home), (v.walkK = 0), me.active || (v.def.via && v.def.via.length) || !q.home || (Be(v, q.home.x, q.home.z, Re.t), (v.gcNavHome = !0)));
 							(v.visiting = !1), (v.inside = null), forced === q && (forced = null), VS.splice(VS.indexOf(q), 1);
 						};
 					// one visit's step
@@ -18059,10 +18123,13 @@ const JGP = (() => {
 						// time, a jump arc, the wall pause) wait too, and the walk picks up when the box closes.
 						// (SPARKAKUS is talked to through his station, never as himself: his own dialogue or his Blossom
 						// lap holds it too)
-						const spT = (isSP(v) || isSP(h)) && ((st.talking && qt.isOpen) || st.romping());
-						if (spT || ("dialogue" === jt.top && xe.lastTarget && (xe.lastTarget === v || xe.lastTarget === h))) {
-							const e2 = spT ? st.ent : xe.lastTarget;
-							isSP(e2) || e2.home.set(e2.group.position.x, e2.home.y, e2.group.position.z);
+						// (and either of them stopped for the player come near, or everyone held by an open panel, holds the
+						// visit's clocks the same way: the visit goes on, whole, once the player has moved on)
+						const spT = (isSP(v) || isSP(h)) && ((st.talking && qt.isOpen) || st.romping() || st.held()),
+							hb = heldBy(v) ? v : heldBy(h) ? h : null;
+						if (spT || hb || v.held || h.held || jt.has("panel")) {
+							const e2 = spT ? st.ent : hb;
+							e2 && !isSP(e2) && e2.home.set(e2.group.position.x, e2.home.y, e2.group.position.z);
 							q.until += dt, q.hop && (q.hop.t0 += dt), q.hhop && (q.hhop.t0 += dt), q.paused && (q.paused += dt), q.meetAt && (q.meetAt += dt), q.played && (q.played += dt);
 							return;
 						}
@@ -18156,7 +18223,13 @@ const JGP = (() => {
 						// who: the asked-for pair, else the pair whose vignette has played least, at random among those,
 						// that can meet now (both free, not already side by side: those play where they stand)
 						// (the ANCIENT is called on only rarely: in one round in eight)
-						const slugToo = Math.random() < 0.125;
+						const slugToo = Math.random() < 0.125,
+							// (how often each has been out visiting or been called on: the ones who have had fewest come
+							// first, so the three Dancers, whose pairs' vignettes play often on the floor where they stand
+							// side by side, still go visiting as often as anyone)
+							cnt = {};
+						// (ZOLLOD's count half, once he is freed: he goes visiting and is called on twice as often)
+						for (const k in made) k.split("|").forEach((id) => (cnt[id] = (cnt[id] || 0) + made[k] * ("cutebex" === id ? 0.5 : 1)));
 						let best = null,
 							bn = 1e9,
 							kind = !1;
@@ -18166,7 +18239,7 @@ const JGP = (() => {
 							if (!ok.length) continue;
 							// (by the pair's two together: no pair meets again before every pair has met once; ZOLLOD's pairs,
 							// once he is freed, count half, so he meets others twice as often)
-							const n2 = ((VIGS.plays[w.key] || 0) + (VIGS.plays[w.key + "t"] || 0)) * (/ZL/.test(w.key) ? 0.5 : 1) + Math.random() * 0.5;
+							const n2 = 2 * ((cnt[w.ways[0][0]] || 0) + (cnt[w.ways[0][1]] || 0)) + ((VIGS.plays[w.key] || 0) + (VIGS.plays[w.key + "t"] || 0)) * (/ZL/.test(w.key) ? 0.5 : 1) + Math.random() * 0.5;
 							n2 < bn && ((bn = n2), (best = ok[(Math.random() * ok.length) | 0]), (kind = (VIGS.plays[w.key + "t"] || 0) < (VIGS.plays[w.key] || 0) || ((VIGS.plays[w.key + "t"] || 0) === (VIGS.plays[w.key] || 0) && Math.random() < 0.5)));
 						}
 						if (!best) return;
@@ -19235,7 +19308,10 @@ if (
 									wAt = 3 + 4 * Math.random(),
 									wFace = 0,
 									// (given a Blossom: down on all fours for a lap of the Library floor, see st.romp)
-									RUN = null;
+									RUN = null,
+									// (when the player came near him out in the world: he stops a while for them, as everyone does)
+									spNear = 0,
+									spHeld = !1;
 								const RX = 4.4,
 									RZ = 1.0,
 									RC = -0.78,
@@ -19320,6 +19396,7 @@ if (
 										};
 									})()),
 									(st.away = () => !!H),
+									(st.held = () => spHeld),
 									// (always a WORLD position: at home he lives in the Library's own frame, and the bulb and the glued
 									// gem of his Artifacts speech are placed by it — with his local position they appeared over the garden)
 									(st.pos = (() => {
@@ -19333,7 +19410,7 @@ if (
 								L.push((s, c) => {
 									const x = s;
 									// (he talks while his dialogue is open)
-									if (((r.dance = st.dancing || 0), tkAnim(r, o, st.talking && qt.isOpen, s, c), a.anim(s, c, r), (r.moving = !1), H)) {
+									if (((r.dance = st.dancing || 0), tkAnim(r, o, st.talking && qt.isOpen, s, c), a.anim(s, c, r), (r.moving = !1), (spHeld = !1), H)) {
 										const a = e.position,
 											n = H.via.length ? H.via[0] : H.target,
 											s = n.x - a.x,
@@ -19341,8 +19418,13 @@ if (
 											l = Math.hypot(s, i);
 										if (H.via.length && l <= 0.3) H.via.shift();
 										else if (l > 0.3) {
-											// (talked to on the way — out on a visit, or walking home — he stands for it, and goes on after)
-											if (!(st.talking && qt.isOpen)) {
+											// (talked to on the way — out on a visit, or walking home — he stands for it, and goes on after;
+											// and like every creature he stops a while, turned to the player, when the player comes near)
+											const dP = Math.hypot(At.position.x - a.x, At.position.z - a.z);
+											dP > CFG.greetClear && (spNear = 0);
+											const near = dP < CFG.greetR && (spNear ? x - spNear < CFG.proximityFreezeS : ((spNear = x), !0));
+											(spHeld = near) && (e.rotation.y += m(e.rotation.y, Math.atan2(At.position.x - a.x, At.position.z - a.z)) * Math.min(1, 6 * c));
+											if (!(st.talking && qt.isOpen) && !near) {
 												const o = Math.min(l, (H.sp || 2.2) * c);
 												(a.x += (s / l) * o),
 													(a.z += (i / l) * o),

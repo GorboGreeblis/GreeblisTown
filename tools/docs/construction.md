@@ -198,12 +198,27 @@ Goo that runs down a body and moves like goo, without clipping:
   each, then go back to wandering.
 - **Visits** (owner's rules): about twice a minute (22 to 32 s apart, twice as often as before at the owner's
   request; two at most on their way out or meeting at once) one creature leaves its place to call on another, so
-  that every pair's two vignettes play in about an hour and a half (about 200 meetings). The pair is the one that has met least (its animation and lines counted together, in random order, so no
-  pair meets a second time before every pair has met once),
+  that every pair's two vignettes play in about an hour and a half (about 200 meetings). The pair is chosen first
+  by how often its two have been out visiting or been called on (fewest first, Zollod's count halved so he goes
+  twice as often: without this the three Dancers, whose vignettes play often among themselves on the floor, almost
+  never went visiting), then by how often the pair has met (its animation and lines counted together, in random
+  order),
   and the meeting plays whichever of its two vignettes, the animation or the lines, has played less: never both.
   Everyone visits everyone, kiosk workers included; King Dino (at his drums), Somlet (asleep at the Post Office)
   and the church's Ancient never leave, the others come to them (so no two of those three ever meet, as intended).
-  Nextessa and Backpacka neither visit nor are visited.
+  Nextessa and Backpacka neither visit nor are visited. Zollod neither visits nor is visited until Overcoming
+  Shyness frees him; after that a Talk with him anywhere (out visiting, being visited, walking home) opens the Shop.
+  - **Home ground never changes** (owner's rules: no creature is ever left stuck away from home, whatever the
+    player does or it meets on the way). Each creature's own place is fixed (`def.at`), and so is the ground it
+    belongs on (`JGP.homeGround`): the dance floor for the three Dancers, the open park for Gemtoe and the Gorbos,
+    round the Portal for Hennrick, the aisle behind the bar for Fortizmo, its spot for everyone else. Its `home` is
+    only where it is walking to now. A roamer never settles where its walk stalled unless that is on its ground
+    (it used to: a Dancer stalled at Garden Supplies after a battle settled there, and its floor spots are picked
+    only 3 to 12 m off, so it never found one again); off its ground it first goes back to its own place
+    (`JGP.sendHome`, a planned route; a worker by its way in). A visit called off by a battle or the Event plans its
+    walk home the same way. And a guard sends home anyone left standing off its ground for 4 s (20 s if still
+    trying to walk) while it has nothing else to do. `test/t_stuck.js` interrupts visits with a Talk, a Blossom and
+    a Dance battle bowed out of, at every stage, and checks everyone gets home.
   - The way: a worker out by its `via` (Mushroom jumps down off the front of his desk first: an 0.8 s arc to the
     first step of his way out), then `JGP.route` (a 1.2 m grid of open ground, as `roamFree`, pulled taut into
     clear straight walks round the garden, the pond, buildings and scenery; a start off open ground, as at a door,
@@ -225,8 +240,15 @@ Goo that runs down a body and moves like goo, without clipping:
     so the walk's own jump-up arc carries it onto the desk and nowhere else). The Event, a
     battle or a meeting calls a visit off (homes put back at once; one called off inside the church slips out by
     the X first, never through a wall). ANYONE CAN ALWAYS BE TALKED TO, mid-visit or on the way home (the owner's
-    rule): the talked-to one stops where it stands, the visit's clocks (give-up time, jump arcs, the wall pause)
-    wait with it, and the walk picks up when the box closes. SPARKAKUS answers out in the world too — his `stump`
+    rule): the talked-to one stops where it stands (ZOLLOD too, while the Shop opened from him is up: `heldBy`),
+    the visit's clocks (give-up time, jump arcs, the wall pause) wait with it, and the walk picks up when the box
+    closes. EVERY CREATURE STOPS A WHILE FOR THE PLAYER COMING NEAR on whatever walk it is on, home from a visit or
+    a battle included (the owner's rule; `Lt`'s proximity freeze used to skip a creature with a planned way home),
+    turned to the player for `proximityFreezeS` (12 s) or until the player moves off (`greetClear`), and NOTHING
+    STOPS IT GOING ON WITH WHAT IT WAS DOING AFTER (the owner's rule): the freeze sets `held`, the visit holds its
+    clocks while either of the pair is held (or everyone, by an open panel), and a planned way home keeps its
+    `wanderAt` budget while held, so it is never swapped for a wander. `test/t_nearstop.js` checks the stop and the
+    walk on, Sparkakus's own walk included (`st.held`). SPARKAKUS answers out in the world too — his `stump`
     station follows him and only the Event hides it (then `xo` speaks for him instead), and his worker walk waits
     while `st.talking && qt.isOpen`. He is talked to through his station, never as himself, so the visit's hold
     reads his own state (his dialogue open, or his Blossom lap) when he is one of the pair. An exchange
