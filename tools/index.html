@@ -7222,7 +7222,7 @@ const JGP = (() => {
 		blinker: { lines: ["BEINGS of CODE.", "ORIGINATOR…", "WAS there WITHIN.", "The WINDOW REMEMBERS the TRAVELER."], sad: 1, gift: "* Munch *", campfire: "PLANT" },
 		// MUSHROOM, looking down at the player from the top of his desk
 		drifter: {
-			lines: ["This town is under the protection of the consortium.", "All travel through the Portal is locked down until further notice.", "We’re investigating UFO sightings in this area.", "See anything glowing in the sky, you report it to this office.|Directly."],
+			lines: ["This town is under the protection of the Consortium.", "All travel through the Portal is locked down until further notice.", "We’re investigating UFO sightings in this area.", "See anything glowing in the sky, you report it to this office.|Directly."],
 			// (and from now on the phone can reach the Portal: see Kt.phone)
 			gift: "A bribe? …Portal is now open to your use.",
 			campfire: "…",
@@ -7234,7 +7234,7 @@ const JGP = (() => {
 			campfire: "Sometimes worry that doing these things will alter the timeline…",
 		},
 		frog: {
-			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Fire Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice.", "I’ve been practicing a song for the coming of the legendary Backpacka."],
+			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice.", "I’ve been practicing a song for the coming of the legendary Backpacka."],
 			gift: "Add it to the tip jar.",
 		},
 		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
@@ -10829,8 +10829,10 @@ const JGP = (() => {
 		R(T.box(4.3, 1.05, 0.1), white, o, [0, 5.55 + dh, -0.12]), R(T.plane(4.1, 1.02), x.world(16777215, { map: signTex }), o, [0, 5.55 + dh, -0.04]);
 		// the counter (the desk), crates on either side
 		const ph = D - 0.22;
-		R(T.box(3.8, ph, 0.1), wall, o, [0, 0.2 + ph / 2, 1.07]), R(T.box(3.84, 0.08, 0.12), white, o, [0, 0.24, 1.08]);
-		// the top overhangs the front panel and the end supports sit inside it, so no faces are flush
+		R(T.box(3.8, ph, 0.1), wall, o, [0, 0.2 + ph / 2, 1.07]), R(T.box(3.84, 0.08, 0.15), white, o, [0, 0.24, 1.075]);
+		// the foot trim stands 2 cm proud of the panel behind as well as in front (its back face lay in the panel's
+		// back face and flickered, seen from behind the counter); the top overhangs the front panel and the end
+		// supports sit inside it, so no faces are flush
 		R(T.box(3.95, 0.1, 1.08), crate, o, [0, D - 0.05, 0.64]);
 		[-1.82, 1.82].forEach((px) => R(T.box(0.1, ph, 0.9), wall2, o, [px, 0.2 + ph / 2, 0.56]));
 		[-1, 1].forEach((sx) => {
@@ -14127,7 +14129,7 @@ const JGP = (() => {
 	(() => {
 		const NAMES = { HN: "HENNRICK", MU: "MUSHROOM", AN: "ANOMALEE", KD: "KING DINO", GW: "GOOWARD", ZL: "ZOLLOD", SM: "SOMLET", FZ: "FORTIZMO", ET: "ETCHER", GT: "GEMTOE", GL: "GLYPH", MG: "MONTGUMMERY", MA: "MAMA GORBO", SP: "SPARKAKUS" },
 			PAIRS = [
-			["HN", "MU", 7, "Sheriff, when may I return to my own era?", "When the consortium says so. Not before."],
+			["HN", "MU", 7, "Sheriff, when may I return to my own era?", "When the Consortium says so. Not before."],
 			["HN", "AN", 1, "May I record what you see in that window?", "It is NOT for jars. It is for REMEMBERING."],
 			["HN", "KD", 3, "Remarkable. Drums survive into the far future?", "Baby, the beat outlasts everything!"],
 			["HN", "GW", 6, "A goo sample, for science? Only a small one.", "Gomp gomp... GOMP!"],
@@ -14142,7 +14144,7 @@ const JGP = (() => {
 			["MU", "GW", 6, "You are leaving goo on public property.", "Gomp? ...gomp."],
 			["MU", "ZL", 10, "Report any UFOs over your seedlings.", "Only bees up there. My seedlings are thriving."],
 			["MU", "SM", 2, "Have you seen anything suspicious tonight?", "Zzz... zzz..."],
-			["MU", "FZ", 5, "The consortium will be inspecting your bar.", "Inspect away. Blossoms up front, honey."],
+			["MU", "FZ", 5, "The Consortium will be inspecting your bar.", "Inspect away. Blossoms up front, honey."],
 			["MU", "ET", 4, "Have you been etching the town records?", "I etch everything. Including your citations."],
 			["MU", "GT", 9, "And where did all those gems come from?", "Found them. Fairly. Mostly. Don't write that down."],
 			["MU", "GL", 11, "Is that symbol a coded alien message?", "Every symbol is a message... don't you think?"],
@@ -14206,7 +14208,7 @@ const JGP = (() => {
 			["MA", "GL", 11, "What does that symbol mean, dear?", "Family. The warmest symbol... don't you think?"],
 			["MA", "MG", 8, "Mont, you're too thin! Have a goo burger.", "Mont cannot eat burger. Mont eats VHS."],
 			["SP", "HN", 0, "Hennrick! Any news of the Ancients' era?", "Much research is still needed, colleague."],
-			["SP", "MU", 3, "Sheriff, may the Library stay open?", "For now. The consortium is watching your books."],
+			["SP", "MU", 3, "Sheriff, may the Library stay open?", "For now. The Consortium is watching your books."],
 			["SP", "AN", 7, "The Ancient texts speak of an ORIGINATOR...", "YES. Read them to me. SLOWLY."],
 			["SP", "KD", 2, "Is drumming in the Ancient texts?", "Not yet, baby. Write me in!"],
 			["SP", "GW", 6, "Please, no goo near the first editions.", "Gomp... gomp."],
@@ -14224,7 +14226,7 @@ const JGP = (() => {
 			SLUG_VIGNETTES = !1,
 			SLUG_PAIRS = [
 				["HN", "You are far from your own time, visitor.", "Fascinating. And you? Which era is yours?"],
-				["MU", "No Portal can hold the one reborn.", "Th-the consortium will be informed."],
+				["MU", "No Portal can hold the one reborn.", "Th-the Consortium will be informed."],
 				["AN", "Anomalee. The glass remembers more than it shows.", "The WINDOW REMEMBERS... WHAT does it REMEMBER?"],
 				["KD", "Even the reborn feel the beat.", "That's right, baby. Everybody feels it."],
 				["GW", "Little goo. You were made with love.", "Gomp... gomp."],
