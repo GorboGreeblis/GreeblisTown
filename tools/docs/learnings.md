@@ -459,6 +459,10 @@ The old tools went with their repos unless a Town path is given.
   direct changes to it, as with finished creature models; the owner says when it is done.
 - **Locked models and designs can still change, with the owner's approval first** (every game we make): a
   finished creature, a locked room or a locked environment is never changed on our own; ask, and wait for a yes.
+- **Keep the checks between builds short** (Town, #100): a quick check of a few minutes (boots, the ordinal
+  sandboxes, the shaders, plus the probes for what changed) runs between builds; the full battery, hours long, is
+  kept for once in a while. Run game-logic probes at a small viewport: a full-size headless page runs the game at
+  about a fifth of real speed.
 - **Platforms, for every game we make** (Town, 13 Oct 2026; all Greeblis games past and future, and any game
   after them): Chrome is the only browser ever supported, on
   desktop and on a phone; a phone is only ever an Android phone (no iPhone or any other); Mac computers are
