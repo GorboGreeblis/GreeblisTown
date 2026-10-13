@@ -720,3 +720,27 @@ Office with its mail heap 46k; Gooward 37 draws; Anomalee 10 draws for 0.5k tria
 (`depthMask`, program switches) about 1.8 ms together. Areas to check: merging static parts, static matrices,
 lossless triangle removal (hidden faces), the XR path (foveation, multiview, frame rate, per-frame allocation).
 Every change must be pixel-lossless or under a pixel or two on the headset, measured before and after.
+
+**Part one (#89), the scene graph, lossless to the pixel.** `tools/test/t_matrix.js` counts the matrix work:
+the scene is 2,122 objects (1,463 meshes, 638 groups), ~1,640 of them with `matrixAutoUpdate` on and almost all
+of those still, yet every frame composed its local matrix and multiplied its world matrix again: 1,946 composes
+and 2,465 multiplies a frame. Now `Object3D.updateMatrix` (patched in the bundled three.js) composes only when
+position, rotation or scale changed since the last compose, and `add` marks a re-parented object's world matrix:
+328 composes and 1,357 multiplies a frame (the rest are the moving creatures' subtrees and the renderer's
+model-view matrices). The creature batcher's per-frame update (`Qe`) leaves a part alone whose matrix, colour
+and on-state are unchanged and recomputes a batch's bounds only when something in it changed: `t_static.js`
+shows 37 of the 130 batches (358 parts, the scenery the batcher batches too) never change. The world-matrix
+pass still visits every node (2,346 a frame) and the renderer's `projectObject` as well: the only way down from
+there is fewer objects. Batching across creatures and props (by material signature within 24 m cells) was
+built, measured and dropped: the signatures differ too much (14 draws fewer of 400 at the south gate) and the
+wider batches cull less (3% more triangles per view).
+
+**What is left, in order of likely worth:** (1) fewer objects: the batched creature parts (~850 hidden meshes)
+and the scenery's small props are the bulk of the 2,122 nodes the two per-frame passes walk; (2) the GPU's
+triangles per view (360k to 540k, drawn twice in VR): the 52.8k-triangle Garden Supplies kiosk and the 46k Post
+Office in particular, where only lossless removal of faces that can never be seen is allowed; (3) draw calls
+(205 to 386 per view): the church (23), the Library (35 at the south gate), Gooward (34), the garden's planters
+(16 to 18), Anomalee (10 for 0.5k triangles); (4) the batcher's per-draw `gcR` upload (128 vec4 for every batch,
+most holding 2 to 7 parts); (5) the XR path (multiview is not in this three.js). The headless profiler's
+millisecond figures vary a third from run to run here; count work (`t_matrix.js`), draws and triangles
+(`t_perf.js`) instead, and measure on the headset.

@@ -717,6 +717,15 @@ Goo that runs down a body and moves like goo, without clipping:
 - **Freeze static groups:** `H(group)` turns off matrix auto-updates.
 - **Mobile counts:** check `window.__jgpMobile` to place fewer envelopes, tufts and fence pickets.
 - **Prefer one canvas texture over many meshes** for flat patterns (the dance floor, the rug).
+- **Still things cost nothing to place** (#89): the bundled three.js's `Object3D.updateMatrix` composes the local
+  matrix only when position, rotation or scale changed since the last compose (a cache of the ten numbers on the
+  object), and `add` marks a re-parented object's world matrix, so the ~1,640 still objects no longer compose and
+  multiply every frame (1,946 composes a frame became 328). Code that moves an object through `position`,
+  `rotation`, `quaternion` or `scale` needs nothing new; code that writes `matrix` by hand must set
+  `matrixAutoUpdate = false` as before. The creature batcher's per-frame update (`Qe`) likewise leaves a part
+  whose matrix, colour and on-state are unchanged as it is (its last values kept at full precision in `p.k`, the
+  array itself holding them rounded to 32 bits) and recomputes a batch's bounds only when something in it changed.
+  `test/t_matrix.js` counts the matrix work; `test/t_static.js` lists the batches and which parts ever move.
 - **Keep per-frame work tiny:** search on from last frame's answer (Somlet's tentacles take a step or two),
   repaint textures a few times a second at most, and never allocate in loops.
 - **Compile early:** anything that first shows mid-game (the bulb, Backpacka, his water) is built and compiled
