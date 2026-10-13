@@ -28,6 +28,6 @@ const { minify } = require('terser');
   console.log(`readable page   ${Buffer.byteLength(html).toLocaleString()} B (game script ${Buffer.byteLength(game).toLocaleString()} B)`);
   console.log(`minified page   ${Buffer.byteLength(page).toLocaleString()} B (game script ${Buffer.byteLength(r.code).toLocaleString()} B, ${((Date.now() - t0) / 1e3).toFixed(1)} s)`);
   const t1 = Date.now();
-  execFileSync('node', [path.join(__dirname, 'park/woods-pack.js'), pagePath, packed, 'Greeblis Town USA'], { stdio: 'pipe' });
+  execFileSync('node', [path.join(__dirname, 'park/woods-pack.js'), pagePath, packed, 'Greeblis Town'], { stdio: 'pipe' });
   console.log(`packed ordinal  ${fs.statSync(packed).size.toLocaleString()} B (${((Date.now() - t1) / 1e3).toFixed(1)} s)  -> ${packed}`);
 })().catch((e) => { console.error(e); process.exit(1); });

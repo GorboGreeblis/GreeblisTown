@@ -1,4 +1,4 @@
-# Greeblis Town USA: tools
+# Greeblis Town: tools
 
 Everything used to build, check, trim and pack the game. The game itself is only `index.html` at the repo root;
 nothing in `tools/` ships inside it. The rules are in [`docs/greeblis-rules.md`](docs/greeblis-rules.md).
@@ -107,6 +107,7 @@ row says otherwise, run it with `shot2.js`.
 | `t_library.js` | Sparkakus browsing his Library: the spots he visits, never within 0.6 m of a bookcase or the posts, still when talked to, out to the Garden Event and back. `VW=320 VH=240` |
 | `t_zfight.js` | Z-fighting scan: every depth-written triangle grouped by plane (normals folded by their largest component); overlapping near-coplanar pairs (`TOL` 6 mm, `MINA` 2 cm²) are kept only if a point in the overlap can be seen from where the player's eyes can be (a ray test through a 2 m grid, as the trimmed three.js has no raycaster; `VISALL=1` skips it, `CREATURES=0` leaves creatures out). Each clash is named by its triangles' own vertex colours, plus a 4 m area for unnamed scenery, with points inside it |
 | `t_shimmer.js` | A headset's shimmer, simulated: from standing spots the view is rendered as one eye sees it (96°, 1600 px) and again with the head nudged a millimetre sideways and up and a hundredth of a degree in yaw and pitch; pixels that change more than `THRESH` (default 40; 100 for what really pops) are flicker, counted per nudge, named by what they land on (with how the surface samples: mipmapped, no mipmaps, nearest, flat colour) and drawn red on a heat map per spot. `SPOTS` (JSON `{name: [x, z, yawDeg, pitchDeg]}`) replaces the built-in spots, `PX` the size, `RAYS` the rays. Level spots are pitched 0.3° down (at exactly 0° the renderer itself differs frame to frame), and asphalt next to the camera is a renderer artefact (see construction.md) |
+| `t_baked.js` | Animations acting on merged-away parts: a fresh copy of every creature is built while every part the merges remove is recorded, then driven through idle, walking, a Talk and a Blossom dialogue, busy dancing, a vignette and lying; any removed part its animation still moves, hides or rescales is listed by creature (it is never drawn, so that change never shows; mark it `userData.keep`) |
 | `t_zcheck.js` | Which scan clashes really flicker: `POINTS` (JSON `[name, x, y, z]`) rendered three times from a player eye with the near plane nudged a fraction of a millimetre. Nothing moves, so changed pixels are surfaces fighting; under ~10 is edge noise. `SHOTS=1` writes the pairs for `tile.py diff` |
 | `t_event3.js` | The whole Garden Event, logged every 5 s of game time. `VW=200 VH=150`, or it takes ages |
 | `t_rounds.js` | Three Garden Events in a row: only the first grows flowers (one per planter); the second and third replay the same spots and leave the garden unchanged. `VW=200 VH=150`, slow |
@@ -216,7 +217,7 @@ swapping the result in:
 3. Minify it: `node pack/woods-build/min.js game.js game.min.js` (terser 5, `toplevel` mangling, 2 passes). The
    test scripts rely on the global names, so test the unminified page and ship the minified one.
 4. Put `game.min.js` back in place of the game script and boot-test that page (`test/ordtest.js`, both modes).
-5. Pack it: `node pack/park/woods-pack.js page.html index.html "Greeblis Town USA"`. Check the round trip with
+5. Pack it: `node pack/park/woods-pack.js page.html index.html "Greeblis Town"`. Check the round trip with
    `node pack/park/woods-unpack.js index.html check.html`: it must report `decoder matches woods-model.js: true`,
    and `check.html` must be identical to `page.html`.
 6. Run `test/ordtest.js` on the packed `index.html`, desktop and `MOBILE=1`, and keep it under ~400 KB. The full

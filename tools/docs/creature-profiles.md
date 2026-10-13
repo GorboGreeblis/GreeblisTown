@@ -1,4 +1,4 @@
-# Greeblis Town USA: creature profiles
+# Greeblis Town: creature profiles
 
 How each creature is modelled, coloured, given a face and animated, read from the game (`index.html`). Every
 model is final: never change one without asking ([rules](greeblis-rules.md)). The methods (builders, `born()`,

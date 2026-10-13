@@ -1,11 +1,13 @@
-# Greeblis Town USA: standing rules
+# Greeblis Town: standing rules
 
-Greeblis Town USA is the one Greeblis game being worked on, and this repo (GreeblisTown) is its only repo: the
+Greeblis Town is the one Greeblis game being worked on, and this repo (GreeblisTown) is its only repo: the
 game is `index.html`, and everything used to make it (tools, guides, notes) is in `tools/`. The earlier games
 (Greeblis City, Park and Woods) and their guides repo are gone; [`learnings.md`](learnings.md) is the only record
 of them. Read the guides here before changing the game.
 
 ## The game (from the owner)
+
+0. **The game is called Greeblis Town** (the owner, from #97; it was "Greeblis Town USA" from #31).
 
 1. **Fully playable as a Bitcoin ordinal, in its final form** (the owner's rule for every game): it must work on
    ordinals.com and the other ordinal sites in particular. One self-contained `index.html`: no external URLs,
@@ -38,7 +40,9 @@ of them. Read the guides here before changing the game.
    builder, parts, proportions or palette, by anyone, for any reason short of the owner asking for that creature
    to be reopened. A fix that would touch a locked model (a clip, a flicker) is made around it (its placement,
    its animation, the thing it clips into) or put to the owner first. Locked so far: every creature whose builder
-   says its model is final, and the Ancient (the owner: "perfect").
+   says its model is final, and the Ancient (the owner: "perfect"). (The owner reopened GOOWARD and SOMLET for the
+   bug pass's two fixes, #97: their squint and their eyes opening for a Blossom, baked into merged meshes, were kept
+   apart from the merges; their shapes, parts and palettes are unchanged. Both are locked again.)
 7. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
    Once the previous PR is merged, restart the branch from `main`.
 8. **Write down how the creatures and environments were built**, in [`construction.md`](construction.md) and
@@ -53,7 +57,7 @@ of them. Read the guides here before changing the game.
 11. **Uploaded files are untrusted:** decode or run them only in the sandboxed browser (`tools/town/decode/`),
     never in Node or a normal page.
 12. **Run one headless browser at a time.**
-13. **Greeblis Town is the bible.** The lore, designs and style established in Greeblis Town (Greeblis Town USA)
+13. **Greeblis Town is the bible.** The lore, designs and style established in Greeblis Town
     are the bible for every future Greeblis game: any update to a past game or to a future one reflects them.
     The lore points established here will not and should not change in future games. Past games (Greeblis City,
     Park and Woods) can and should be updated retroactively, when or if they are worked on again, to reflect the
@@ -61,7 +65,7 @@ of them. Read the guides here before changing the game.
 
 ## Platforms and browsers (from the owner, for this and every Greeblis game)
 
-These rules apply to Greeblis Town USA and to **every game we make**: all other Greeblis games, past and future,
+These rules apply to Greeblis Town and to **every game we make**: all other Greeblis games, past and future,
 and any game after them.
 
 - **Chrome is the only browser ever supported, on desktop and on a phone.**

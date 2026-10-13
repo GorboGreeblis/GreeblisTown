@@ -1,7 +1,7 @@
 {
   "name": "greeblis-town-usa-tools",
   "private": true,
-  "description": "Build, check, trim and pack tools for Greeblis Town USA (see README.md)",
+  "description": "Build, check, trim and pack tools for Greeblis Town (see README.md)",
   "scripts": {
     "lint": "cd town/lint && npm install --no-save eslint@8.57.0 >/dev/null && sh lint.sh",
     "test": "test/battery.sh"

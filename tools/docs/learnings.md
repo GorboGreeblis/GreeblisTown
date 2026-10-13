@@ -1,6 +1,6 @@
 # Greeblis games: what City, Park and Woods taught
 
-What was learned from the three Greeblis games before Greeblis Town USA (**Greeblis City**, **Greeblis Park** and
+What was learned from the three Greeblis games before Greeblis Town (**Greeblis City**, **Greeblis Park** and
 **Greeblis Woods**): their guides, profiles, packing recipes, PR histories and readable sources, and the final
 builds the owner uploaded on 11 Oct 2026, checked against Town (the 4th game, this repo). Their repos no longer
 exist, so this is the only record. Names such as `gcEB`, `Pt` or `gcVeg` are from the old readable sources (the
