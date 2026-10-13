@@ -16413,10 +16413,10 @@ const JGP = (() => {
 							const q = inner.worldToLocal(inRoomV.copy(At.position));
 							return Math.abs(q.x) < IX && q.z > ZB && q.z < ZF ? "Talk" : null;
 						},
-						// ("Hello Kate" at the Event is the owner's script, as written: never flag it)
+						// (at the Event it says only "Hello")
 						// (pointed at anywhere on its body, head to tail)
 						pickObj: [slug, head],
-						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", me.active ? "Hello Kate" : "I am the one reborn.")),
+						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", me.active ? "Hello" : "I am the one reborn.")),
 						gift: () => Kt.blossoms > 0 && (Kt.blossoms--, G.heart(), (talking = 1), qt.open("ANCIENT", "#9a7a5a", "...")),
 					});
 					// (a visit's exchange with it: it talks, lifting its head, for so long, see JGP.slug.chat)
