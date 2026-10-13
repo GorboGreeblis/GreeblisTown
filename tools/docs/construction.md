@@ -524,11 +524,16 @@ Goo that runs down a body and moves like goo, without clipping:
   parchment: two little green aliens, their UFO, GLOOPERNAUGHT (a big green goo creature, named under its
   picture), a brown rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
   with red collar and gold epaulettes, a paw tucked in) front and centre under the star, and a drawing of the
-  player's own avatar (copper hair and ponytail band, freckles, the flowered yellow sun dress), pinned a few
-  millimetres proud of the goo poster's corner so the two never flicker, and on the right, between the rabbit and
+  player's own avatar (copper hair and ponytail band, freckles, the flowered yellow sun dress), clear of the goo
+  poster's corner, and on the right, between the rabbit and
   the alien, a stranger drawn from a photo the owner sent (as cartoony as the visitor and never a likeness: shaggy
   pale-blond hair with darker roots over the brow, dark brows and eyes, a small smile, a little gold earring, a
-  brown leather jacket with a wide collar over a cream shirt collar and a sage knit sweater). Its back wall is plain: the battens
+  brown leather jacket with a wide collar over a cream shirt collar and a sage knit sweater). Up on the left, between
+  the alien and the star and above the avatar, OLAG, from a picture the owner sent, the name under WANTED as on
+  GLOOPERNAUGHT's poster: a wrinkled tan bald head with long ears swept up and out, a deep-set scowl, a long thin neck,
+  a high blue collar and blue robe with pointed shoulder flaps and gold diamonds, a white belt over a blue and gold
+  checked panel, and a pale grey-green book in both hands. No two posters overlap anywhere, so none can flicker.
+  Its back wall is plain: the battens
   every other kiosk has would cut across the posters, so the owner had them taken off (`noBattens`).
   Garden Supplies' wheelbarrow of flowers out front stands on its wheel: two fork rails run from under the tray's
   front edge down to the axle, the wheel's top level with the tray's bottom, and two legs at the back.
