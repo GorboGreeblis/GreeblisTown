@@ -1,8 +1,9 @@
-// The cardinal in the park's north-east maple: close-ups from its side, front, back and from below (<out>_c*.png),
+// A bird in a park tree (the cardinal in the north-east maple by default; AT=x,z picks another tree's bird, the
+// robin's oak being AT=-17,-34): close-ups from its side, front, back and from below (<out>_c*.png),
 // the view a player has of it from the walk (<out>_walk.png), a few frames of its hop and look-about, and a
 // check that nothing of it or its bough is inside the tree's crowns (the bird's highest point against the crown's
 // lowest over it).
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_cardinal.js
+//   VW=320 VH=240 NOSHOT=1 [AT=-17,-34] node shot2.js <url> x.png ./t_cardinal.js
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(2000);
@@ -12,16 +13,17 @@ module.exports = async (p, out) => {
     O.setSize(800, 600, !1); O.render(C, c); const d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); return d;
   }, [cam, look, fov]).then((d) => fs.writeFileSync(out.replace('.png', '_' + name + '.png'), Buffer.from(d.split(',')[1], 'base64')));
   // the bird's group: the kept group at the maple's foot; its one group child is the bird
-  const B = await p.evaluate(() => {
-    const o = C.children.find((g) => g.userData.jgpKeep && Math.abs(g.position.x - 31) < 0.01 && Math.abs(g.position.z + 33.5) < 0.01);
+  const AT = (process.env.AT || '31,-33.5').split(',').map(Number);
+  const B = await p.evaluate((AT) => {
+    const o = C.children.find((g) => g.userData.jgpKeep && Math.abs(g.position.x - AT[0]) < 0.01 && Math.abs(g.position.z - AT[1]) < 0.01);
     if (!o) return null;
     o.updateMatrixWorld(!0);
     const P = o.children.find((c) => c.isGroup), v = new THREE.Vector3(), bx = new THREE.Box3().setFromObject(P);
     P.getWorldPosition(v);
     const f = o.rotation.y + P.rotation.y;
     return { at: [v.x, v.y, v.z], face: f, top: bx.max.y, bottom: bx.min.y, size: [bx.max.x - bx.min.x, bx.max.y - bx.min.y, bx.max.z - bx.min.z] };
-  });
-  if (!B) return log('no cardinal found');
+  }, AT);
+  if (!B) return log('no bird found at', AT.join(','));
   log('bird at', B.at.map((v) => +v.toFixed(2)).join(','), '| size (m)', B.size.map((v) => +v.toFixed(2)).join(' x '), '| top', B.top.toFixed(2));
   const [x, y, z] = B.at, f = B.face, d = 1.1;
   await shot('c_side', [x + d * Math.sin(f + Math.PI / 2), y + 0.35, z + d * Math.cos(f + Math.PI / 2)], [x, y + 0.2, z]);

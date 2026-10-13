@@ -16822,6 +16822,103 @@ const JGP = (() => {
 			});
 			return o;
 		};
+		// robin(X, Z, s, ry): the same low bough out of another tree's trunk (its fork and leaves on the other side), with
+		// an American robin on it, built from the owner's two photos: an upright grey-brown bird, its head near black
+		// with a white ring round each eye and a white throat streaked dark, a slim yellow beak, a rusty orange breast
+		// and belly over white under the tail, wings folded along the sides a shade darker than the back, a longish dark
+		// tail with white corners, and long thin legs. It stands taller and straighter than the cardinal.
+		const robin = (X, Z, s, ry) => {
+			const o = new THREE.Group();
+			o.position.set(X, 0, Z), (o.rotation.y = ry), (o.userData.jgpKeep = !0), (o.userData.keepInFinale = !0), C.add(o);
+			const bark = x.clay("#5a4632", { shininess: 4 }),
+				leaf = x.clay("#427630", { shininess: 6 });
+			R(T.cyl(0.035, 0.08, 1.9, 7), bark, o, [0, 2.55, 0.95], [Math.PI / 2 - 0.12, 0, 0]);
+			R(T.cyl(0.018, 0.03, 0.7, 6), bark, o, [-0.22, 2.78, 1.62], [Math.PI / 2 - 0.45, -0.35, 0]);
+			[[-0.36, 2.98, 1.84, -0.4], [-0.3, 2.9, 1.95, 0.3], [-0.1, 2.72, 1.98, -0.9], [0.05, 2.68, 1.9, 0.6]].forEach(([px, py, pz, rr2]) => R(T.sphere(0.1, 8, 6), leaf, o, [px, py, pz], [0.3, rr2, 0.15], [0.8, 0.08, 1.1]));
+			// the bird faces its own +z (across the bough), feet on the bough's top; a little bigger than the cardinal,
+			// as a robin is (about 50 cm from beak to tail tip, twice a real one)
+			const P = new THREE.Group(),
+				s2 = 0.85 * s,
+				PY = 2.655;
+			P.position.set(0, PY, 1.445), (P.rotation.y = Math.PI / 2), P.scale.setScalar(s2), o.add(P);
+			const back = KIT.surf("fur", "#5c5248", { rep: 2, bump: 0.02, shine: 8 }),
+				wingM = KIT.surf("fur", "#4c443c", { rep: 2, bump: 0.025, shine: 8 }),
+				breast = KIT.surf("fur", "#c85a26", { rep: 2, bump: 0.02, shine: 10 }),
+				belly = x.clay("#ece6da", { shininess: 6 }),
+				headM = x.clay("#2c2824", { shininess: 10 }),
+				tailM = x.clay("#36302c", { shininess: 8 }),
+				white = x.clay("#f4f0ea", { shininess: 8 }),
+				beakM = x.clay("#e8b22a", { shininess: 40 }),
+				eyeM = x.clay("#141010", { shininess: 90 }),
+				legM = x.clay("#4a3c32", { shininess: 10 });
+			// long thin legs and toes gripping the bough
+			[-1, 1].forEach((sx) => {
+				R(T.cyl(0.006, 0.007, 0.1, 6), legM, P, [0.03 * sx, 0.05, 0]);
+				[[0.012, 0.6], [0.012, -0.6], [-0.01, 0]].forEach(([dz, ry2]) => R(T.cyl(0.004, 0.0035, 0.045, 5), legM, P, [0.03 * sx, 0.004, dz], [Math.PI / 2, ry2, 0]));
+			});
+			// the body stands up at the front (a robin's upright stance): the grey-brown back, the orange breast full and
+			// forward below the throat, white under the tail
+			const Bd = new THREE.Group();
+			Bd.position.set(0, 0.17, -0.01), (Bd.rotation.x = -0.32), P.add(Bd);
+			R(T.sphere(0.1, 14, 10), back, Bd, [0, 0.02, 0], null, [1, 0.95, 1.55]);
+			R(T.sphere(0.09, 12, 9), breast, Bd, [0, -0.012, 0.06], null, [1, 1.18, 1.1]);
+			R(T.sphere(0.05, 10, 8), belly, Bd, [0, -0.072, -0.05], null, [0.9, 0.5, 1.1]);
+			// the tail: three feather boards held a little down, white corners proud of the outer two
+			const tail = new THREE.Group();
+			tail.position.set(0, 0, -0.12), (tail.rotation.x = 0.45), Bd.add(tail);
+			R(T.box(0.065, 0.012, 0.22), tailM, tail, [0, 0, -0.11]);
+			[-1, 1].forEach((sx) => {
+				R(T.box(0.045, 0.012, 0.23), tailM, tail, [0.014 * sx, 0.005 * sx, -0.115], [0, 0.12 * sx, 0]);
+				R(T.box(0.016, 0.016, 0.03), white, tail, [0.044 * sx, 0.005 * sx, -0.218], [0, 0.12 * sx, 0]);
+			});
+			// wings folded along the sides, darker than the back, their tips darker still
+			const wings = [-1, 1].map((sx) => {
+				const w = new THREE.Group();
+				w.position.set(0.08 * sx, 0.035, 0), Bd.add(w);
+				R(T.sphere(0.07, 12, 9), wingM, w, [0.012 * sx, -0.02, -0.06], null, [0.45, 0.7, 1.55]);
+				R(T.sphere(0.07, 10, 8), tailM, w, [0.006 * sx, -0.045, -0.19], null, [0.3, 0.4, 0.9]);
+				return w;
+			});
+			// the head: round and near black, the white ring round each glossy eye, the white throat with its dark
+			// streaks under the slim yellow beak
+			const head = new THREE.Group();
+			head.position.set(0, 0.095, 0.1), Bd.add(head);
+			R(T.sphere(0.068, 14, 10), headM, head, [0, 0.01, 0.01]);
+			R(T.cone(0.013, 0.06, 8), beakM, head, [0, 0.002, 0.097], [Math.PI / 2, 0, 0]);
+			[-1, 1].forEach((sx) => {
+				R(T.sphere(0.017, 10, 8), white, head, [0.051 * sx, 0.026, 0.03], null, [0.6, 1, 1]);
+				R(T.sphere(0.012, 8, 6), eyeM, head, [0.062 * sx, 0.026, 0.03]);
+				R(T.sphere(0.004, 6, 5), x.clay("#ffffff"), head, [0.07 * sx, 0.031, 0.036]);
+			});
+			R(T.sphere(0.028, 10, 8), white, head, [0, -0.04, 0.04], null, [1, 0.6, 0.75]);
+			for (let k = -1; k <= 1; k++) {
+				const a = 0.5 * k;
+				R(T.box(0.003, 0.012, 0.004), x.clay("#4a443e"), head, [0.022 * Math.sin(a), -0.04, 0.04 + 0.02 * Math.cos(a)], [0, a, 0]);
+			}
+			// its little life: it looks about, cocks its head to one side and holds it there a while (a robin listening),
+			// flicks its tail now and then, and every so often hops a hand's width along the bough and back with a
+			// flutter of its wings; it breathes. It never flies and never leaves its tree (the owner's rule).
+			const st0 = { look: 0, lookT: 0, nextLook: 2.5, cock: 0, cockT: 0, nextCock: 5, flickT: -9, nextFlick: 4, hop: 0, hopT: -9, hopFrom: 0, hopTo: 0, nextHop: 9 };
+			L.push((t, dt) => {
+				if (!o.visible) return;
+				if (t > st0.nextLook) (st0.lookT = -0.8 + 1.6 * Math.random()), (st0.nextLook = t + 1.5 + 3 * Math.random());
+				st0.look += (st0.lookT - st0.look) * Math.min(1, 6 * dt);
+				if (t > st0.nextCock) (st0.cockT = st0.cockT ? 0 : (Math.random() < 0.5 ? -1 : 1) * 0.45), (st0.nextCock = t + (st0.cockT ? 2 + 2 * Math.random() : 4 + 6 * Math.random()));
+				st0.cock += (st0.cockT - st0.cock) * Math.min(1, 5 * dt);
+				(head.rotation.y = st0.look), (head.rotation.z = st0.cock), (head.rotation.x = 0.08 * Math.sin(1.1 * t) + 0.25 * Math.max(0, Math.sin(0.31 * t)) ** 6);
+				t > st0.nextFlick && ((st0.flickT = t), (st0.nextFlick = t + 3 + 5 * Math.random()));
+				const fl = Math.max(0, Math.sin((Math.PI * (t - st0.flickT)) / 0.3));
+				tail.rotation.x = 0.45 + 0.3 * fl;
+				if (t > st0.nextHop) (st0.hopT = t), (st0.hopFrom = st0.hop), (st0.hopTo = st0.hop < 0 ? 0 : -0.18), (st0.nextHop = t + 7 + 9 * Math.random());
+				const f = Math.min(1, (t - st0.hopT) / 0.32),
+					hop = f < 1 ? 1 : 0,
+					sm = f * f * (3 - 2 * f);
+				(st0.hop = st0.hopFrom + (st0.hopTo - st0.hopFrom) * sm), (P.position.x = st0.hop), (P.position.y = PY - 0.11 * st0.hop + 0.07 * Math.sin(Math.PI * f) * hop);
+				wings.forEach((w, k) => (w.rotation.z = (k ? 1 : -1) * 0.55 * hop * Math.abs(Math.sin(22 * (t - st0.hopT)))));
+				P.scale.setScalar(s2 * (1 + 0.012 * Math.sin(2.1 * t)));
+			});
+			return o;
+		};
 		const lampPost = (X, Z) => {
 			const iron = "#1e2226";
 			put("plain", ucyl(6), iron, S(X, 0.25, Z, 0, 0, 0, 0.42, 0.5, 0.42)), put("plain", ucyl(6), iron, S(X, 2.25, Z, 0, 0, 0, 0.15, 4.0, 0.15));
@@ -17020,6 +17117,11 @@ const JGP = (() => {
 		// and now and then hops along its bough with a flutter; it never flies and never leaves its tree (the owner's
 		// rule). Its own small group, kept through every scene clear.
 		cardinal(31, -33.5, 1.15, Math.atan2(-31, 6 + 33.5));
+		// THE ROBIN: the park's second bird, an American robin from the owner's two photos, on the same kind of bough
+		// out of the oak by the north fence's west half (the tree at (-17, -34)), on the side toward the square. It
+		// looks about, cocks its head to listen, flicks its tail and hops along its bough; it never flies and never
+		// leaves its tree (the owner's rule). One bird to a tree.
+		robin(-17, -34, 1.2, Math.atan2(17, 6 + 34));
 		// hydrant and a blue mailbox by the south walk
 		put("plain", ucyl(10), "#c8282a", S(3.2, 0.38, 40.2 + ZS, 0, 0, 0, 0.36, 0.76, 0.36)), put("plain", usph(10, !0), "#c8282a", S(3.2, 0.76, 40.2 + ZS, 0, 0, 0, 0.36, 0.3, 0.36));
 		put("plain", ucyl(8), "#d8d8dc", S(3.2, 0.5, 40.2 + ZS, 0, 0, Math.PI / 2, 0.16, 0.6, 0.16)), E.add(3.2, 40.2 + ZS, 0.5, "scenery");
