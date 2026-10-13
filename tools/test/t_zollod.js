@@ -1,6 +1,7 @@
 // ZOLLOD: his shyness sub-quest played through, and, once freed, his shop opened wherever he is (out visiting,
 // walking home, being visited).
-//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_zollod.js   (PART=shyness,away runs only those)
+//   NOSHOT=1 node shot.js <url> x.png ./t_zollod.js   (at the default size: the shyness part clicks the book on screen)
+//     (PART=shyness,away runs only those)
 
 // ZOLLOD's shyness sub-quest, played through: before the book ZOLLOD has one Talk ("…/…/I'm shy…"), no Blossom, no
 // shop, and he neither visits nor is visited; OVERCOMING SHYNESS is taken from its Library shelf by clicking it on

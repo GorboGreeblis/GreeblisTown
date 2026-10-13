@@ -27,7 +27,7 @@ point a runner at the file with `URL=file:///…/index.html`.
 
 | Runner | What it does |
 | --- | --- |
-| `test/quick.sh [probe.js …]` | The quick check: the readable copy, lint, boots on desktop and mobile (with the GIVE button), both ordinal sandboxes, the shaders and the church. Then each named probe, on its own page at 320×240. `Z=1` adds the z-fighting scan. |
+| `test/quick.sh [probe.js …]` | The quick check: the readable copy, lint, boots on desktop and mobile (with the GIVE button), both ordinal sandboxes, the shaders and the church. Then each named probe, on its own page at 320×240 (`VW`, `VH` change it). `Z=1` adds the z-fighting scan. |
 | `test/battery.sh` | The full battery: every regression probe in turn, each section stamped with the seconds elapsed. `test/battery.sh > test/battery.log 2>&1`. |
 | `test/shot.js <url> <out.png> [scene.js]` | Loads the page in headless Chromium on desktop (1280×720; `VW`, `VH` change it), waits `WAIT` ms (default 6000), runs the scene script, then screenshots unless `NOSHOT=1`, and prints the console log. `HARNESS=1` makes the game treat the browser as a Quest. |
 | `test/mob.js <url> <out.png> [scene.js]` | The same as a Pixel 7 in Chrome, the one kind of phone the game runs on (`EXTRA` adds browser flags). |
@@ -65,7 +65,7 @@ Scene scripts export `async (page, out) => {}` and drive the game through its gl
 | `t_pizza.js` | `lock`: the phone is blocked until MUSHROOM has a Blossom, then calls NEXTESSA for the session. `courier`: her delivery. |
 | `t_stone.js` | The GARDEN EVENT menu and its rule: without the Summoning Stone nothing starts; with it, it starts. |
 | `t_sparkakus.js` | `script`: his Artifacts talk, the glue bottle, his Blossom lap, the shelf renders. `menu`: Talk and Give a blossom from the first moment. `anywhere`: a Blossom (the lap at home, his away line elsewhere), a Talk and his Artifacts speech at home, on a visit, walking home and with a visitor. `away`: the Artifacts speech away from the Library. |
-| `t_zollod.js` | `shyness`: the sub-quest played through. `away`: once freed, his shop opened wherever he is (visiting, walking home, being visited). |
+| `t_zollod.js` | `shyness`: the sub-quest played through (at the default size: it clicks the book on screen). `away`: once freed, his shop opened wherever he is (visiting, walking home, being visited); he holds still while it is open. |
 | `t_script.js` | `lines`: the owner's script in motion (ANOMALEE's sad line, MONTGUMMERY's screen, SOMLET's eyes and sleep, the Event's pizza, ZOLLOD's Event line). `anomalee`: her gaze at the window, and turning to the player only for her Blossom line. |
 | `t_church.js` | The secret room: the way in under the right-hand Garden window and nowhere else, the head guard, no creature inside, and the Ancient's Talk, Blossom, idle and Talk moves. |
 | `t_library.js` | SPARKAKUS browsing: the spots he visits, never near a bookcase, still when talked to, out to the Event and back. |

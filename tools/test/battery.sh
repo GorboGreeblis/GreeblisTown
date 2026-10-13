@@ -25,7 +25,7 @@ h "the Ancient Gem trade"; NOSHOT=1 run 300 shot.js $U x.png ./t_gem.js
 h "the phone and the pizza courier"; NOSHOT=1 run 400 shot.js $U x.png ./t_pizza.js
 h "the Summoning Stone"; NOSHOT=1 run 300 shot.js $U x.png ./t_stone.js
 h "SPARKAKUS"; small 1800 shot.js $U x.png ./t_sparkakus.js
-h "ZOLLOD"; small 900 shot.js $U x.png ./t_zollod.js
+h "ZOLLOD"; NOSHOT=1 run 1200 shot.js $U x.png ./t_zollod.js
 h "the script"; small 900 shot.js $U x.png ./t_script.js
 h "the church's secret room and the Ancient"; NOSHOT=1 run 300 shot.js $U x.png ./t_church.js
 h "KING DINO's jazz"; small 900 shot.js $U x.png ./t_jazz.js
