@@ -10829,8 +10829,10 @@ const JGP = (() => {
 		R(T.box(4.3, 1.05, 0.1), white, o, [0, 5.55 + dh, -0.12]), R(T.plane(4.1, 1.02), x.world(16777215, { map: signTex }), o, [0, 5.55 + dh, -0.04]);
 		// the counter (the desk), crates on either side
 		const ph = D - 0.22;
-		R(T.box(3.8, ph, 0.1), wall, o, [0, 0.2 + ph / 2, 1.07]), R(T.box(3.84, 0.08, 0.12), white, o, [0, 0.24, 1.08]);
-		// the top overhangs the front panel and the end supports sit inside it, so no faces are flush
+		R(T.box(3.8, ph, 0.1), wall, o, [0, 0.2 + ph / 2, 1.07]), R(T.box(3.84, 0.08, 0.15), white, o, [0, 0.24, 1.075]);
+		// the foot trim stands 2 cm proud of the panel behind as well as in front (its back face lay in the panel's
+		// back face and flickered, seen from behind the counter); the top overhangs the front panel and the end
+		// supports sit inside it, so no faces are flush
 		R(T.box(3.95, 0.1, 1.08), crate, o, [0, D - 0.05, 0.64]);
 		[-1.82, 1.82].forEach((px) => R(T.box(0.1, ph, 0.9), wall2, o, [px, 0.2 + ph / 2, 0.56]));
 		[-1, 1].forEach((sx) => {
