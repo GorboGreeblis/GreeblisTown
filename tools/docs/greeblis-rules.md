@@ -30,6 +30,11 @@ of them. Read the guides here before changing the game.
 6. **Creature models and their characteristics are protected.** Never change a creature's shape, palette,
    signature parts or personality without asking. Every model is now final (its builder says so in a comment),
    and so are the five plants and the church's secret room with its Ancient (the slug creature); animation changes on request are fine.
+   **Once a creature model is finished it is locked down** (the owner's rule): no more direct changes to its
+   builder, parts, proportions or palette, by anyone, for any reason short of the owner asking for that creature
+   to be reopened. A fix that would touch a locked model (a clip, a flicker) is made around it (its placement,
+   its animation, the thing it clips into) or put to the owner first. Locked so far: every creature whose builder
+   says its model is final, and the Ancient (the owner: "perfect").
 7. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
    Once the previous PR is merged, restart the branch from `main`.
 8. **Write down how the creatures and environments were built**, in [`construction.md`](construction.md) and
