@@ -77,7 +77,7 @@ Fixed points of that history:
 | Motif | Canon |
 | --- | --- |
 | **Blossoms** | The flower that grows round town: a green stem and leaves, red flame-shaped petals, an ember glowing over its heart. Giving one is the town's great gesture of friendship. They are always called Blossoms, never Fire Blossoms (rule). |
-| **Flint** | The town's money. The bank has a flint nugget carved over its doors; shops price in flint. Never show flint knapping (rule). |
+| **Flint** | The main currency of this time period: the town's money. The bank has a flint nugget carved over its doors; shops price in flint. Never show flint knapping (rule). |
 | **Goo** | The Gorbo family's substance, joyful and messy: goo burgers, goo shakes, splats of colour. "GOO... is also a kind of CODE." (ANOMALEE) |
 | **VHS** | Old tapes as knowledge. MONTGUMMERY eats them to learn about your culture, and always rewinds first. |
 | **Symbols and etching** | GLYPH masters symbols; ETCHER records the ages in his scales ("a backup of a backup"). |
