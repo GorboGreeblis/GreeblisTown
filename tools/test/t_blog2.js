@@ -18,7 +18,14 @@ module.exports = async (p) => { await p.mouse.click(p.viewportSize().width / 2, 
     out.push('err ' + Re.errors); return out.join('\n'); }));
   await p.waitForTimeout(1000);
   // with all three, SPARKAKUS's finale runs
-  console.log(await p.evaluate(() => { try { LIB.talk(); } catch (x) { return 'LIB err ' + x.message; } return 'LIB top ' + jt.top + ' text ' + JSON.stringify((qt.text || '').slice(0, 60)); }));
-  await p.waitForTimeout(500);
-  console.log(await p.evaluate(() => { for (let i = 0; i < 40 && jt.top === 'dialogue'; i++) { try { qt.skipAll(); } catch (x) {} } return 'after rewards.artifacts ' + Kt.rewards.artifacts + ' gem ' + Kt.gem + ' err ' + Re.errors; }));
+  console.log(await p.evaluate(() => { try { LIB.talk(); } catch (x) { return 'LIB err ' + x.message; } return 'LIB top ' + jt.top + ' text ' + JSON.stringify((document.getElementById('dlgText').textContent || '').slice(0, 60)); }));
+  // (the finale's pages, then the three pieces glued together in the air for a few seconds, then the Gem speech:
+  // its pages are skipped as they open, for up to 15 s, until the rewards are given)
+  let res = '';
+  for (let k = 0; k < 30; k++) {
+    await p.waitForTimeout(500);
+    res = await p.evaluate(() => { for (let i = 0; i < 40 && jt.top === 'dialogue'; i++) { try { qt.skipAll(); qt.advance(); } catch (x) {} } return Kt.rewards.artifacts ? 'after rewards.artifacts true gem ' + Kt.gem + ' err ' + Re.errors : ''; });
+    if (res) break;
+  }
+  console.log(res || 'after 15 s: rewards.artifacts still false FAIL');
 };
