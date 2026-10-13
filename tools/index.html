@@ -12959,7 +12959,8 @@ const JGP = (() => {
 				}),
 			// a flower head's frame: at p, facing away from where its stalk comes from (tipped by lean, 0 = up)
 			faceFrom = (p, from, lean) => mul(at(...p), ry(Math.atan2(p[0] - from[0], p[2] - from[2])), rx(-lean));
-		// (The five plant models below, each built only from the owner's photos, are final: keep them as they are.)
+		// (The five plant models below, each built only from the owner's photos, are final, and these Event flowers are LOCKED DOWN (the owner, #99): no change
+		// to any of them without the owner's approval first.)
 		const kinds = [
 			// PLANT #1: a creeping thistle (only from the owner's photos): three stems from a rosette of spiny, deeply
 			// lobed leaves, one leaning far out, one tall, one short, each splitting at the top into a loose spray

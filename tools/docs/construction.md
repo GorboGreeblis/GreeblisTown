@@ -557,8 +557,9 @@ Goo that runs down a body and moves like goo, without clipping:
   of those remembers: this three.js keeps no geometry `parameters`, so the light meshes used to be just as heavy).
   With the Snacks done, Anomalee's pizza box goes 0.8 m to her side if a flower of hers from an earlier Event
   stands where it would.
-- **The plants** (final; each built only from the owner's photos of it): five kinds in `PLANT_KINDS`, each
-  `[name, flower, talk colour, builder]`: a creeping thistle, a scentless mayweed, a chicory, a common milkweed and
+- **The plants** (final, and locked down as the Event flowers by the owner in #99: no change without the owner's
+  approval first; each built only from the owner's photos of it): five kinds in `PLANT_KINDS`, each its builder
+  `(add) => …` (#99 removed the unread name labels): a creeping thistle, a scentless mayweed, a chicory, a common milkweed and
   a zebra mallow. One merged vertex-coloured mesh per kind, drawn at `PLANT_SIZE` 2.4; leaves stay 0.11 model units
   up (stems aside) so they clear a row's ridge.
   - The toolkit inside `PLANT_KINDS`: `part(name, make, lit)` builds a flat double-sided part once from its

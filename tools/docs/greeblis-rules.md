@@ -40,8 +40,9 @@ of them. Read the guides here before changing the game.
    builder, parts, proportions or palette, by anyone, for any reason short of the owner asking for that creature
    to be reopened. A fix that would touch a locked model (a clip, a flicker) is made around it (its placement,
    its animation, the thing it clips into) or put to the owner first. Locked so far: every creature whose builder
-   says its model is final, the Ancient (the owner: "perfect"), and the design of the church's secret room (the
-   owner, #99). **A locked model or design can still change, but only with the owner's approval first** (the
+   says its model is final, the Ancient (the owner: "perfect"), the design of the church's secret room (the
+   owner, #99), and **the Event flowers** (the owner, #99): the five plant models the Garden Event grows, and only
+   those. **A locked model or design can still change, but only with the owner's approval first** (the
    owner's rule, for every game we make): ask before touching it, and wait for a yes. (The owner reopened GOOWARD and SOMLET for the
    bug pass's two fixes, #98: their squint and their eyes opening for a Blossom, baked into merged meshes, were kept
    apart from the merges; their shapes, parts and palettes are unchanged. Both are locked again.)
