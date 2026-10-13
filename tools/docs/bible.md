@@ -14,7 +14,6 @@ Contents:
 3. [Design](#3-design)
 4. [Style](#4-style)
 5. [Starting a new Greeblis game](#5-starting-a-new-greeblis-game)
-6. [Open questions for the owner](#6-open-questions-for-the-owner)
 
 ---
 
@@ -23,7 +22,8 @@ Contents:
 ### 1.1 Setting
 
 - **Greeblis Town** is a small American town in the Midwest, built round a fenced park that serves as its
-  square. Its streets hold the creatures' shops and homes; the park holds the town's life.
+  square. The area the game takes place in is called **Greeblis Park** ("What a beautiful day in Greeblis Park!").
+  The town's streets hold the creatures' shops and homes; the park holds the town's life.
 - **Time is the world's great puzzle.** To a visitor from the far past, this small town is the far future:
   > "In my era, the towers of Greeblis City reach the clouds. I never imagined the far future would have…
   > picket fences." (HENNRICK)
@@ -35,7 +35,7 @@ Contents:
 
 | Place | Canon |
 | --- | --- |
-| **The park** | The town square: an iron fence, a lawn, a duck pond, a garden of tilled rings round the Summoning Stone, the Portal, a purple dance floor before the Juice Bar, and an open-air Library. Four kiosks: the LIBRARY, the POST OFFICE, the SHERIFF'S and GARDEN SUPPLIES. Two birds live in its trees, a cardinal and a robin; they never fly and never leave their trees. |
+| **Greeblis Park** | The area the game takes place in, the park at the town's heart, its square: an iron fence, a lawn, a duck pond, a garden of tilled rings round the Summoning Stone, the Portal, a purple dance floor before the Juice Bar, and an open-air Library. Four kiosks: the LIBRARY, the POST OFFICE, the SHERIFF'S and GARDEN SUPPLIES. Two birds live in its trees, a cardinal and a robin; they never fly and never leave their trees. |
 | **The Portal** | The way between eras. Locked by the Sheriff on the Consortium's orders: "All travel through the Portal is locked down until further notice." |
 | **The church** | A Gothic Revival church of grey stone at the end of the park's south walk. Over its door is the lancet window **THE TRAVELER SAVES THE ORIGINATOR**. Its two Garden windows show a robed figure and MAMA GORBO in a meadow. Behind the wall under the right-hand Garden window, marked only by a small red X, lies a secret room where the Ancient rests. |
 | **Greeblis City** | A city of the far past, HENNRICK's home, whose towers reach the clouds. Its cathedral's windows are the model for the church's windows. |
@@ -64,7 +64,7 @@ Fixed points of that history:
 ### 1.4 Factions and forces
 
 - **The Consortium** protects the town and watches it. MUSHROOM, the sheriff, is its man in town: "This town is
-  under the protection of the consortium. We're investigating UFO sightings in this area." Its field office,
+  under the protection of the Consortium. We're investigating UFO sightings in this area." Its field office,
   listening dish and a scorched, taped-off ring under floodlights stand at the edge of town. The sheriff can be
   bribed with a Blossom, which reopens the Portal.
 - **Aliens and UFOs.** A UFO crosses the sky now and then (never during the Garden Event). Little green aliens and
@@ -291,12 +291,3 @@ The climax pattern every Greeblis game builds toward:
 7. **Check against the quality bar** from the first build: ordinal sandbox, no flicker, Quest frame rate.
 
 ---
-
-## 6. Open questions for the owner
-
-These are inconsistencies in Greeblis Town's text. They are noted here, not changed:
-- FORTIZMO's line "We only accept Fire Blossoms at this establishment." uses "Fire Blossoms", which the rules
-  retire.
-- Dialogue writes "the consortium" in lower case; the docs write "the Consortium".
-- MAMA GORBO's line ("What a beautiful day in Greeblis Park!") and the billboard call the town's park "Greeblis
-  Park". Is that its canon name?
