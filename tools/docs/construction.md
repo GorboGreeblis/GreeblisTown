@@ -477,8 +477,11 @@ Goo that runs down a body and moves like goo, without clipping:
     contrast to his gummy self in the park, but in his own lemon yellow with his turquoise as markings where his
     buttons and ball joints are) at his drums under a spotlight, his crown and plume on, and
     the words the owner gave it, "A Prehistoric Era in Jazz!", with a cloth banner hung under the board on two
-    ropes carrying the second line in one row of big letters, "Let King Dino take you to the Jurassic Greeblis
-    Park!" (the one piece of lore text in the background, at the owner's request).
+    ropes carrying the second line, "Let King Dino take you to the Jurassic Greeblis Park!" (the one piece of
+    lore text in the background, at the owner's request). The banner is wider than the board (11 m to its 10)
+    and three lines tall (3.3 m), the words on three lines in one size as big as the cloth's width allows
+    (`bb_ban`, 640 x 192 in the sign atlas), so it reads from the spawn across the road (the owner asked for it
+    bigger).
   - **minor details** (the owner asked for more small things in the town, each a creature's, no words): picture
     bands on the blank sign bands (GEMTOE's scales with an amethyst and spilling coins, MONTGUMMERY's row of
     cassettes with the last one bitten on the video store, GOOWARD's winged goo cone on the parlour, ZOLLOD's five
@@ -500,8 +503,15 @@ Goo that runs down a body and moves like goo, without clipping:
   101.6k triangles (101,595), right under the 101.6k it was before any of this (the trees thinned to 66 and
   their lighter far build from 80 m out, to pay for the church's stonework). `test/t_townview.js` renders the map, the views
   out of the square, every piece close up and the fence pickets from inside, and prints the counts.
-- **The player** starts at (0, 2), just south of the Summoning Stone, facing the church (`player.spawn` and
-  `player.face` in the config `t`; face 0 looks south along +z).
+- **The player** starts at (-36.3, -20), at the edge of the park just inside the west fence north of the Juice
+  Bar, facing KING DINO's billboard across the road (`player.spawn` and `player.face` in the config `t`; face 0
+  looks south along +z, and this one is `atan2` toward the billboard at (-55, -55)). The owner's choice: the
+  billboard is the first thing seen, above all in VR, and the whole park a surprise behind the player when they
+  turn round. From there nothing of the park is in the way (the north fence's west half is behind the Library,
+  under the big maple or behind the Portal), and the street lamp that stood in front of the board on the west
+  sidewalk is left out. The desktop and mobile test modes start their camera nearer level (`dk.pitch` 0.2, it was
+  0.38) so the board is in their first frame too. `test/t_firstview.js` shows the first frame; `test/t_detail.js` with `HIDE=1` renders a
+  view from where the player stands. (It started at (0, 2), south of the Summoning Stone, facing the church.)
 - **Kiosks:** `kioskFrame(o, {sign, ink, wall, wall2, tin})` builds the shared shell (deck, back wall, half side
   walls, posts, tin roof, counter at 1.12 m). Each kiosk adds its goods through `goods()`, which merges every small
   item into one vertex-coloured mesh. `KIOSK_AT` holds each kiosk's position and its `front`, `spot`, `desk`,
