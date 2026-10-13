@@ -1091,10 +1091,14 @@ a little longer to the south for the church.
 **The wrist HUD**
 - A small panel (0.15 m wide) on the left controller's grip, tilted toward the eye. It is hidden when there is no
   left controller.
-- **It shows only the three quests,** each with ☐ or ☑: **SEEDS** (lime), **SUMMONING STONE** (blue `#5ab4ff`) and
-  **SNACKS** (orange `#ff9a3a`).
-- **No counters.** Flint shows only in the shop ("Flint: N"). The Blossom count is felt, not read: a pulse on
-  pickup, and "Give a blossom" offered only while one is in hand.
+- **The three quests,** each with ☐ or ☑: **SEEDS** (lime), **SUMMONING STONE** (blue `#5ab4ff`) and **SNACKS**
+  (orange `#ff9a3a`).
+- **Below the quests, the items in hand,** four to a row on small tiles, each with its own icon; an item the player
+  doesn't have shows no icon at all. In order: **Blossoms** and **Flint** with their counts ("x14"), the **Ancient
+  Artifacts** with theirs (until SPARKAKUS glues them), the **Ancient Gem** (until it is traded), the **Summoning
+  Stone**, **OVERCOMING SHYNESS** (until ZOLLOD has it), the **Seeds**, the **pizza**, and the **Flower Hat**, **Sun
+  Dress** and **Frog Shoes** once bought. The card grows down to fit them; the quests never move.
+- The same card is the HUD in every mode: on the wrist in VR, in a screen corner in the test modes.
 
 ### 3.3 The core loop
 
@@ -2275,12 +2279,16 @@ The town's music is jazz, played live by the cast. Every built-in dance keeps wh
 **The wrist HUD**
 - A small dark card (ink at 85 %, 0.15 m wide) on the left controller, tilted toward the eyes. Three rows on faint
   strips: **SEEDS** in lime, **SUMMONING STONE** in sky blue `#5ab4ff`, **SNACKS** in orange `#ff9a3a`, each with a white
-  ☐ or ☑. The three main quests and nothing else.
+  ☐ or ☑. Under a faint rule, the items in hand on 52 px tiles, four to a row: each icon painted in code in the item's
+  own colours (a red flame Blossom, a dark faceted Flint, teal Artifact and Gem, the grey rune stone, the pink book, a
+  paper seed packet, a pizza slice, the three clothes), counts in white bold with an ink outline. No item, no tile.
 
 **The gate screen**
 - Full screen, a radial glow from `#2a2856` into ink, white centred text. The title "-Greeblis Town-" in lime with a
   hard ink shadow; below it the instruction ("Press A to enter VR" on the Quest); a small version line in faded
   white at the foot.
+- In the final build, desktop and phone browsers get the same screen with the game's name and "Greeblis Town is a
+  VR game. Open it in the Meta Quest Browser." (the owner's wording; applied when the test modes are cut).
 - Unsupported devices get a plain notice in place of the game: two short sentences, the second an instruction ("Greeblis
   Town plays only in Chrome (and in the Meta Quest). Open it in Chrome.").
 

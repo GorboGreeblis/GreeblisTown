@@ -42,7 +42,9 @@ Contents: [The game](#the-game) · [Working on it](#working-on-it) · [Locks and
 10. **Desktop and Mobile are test modes, removed from the final build.** For now they stay in, so the owner can see
     how they look as possible versions of the game. Their code is fenced off between `TEST-MODE-BEGIN` and
     `TEST-MODE-END` markers so it can be cut cleanly when the time comes (see [release.md](release.md)). Anything
-    new written only for them goes inside a fence.
+    new written only for them goes inside a fence. Once they are cut, and only then:
+    - desktop and phone browsers show the game's name and that it is a VR game to open in the Meta Quest Browser;
+    - in VR the player lands on a screen with the game's name and "Press A to enter VR".
 
 ## Working on it
 

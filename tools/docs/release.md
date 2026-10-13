@@ -27,14 +27,16 @@ Contents: [What a packed page must meet](#what-a-packed-page-must-meet) · [The 
 1. **Start clean.** The game starts with no quest or item progress; the tests give themselves what they need.
 2. **Cut the Desktop and Mobile test modes** (the owner's plan: they are not in the final build):
    `node pack/cutmodes.js ../index.html cut.html`. Every line from a `TEST-MODE-BEGIN` marker through the next
-   `TEST-MODE-END` goes; the tool fails on a fence left open or nested. What is left still runs as it is:
+   `TEST-MODE-END` goes, and every commented-out line between `FINAL-BUILD-BEGIN` and `FINAL-BUILD-END` is
+   uncommented; the tool fails on a fence or block left open or nested. What is left runs as it is:
    - the `dk = { on: false }` stub stays outside the fences, so the shared code's `dk.on` checks read false;
    - `window.__jgpMobile` is never set, so every check on it takes the headset's settings;
-   - the start screen's flat-screen branch is left empty. Before the release, give it the notice the owner wants
-     for desktop and phone browsers (see the platforms in [rules.md](rules.md#platforms-every-game)).
+   - the start screens are the owner's: in the Meta Quest Browser, the game's name and "Press A to enter VR"; on
+     desktop and phone browsers (the final-build block), the game's name and "Greeblis Town is a VR game. Open it
+     in the Meta Quest Browser."
 
-   Checked on 13 Oct 2026: the cut page parses, boots with 0 errors and builds the whole world. Work on `cut.html`
-   from here on.
+   Checked on 13 Oct 2026: the cut page parses, boots with 0 errors, builds the whole world and shows the flat-screen
+   start screen. Work on `cut.html` from here on.
 3. **Cut the game script out** (the last `<script>` in `index.html`) to `game.js`.
 4. **Strip every label and comment from it:** every comment and section banner, every object name and test-only
    label or hook (the `window.__jgp…` and `__gb…` hooks, the test modes' text) the game does not need to run. The
@@ -152,7 +154,8 @@ Why each step is safe:
 
 - [ ] `tools/index.html` holds the readable page and matches it (`test/copycheck.sh`), made before the root was
       minified or packed.
-- [ ] The test modes are cut (`pack/cutmodes.js`), and the flat-screen start screen shows the owner's notice.
+- [ ] The test modes are cut (`pack/cutmodes.js`): a desktop browser shows the game's name and the VR notice, and the
+      Quest shows the game's name and "Press A to enter VR".
 - [ ] The round trip is exact with the decoder that ships in the page (`decoder matches model.js: true`, and the
       unpacked page identical to the minified one).
 - [ ] The packed page passes `test/ordtest.js`, direct and in the sandboxed iframe, desktop and `MOBILE=1`: start

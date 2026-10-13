@@ -36,6 +36,7 @@ h "walking home: stopping for the player"; small 900 shot.js $U x.png ./t_nearst
 h "vignettes"; NOSHOT=1 run 600 shot.js $U x.png ./t_vigall.js
 h "visits"; small 4000 shot.js $U x.png ./t_visits.js
 h "the avatar"; small 600 shot.js $U x.png ./t_avatar.js
+h "the items on the HUD (look at x_inv_*.png)"; NOSHOT=1 run 300 shot.js $U x_inv ./t_inventory.js
 h "the VR head guard"; small 300 shot.js $U x.png ./t_headguard.js
 h "a walking soak"; NOSHOT=1 run 600 shot.js $U x.png ./soak.js
 h "z-fighting (check any clash with t_zcheck.js)"; small 600 shot.js $U x.png ./t_zfight.js
