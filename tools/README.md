@@ -14,7 +14,7 @@ Start with the [rules](docs/rules.md). The [bible](docs/bible.md) holds the worl
 | [`test/`](test) | The quick check and the full battery, the Playwright probes, and the render, coverage and pixel-compare tools. |
 | [`audit/`](audit) | Scene audits: stale bounds, meshes and triangles, dead builders, collisions, the interface's text, state dumps. |
 | [`lint/`](lint) | ESLint over the game script, and the unread-property finder. |
-| [`pack/`](pack) | The release pipeline: minify, pack into the ordinal, unpack and measure. |
+| [`pack/`](pack) | The release pipeline: cut the test modes, minify, pack into the ordinal, unpack and measure. |
 | [`three/`](three) | Trimming the bundled three.js. |
 | [`sandbox/`](sandbox) | Opening uploaded or packed pages safely, in a sandboxed browser with the network blocked. |
 
@@ -61,7 +61,7 @@ and `soak.js` (see [testing.md](docs/testing.md#probes)).
 
 **Lint** (`lint/`): `lint.sh` (with `extract.py` and `.eslintrc.json`) · `deadprops.js`.
 
-**Release** (`pack/`, `three/`): `min.js` · `pack.js` · `unpack.js` · `model.js` · `cmz.js` · `size.js` · `prune3.js`
+**Release** (`pack/`, `three/`): `cutmodes.js` (cut the test modes) · `min.js` · `pack.js` · `unpack.js` · `model.js` · `cmz.js` · `size.js` · `prune3.js`
 · `glsl_if.js` · `noconsole.js` · `min3.js` · `swap3.py`.
 
 **Sandbox** (`sandbox/`): `decode.js` (decode a packed page without rendering it) · `run.js` (run a decoded page with

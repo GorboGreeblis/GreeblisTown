@@ -37,8 +37,12 @@ Contents: [The game](#the-game) · [Working on it](#working-on-it) · [Locks and
    VR and flat, holding the headset's frame rate. The Quest's draw-call, triangle and CPU budgets are the ones
    that decide. Test at Android phone and Quest screen sizes and frame rates along the way.
 9. **Greeblis Town is the bible.** Its lore, designs and style ([bible.md](bible.md)) are canonical for every
-   future Greeblis game. The lore points established here do not change. An earlier Greeblis game, if it is ever
-   worked on again, is brought in line with them.
+   future Greeblis game. The lore points established here do not change. The earlier Greeblis games will never be
+   worked on again; one may some day be remade as an experiment, and a remake follows the bible like any new game.
+10. **Desktop and Mobile are test modes, removed from the final build.** For now they stay in, so the owner can see
+    how they look as possible versions of the game. Their code is fenced off between `TEST-MODE-BEGIN` and
+    `TEST-MODE-END` markers so it can be cut cleanly when the time comes (see [release.md](release.md)). Anything
+    new written only for them goes inside a fence.
 
 ## Working on it
 
@@ -95,8 +99,9 @@ Contents: [The game](#the-game) · [Working on it](#working-on-it) · [Locks and
   creator's name, workplace and location are never in it.
 - **Nothing pushed carries the owner's name, email, workplace, job or location:** not code, game text, docs,
   tools, comments, commit messages or PR descriptions. Refer to them only as "the owner".
-- The game's own text has one exception the owner chose: the readable parcel labels on the Post Office's mail
-  heap. They appear in the game only, and are never repeated in the docs.
+- **The parcel labels are the one exception the owner chose.** The readable labels on the Post Office's mail heap
+  are part of the game, so they also appear in the readable copy, `tools/index.html`. They are never repeated
+  anywhere else in the tools folder.
 - Keep machine paths, session links and upload file names out of everything pushed.
 
 ## Creatures and art

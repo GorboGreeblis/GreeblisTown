@@ -47,7 +47,7 @@ Every frame:  step(t, dt, talk, walk)  ->  posts, patrols and roamers  ->  visit
 | Source | What it is |
 | --- | --- |
 | **Born** | Readable builders in `BORN`, registered as `born_*`. Each starts with a plain-language comment describing the creature and saying its model is final: that comment is the design brief. |
-| **Packaged models** | Minified builder modules, `JGP_CITY` and `JGP_WOODS` (historical identifiers), between the `PULLED-MODELS-BEGIN` and `-END` markers, registered as `city_*` and `woods_*`. Engine services reach them as `$x` aliases, because the minified code shadows one-letter names. |
+| **Packaged models** | Two minified builder modules, `PK_MODELS` (HENNRICK, FORTIZMO, ANOMALEE, NEXTESSA) and `PK_MONT` (MONTGUMMERY), between the `PACKAGED-MODELS-BEGIN` and `-END` markers, registered as `pk_*`. Engine services reach them as `$x` aliases, because the minified code shadows one-letter names. |
 | **Wrappers** | Round a packaged model: `anomaleePeg` (ANOMALEE's peg leg) and `fortizmoPick` (FORTIZMO's bounds). |
 | **Special** | Backpacka is built by the Garden Event (`BP`), SPARKAKUS by the Library's worker (`st`), the Ancient by the church. |
 
@@ -490,7 +490,7 @@ At the end of the south walk, its back to the fence.
   and `shade` blend colours; `reseed(n)` makes each window repeatable; `border()` leads the arch with 64 jewel-coloured
   pieces.
   - **The Traveler window** over the door: `paintTravelerWindow`, at twice the needed resolution.
-  - **The Garden windows**, one on each side wall: `paintGardenWindow(cx, swap)`, after the cathedral of Greeblis City:
+  - **The Garden windows**, one on each side wall: `paintGardenWindow(cx, swap)`:
     sky, a rayed sun, clouds, a meadow with flowers and two butterflies, a robed figure, and MAMA GORBO. The left wall's
     copy has `swap` set, which mirrors the two figures' places and moves one cloud.
   - Each sits in an extruded stone frame with a sill, 2.6 × 5.2 m, its glass 4 cm off the wall. All window glass glows
@@ -649,7 +649,10 @@ Quest's browser always passes, and so does headless Chromium.
 ### The desktop and mobile test modes
 
 Third-person modes for testing, with an avatar walked through the park (`dk`). `?desktop=1` and `?mobile=1` force them;
-`__jgpMobile` (the mobile mode) turns on by itself on Android.
+`__jgpMobile` (the mobile mode) turns on by itself on Android. They are not in the final build: their code sits
+between `TEST-MODE-BEGIN` and `TEST-MODE-END` markers, which `pack/cutmodes.js` removes (see
+[release.md](release.md)). Only the `dk = { on: false }` stub stays outside, for the shared code's `dk.on` checks.
+Write anything new that only the test modes need inside a fence.
 - **Desktop:** WASD or the arrows to walk, drag (or Q and E) to look, the wheel to zoom, a click to pick. The quest HUD
   sits top left; the frame rate and the error count sit bottom left (`#jgpDeskErr`) with a `copy errors` button that
   copies the error report. Nothing sits top right.
@@ -714,6 +717,14 @@ Rule of thumb: place from the skin (`hit()`), keep orbits wider than the body, a
 - **Transparent overlays** each get their own render order (goo splats on the view: the newest on top), or they swap
   as the view moves.
 - **Single-sided planes** disappear from behind. Use thin boxes or double-sided materials.
+- **Closed boxes are drawn from the front only.** Every material here is double-sided by default (a shim at the top of
+  the page), and a double-sided box's inside faces meet its outside faces along every edge, so its edges shimmer
+  between the two, seen at a grazing angle. The kiosk frame's parts (`kioskFrame`) take front-only clones of their
+  materials for this; the counter tops' rims shimmered seen from behind the counter. Do the same for any closed solid
+  whose edges show.
+- **Finding the culprits:** where a flicker shows, render the view three times with the near plane nudged; pixels that
+  change are depth ties. Hiding meshes in halves until the change stops names the two that tie. If hiding never stops
+  it, it is a `polygonOffset` decal's edge, which the nudge itself disturbs (the game's near plane never moves).
 - **Finding it:** `test/t_zfight.js` lists coplanar overlaps the player's eyes can see; `test/t_zcheck.js` shows which
   really flicker; `test/t_shimmer.js` simulates a headset's shimmer. Moving the camera instead, even by millimetres,
   reports fine textures as flicker.
