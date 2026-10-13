@@ -11914,6 +11914,23 @@ const JGP = (() => {
 		}
 		// small caps topping the sign posts on the ridge
 		[-1.6, 1.6].forEach((px) => G.add(capGeo, "#c82a24", G.m(px, 6.08 + SHERIFF_DH, -0.12, 0, 0, 0, 0.2, 0.12, 0.2)));
+		// the Consortium's flag flying over the kiosk, from a pole up out of the roof behind the sign: navy, a gold hem on
+		// its fly, and on each face a red toadstool with white spots on a cream stem (flat pieces standing a little off
+		// the cloth, each layer further out than the last, so none of them fights the one under it)
+		{
+			const fy = 9.5 + SHERIFF_DH,
+				pz = -0.5,
+				half = cachedGeo("halfdisc", () => new THREE.CircleGeometry(1, 16, 0, Math.PI)),
+				dot = cachedGeo("dot", () => new THREE.CircleGeometry(1, 8));
+			G.add(T.cyl(0.05, 0.055, 5.8, 8), "#f6f2e8", G.m(0, 7.5 + SHERIFF_DH, pz)), G.add(T.sphere(0.1, 10, 8), "#e8b830", G.m(0, 10.44 + SHERIFF_DH, pz));
+			G.add(T.plane(2.1, 1.4), "#1c2440", G.m(1.1, fy, pz)), G.add(T.plane(0.1, 1.4), "#e8b830", G.m(2.2, fy, pz));
+			[-1, 1].forEach((s) => {
+				const ry = s < 0 ? Math.PI : 0;
+				G.add(T.plane(1, 1), "#f2e8d0", G.m(1.1, fy - 0.3, pz + 0.015 * s, 0, ry, 0, 0.2, 0.42, 1));
+				G.add(half, "#d8302a", G.m(1.1, fy - 0.1, pz + 0.03 * s, 0, ry, 0, 0.55, 0.45, 1));
+				[[-0.27, 0.06, 0.065], [0.03, 0.23, 0.06], [0.29, 0.08, 0.06], [-0.06, 0.05, 0.045], [-0.17, 0.25, 0.04]].forEach(([dx, dy, r]) => G.add(dot, "#ffffff", G.m(1.1 + dx, fy - 0.1 + dy, pz + 0.045 * s, 0, ry, 0, r, r, 1)));
+			});
+		}
 		G.done(o);
 		// wanted posters on parchment: a little green alien, the UFO it flies, GLOOPERNAUGHT, a goo creature, or OLAG
 		const poster = (kind, skin) =>
@@ -17884,9 +17901,6 @@ const JGP = (() => {
 			const dish = B.sub(mx, 0, 0, 12.4);
 			dish.geo("plain", usph(12, !0), "#e8eaee", 0, 0, 0, 6, 1.8, 6, -2.5, 0, 0).geo("plain", ucyl(5), steel, 0, 1.1, 0.6, 0.12, 2.6, 0.12, -0.6, 0, 0).geo("plain", usph(6), steel, 0, 2.2, 1.2, 0.4, 0.4, 0.4);
 			dish.box("plain", steel, 0, -0.3, 0, 1.6, 0.6, 1.6);
-			// the Consortium's standard: a navy flag with the star both sides, hung from a yardarm off the mast
-			B.box("plain", steel, mx + 1.32, 10.3, 0, 1.2, 0.08, 0.08).box("plain", "#1c2440", mx + 1.37, 9.72, 0, 1.1, 1.1, 0.03);
-			B.sign("s_star", mx + 1.37, 9.72, 0.02, 0.8, 0.8).sign("s_star", mx + 1.37, 9.72, -0.02, 0.8, 0.8, Math.PI);
 		};
 		// the town's video store, on the corner lot north-east of the square (MONTGUMMERY's favourite shop: he
 		// eats the tapes), a giant VHS cassette on its roof
