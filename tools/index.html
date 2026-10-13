@@ -385,7 +385,7 @@ const x = (() => {
 			// (sphere, cylinder and cone remember how they were made, `lp`: this three.js keeps no `parameters`, and
 			// the plants' light meshes rebuild them with fewer segments from it, see loGeo)
 			sphere: (t, o = 16, a = 12) => e(`s${t}|${o}|${a}`, () => Object.assign(new THREE.SphereGeometry(t, o, a), { lp: ["s", t, o, a] })),
-			box: (t, o, a) => e(`b${t}|${o}|${a}`, () => new THREE.BoxGeometry(t, o, a)),
+			box: (t, o, a) => e(`b${t}|${o}|${a}`, () => Object.assign(new THREE.BoxGeometry(t, o, a), { lp: ["b", t, o, a] })),
 			cyl: (t, o, a, n = 10) => e(`c${t}|${o}|${a}|${n}`, () => Object.assign(new THREE.CylinderGeometry(t, o, a, n), { lp: ["c", t, o, a, n] })),
 			cone: (t, o, a = 10) => e(`k${t}|${o}|${a}`, () => Object.assign(new THREE.ConeGeometry(t, o, a), { lp: ["k", t, o, a] })),
 			torus: (t, o, a = 8, n = 16, r = l) =>
@@ -432,7 +432,7 @@ function v(t, under) {
 							(e[o + 6 + a] = n);
 					}
 			}
-			return under && (o = dropUnder(o)), (e += o.attributes.position.count), { g: o, color: new THREE.Color(t.color) };
+			return under && (o = dropUnder(o)), t.drop && t.drop.size && (o = dropTris(o, t.drop)), (e += o.attributes.position.count), { g: o, color: new THREE.Color(t.color) };
 		}),
 		a = new Float32Array(3 * e),
 		n = new Float32Array(3 * e),
@@ -480,6 +480,113 @@ function dropUnder(g) {
 		out.setAttribute(nm, new THREE.BufferAttribute(ar, sz, at.normalized));
 	}
 	return (dropUnder.n = (dropUnder.n || 0) + P.length / 9 - keep.length), out;
+}
+// a non-indexed geometry without the faces in `drop` (face k = vertices 3k..3k+2)
+function dropTris(g, drop) {
+	const P = g.attributes.position.array,
+		keep = [];
+	for (let k = 0; k < P.length / 9; k++) drop.has(k) || keep.push(k);
+	if (keep.length * 9 === P.length) return g;
+	const out = new THREE.BufferGeometry();
+	for (const nm in g.attributes) {
+		const at = g.attributes[nm],
+			sz = at.itemSize,
+			ar = new at.array.constructor(keep.length * 3 * sz);
+		keep.forEach((t, j) => ar.set(at.array.subarray(t * 3 * sz, (t + 1) * 3 * sz), j * 3 * sz));
+		out.setAttribute(nm, new THREE.BufferAttribute(ar, sz, at.normalized));
+	}
+	return g.dispose(), out;
+}
+// HIDDEN FACES INSIDE SOLID PARTS (lossless, the Quest pass part three): in a goods() merge, a face whose three
+// corners all lie a millimetre or more inside another part's solid (a box, sphere, cylinder, cone or icosahedron:
+// the geometries that remember how they were made, `lp`) can never be seen from anywhere, as every part of a
+// merge is opaque: a letter's underside sunk into the letter below it, a stalk's end in its bulb, a leaf ball
+// half in a pot. Each such face is marked for v() to leave out (`pt.drop`). A face is only ever judged against a
+// convex solid, so the three corners inside mean the whole face is. Two identical parts in one place would each
+// empty the other: the later one keeps its faces. JGP.dropInside.dropped / .ms count the work.
+function dropInside(list) {
+	// (the Post Office's mail heap, 4,000 letters each lying on twenty others, would take three quarters of the
+	// pass's time for a quarter of its faces: a merge that big is left as it is)
+	if (list.length > 2500) return;
+	const t0 = performance.now(),
+		inv = new THREE.Matrix4(),
+		M = new THREE.Matrix4(),
+		// (a container's solid, in its own space, as numbers for the corner loop: kind 0 a box with half sizes hx hy hz,
+		// 1 a sphere of radius r (an icosahedron as a sphere of 0.8 of its radius), 2 a cylinder or cone, rt at the
+		// top, rb at the bottom, half height hh, its flat sides in by the factor f; every size in by the margin m)
+		solid = (lp, m) => {
+			const k = lp[0];
+			if ("b" === k) return { kind: 0, hx: lp[1] / 2 - m, hy: lp[2] / 2 - m, hz: lp[3] / 2 - m };
+			if ("s" === k) return { kind: 1, r2: (lp[1] * Math.cos(Math.PI / lp[2]) * Math.cos(Math.PI / lp[3]) - m) ** 2 };
+			if ("i" === k) return { kind: 1, r2: (0.8 * lp[1] - m) ** 2 };
+			if ("c" === k || "k" === k) {
+				const rt = "c" === k ? lp[1] : 0,
+					rb = "c" === k ? lp[2] : lp[1],
+					h = "c" === k ? lp[3] : lp[2];
+				return { kind: 2, rt, rb, h, f: Math.cos(Math.PI / ("c" === k ? lp[4] : lp[3])), hh: h / 2 - m, m };
+			}
+			return null;
+		},
+		bb = new THREE.Box3(),
+		parts = list.map((pt) => {
+			const g = pt.geo;
+			g.boundingSphere || g.computeBoundingSphere(), g.boundingBox || g.computeBoundingBox();
+			const e = pt.matrix.elements,
+				mn = Math.min(Math.hypot(e[0], e[1], e[2]), Math.hypot(e[4], e[5], e[6]), Math.hypot(e[8], e[9], e[10]));
+			// (each part's box in merge space: a flat letter's box meets only the letters right on it, where its
+			// sphere would meet the whole stack)
+			bb.copy(g.boundingBox).applyMatrix4(pt.matrix);
+			// (a container smaller than 2 cm across holds no face a millimetre inside it worth the search)
+			return { pt, x0: bb.min.x, y0: bb.min.y, z0: bb.min.z, x1: bb.max.x, y1: bb.max.y, z1: bb.max.z, in: g.lp && mn > 0 && g.boundingSphere.radius * mn > 0.01 ? solid(g.lp, 0.001 / mn) : null };
+		});
+	let dropped = 0,
+		pairs = 0,
+		verts = 0;
+	for (let i = 0; i < parts.length; i++) {
+		const a = parts[i];
+		if (!a.in) continue;
+		inv.copy(a.pt.matrix).invert();
+		for (let j = 0; j < parts.length; j++) {
+			if (j === i) continue;
+			const b = parts[j];
+			if (b.x0 >= a.x1 || b.x1 <= a.x0 || b.y0 >= a.y1 || b.y1 <= a.y0 || b.z0 >= a.z1 || b.z1 <= a.z0) continue;
+			// (the same geometry in the same place: the later part keeps its faces)
+			if (j > i && b.pt.geo === a.pt.geo && b.pt.matrix.equals(a.pt.matrix)) continue;
+			M.multiplyMatrices(inv, b.pt.matrix), pairs++, (verts += b.pt.geo.attributes.position.count);
+			const g = b.pt.geo,
+				P = g.attributes.position,
+				I = g.index,
+				n = I ? I.count : P.count,
+				// (every corner judged once, in the container's space, then the faces by their corners)
+				w = b.w || (b.w = new Uint8Array(P.count)),
+				A = P.array,
+				m = M.elements,
+				S0 = a.in;
+			let any = 0;
+			for (let k = 0, q = 0; k < P.count; k++, q += 3) {
+				const x0 = A[q],
+					y0 = A[q + 1],
+					z0 = A[q + 2],
+					x = m[0] * x0 + m[4] * y0 + m[8] * z0 + m[12],
+					y = m[1] * x0 + m[5] * y0 + m[9] * z0 + m[13],
+					z = m[2] * x0 + m[6] * y0 + m[10] * z0 + m[14];
+				let ok;
+				if (0 === S0.kind) ok = Math.abs(x) < S0.hx && Math.abs(y) < S0.hy && Math.abs(z) < S0.hz;
+				else if (1 === S0.kind) ok = x * x + y * y + z * z < S0.r2;
+				else if (Math.abs(y) >= S0.hh) ok = !1;
+				else {
+					const r = (S0.rb + (S0.rt - S0.rb) * (y / S0.h + 0.5)) * S0.f - S0.m;
+					ok = r > 0 && x * x + z * z < r * r;
+				}
+				any += w[k] = ok ? 1 : 0;
+			}
+			if (!any) continue;
+			const drop = b.pt.drop || (b.pt.drop = new Set());
+			for (let k = 0; k < n; k += 3)
+				w[I ? I.getX(k) : k] && w[I ? I.getX(k + 1) : k + 1] && w[I ? I.getX(k + 2) : k + 2] && !drop.has(k / 3) && (drop.add(k / 3), dropped++);
+		}
+	}
+	(dropInside.dropped = (dropInside.dropped || 0) + dropped), (dropInside.pairs = (dropInside.pairs || 0) + pairs), (dropInside.verts = (dropInside.verts || 0) + verts), (dropInside.ms = (dropInside.ms || 0) + performance.now() - t0);
 }
 const S = (t = 0, e = 0, o = 0, a = 0, n = 0, r = 0, s = 1, i = 1, l = 1) =>
 	new THREE.Matrix4().compose(
@@ -1439,7 +1546,9 @@ function Xe(t) {
 		d.setIndex(new THREE.BufferAttribute(h, 1)),
 		d.computeBoundingSphere();
 	const m = e.clone();
-	(m.userData = { gcR: new Float32Array(16 * gcEB.N) }),
+	// (the array holds this batch's parts only, not all N the shader declares: a shorter upload is allowed, and most
+	// batches hold a handful of parts, so the per-draw upload shrinks from 2 KB to a few hundred bytes)
+	(m.userData = { gcR: new Float32Array(16 * t.length) }),
 		m.color && m.color.set(16777215),
 		(m.vertexColors = !0),
 		(m.onBeforeCompile = Le);
@@ -11390,7 +11499,7 @@ const JGP = (() => {
 			m,
 			add: (geo, color, mat) => list.push({ geo, color, matrix: mat }),
 			box: (color, px, py, pz, w, h, d, rx = 0, ry = 0, rz = 0) => list.push({ geo: UBX, color, matrix: m(px, py, pz, rx, ry, rz, w, h, d) }),
-			done: (o) => list.length && (unfightParts(list), R(v(list, !0), V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })), o)),
+			done: (o) => list.length && (unfightParts(list), dropInside(list), R(v(list, !0), V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })), o)),
 		};
 	};
 	const capGeo = new THREE.SphereGeometry(1, 16, 8, 0, l, 0, Math.PI / 2),
@@ -11805,7 +11914,7 @@ const JGP = (() => {
 			rs = srand(313),
 			GREENS = ["#3f7a2a", "#4f8a30", "#5a9a3a", "#2f6a2a", "#6aa83e"],
 			BLOOM = ["#e8303a", "#ffd23a", "#9a5ae0", "#ffffff", "#ff8a1a", "#ff7ab8", "#4a8ae8"];
-		const leafy = cachedGeo("kleafy", () => new THREE.IcosahedronGeometry(1, 1));
+		const leafy = cachedGeo("kleafy", () => Object.assign(new THREE.IcosahedronGeometry(1, 1), { lp: ["i", 1] }));
 		// a terracotta pot with one of five kinds of plant
 		const pot = (px, py, pz, s, kind) => {
 			const pc = rs() < 0.3 ? "#a85a3a" : rs() < 0.5 ? "#c8703e" : "#b86a48";
@@ -19074,6 +19183,7 @@ const JGP = (() => {
 	return {
 		// (the load-time z-fight fix: stats in unfightParts.moved / .ms)
 		unfightParts,
+		dropInside,
 		GARDEN_R,
 		GATHER_S,
 		garden,

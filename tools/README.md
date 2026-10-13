@@ -123,6 +123,7 @@ row says otherwise, run it with `shot2.js`.
 | Other tool | What it does |
 | --- | --- |
 | `test/px.js <url> <prefix>` | Seven fixed views with seeded randomness, for comparing two builds pixel by pixel |
+| `test/pxcmp.js <urlA> <urlB>` | Two builds compared pixel by pixel in one browser: ten fixed views, seeded alike, everything that moves with time hidden, so a lossless change shows 0 differing pixels per view; the worst view written as A, B and the difference (`OUT=x`) |
 | `test/cov.js <url> <out.json> <scenes…>` | Records precise JS coverage over a whole session of scene scripts (`MOBILE=1`, `MODT` per-scene timeout) |
 | `test/cov_extra.js` | A scene for `cov.js`: pokes everything the others don't (every station, every Blossom gift, every shop item, the keys, resizing, hiding the page) |
 | `test/uncov.js <script.js> <cov.json…>` | Lists the code that never ran, largest first (cut the script out of the page first, as `three/swap3.py` shows) |
