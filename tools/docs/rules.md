@@ -155,7 +155,8 @@ Contents: [The game](#the-game) · [Working on it](#working-on-it) · [Locks and
   style and design: its creatures, the Consortium, the Portal and Greeblis City, goo and VHS. Build it into the
   town's merged meshes and sign atlas. Small, measured increases in the background's complexity are allowed, as
   long as they stay merged.
-- **Never flint knapping**, and nothing outside the park comes from the church's Ancient.
+- **Never flint knapping** in the game's elements (no knapping shown, built or played), and nothing outside the park
+  comes from the church's Ancient. A joke in a line is fine: MONTGUMMERY's tape "Flint Knapping for Beginners".
 - **Show, don't tell (every game).** In the background outside the park, lore comes through visual elements, never
   through text; words on signs don't count as visual. Keep words and signs to a minimum. The one exception is the
   billboard the owner asked for, with the words they gave it.
