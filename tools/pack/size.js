@@ -18,8 +18,8 @@ const { minify } = require('terser');
   for (const [k, m] of blocks.entries()) {
     const code = m[2], start = m.index + m[1].length;
     let min = code;
-    if (k === last) (game = code), (r = await minify(code, { ecma: 2020, toplevel: true, compress: { passes: 2 }, mangle: { toplevel: true }, format: { ascii_only: false } })), (min = r.code);
-    else if (!/^\s*var THREE=/.test(code) && code.trim()) min = (await minify(code, { ecma: 2020, compress: { passes: 2 }, format: { ascii_only: false } })).code;
+    if (k === last) (game = code), (r = await minify(code, { ecma: 2020, toplevel: true, compress: { passes: 2 }, mangle: { toplevel: true }, format: { ascii_only: false, wrap_func_args: false } })), (min = r.code);
+    else if (!/^\s*var THREE=/.test(code) && code.trim()) min = (await minify(code, { ecma: 2020, compress: { passes: 2 }, format: { ascii_only: false, wrap_func_args: false } })).code;
     (page += html.slice(at, start) + min), (at = start + code.length);
   }
   page += html.slice(at);
