@@ -512,6 +512,10 @@ Goo that runs down a body and moves like goo, without clipping:
   sidewalk is left out. The desktop and mobile test modes start their camera nearer level (`dk.pitch` 0.2, it was
   0.38) so the board is in their first frame too. `test/t_firstview.js` shows the first frame; `test/t_detail.js` with `HIDE=1` renders a
   view from where the player stands. (It started at (0, 2), south of the Summoning Stone, facing the church.)
+- **The duck pond** (`buildPond`, at the pool station (24.6, 0)): bank, mud and water circles 4 cm apart, rocks,
+  lily pads, cattails and the dock; the water only breathes in colour. It carries no effects (the owner asked):
+  the ripple rings and the light points that rose out of it are gone. Backpacka's own ripples while he drinks at
+  the Event are his, not the pond's.
 - **Kiosks:** `kioskFrame(o, {sign, ink, wall, wall2, tin})` builds the shared shell (deck, back wall, half side
   walls, posts, tin roof, counter at 1.12 m). Each kiosk adds its goods through `goods()`, which merges every small
   item into one vertex-coloured mesh. `KIOSK_AT` holds each kiosk's position and its `front`, `spot`, `desk`,

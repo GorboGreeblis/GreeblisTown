@@ -3174,45 +3174,6 @@ const Ut = (() => {
 			},
 		};
 	})(),
-	Yt = (() => {
-		let t, e;
-		return {
-			build: function () {
-				const o = z.list.find((t) => "pool" === t.id),
-					a = new THREE.BufferGeometry();
-				a.setAttribute("position", new THREE.BufferAttribute(new Float32Array(42), 3)),
-					(t = new THREE.Points(
-						a,
-						new THREE.PointsMaterial({
-							color: 15268095,
-							size: 0.12,
-							transparent: !0,
-							opacity: 0.7,
-							depthWrite: !1,
-							blending: THREE.NormalBlending,
-						}),
-					)),
-					(t.frustumCulled = !1),
-					C.add(t),
-					(e = []);
-				for (let t = 0; t < 14; t++) e.push({ cx: o ? o.x : 17, cz: o ? o.z : -3, x: 0, z: 0, y: -1, sp: h(0.3, 0.6) });
-			},
-			update: function (o, a) {
-				const n = t.geometry.attributes.position.array;
-				e.forEach((t, e) => {
-					if (t.y < 0 || t.y > 0.9) {
-						const e = Math.random() * l,
-							o = 2 * Math.sqrt(Math.random());
-						(t.x = t.cx + Math.cos(e) * o),
-							(t.z = t.cz + Math.sin(e) * o),
-							(t.y = t.y < 0 && Math.random() < 0.98 ? t.y + 0.3 * a : 0.02);
-					} else t.y += t.sp * a;
-					(n[3 * e] = t.x + 0.05 * Math.sin(5 * o + e)), (n[3 * e + 1] = Math.max(-5, t.y)), (n[3 * e + 2] = t.z);
-				}),
-					(t.geometry.attributes.position.needsUpdate = !0);
-			},
-		};
-	})(),
 	mo = (t) => document.getElementById(t),
 	jt = {
 		stack: ["playing"],
@@ -6912,8 +6873,7 @@ const Re = (() => {
 				i("blossoms", () => le.update(o)),
 				i("acorns", () => ce.update(o)),
 				i("fx", () => Nt.update(o, c)),
-				i("emotes", () => Ut.update(c)),
-				i("ambient", () => Yt.update(o, c));
+				i("emotes", () => Ut.update(c));
 			for (let t = 0; t < L.length; t++)
 				try {
 					L[t](o, c);
@@ -12085,7 +12045,7 @@ const JGP = (() => {
 		G.done(o);
 	}
 
-	// A duck pond with a grassy bank, limestone rocks, cattails, lily pads and a little dock
+	// A duck pond with a grassy bank, limestone rocks, cattails, lily pads and a little dock (no effects on it)
 	// (it replaces the city fountain); o sits at the pool station.
 	function buildPond(o) {
 		PONDO = o;
@@ -12146,19 +12106,14 @@ const JGP = (() => {
 		const plank = KIT.surf("wood", "#8a6a48", { rep: 1, bump: 0.03, shine: 10 });
 		for (let k = 0; k < 6; k++) R(T.box(2.9, 0.08, 0.2), plank, o, [-4.1, 0.34, 0.4 + 0.22 * k], [0, 0, 0.01 * (k % 2)]);
 		[-5.4, -2.85].forEach((px) => [0.32, 1.58].forEach((pz) => R(T.cyl(0.07, 0.07, 0.6, 7), plank, o, [px, 0.2, pz])));
-		const rip = [0, 0.5].map(() =>
-			R(T.torus(1, 0.02, 4, 32), x.basic("#e8f6ff", { unique: !0, transparent: !0, opacity: 0.5, depthWrite: !1 }), o, [0.8, 0.13, -0.5], [Math.PI / 2, 0, 0]),
-		);
+		// (the water only breathes in colour: the owner asked for no ripple rings on the pond and nothing rising out
+		// of it, so the two expanding rings and the drifting light points that were here are gone)
 		L.push((tt) => {
-			rip.forEach((m, k) => {
-				const a = (0.25 * tt + 0.5 * k) % 1;
-				m.scale.setScalar(0.3 + 2.2 * a), (m.material.opacity = 0.45 * (1 - a));
-			}),
-				water.material.color.setHSL(0.52, 0.42, 0.3 + 0.03 * Math.sin(1.1 * tt));
+			water.material.color.setHSL(0.52, 0.42, 0.3 + 0.03 * Math.sin(1.1 * tt));
 		});
 		o.updateMatrixWorld(!0),
 			o.traverse((m) => {
-				m === o || m === water || rip.includes(m) || (m.matrixAutoUpdate = !1);
+				m === o || m === water || (m.matrixAutoUpdate = !1);
 			});
 	}
 
@@ -20088,7 +20043,6 @@ if (
 			for (let e = 0; e < t.creaturesRoaming; e++) Mo(r[e % r.length]);
 			le.build(),
 				ce.build(),
-				Yt.build(),
 				(function () {
 					It.all.forEach((t) => _e(t.group)), st.group && _e(st.group);
 					const t = new Set([gcEB.root, ...le.list, ...ce.list]);
