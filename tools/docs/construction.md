@@ -1,6 +1,6 @@
-# Greeblis Town USA: how the creatures and the town are built
+# Greeblis Town: how the creatures and the town are built
 
-How the creatures and the town of Greeblis Town USA are built and behave. The game is this repo's single readable
+How the creatures and the town of Greeblis Town are built and behave. The game is this repo's single readable
 `index.html`, which is its source. The rules are in [greeblis-rules.md](greeblis-rules.md), per-creature detail in
 [creature-profiles.md](creature-profiles.md), every PR in [history.md](history.md), the tools in the
 [tools README](../README.md), and what the earlier games taught in [learnings.md](learnings.md).
@@ -830,6 +830,15 @@ plane.
   the far faces level and they fight), and not at all when both are only a few millimetres thick. Up to three
   passes. It moves about 5,900 parts in about 0.5 s (`JGP.unfightParts.moved` / `.ms`). Merged faces lying flat on
   the ground facing down are dropped (no eye goes below the ground).
+- **A part its animation changes only in a rare state must be kept out of the merges** (#97): a creature's build
+  plays its animation at a handful of sample times (`KIT.animated`, and the spawn-time test that feeds `io`), and
+  merges every part that never changed in them. A part moved, hidden or rescaled only in a state those samples
+  never reach (GOOWARD's squint every 4.3 s, SOMLET's lids hiding when her eyes open for a Blossom) was baked into
+  the body, and its animation then changed a detached copy: the change never showed. Mark such a part
+  `userData.keep = true`; both merges leave it apart. `test/t_baked.js` builds a fresh copy of every creature,
+  records what the merges removed, drives the copy through idle, walking, Talk, a Blossom, busy dancing, a
+  vignette and lying, and lists any removed part that still moves (today only ANOMALEE's hidden fourth leg, which
+  her peg leg replaces and which is never shown).
 - **Locked creatures:** where a final model's own parts share a surface (Somlet's cap: the crown's top, the white
   piping, the badge's flap), give the overlay a cloned material with `polygonOffset` (factor −1, units −4). The
   depth changes, the shape does not.

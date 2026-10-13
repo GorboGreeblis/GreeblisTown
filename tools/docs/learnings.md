@@ -1,6 +1,6 @@
 # Greeblis games: what City, Park and Woods taught
 
-What was learned from the three Greeblis games before Greeblis Town USA (**Greeblis City**, **Greeblis Park** and
+What was learned from the three Greeblis games before Greeblis Town (**Greeblis City**, **Greeblis Park** and
 **Greeblis Woods**): their guides, profiles, packing recipes, PR histories and readable sources, and the final
 builds the owner uploaded on 11 Oct 2026, checked against Town (the 4th game, this repo). Their repos no longer
 exist, so this is the only record. Names such as `gcEB`, `Pt` or `gcVeg` are from the old readable sources (the
@@ -453,6 +453,8 @@ The old tools went with their repos unless a Town path is given.
 ### Owner decisions that recurred
 
 - VR only in the final build; test modes are temporary (Town also targets Android phones).
+- **A finished environment is locked down** (every game we make): when the general environment is done, no more
+  direct changes to it, as with finished creature models; the owner says when it is done.
 - **Platforms, for every game we make** (Town, 13 Oct 2026; all Greeblis games past and future, and any game
   after them): Chrome is the only browser ever supported, on
   desktop and on a phone; a phone is only ever an Android phone (no iPhone or any other); Mac computers are

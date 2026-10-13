@@ -4,7 +4,8 @@
 // Run: NOSHOT=1 node shot2.js <url> x.png ./talk.js
 module.exports = async (p) => {
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
-  const ids = await p.evaluate(() => It.all.map(e => e.id || e.def.__type));
+  // (ZOLLOD has no Talk lines: his menu only opens the shop, so he is left out)
+  const ids = await p.evaluate(() => It.all.filter((e) => e.def && e.def.lines && e.def.lines.length).map(e => e.id || e.def.__type));
   const out = [];
   for (const id of ids) {
     await p.evaluate((id) => { const e = It.byId[id] || It.all.find(q => q.def && q.def.__type === id); window.__te = e; window.__mx = 0; te(e, !1); }, id);

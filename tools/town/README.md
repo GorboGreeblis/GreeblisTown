@@ -1,6 +1,6 @@
-# Greeblis Town USA: older tools
+# Greeblis Town: older tools
 
-The tools used to build Greeblis Town USA before the main checks in [`../test/`](../test), divided by job. Setup,
+The tools used to build Greeblis Town before the main checks in [`../test/`](../test), divided by job. Setup,
 the battery, the game's globals and the release steps are in the [tools README](../README.md); the lint in
 `lint/` is described there too.
 
