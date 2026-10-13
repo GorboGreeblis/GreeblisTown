@@ -11914,6 +11914,23 @@ const JGP = (() => {
 		}
 		// small caps topping the sign posts on the ridge
 		[-1.6, 1.6].forEach((px) => G.add(capGeo, "#c82a24", G.m(px, 6.08 + SHERIFF_DH, -0.12, 0, 0, 0, 0.2, 0.12, 0.2)));
+		// the Consortium's flag flying over the kiosk, from a pole up out of the roof behind the sign: navy, a gold hem on
+		// its fly, and on each face a red toadstool with white spots on a cream stem (flat pieces standing a little off
+		// the cloth, each layer further out than the last, so none of them fights the one under it)
+		{
+			const fy = 9.5 + SHERIFF_DH,
+				pz = -0.5,
+				half = cachedGeo("halfdisc", () => new THREE.CircleGeometry(1, 16, 0, Math.PI)),
+				dot = cachedGeo("dot", () => new THREE.CircleGeometry(1, 8));
+			G.add(T.cyl(0.05, 0.055, 5.8, 8), "#f6f2e8", G.m(0, 7.5 + SHERIFF_DH, pz)), G.add(T.sphere(0.1, 10, 8), "#e8b830", G.m(0, 10.44 + SHERIFF_DH, pz));
+			G.add(T.plane(2.1, 1.4), "#1c2440", G.m(1.1, fy, pz)), G.add(T.plane(0.1, 1.4), "#e8b830", G.m(2.2, fy, pz));
+			[-1, 1].forEach((s) => {
+				const ry = s < 0 ? Math.PI : 0;
+				G.add(T.plane(1, 1), "#f2e8d0", G.m(1.1, fy - 0.3, pz + 0.015 * s, 0, ry, 0, 0.2, 0.42, 1));
+				G.add(half, "#d8302a", G.m(1.1, fy - 0.1, pz + 0.03 * s, 0, ry, 0, 0.55, 0.45, 1));
+				[[-0.27, 0.06, 0.065], [0.03, 0.23, 0.06], [0.29, 0.08, 0.06], [-0.06, 0.05, 0.045], [-0.17, 0.25, 0.04]].forEach(([dx, dy, r]) => G.add(dot, "#ffffff", G.m(1.1 + dx, fy - 0.1 + dy, pz + 0.045 * s, 0, ry, 0, r, r, 1)));
+			});
+		}
 		G.done(o);
 		// wanted posters on parchment: a little green alien, the UFO it flies, GLOOPERNAUGHT, a goo creature, or OLAG
 		const poster = (kind, skin) =>
@@ -15336,11 +15353,6 @@ const JGP = (() => {
 				cx.fill();
 			}
 		});
-		slot("flag", 256, 144, (cx, w, h) => {
-			for (let k = 0; k < 13; k++) (cx.fillStyle = k % 2 ? "#ffffff" : "#c22a32"), cx.fillRect(0, (k * h) / 13, w, h / 13 + 1);
-			(cx.fillStyle = "#2a3a7a"), cx.fillRect(0, 0, 0.42 * w, (7 * h) / 13), (cx.fillStyle = "#ffffff");
-			for (let r2 = 0; r2 < 5; r2++) for (let k = 0; k < 6; k++) cx.fillRect(9 + 17 * k + (r2 % 2 ? 8 : 0), 8 + 15 * r2, 4, 4);
-		});
 		slot("stop", 128, 128, (cx) => {
 			cx.clearRect(0, 0, 128, 128);
 			const oct = (r2, col) => {
@@ -17602,7 +17614,7 @@ const JGP = (() => {
 			// by the door with her magenta glow in their screens
 			[9, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { bin: "siding", col: "#c8ccd2", pier: "#9aa0a8", front: "#2a2a36", lintel: "#9aa0a8", band: "repair", extra: (B, w2, h2) => (aerial(B, 1.4, h2, -3.0, 1.7), tvStack(B, -w2 / 2 + 1.6, 0.75, 0)) })],
 		].forEach(([w, h, mk]) => (mk(-52.6, ZS - (zc + (w * MK) / 2), w * MK, h), (zc += w * MK)));
-		// north: courthouse with a flagpole and the fire station; a hotel on the corner (the church is in
+		// north: the courthouse and the fire station; a hotel on the corner (the church is in
 		// the square now)
 		COURTHOUSE(0, -62), FIRE_STATION(29, -58);
 		STORE(-70, -55, 0, 14, 12.5, {
@@ -17626,8 +17638,6 @@ const JGP = (() => {
 
 		});
 		put("concrete", UB, WALK, S(0, -0.05, -53.6, 0, 0, 0, 3, 0.12, 3.2));
-		put("plain", ucyl(8), "#d8dce0", S(-10, 6.6, -54.5, 0, 0, 0, 0.18, 13.2, 0.18)), put("plain", usph(8), "#d8b040", S(-10, 13.3, -54.5, 0, 0, 0, 0.3, 0.3, 0.3));
-		put("concrete", ucyl(8), "#c8c2b6", S(-10, 0.15, -54.5, 0, 0, 0, 1.2, 0.3, 1.2)), place(-10, -54.5, 0).sign("flag", 1.55, 12.0, 0, 2.9, 1.63);
 		// south: porch houses facing the square, more on the side streets, the schoolhouse
 		[
 			// KING DINO's: lemon yellow with turquoise trim, his crown on the ridge, a drum on the porch
@@ -17891,9 +17901,6 @@ const JGP = (() => {
 			const dish = B.sub(mx, 0, 0, 12.4);
 			dish.geo("plain", usph(12, !0), "#e8eaee", 0, 0, 0, 6, 1.8, 6, -2.5, 0, 0).geo("plain", ucyl(5), steel, 0, 1.1, 0.6, 0.12, 2.6, 0.12, -0.6, 0, 0).geo("plain", usph(6), steel, 0, 2.2, 1.2, 0.4, 0.4, 0.4);
 			dish.box("plain", steel, 0, -0.3, 0, 1.6, 0.6, 1.6);
-			// the Consortium's standard: a navy flag with the star both sides, hung from a yardarm off the mast
-			B.box("plain", steel, mx + 1.32, 10.3, 0, 1.2, 0.08, 0.08).box("plain", "#1c2440", mx + 1.37, 9.72, 0, 1.1, 1.1, 0.03);
-			B.sign("s_star", mx + 1.37, 9.72, 0.02, 0.8, 0.8).sign("s_star", mx + 1.37, 9.72, -0.02, 0.8, 0.8, Math.PI);
 		};
 		// the town's video store, on the corner lot north-east of the square (MONTGUMMERY's favourite shop: he
 		// eats the tapes), a giant VHS cassette on its roof

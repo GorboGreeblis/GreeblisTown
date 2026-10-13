@@ -520,6 +520,9 @@ At the end of the south walk, its back to the fence.
   parchment, none overlapping: two little green aliens and their UFO; GLOOPERNAUGHT, a big green goo creature, named
   under its picture; a rabbit dressed as Napoleon front and centre under the star; the player's avatar; a stranger;
   and OLAG, named under WANTED. MUSHROOM's desk is raised (`SHERIFF_DESK`).
+  The Consortium's flag flies over the kiosk from a pole behind the sign, built in the kiosk's own merge (no texture,
+  no extra draw): a navy cloth and a gold hem as flat planes, and on each face a cream stem, a red half-disc cap and
+  white spots, each layer 1.5 cm further off the cloth than the one under it, so none of them fights another.
 - **Garden Supplies'** wheelbarrow of flowers stands on its wheel: two fork rails from under the tray's front edge to
   the axle, the wheel's top level with the tray's bottom, two legs at the back.
 - **The Post Office mail mountain** stands behind the kiosk under its roof line, hidden from the square (a visual joke):
@@ -604,7 +607,7 @@ share one atlas. The town is about 101.6k triangles in 24 meshes; `test/t_townvi
   on the roof beside a giant blank cassette, his pots by the door, a tape-return bin and two chewed cassettes, a band of
   cassettes with the last one bitten); the filling station of the far future (charging posts with glowing ports, the
   canopy in his teal, a lightning bolt on the pylon); the Consortium's field office (the sheriff's star on its side), its
-  listening dish, the sighting painted on its trailer, its standard on the mast, and its find behind them: a scorched
+  listening dish, the sighting painted on its trailer, and its find behind them: a scorched
   ring taped off between orange posts under two floodlights.
 - **Mistergummery's:** MONTGUMMERY's teal (`#55b8c6`) wherever a burger chain would have its yellow (the building,
   trim, lot and menu); the pylon is just the big teal M on a beam, about as tall as the Main Street rooftops, beside the

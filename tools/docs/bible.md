@@ -104,7 +104,7 @@ the kiosk's sign standing on its ridge, and a counter with crates either side.
 | --- | --- | --- |
 | **LIBRARY** (north-west) | SPARKAKUS | An open reading ground with no walls or roof. Rows of freestanding double-sided bookcases full of big books stand round the librarian; the **LIBRARY** banner stands on two white posts behind them. A rug lies over the ground: a deep red field printed with paisley teardrops, small red flowers and gold fern sprigs, a striped border, a great paisley medallion of two paisleys curled round each other, cream lace and a fringe at each end. Face-out on the shelves stand six titled hardbacks (1.15) and three curiosities (1.13). |
 | **POST OFFICE** (north-east) | SOMLET | Navy walls and a red roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, tall stacks leaning on its sides, parcels half buried in it and an avalanche of letters fanning out round its foot. Some of the buried parcels carry readable labels. |
-| **SHERIFF'S** (north-east) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts. A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the back wall over the wanted posters (1.10). Its roof stands a metre higher than the others' and its desk is raised, so that the Sheriff looks down on his visitors. |
+| **SHERIFF'S** (north-east) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts, and **the Consortium's flag** flying over it all from a pole behind the sign: navy with a gold hem, a red toadstool with white spots on a cream stem on each face. A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the back wall over the wanted posters (1.10). Its roof stands a metre higher than the others' and its desk is raised, so that the Sheriff looks down on his visitors. |
 | **GARDEN SUPPLIES** (south-east) | ZOLLOD | Sage walls and a terracotta roof, with plants everywhere: potted shrubs, flowers, ferns, succulents and little trees, seedling trays, a sunflower tray, hanging baskets, bags of soil and compost, a wheelbarrow of flowers out front, a rake and a shovel against the side wall. Among them grow **strange curiosities** drawn like an old herbal manuscript in faded inks: bare bulbous roots as big as the plant, striped cup blooms, an "eye of a flower" (a ringed blue eye on legs of forked roots), trumpet clusters on a knot of roots, a scaled bud on a hand of fat roots, a striped lantern bloom on an onion with a beard of roots. A parchment card on the counter is written in the manuscript's unread script. The town's one shop (1.13). |
 
 ### 1.5 The Juice Bar, the dance floor and the phone booth
@@ -200,8 +200,8 @@ strands of dry grass and damp stains lie about. **THE ANCIENT** lies across the 
 
 **North of the square**
 - **The courthouse (Town Hall):** a portico with the **town seal** in its entablature, a wreath round the garden's
-  five flowers (1.3), the same five flowers in beds by its steps, a clock tower with a copper dome, and a flagpole
-  flying the stars and stripes.
+  five flowers (1.3), the same five flowers in beds by its steps, and a clock tower with a copper dome. The town flies
+  no flag: the Consortium's flag flies over the Sheriff's kiosk in the park, never at the courthouse.
 - **The fire station** (one bay open with the engine's nose in it, a brass bell, a hose-drying tower with a siren),
   **a hotel** with iron balconies and a brass luggage cart, and **the gas station** on the north-east corner. The gas
   station is the far-future kind (HENNRICK's paradox: small-town America ahead of its time): its pumps are charging
@@ -292,6 +292,8 @@ The world has a deep history of three ages, and its beings know it:
 
 **The Consortium**
 - An authority beyond the town that protects it and watches it. It is always "the Consortium", capitalised.
+- **It is run by MALTOE,** a creature never seen in town. No line names who runs it, and none may name anyone else:
+  MUSHROOM takes his orders from the Consortium, never gives them.
   > "This town is under the protection of the Consortium." (MUSHROOM)
 - **Its man in town** is MUSHROOM, the sheriff (the Consortium's deputy). On its orders the Portal is locked, and it
   decides who may travel: "Sheriff, when may I return to my own era?" / "When the Consortium says so. Not before."
@@ -300,9 +302,8 @@ The world has a deep history of three ages, and its beings know it:
 - **It is investigating UFOs:** "We’re investigating UFO sightings in this area." "See anything glowing in the sky,
   you report it to this office. Directly."
 - **Its presence in town:** a field office (a trailer with the sheriff's gold star on navy), a painting of the
-  sighting (a saucer over a scorched ring under the stars), a listening dish on a lattice mast turned to the sky, its
-  standard (a navy flag with the star) on a yardarm, and **its find**: a scorched ring in the field behind the
-  office, taped off between orange posts under two floodlights. MUSHROOM's porch telescope is trained on the sky.
+  sighting (a saucer over a scorched ring under the stars), a listening dish on a lattice mast turned to the sky,
+  and **its find**: a scorched ring in the field behind the office, taped off between orange posts under two floodlights. MUSHROOM's porch telescope is trained on the sky.
 - **It can be bought:** a Blossom bribes its deputy into opening the Portal; a goo burger nearly does too ("A
   bribe? ...Make it a double.").
 - **It fears THE ANCIENT:** "No Portal can hold the one reborn." / "Th-the Consortium will be informed."
@@ -2053,7 +2054,7 @@ drive-in burger place. Open prairie runs from the last street to the hazy horizo
 - **The water tower** in MAMA GORBO's peach `#ff9f5c`, her lime tail wound round it, goo runs in cyan, magenta,
   violet and lime from under its roof.
 - **The Consortium:** a field-office trailer with the gold star on navy and a painting of a saucer sighting; a
-  listening dish turned to the sky; a navy standard; a scorched ring taped off with yellow tape between orange posts
+  listening dish turned to the sky; a scorched ring taped off with yellow tape between orange posts
   under floodlights.
 - **MAMA GORBO's goo burger** on a pole, goo running out of it; **ZOLLOD's greenhouse** with one magenta flower grown
   giant through its roof, nodding toward the square; **GEMTOE's hoard** of amethysts pushing up out of a fenced lot.
@@ -2070,7 +2071,7 @@ drive-in burger place. Open prairie runs from the last street to the hazy horizo
   blue, the alebrije band, MUSHROOM's cap, ANOMALEE's scanlines, the family tree, the town seal, GEMTOE's gold scales
   on plum, a row of cassettes with the last one bitten, ZOLLOD's pots from seed to flower, a Blossom stencil, a
   lightning bolt.
-- Fixed civic pieces: a cream clock face with Roman numerals, the US flag, the red STOP sign.
+- Fixed civic pieces: a cream clock face with Roman numerals, the red STOP sign. No national flags; the town's one flag is the Consortium's toadstool, over the Sheriff's kiosk.
 
 **Vegetation**
 - **Trees:** crowns of lumpy noise-pushed spheres, sunlit on top and dark beneath (the shading is painted in), with
