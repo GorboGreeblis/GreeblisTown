@@ -1,7 +1,7 @@
 // SPARKAKUS browsing his Library: the spots he visits, that he never comes within 0.6 m of a bookcase or the
 // banner's posts (in the Library's own frame) nor leaves it, that he stands still while talked to, and that he
 // still walks out for the Garden Event and back.
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_library.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_library.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(1500);

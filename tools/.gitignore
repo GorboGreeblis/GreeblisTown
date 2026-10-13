@@ -1,6 +1,5 @@
 node_modules/
 *.png
 *.log
-block6.js
+lint/game.js
 test/x*
-pack/woods/*.min.js

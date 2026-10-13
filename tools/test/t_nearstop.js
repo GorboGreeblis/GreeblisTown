@@ -1,7 +1,7 @@
 // Every creature walking home stops a while for the player coming near (the owner's rule), and ZOLLOD stays put while
 // his shop, opened from him out in the world, is open. For each case the player is set 2 m from the walker on its way
 // home, and how far it moves over the next 4 game seconds is measured (a stop moves well under 0.3 m).
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_nearstop.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_nearstop.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);

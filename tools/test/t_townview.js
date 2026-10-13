@@ -1,7 +1,7 @@
 // The town outside the park, for the background pass: a top-down map of everything out to the prairie
 // (<out>_map.png) and the views out of the square a player has, from 1.6 m up at each side of the park
 // (<out>_n/_s/_e/_w.png), and the town's static triangle count (the merged scenery meshes).
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_townview.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_townview.js
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(2500);

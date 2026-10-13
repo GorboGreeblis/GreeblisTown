@@ -4,7 +4,7 @@
 // keeps breathing and waving its stalks, and never leaves its spot; and no Blossom or Flint ever spawns in the room
 // (2,000 spawn spots sampled for each, plus every one in the town now).
 // Walking uses the game's own player collision (F.solid on the player's position), step by step, as every
-// mode does (desktop, mobile and VR all move the same body). Run: NOSHOT=1 node shot2.js <url> x.png ./t_church.js
+// mode does (desktop, mobile and VR all move the same body). Run: NOSHOT=1 node shot.js <url> x.png ./t_church.js
 module.exports = async (p) => {
   const log = (...a) => console.log(...a);
   // (the click that starts the game goes to the middle of the view: a click near the top edge can land on the menu bar,

@@ -1,7 +1,7 @@
 // Close shots of named spots in the town, for checking small details: DETAILS is a JSON list of
 // [name, [camX, camY, camZ], [lookX, lookY, lookZ]]; each is rendered at 800x600 to <out>_<name>.png. HIDE=1 hides
 // the avatar first (for a shot from where the player stands, as the view from the spawn).
-//   DETAILS='[["cart",[42,1.5,-19],[39.4,0.6,-21.5]]]' VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_detail.js
+//   DETAILS='[["cart",[42,1.5,-19],[39.4,0.6,-21.5]]]' VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_detail.js
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);

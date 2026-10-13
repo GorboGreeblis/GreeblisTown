@@ -2,7 +2,7 @@
 // the new last one included (printed in full); SPARKAKUS keeps his quest Talk only (owner's call); at the
 // Garden Event each creature's Talk gives only its Event line, never a flavor line, SPARKAKUS's included (beside
 // him at his garden spot).
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_flavor.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_flavor.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);

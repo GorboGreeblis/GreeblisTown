@@ -1,7 +1,7 @@
 // Talks to every creature in turn (te) and prints a line for each: its name, the open screen, the largest movement
 // of its talk animation over 2 s (the tkW node's offset or stretch) and its talk weight (tkK); then the error count
 // and the open screen.
-// Run: NOSHOT=1 node shot2.js <url> x.png ./talk.js
+// Run: NOSHOT=1 node shot.js <url> x.png ./talk.js
 module.exports = async (p) => {
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   // (ZOLLOD has no Talk lines: his menu only opens the shop, so he is left out)

@@ -3,7 +3,7 @@
 // dialogue, busy with dance, a vignette and lying, and any removed part its animation still moves, hides,
 // shows or rescales is reported by creature (such a part is no longer drawn: the change never shows, as with
 // GOOWARD's squint and SOMLET's lids before userData.keep). The copies are removed after.
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_baked.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_baked.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
   await p.mouse.click(160, 120); await W(2000);

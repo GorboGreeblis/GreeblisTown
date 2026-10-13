@@ -4,7 +4,7 @@
 // roamer, its roaming ground (the dance floor for the Dancers, the park for Gemtoe and the Gorbos, round the Portal
 // for Hennrick). CASES (env, comma list) picks cases, e.g. "p_etcher:battle:out"; the default runs a set over all
 // three stages. Prints, per case, where it ended up after up to 150 s of game time and whether that is home ground.
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_stuck.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_stuck.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);

@@ -4,8 +4,8 @@
 // more than MINA m², default 2 cm², not just meeting at an edge) and can be seen from the same side are a
 // clash. Clashes are grouped by the two parts (material colour, mesh name, owning creature or building) with
 // a world position for each, so every one can be found and fixed. Transparent surfaces that don't write
-// depth (and polygon-offset ones) are left out: they cannot z-fight (sorting is checked by t_goo.js).
-// Run after boot: NOSHOT=1 node shot2.js <url> x.png ./t_zfight.js   (CREATURES=0 to leave creatures out)
+// depth (and polygon-offset ones) are left out: they cannot z-fight.
+// Run after boot: NOSHOT=1 node shot.js <url> x.png ./t_zfight.js   (CREATURES=0 to leave creatures out)
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(2500);
@@ -112,7 +112,7 @@ module.exports = async (p) => {
     // 12 nearest eyes (opaque surfaces block; glass and other transparent ones do not). VISALL=1 skips this.
     const eyes = [];
     for (let x = -34; x <= 34.1; x += 8.5) for (let z = -34; z <= 46.1; z += 10) eyes.push(new V(x, 1.6, z), new V(x, 3, z));
-    // (the game's trimmed three.js has no raycasting: every depth-writing opaque triangle goes into a 2 m grid
+    // (its own ray test, built for this scan: every depth-writing opaque triangle goes into a 2 m grid
     // and each sight line steps through it, testing the triangles of the cells it passes)
     const CELL = 2, grid = new Map(), ck = (a, b, c) => a + ',' + b + ',' + c;
     tris.forEach((t, i) => {

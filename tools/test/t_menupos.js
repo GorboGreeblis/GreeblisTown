@@ -5,7 +5,7 @@
 // step, since the test modes' camera swings and eases behind the avatar (the owner saw menus too high and off to
 // the side).
 // (the trimmed three.js has no Vector3.project: the view and projection matrices are applied by hand)
-//   VW=800 VH=600 NOSHOT=1 node shot2.js <url> x.png ./t_menupos.js
+//   VW=800 VH=600 NOSHOT=1 node shot.js <url> x.png ./t_menupos.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);

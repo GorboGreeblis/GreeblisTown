@@ -1,7 +1,7 @@
 // The GARDEN EVENT menu at the Summoning Stone (Summoning Stone, Seeds and Snacks with their boxes, "Start gardening
 // event?", Yes / No) and its rule: without the Summoning Stone quest, Yes only says the runes stay dark and nothing
 // starts; with it, Yes starts the Event.
-//   NOSHOT=1 node shot2.js <url> x.png ./t_stone.js
+//   NOSHOT=1 node shot.js <url> x.png ./t_stone.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(640, 60); await W(1500);

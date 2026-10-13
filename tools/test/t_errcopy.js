@@ -1,8 +1,8 @@
-// The test modes' error tools: throws one error into a frame callback, then checks the desktop counter (top right)
+// The test modes' error tools: throws one error into a frame callback, then checks the desktop counter (bottom left)
 // shows it and its "copy errors" button copies (or, where the page may not write to the clipboard, opens a box with
 // the text selected), and prints the copied text. With MOB=1 the page is opened with ?mobile=1 by the caller and the
 // mobile panel's button is used instead.
-//   NOSHOT=1 node shot2.js <url> x.png ./t_errcopy.js        (desktop)
+//   NOSHOT=1 node shot.js <url> x.png ./t_errcopy.js        (desktop)
 //   node mob.js "<url>?mobile=1" x.png ./t_errcopy.js        (mobile)
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), mob = await p.evaluate(() => !!window.__jgpMobile);

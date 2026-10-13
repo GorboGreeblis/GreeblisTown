@@ -10,6 +10,6 @@ if cmp -s "$G" "$C"; then echo "ok: tools/index.html is the game, byte for byte 
 # (a packed root carries the loader's readout and the 7-bit payload instead of the game script)
 if grep -q "LOADING" "$G" && ! grep -q "const SCRIPT = {" "$G"; then
   echo "ok: the root index.html is packed ($(wc -c < "$G") bytes); the readable page is tools/index.html ($(wc -c < "$C") bytes)."
-  echo "    (check the root with test/ordtest.js, desktop and MOBILE=1, and the round trip with pack/park/woods-unpack.js)"; exit 0
+  echo "    (check the root with test/ordtest.js, desktop and MOBILE=1, and the round trip with pack/unpack.js)"; exit 0
 fi
 echo "STALE: index.html and tools/index.html differ and the root is not packed. Copy the page before pushing:  cp index.html tools/index.html"; exit 1

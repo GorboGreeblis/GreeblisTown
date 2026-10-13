@@ -3,7 +3,7 @@
 // with the two side by side (every other pair meets by a visit, see t_visits.js and t_visitlive.js), a pair's
 // animation and its lines play separately, and no pair plays again before every pair standing together has had
 // its turn. Reports the pairs side by side, what played, every wrapper back at rest, and the error count.
-//   NOSHOT=1 node shot2.js <url> x.png ./t_vigall.js
+//   NOSHOT=1 node shot.js <url> x.png ./t_vigall.js
 module.exports = async (p) => {
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
   console.log(await p.evaluate(() => {

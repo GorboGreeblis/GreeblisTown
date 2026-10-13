@@ -1,6 +1,6 @@
 // Renders chosen creatures close up: VIEWS is a JSON list of [name, entity id or name, camera offset from the creature
 // (world, metres), look-at height, fov]; writes <out>_<name>.png. AWAY=1 moves the player off first.
-//   VIEWS='[["leg","blinker",[1.2,0.9,-1.2],0.5,35]]' NOSHOT=1 node shot2.js <url> x.png ./t_shots.js
+//   VIEWS='[["leg","blinker",[1.2,0.9,-1.2],0.5,35]]' NOSHOT=1 node shot.js <url> x.png ./t_shots.js
 module.exports = async (p, out) => {
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1000); if (process.env.AWAY) { await p.evaluate(() => At.position.set(30, 0, -30)); await p.waitForTimeout(15000); }
   const V = JSON.parse(process.env.VIEWS || '[]');

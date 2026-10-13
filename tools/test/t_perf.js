@@ -7,7 +7,7 @@
 //     (default 25), and the time per frame with and without rendering;
 //  3. what allocates every frame: a sampled allocation profile over the same frames, by line.
 // EVENT=1 profiles during a Garden Event instead of quiet play. Run on its own (one browser at a time):
-//   NODE_PATH=$(npm root -g) NOSHOT=1 node shot2.js http://localhost:8765/index.html x.png ./t_perf.js
+//   NODE_PATH=$(npm root -g) NOSHOT=1 node shot.js http://localhost:8765/index.html x.png ./t_perf.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   const TOP = +(process.env.TOP || 25);

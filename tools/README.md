@@ -1,16 +1,22 @@
-# Greeblis Town: tools
+# Greeblis Town: Tools
 
-Everything used to build, check, trim and pack the game. The game itself is only `index.html` at the repo root;
-nothing in `tools/` ships inside it. The rules are in [`docs/greeblis-rules.md`](docs/greeblis-rules.md).
+Everything used to build, check, measure and release **Greeblis Town**. The game itself is the single file
+`index.html` at the repo root; nothing in `tools/` ships inside it.
 
-| Folder | What is in it |
+Start with the [rules](docs/rules.md). The [bible](docs/bible.md) holds the world's lore, design and style.
+
+## Layout
+
+| Path | What it holds |
 | --- | --- |
-| `index.html` | The readable copy of the game, never compressed (the owner's rule): the same bytes as the root `index.html` until the final pass packs the root, and the only readable page after it. Copy every change here before pushing; `test/copycheck.sh` checks |
-| [`docs/`](docs) | The rules, how the game is built, creature profiles, PR history, and the learnings from the earlier games |
-| [`test/`](test) | Playwright checks (`battery.sh` runs the main ones), coverage, pixel-compare and render tools |
-| [`three/`](three) | Trimming the bundled three.js |
-| [`pack/`](pack) | Minify settings and the Woods compressor |
-| [`town/`](town) | Older tools: creature extraction from earlier games, safe decoding of uploads, lint, review renders, audits, editing helpers (see [`town/README.md`](town/README.md)) |
+| `index.html` | The readable copy of the game, never compressed: the same bytes as the root `index.html` until the final pass packs the root, and the only readable page after it. Copy every change here before pushing; `test/copycheck.sh` checks. |
+| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](docs/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md). |
+| [`test/`](test) | The quick check and the full battery, the Playwright probes, and the render, coverage and pixel-compare tools. |
+| [`audit/`](audit) | Scene audits: stale bounds, meshes and triangles, dead builders, collisions, the interface's text, state dumps. |
+| [`lint/`](lint) | ESLint over the game script, and the unread-property finder. |
+| [`pack/`](pack) | The release pipeline: minify, pack into the ordinal, unpack and measure. |
+| [`three/`](three) | Trimming the bundled three.js. |
+| [`sandbox/`](sandbox) | Opening uploaded or packed pages safely, in a sandboxed browser with the network blocked. |
 
 ## Setup
 
@@ -19,235 +25,44 @@ cd tools && npm install          # acorn, terser 5.31.0 (pinned), playwright
 python3 -m http.server 8765      # from the repo root, in another terminal: the tests load http://localhost:8765/index.html
 ```
 
-- `package.json` pins the tools' own packages and has three scripts: `npm test` runs the quick check, `npm run battery` the full
-  battery, and `npm run lint` the lint (below).
-- `.gitignore` keeps `node_modules`, renders, logs, the lint's cut-out script and the battery's `test/x*` images
-  out of git.
-- Where Playwright and its Chromium are already installed globally (as in a cloud session), point Node at them
-  with `NODE_PATH=$(npm root -g)` instead, and don't run `playwright install`.
-- The browser tests render with SwiftShader WebGL (`--use-angle=swiftshader`).
+- `npm test` runs the quick check, `npm run battery` the full battery, and `npm run lint` the lint (it installs
+  ESLint 8 into `lint/` the first time).
+- Instead of serving the page, any runner takes `URL=file:///…/index.html`.
+- Where Playwright and its Chromium are installed globally (as in a cloud session), point Node at them with
+  `NODE_PATH=$(npm root -g)` and don't run `playwright install`.
+- The browser tests render with SwiftShader WebGL. Run one headless browser at a time.
+- `.gitignore` keeps `node_modules`, renders, logs and the lint's cut-out script out of git.
 
-## Checking the game
+## Everyday work
 
-**Between builds, run the quick check; save the full battery for once in a while** (the owner, #100: the full
-battery takes two hours and more).
-
-- `test/quick.sh` (about 4 minutes) checks the readable copy and the lint, boots on desktop and on mobile (with
-  the GIVE button), runs both ordinal sandboxes, compiles the shaders and walks the church and its Ancient. Name
-  the probes for what the change touched after it (`test/quick.sh t_misc.js t_script.js`), each on its own page at
-  a small viewport so it runs near full speed; `Z=1` adds the z-fighting scan, for a change to what is drawn.
-- The full battery: before a release build, after a change to a whole system (the Event, the visits, the
-  roaming, the battles), every few PRs, or when the owner asks. Each section prints the seconds elapsed.
-
-`test/battery.sh > test/battery.log 2>&1` runs, one browser at a time: boot on desktop and on mobile (with the GIVE
-button); both ordinal sandboxes; talking to every creature; battles, Artifacts and the Library finale; the Gem
-trade; pizza; vignettes; pickup reachability; the jazz on the floor, pickup respawn and the Blossom option;
-Fortizmo's patrol; the shaders; a walking soak; King Dino's jazz; Somlet asleep; the roamers; the avatar's walk;
-the VR head guard; Sparkakus browsing; the church's secret room and its Ancient; a Dance battle's Blossom; the phone lock; and the z-fighting
-scan. Every line should end with
-`err 0` / `errors 0`.
-
-| Runner | What it does |
+| When | Do |
 | --- | --- |
-| `test/quick.sh [probe.js …]` | The quick check above, plus the named probes (`URL` overrides the page, `Z=1` adds the z-fighting scan) |
-| `test/battery.sh` | The full battery above (`URL` overrides the page) |
-| `test/shot2.js <url> <out.png> <scene.js>` | Loads the page on desktop (1280×720; `VW`, `VH` change it), waits `WAIT` ms (default 6000), runs the scene script, then screenshots unless `NOSHOT=1` |
-| `test/mob.js <url> <out.png> <scene.js>` | The same as a Pixel 7 in Chrome, the one kind of phone the game runs on (`EXTRA` adds browser flags) |
-| `test/copycheck.sh` | The readable copy: `tools/index.html` must be the root `index.html` byte for byte until the final pass packs the root, and after that the root must be the packed page (exit 1 when the copy is missing or stale). The battery runs it first |
-| `test/ordtest.js <index.html> <out.png>` | The game as an ordinal: served from memory inside `<iframe sandbox="allow-scripts">` with ord's CSP, every other request blocked and listed (`MOBILE=1` for an Android phone). A pass shows every creature, 0 errors and `blocked: []` |
+| After every edit | `npm run lint` (one known warning: `'p' is not modified in this loop`). |
+| Before every push | `cp index.html tools/index.html`, then `test/quick.sh` (about four minutes), naming the probes for what changed: `test/quick.sh t_zollod.js`. |
+| After a change to what is drawn | `Z=1 test/quick.sh` and close renders (`test/t_views.js`, `test/t_detail.js`, `test/portraits.js`). |
+| After a change that should change nothing on screen | `node test/pxcmp.js <old url> <new url>`: 0 differing pixels in every view. |
+| Once in a while | `test/battery.sh > test/battery.log 2>&1` (two hours and more): before a release, after a change to a whole system, every few PRs, or when the owner asks. |
+| Measuring size | `node pack/size.js`: the page readable, minified and packed. |
 
-A scene script exports `async (page, outPath) => {}` and drives the game through its globals (below). Unless a
-row says otherwise, run it with `shot2.js`.
+Every runner, probe and audit is described in [testing.md](docs/testing.md); the final pass, the codec, trimming
+three.js and finding dead code in [release.md](docs/release.md).
 
-| Scene script | What it checks |
-| --- | --- |
-| `boot.js`, `talk.js` | Boot (creatures by kind, names, errors); talking to every creature |
-| `t_give.js` | The mobile GIVE button hides without a Blossom (run with `mob.js`) |
-| `t_blog2.js` | Dance battle text, an Artifact from first wins only, a bow on repeat wins, the Library finale |
-| `t_gem.js`, `t_pizza.js`, `vigrun.js` | The Ancient Gem trade, the pizza courier, many creature vignettes |
-| `t_vigall.js` | Vignettes where the cast stand: only two side by side play (every other pair meets by a visit), an animation and the lines separately, none again before its turn; wrappers back at rest, errors |
-| `t_visits.js` | Creatures visiting each other: a spot and a clear way for every visitor and host (168 pairs), then eight visits played out (a kiosk host stepping out, Sparkakus met on his Library floor, the Ancient through the X, stopping puzzled at the wall): getting there, the meeting side by side, slowly home, and nobody passing through anything on the way. `VW=320 VH=240` |
-| `t_visitlive.js` | Visits and vignettes as they happen on their own for `GAME` game seconds: each visit and each vignette with the gap between the two, the pairs played and the rate per hour. `VW=320 VH=240` |
-| `t_shy.js` | ZOLLOD's shyness sub-quest played through: the shy lines, no Blossom, no shop, no visits; OVERCOMING SHYNESS clicked off its Library shelf ("book obtained", gone from the shelf); the freeing Talk; the shop and his visits after; MAMA GORBO's and GEMTOE's fourth Talk lines |
-| `t_flavor.js` | The flavor Talk lines: each creature talked through all its lines outside the Event (the last, new one printed), SPARKAKUS's quest Talk unchanged, and only Event lines at the Event. `VW=320 VH=240` |
-| `t_townview.js` | The town outside the park: a top-down map (`_map`), the views out of the square (`_n/_s/_sw/_e/_w`), every store, civic building, home and lore piece close up (`_c*`), the park fence's pickets from inside (`_fence*`), the Library rug from above (`_rug`), and the town's triangle and mesh counts. `VW=320 VH=240` |
-| `t_errcopy.js` | The test modes' error tools: the desktop fps / error counter (bottom left) and its copy button, or the mobile panel's (run with `mob.js` and `?mobile=1`), and the copied text |
-| `t_taps.js` | The mobile test mode's taps (no NEXT or CLOSE buttons): a tap moves a dialogue on and closes it after the last page, and a tap off the action menu or a panel closes it (run with `mob.js` and `?mobile=1`) |
-| `t_stone.js` | The GARDEN EVENT menu (Summoning Stone, Seeds, Snacks, Yes / No) and its rule: without the Summoning Stone, Yes only says the runes stay dark and nothing starts; with it, it starts |
-| `t_reach2.js` | Floods the walkable area with the player's own collision and checks 4,000 pickup spawn spots |
-| `t_misc.js` | King Dino's jazz on the floor (also while he is talked to, given a Blossom, in a battle), pickup respawn, the Blossom menu option |
-| `t_fz.js` | Fortizmo's walk behind the bar (it pushes her timer, as headless game time is slow) |
-| `t_shader.js` | Compiles every material (Backpacka included) and reports three.js shader errors |
-| `soak.js` | Walks the town for a few minutes: NaN positions, getting inside buildings, leaks |
-| `t_jazz.js` | King Dino's jazz: heard on every corner of the dance floor and in every Dance battle, silent elsewhere, never with Fortizmo's horn tune; measures both at the speakers and prints FAIL where the jazz should sound and does not |
-| `t_somlet.js` | Somlet asleep on her side: her lowest point stays above the ground resting and getting up (`SHOTS=<prefix>` for renders) |
-| `t_roam.js` | The roamers: spots visited, nobody stuck or somewhere they should not be, trap scenarios, a Gorbo meeting with hearts. `VW=320 VH=240`, `ROAM_S`/`TRAP_S` game seconds |
-| `t_plants.js` | The new flowers at a whole Garden Event: one plant per planter, by kind; how many show the full or the light model from the garden's edge; what the Ancient did; game time against real time (a slow-down means the plants cost too much); renders of the grown garden. Slow |
-| `plantshots.js` | Renders each plant kind from four views (`JGP.plantShow`) for checking against the owner's photos. `ONLY=1,3` |
-| `t_church.js` | The church's secret room: in through the wall under the right-hand Garden window (the little X) and nowhere else, the head guard, no creature inside, and the Ancient: one Talk (no Blossom), its idle and Talk moves, never leaving its spot |
-| `churchshots.js` | Renders the way in from outside and the secret room (down the nave, the Ancient, the ceiling) |
-| `t_churchout.js` | The church from outside after the owner's photos: from the south walk, the garden, its front, door, right side (the Garden window and the X), its back and the tower top. `VW=320 VH=240` |
-| `t_battlecost.js` | A Dance battle costs a Blossom: no Blossom option (and no battle from a gift) with none in hand; with one, giving it empties the hand and opens the battle |
-| `t_phone.js` | The phone is locked (its connection to the Portal is blocked) until Mushroom has a Blossom, then calls Nextessa for the rest of the session |
-| `t_script.js` | The owner's script, the parts that move: Sparkakus's Artifacts talk and the glue bottle putting the Gem together, his Blossom lap on all fours (clear of every bookcase), and renders of the Library's face-out books and Wish Blossom and the Sheriff's posters. `VW=320 VH=240` |
-| `t_spmenu.js` | Sparkakus's menu, as everyone's: Talk and "Give a blossom" offered from the first moment a Blossom is held (no Talk or quest first), the Blossom given before any Talk (his lap and his sorry line), Talk then opening his quest dialogue, and at the Garden Event no creature, Sparkakus included, offering a Blossom option. `VW=320 VH=240` |
-| `t_spmoves.js` | Sparkakus's planting and dance at the Garden Event measured like any guest's (the largest offset and turn of his move wrapper, and Glyph's and Mushroom's for comparison, per phase), and that he stays inside the garden. `VW=320 VH=240` |
-| `t_evplanters.js` | The Garden Event's planters: every creature that plants grows a flower at its spot (one per planter), the held spots, and the flower count after the Event. `VW=320 VH=240` |
-| `t_detail.js` | Close shots of named spots for checking small details: `DETAILS` is a JSON list of `[name, [cam x,y,z], [look x,y,z]]`, each rendered at 800x600 to `<out>_<name>.png`, fog off; `HIDE=1` hides the avatar first (a shot from where the player stands). `VW=320 VH=240` |
-| `t_spaway.js` | Sparkakus's Artifacts speech (the bulb, the dimming, the glue-bottle Gem) away from the Library: he is sent on a visit, talked to where he stands, and the bulb, the Gem's assembly and the speech must all happen by him. `VW=320 VH=240` |
-| `t_stuck.js` | Nothing is ever left stuck away from home: visits are interrupted at every stage (`CASES`, e.g. `p_etcher:battle:out`; the default set covers a Dancer bowing out of a battle, a Blossom, a Talk, Zollod's shop) and the interrupted one must be back on its own ground within 150 s. `VW=320 VH=240 NOSHOT=1` |
-| `t_visitlong.js` | Natural visits over `VISIT_S` game seconds (default 600): how often each creature went out or was called on, whether the Ancient was visited, and who stood off its home ground at the end; `SHY=1` keeps Zollod shy (he must then never visit or be visited). `VW=320 VH=240 NOSHOT=1` |
-| `t_zollod.js` | Zollod away from his kiosk: shy, a visit asked for by name must not start; freed, a Talk with him out visiting, walking home or being visited opens the Shop. `VW=320 VH=240 NOSHOT=1` |
-| `t_shelf.js` | The Library's shelf items (the hardbacks, the Blossoms, the acorn), each rendered from 1.1 m in front at eye height, one PNG per item: the covers' titles must read and nothing clips the shelf above. `VW=320 VH=240 NOSHOT=1` |
-| `t_static.js` | What the scene is made of, for the optimisation pass: objects, meshes, groups and how many update their matrix each frame; the creature batcher's batches per owner (creatures and the scenery it batches) with their parts; and which batched parts ever move in `WATCH_S` seconds (default 20; `EVENT=1` during a Garden Event), so still batches can be told from live ones. `VW=320 VH=240 NOSHOT=1` |
-| `t_matrix.js` | The scene graph's matrix work per frame: local matrices composed, world matrices multiplied, nodes visited, and which lines force a world-matrix update every frame (with the subtree size). `VW=320 VH=240 NOSHOT=1` |
-| `t_menupos.js` | The action menu's place on screen in the desktop test mode: for each creature in `IDS` (Sparkakus as `keeper`) the menu is opened by a click on its head and its bottom edge projected against the creature's top, at once, after an orbit by drag and after a step: a small gap over the head, no sideways offset. `VW=800 VH=600 NOSHOT=1` |
-| `t_firstview.js` | The game's first frame as the player sees it in the desktop test mode (the title clicked away, three seconds in): the spawn view, which must show King Dino's billboard first. `VW=800 VH=600`, no `NOSHOT` |
-| `t_nearstop.js` | Every creature walking home stops a while for the player coming near (visitors on their way back, a planned way home, Sparkakus), and Zollod stays put while the Shop opened from him is up, then everyone walks on home. `VW=320 VH=240 NOSHOT=1` |
-| `t_meet.js` | Mama Gorbo and Gooward's goo-ball meetings with everything else running (visits, vignettes, roaming): how often they meet over `MEET_S` seconds of game time (default 300), what each is doing every 10 s, and the meetings seen. `VW=320 VH=240` |
-| `t_script2.js` | The owner's script, the rest of the parts that move: Anomalee's sad line and its falling notes, Montgummery's screen face for his Blossom line, Somlet's eyes open for her thanks and her sleeping on at the Post Office through the Event, the Event's pizza-box stacks and Anomalee eating her slices, Zollod's Event line, and no Blossom option on anyone at the Event. `VW=320 VH=240` |
-| `t_spdance.js` | Sparkakus's funky dance at the Garden Event: eight frames over one eight-beat loop from his front and two from his side, the lowest point of his model against the ground each frame. `VW=320 VH=240` |
-| `t_parcels.js` | The five readable parcels round the mail heap: each label's facing (the dot with the way out of the heap, and its tip toward the eye), each rendered from in front, and the heap from the walk round it on four sides. `VW=320 VH=240` |
-| `t_cardinal.js` | A bird in a park tree (the cardinal in the north-east maple by default; `AT=-17,-34` picks the robin in the north-west oak): close-ups from every side and from below, the view from the walk, frames of its hop and look-about, and the crown clearance over its top |
-| `dance-plant.js` | Planting and dancing are animations, not menu options: every menu holds only Talk (and Give a blossom), each creature's moves move it, and at the Event they plant, then dance while Fortizmo plays. Slow |
-| `portraits.js` | Isolated portraits of creatures (`IDS`) on open lawn (`SPAWN=x,z`), two angles each |
-| `topview.js` | The whole town from straight above |
-| `t_avatar.js` | The avatar's walk and idle in the test modes: side renders mid-stride and standing, feet above the ground, hands clear of the skirt |
-| `t_outfits.js` | The avatar's outfits: the default and each Garden Supplies piece alone and all together, from the front, side, back and a head close-up, with the fit numbers (hat over the head, frogs on the ground, hem at the skirt's edge), and the Sheriff's Wanted poster of the avatar. `VW=320 VH=240` |
-| `t_headguard.js` | The VR head guard: distance to the nearest solid at known spots and how dark the view goes (through its test probe, as VR can't run headless). `VW=320 VH=240` |
-| `t_library.js` | Sparkakus browsing his Library: the spots he visits, never within 0.6 m of a bookcase or the posts, still when talked to, out to the Garden Event and back. `VW=320 VH=240` |
-| `t_zfight.js` | Z-fighting scan: every depth-written triangle grouped by plane (normals folded by their largest component); overlapping near-coplanar pairs (`TOL` 6 mm, `MINA` 2 cm²) are kept only if a point in the overlap can be seen from where the player's eyes can be (a ray test through a 2 m grid, as the trimmed three.js has no raycaster; `VISALL=1` skips it, `CREATURES=0` leaves creatures out). Each clash is named by its triangles' own vertex colours, plus a 4 m area for unnamed scenery, with points inside it |
-| `t_shimmer.js` | A headset's shimmer, simulated: from standing spots the view is rendered as one eye sees it (96°, 1600 px) and again with the head nudged a millimetre sideways and up and a hundredth of a degree in yaw and pitch; pixels that change more than `THRESH` (default 40; 100 for what really pops) are flicker, counted per nudge, named by what they land on (with how the surface samples: mipmapped, no mipmaps, nearest, flat colour) and drawn red on a heat map per spot. `SPOTS` (JSON `{name: [x, z, yawDeg, pitchDeg]}`) replaces the built-in spots, `PX` the size, `RAYS` the rays. Level spots are pitched 0.3° down (at exactly 0° the renderer itself differs frame to frame), and asphalt next to the camera is a renderer artefact (see construction.md) |
-| `t_baked.js` | Animations acting on merged-away parts: a fresh copy of every creature is built while every part the merges remove is recorded, then driven through idle, walking, a Talk and a Blossom dialogue, busy dancing, a vignette and lying; any removed part its animation still moves, hides or rescales is listed by creature (it is never drawn, so that change never shows; mark it `userData.keep`) |
-| `t_zcheck.js` | Which scan clashes really flicker: `POINTS` (JSON `[name, x, y, z]`) rendered three times from a player eye with the near plane nudged a fraction of a millimetre. Nothing moves, so changed pixels are surfaces fighting; under ~10 is edge noise. `SHOTS=1` writes the pairs for `tile.py diff` |
-| `t_event3.js` | The whole Garden Event, logged every 5 s of game time. `VW=200 VH=150`, or it takes ages |
-| `t_rounds.js` | Three Garden Events in a row: only the first grows flowers (one per planter); the second and third replay the same spots and leave the garden unchanged. `VW=200 VH=150`, slow |
-| `t_stress.js` | Collides systems on purpose (Event during a battle, a pizza at the start, talk, gifts, shop, Library, stone, Event without Seeds, battle spam) and checks everyone ends up home. `VW=200 VH=150` |
-| `t_fixes.js` | The October bug-pass fixes: no battle from a thanks closed far away, talk target after the phone, Mushroom on his desk, Fortizmo holding still, no vignette off the spot. `VW=320 VH=240` |
-| `t_anomalee.js` | Anomalee keeps gazing at the window with the player close and through Talk; turns to the player for her Blossom line and for Talk at the Event |
-| `t_ground.js` | Every creature's lowest point against the real surface under it (`JGP.groundAt`) through idling, Talk, Blossoms, battles and a whole Garden Event, with where each worst dip happened; flags any creature inside a building. `VW=200 VH=150`, `LIMIT` (default −5 mm), `ONLY=event` |
-| `t_goo.js` | The goo splats on the screen: flickering pixels with the old shared draw order against the fixed one |
-| `t_perf.js` | Performance profile: draw calls, triangles and the biggest draws from a player's eyes at 8 spots; totals of programs, textures, geometries, meshes, materials; a DevTools CPU profile (self time by function and line of `index.html`) and a sampled allocation profile over `FRAMES` frames (`EVENT=1` during a Garden Event) |
-| `t_views.js` | Renders chosen town views (`VIEWS`: a building collider name, `parcel` or `[x, z]`, with offsets; `AWAY=1` moves the player off) |
-| `t_shots.js` | Renders chosen creatures from chosen offsets (`VIEWS`; `AWAY=1` moves the player off) |
-| `t_eval.js` | Prints any expression (`EXPR`), e.g. `EXPR='JGP.unfightParts.ms'` |
+## Tools at a glance
 
-| Other tool | What it does |
-| --- | --- |
-| `test/px.js <url> <prefix>` | Seven fixed views with seeded randomness, for comparing two builds pixel by pixel |
-| `test/pxcmp.js <urlA> <urlB>` | Two builds compared pixel by pixel in one browser: ten fixed views, seeded alike, everything that moves with time hidden, so a lossless change shows 0 differing pixels per view; the worst view written as A, B and the difference (`OUT=x`) |
-| `test/cov.js <url> <out.json> <scenes…>` | Records precise JS coverage over a whole session of scene scripts (`MOBILE=1`, `MODT` per-scene timeout) |
-| `test/cov_extra.js` | A scene for `cov.js`: pokes everything the others don't (every station, every Blossom gift, every shop item, the keys, resizing, hiding the page) |
-| `test/uncov.js <script.js> <cov.json…>` | Lists the code that never ran, largest first (cut the script out of the page first, as `three/swap3.py` shows) |
-| `test/tile.py` | Contact sheets of renders (`sheet`) and amplified before/after differences (`diff`). Needs Pillow |
-| `pack/size.js [index.html] [outdir]` | What the page weighs at each release step: readable, minified (the release terser settings) and packed into the ordinal (round trip checked), with the intermediate pages written out for boot tests |
-| `town/lint/deadprops.js [index.html]` | Properties the game defines but never reads (object keys, methods, `x.name =` assignments), apart from those only the tests read: a lead for the dead-code pass |
+**Checks** (`test/`): `quick.sh` · `battery.sh` · `shot.js` (desktop runner) · `mob.js` (phone runner) · `ordtest.js`
+(the ordinal sandbox) · `copycheck.sh` · `parts.js` (multi-part probes) · the `t_*.js` probes, `boot.js`, `talk.js`
+and `soak.js` (see [testing.md](docs/testing.md#probes)).
 
-**Tips:**
-- Headless game time runs about 10× slower than real time at 1280×720. Use a tiny viewport for long scenes,
-  fast-forward with the game's own hooks (e.g. `JGP.backpacka.start(Re.t - k)`), or push timers directly, and wait
-  on game time (`Re.t`), not wall time.
-- A creature turns to face a player standing near it, so move the player away (`AWAY=1`) before checking which
-  way it faces.
-- Two headless browsers at once time out. Never `pkill -f` a pattern that matches your own command.
+**Renders and measuring** (`test/`): `t_views.js` · `t_detail.js` · `t_shots.js` · `portraits.js` · `t_townview.js` ·
+`t_perf.js` · `t_eval.js` · `pxcmp.js` · `cov.js`, `cov_extra.js`, `uncov.js` · `tile.py` · `pairs.py`.
 
-### The game's globals (minified names the scripts rely on)
+**Audits** (`audit/`): `audit_stale.js` · `meshcount.js` · `tribreak.js` · `sosz.js` · `solid.js` · `rowcheck.js` ·
+`uiaudit.js` · `snap.js`, `snapdiff.py` · `study.js`.
 
-Check a name still exists before trusting a result: a rename in the game breaks the scripts silently.
+**Lint** (`lint/`): `lint.sh` (with `extract.py` and `.eslintrc.json`) · `deadprops.js`.
 
-| Name | What it is |
-| --- | --- |
-| `It` | Entities (`It.all`, `It.byId`, `take`/`release`) |
-| `Re` | The loop (`Re.t` game time, `Re.errors`) |
-| `At` | The player |
-| `C`, `O`, `B` | Scene, renderer, camera |
-| `we` | The view: `we.headPos` is the player's head (in the desktop and mobile test modes, the avatar's head, not the orbiting camera) |
-| `F` | Colliders (`F.buildings`, `F.resolve`, `F.inHull`) |
-| `E` | Keep-clear zones (pickups avoid them) |
-| `L` | Per-frame callbacks (`L` is a different local variable inside the mobile overlay) |
-| `G` | Sounds (`G.near(x, z, r, name)`) |
-| `qt` | Dialogue |
-| `_t` | The panel (shop, battle, Summoning Stone) |
-| `xe` | Menus (`actionsFor`, `actions`, `lastTarget`) |
-| `te(ent, gift)` | Talk to a creature, or give it a Blossom |
-| `Kt` | State (`rewards`, `artifacts`, `blossoms`, `acorns` = flint, `owned`, `equip`, `danceWins`, `gem`, `phone`: the phone unlocked by Mushroom's Blossom) |
-| `me`, `bt` | The Garden Event and its state (`bt.tg`: each creature's planting or dancing state) |
-| `ue` | The pizza courier |
-| `le`, `ce` | Blossoms, flint |
-| `Dbt` | Dance battles |
-| `ARTS`, `LIB` | Ancient Artifacts, Sparkakus's talk |
-| `gcHorn`, `ee` | Fortizmo's horn, her tune |
-| `st` | The Library's worker, Sparkakus (`away()`, `pos()`) |
-| `JGP` | The game layer's exports: `garden` (`plants`, `lods`: each plant's full and light mesh), `plantShow`, `backpacka`, `barSpot`, `barVia`, `noPlant`, `onDance`, `groundAt`, `headGuard`, `jazz`, `meetAt`, `unfightParts`, `roamFree`, `roamWalk`, `slug` and `eventMove` (the church's Ancient and the Event move it follows), `churchGuard`, `ufoNow` (a UFO pass now), … |
-| `z.list` | Stations: `campfire` = the Summoning Stone, `gshop`, `stump` = the Library, `pool`, `phone`, `slug` |
+**Release** (`pack/`, `three/`): `min.js` · `pack.js` · `unpack.js` · `model.js` · `cmz.js` · `size.js` · `prune3.js`
+· `glsl_if.js` · `noconsole.js` · `min3.js` · `swap3.py`.
 
-## Finding dead code (how the size pass was done)
-
-1. `test/cov.js` over a broad session (desktop, then `MOBILE=1` with `vigrun.js`), and `test/uncov.js` to list what
-   never ran.
-2. Treat coverage as a lead, not proof. VR, mobile, error handlers and random events (vignettes, the UFO every
-   10 minutes, battle moves) are live even when uncovered. Remove only what no live data can reach: entries keyed
-   to creatures that are gone, options no builder passes, unused fields.
-3. `town/lint/deadprops.js` lists properties nothing reads (ESLint only sees unused local variables).
-4. `npm run lint`: ESLint 8 over the game script, through `town/lint/`. There, `extract.py` cuts the game script
-   out of `index.html` into `block6.js` (keeping line numbers aligned), `lint.sh` runs ESLint with
-   `.eslintrc.json` and prints each finding at its `index.html` line, and `package.json` lists ESLint 8 for that
-   folder. The `'p' is not modified in this loop` warning is known.
-5. Re-run the quick check (and the full battery before a release), and measure with `pack/size.js`.
-
-## Trimming three.js
-
-Already applied in `index.html`; redo it whenever the game starts using more of three.js.
-
-```sh
-node three/prune3.js three.js game_all.js three_p1.js cov_d.json cov_m.json   # never-ran methods nothing names
-node three/glsl_if.js three_p1.js three_p2.js       # impossible shader #if blocks (keeps USE_EMISSIVEMAP: Anomalee and Montgummery use it)
-node three/noconsole.js three_p2.js three_p3.js     # developer warnings
-node three/min3.js three_p3.js three_p4.js          # re-minify (toplevel off, so `var THREE` stays global)
-```
-
-`three.js` is the page's second `<script>`, `game_all.js` every other script plus the HTML, and the coverage must
-be recorded on that same three.js build. Put a build into a page with
-`python3 three/swap3.py <page.html> <three.js> <out.html>` (it replaces the page's second `<script>`). Before
-swapping the result in:
-- `test/t_shader.js` on a page with the `three_p2` build (warnings still on) must show no shader errors;
-- `test/px.js` on the old and new pages: only animated creatures may differ.
-
-## The final pass: release, minify, pack
-
-0. The readable page goes to `tools/index.html` first (`cp index.html tools/index.html`; `test/copycheck.sh`
-   says they match). That copy is never minified or packed: once the root is packed it is the only readable
-   page, and every later change starts from it (the owner's rule, for every game).
-1. Nothing to switch off: the game starts with no quest or item progress (the testing head start, `TEST_QUESTS`,
-   was removed; the tests give themselves what they need, e.g. `Kt.rewards.stone = Kt.rewards.seeds = !0`).
-2. Cut the game script (the last `<script>` in `index.html`) out to `game.js`.
-   **Strip all labels and comments from it first** (the owner's rule for the final pre-compression build): every
-   comment and section banner, every object name and test-only label or hook (the `window.__jgp…` hooks, the
-   test modes' text) that the game does not need to run. At that point the code is only what runs the game. The
-   readable copy in `tools/index.html` keeps all of it.
-3. Minify it: `node pack/woods-build/min.js game.js game.min.js` (terser 5, `toplevel` mangling, 2 passes). The
-   test scripts rely on the global names, so test the unminified page and ship the minified one.
-4. Put `game.min.js` back in place of the game script and boot-test that page (`test/ordtest.js`, both modes).
-5. Pack it: `node pack/park/woods-pack.js page.html index.html "Greeblis Town"`. Check the round trip with
-   `node pack/park/woods-unpack.js index.html check.html`: it must report `decoder matches woods-model.js: true`,
-   and `check.html` must be identical to `page.html`.
-6. Run `test/ordtest.js` on the packed `index.html`, desktop and `MOBILE=1`, and keep it under ~400 KB. The full
-   push checklist is in [`docs/learnings.md`](docs/learnings.md#checks-before-every-push).
-
-Measured on 11 Oct 2026 with `pack/size.js`: the readable 1,135,495-byte page minified to 782,141 bytes and packed to
-209,133 bytes, round-tripped exactly (minifying first only makes the packed page smaller).
-
-| Pack tool | What it does |
-| --- | --- |
-| `pack/woods-build/min.js <in.js> <out.js>` | Minifies the game script with the Woods terser settings |
-| `pack/park/woods-model.js` | The Woods decoder model, copied verbatim from the shipped Woods page |
-| `pack/park/woods-pack.js <page.html> <out.html> "<title>"` | Packs a page: the decoder model turned into an encoder (the arithmetic decoder's two lines swapped for the encoder's), so the page's own decoder unpacks it bit for bit |
-| `pack/park/woods-unpack.js <packed.html> <out.html>` | Unpacks with the page's own decoder and says whether it matches `woods-model.js` |
-| `pack/woods/cmz.js` | The full Woods codec source, one generator shared by encoder and decoder |
-| `pack/woods/build_loader.js` | Builds `codec.min.js` (full codec), `decoder.min.js` (the decode-only codec that ships) and `loader.min.js` (from the template `loader_src.js`: unpacks the 7-bit text, runs the decoder with a `LOADING nn%` readout, writes the page) |
-| `pack/woods/enc.js <page.html> <out.bin>` | Compresses with the full codec and checks a byte-exact round trip with the decode-only codec (needs `build_loader.js` first) |
-| `pack/woods/pack_cm.py <page.html> "<title>" <index.html>` | Compresses through `enc.js` and writes the 7-bit ordinal page |
-| `pack/woods/tuning/cmzx.c`, `tunex.py` | A native research encoder for trying settings fast: `gcc -O2 -ffp-contract=off -DNATIVE -o cmzx cmzx.c -lm`, then `python3 tunex.py ./cmzx page.html "" "NC=11" "TB=23 LRK=0.5"` prints the size per setting (NC, TB, LIMS, LIMF, LRK, FB, WI, RUN, CHK, FSEL, L1M, L2M, LFM). Its defaults are not the shipped model: port a winning setting into `cmz.js` and re-check the round trip |
-
-How the codec and the page encoding work, and why this route was chosen, is in
-[`docs/learnings.md`](docs/learnings.md#4-ordinal-packing).
+**Sandbox** (`sandbox/`): `decode.js` (decode a packed page without rendering it) · `run.js` (run a decoded page with
+the network blocked). Uploaded files are untrusted: open them only this way.
