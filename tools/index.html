@@ -4413,7 +4413,9 @@ const le = (() => {
 													return (
 														R(
 															T.plane(0.76, 0.76),
-															x.basic(16777215, { map: a }),
+															// (unique: a box with its own texture each delivery, kept out of the material cache, which
+															// would hold every one, and its canvas, for the whole session)
+															x.basic(16777215, { map: a, unique: !0 }),
 															e,
 															[0, 0.1305, 0],
 															[-Math.PI / 2, 0, 0],
@@ -7062,7 +7064,8 @@ setInterval(() => {
 		}
 }, 1e3);
 const Ho = (() => {
-	const t = new Map();
+	// (weak: a canvas whose texture is gone, an emote's or a pizza box's, takes its saved image with it)
+	const t = new WeakMap();
 	const o = { contextLost: !1 };
 	function a() {
 		const t = window.__gbTexReg || [];
@@ -19021,8 +19024,11 @@ const JGP = (() => {
 					juice: [1.15, 1.15, 3],
 				},
 				INSET = { post: [0, 0, 0, 0, 0, 0, 0.5] },
+				// (1 m round the eye, drawn over everything whatever its depth: well past the near plane at the view's
+				// edges and corners, flat 0.2 m or VR 0.15 m; at 0.25 m the near plane cut its outer part away and the
+				// view's sides stayed lit)
 				blk = new THREE.Mesh(
-					new THREE.SphereGeometry(0.25, 12, 8),
+					new THREE.SphereGeometry(1, 12, 8),
 					new THREE.MeshBasicMaterial({ color: 0, side: THREE.BackSide, transparent: !0, opacity: 0, depthTest: !1, depthWrite: !1, fog: !1 }),
 				);
 			(blk.renderOrder = 10010), (blk.frustumCulled = !1), (blk.visible = !1), (blk.userData.xrUI = !0), B.add(blk);
