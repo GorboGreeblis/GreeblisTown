@@ -6834,7 +6834,7 @@ const xe = (() => {
 		}
 		return (o.headPos = n), o;
 	})();
-function Te(e, o) {
+function Te(o) {
 	const a = At.position,
 		n = bo.move,
 		r = we.headYaw,
@@ -6870,7 +6870,7 @@ const Re = (() => {
 			e = t;
 			let c = l / 1e3;
 			if ((c > 1 && (c = 1 / 60), (c = Math.min(c, 0.1)), (o += c), !we.presenting)) return;
-			i("xr", () => we.update(c, o)), i("input", () => bo.update(c)), i("player", () => Te(0, c));
+			i("xr", () => we.update(c, o)), i("input", () => bo.update(c)), i("player", () => Te(c));
 			const h = jt.has("panel"),
 				p = It.all;
 			// the per-entity and per-callback loops run every frame: no closures or label strings here
@@ -7082,15 +7082,15 @@ const JGP_WOODS=(()=>{const $R=R,$S=S,$T=T,$ao=ao,$b=b,$c=c,$l=l,$u=u,$v=v,$x=x;
 // (His screen shows the script's emotes: a robot face for his Blossom line, a shovel for his Event line.)
 return{mont:function(e,t){const o="#1d2a23",a="#3db2d6",n="#e2521f",r=(e,t,o,a,n,r,s,i,l)=>{let c=l;const h=()=>(c=16807*c%2147483647)/2147483647;e.font="bold "+r+"px 'Courier New', monospace",e.textBaseline="top";for(let l=o;l<o+n;l+=1.05*r){let o="";const n=Math.floor(a/(.6*r));for(let e=0;e<n;e++)o+=h()<.12?" ":"{}[]()<>;:'\"=,._/\\|abcdeforstuvgxinpl0123456789"[Math.floor(47*h())];e.globalAlpha=i*(.6+.4*h()),e.fillStyle=s[Math.floor(h()*s.length)],e.fillText(o,t,l)}e.globalAlpha=1},s=$b(512,512,(e=>{r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.9,7)}));s.wrapS=s.wrapT=THREE.RepeatWrapping,s.repeat.set(2.5,1.6);const i=$b(512,512,(e=>{e.fillStyle=o,e.fillRect(0,0,512,512),r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.85,11)}));i.wrapS=i.wrapT=THREE.RepeatWrapping,i.repeat.set(1.5,1.5);const l=new THREE.MeshPhongMaterial({color:o,specular:3355443,shininess:40}),c=new THREE.MeshPhongMaterial({map:i,specular:2763306,shininess:36}),h=new THREE.MeshPhongMaterial({map:s,transparent:!0,depthWrite:!1,specular:0,shininess:1}),p=new THREE.SphereGeometry(1,40,30);{const e=p.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=t.y,n=Math.hypot(t.x,t.z),r=a>0?6:2.4,s=Math.pow(Math.max(0,1-Math.pow(Math.abs(a),r)),1/r),i=n>1e-6?s/n:0;e.setXYZ(o,t.x*i,a,t.z*i)}p.computeVertexNormals()}const u=(()=>{const e=p.attributes.position,t=p.attributes.uv;let o=-1,a=-9;for(let t=0;t<e.count;t++){const n=e.getY(t),r=e.getZ(t);Math.abs(n+.25)<.08&&r>a&&(a=r,o=t)}return{u:t.getX(o),v:t.getY(o)}})(),f=$b(512,256,(e=>{e.fillStyle=o,e.fillRect(0,0,512,256);const t=512*u.u,a=256*(1-u.v);e.fillStyle="#4cb6e0",e.beginPath(),e.ellipse(t,a,52,50,0,0,$l),e.fill()})),d=new THREE.Group;e.add(d);const m=$R(p,new THREE.MeshPhongMaterial({map:f,specular:3355443,shininess:40}),d,[0,1.5,0],null,[.7,.8,.54]);$R(p.clone().scale(1.012,1.012,1.012),h,m).renderOrder=1;const g=[-1,1].map((e=>{const t=new THREE.Group;t.position.set(.29*e,.86,.02),t.scale.setScalar(1.15),d.add(t),$R($T.cyl(.1,.1,.28,12),c,t,[0,-.1,0]);const o=[],r=(e,t,a)=>o.push({geo:e,matrix:t,color:a});r(new THREE.CylinderGeometry(.162,.15,.42,16),$S(0,-.42,0),a),r(new THREE.TorusGeometry(.158,.018,6,18),$S(0,-.21,0,Math.PI/2,0,0),"#46bede"),r($T.sphere(1,16,12),$S(0,-.62,.07,0,0,0,.16,.11,.25),a),r($T.sphere(1,14,10),$S(0,-.63,.24,0,0,0,.15,.1,.12),n),r($T.sphere(1,14,10),$S(0,-.72,.07,0,0,0,.175,.035,.3),"#c9441a"),r($T.sphere(1,12,8),$S(0,-.7,-.12,0,0,0,.15,.055,.11),n),[-1,1].forEach((e=>r($T.box(.016,.36,.012),$S(.04*e,-.42,.163),"#f0c23a")));for(let e=0;e<7;e++)r($T.box(.08,.014,.012),$S(0,-.27-.05*e,.165),"#f0c23a");return[-1,1].forEach((e=>r($T.box(.014,.012,.16),$S(.04*e,-.585,.2,-.75,0,0),"#f0c23a"))),$R($v(o),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),t),t})),y=new THREE.Group;y.position.set(-.22,1,-.36),d.add(y),$R($ao([[0,0,0],[-.25,-.25,-.12],[-.6,-.6,-.05],[-.92,-.84,.12],[-1.15,-.92,.3]],.085,.006,40,10),c,y);const b=$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),M=(e,t,o,a,n,r)=>{const s=(new $c).subVectors(o,t),i=s.length(),l=(new $c).addVectors(t,o).multiplyScalar(.5),c=(new THREE.Quaternion).setFromUnitVectors(new $c(0,1,0),s.clone().normalize());e.push({geo:new THREE.CylinderGeometry(n,a,i,10),matrix:(new THREE.Matrix4).compose(l,c,new $c(1,1,1)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(t,c,new $c(a,a,a)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(o,c,new $c(n,n,n)),color:r})},w=(e,t)=>{const o=new THREE.Group;o.position.copy(t),d.add(o);const a=new $c(.12*e,-.34,.03),n=new $c(.14*e,-.66,.09);return $R($ao([[0,0,0],[.08*e,-.18,0],[a.x,a.y,a.z],[.14*e,-.5,.06],[n.x,n.y,n.z]],.13,.085,20,10),c,o),$R((e=>{const t=[],o="#7cc6ea",a="#6db8dc";t.push({geo:$T.box(.034,.1,.1),matrix:$S(0,-.08,0),color:o}),t.push({geo:$T.sphere(1,14,10),matrix:$S(0,-.08,0,0,0,0,.022,.055,.055),color:o}),[[-1,-1],[-1,1],[1,-1],[1,1]].forEach((([e,a])=>t.push({geo:$T.sphere(1,8,6),matrix:$S(0,.045*e-.08,.045*a,0,0,0,.017,.012,.012),color:o}))),t.push({geo:$T.sphere(1,12,10),matrix:$S(0,-.015,0,0,0,0,.022,.03,.04),color:o}),[[.036,.078,.0125],[.012,.088,.013],[-.012,.083,.0125],[-.035,.066,.0112]].forEach((([n,r,s],i)=>{const l=new $c(0,-.13-(3===i?-.006:0),n),c=l.clone().add(new $c(.012*e,.5*-r,.006+.001*i)),h=c.clone().add(new $c(.03*e,.45*-r,.004));M(t,l,c,s,.92*s,o),M(t,c,h,.92*s,.8*s,a)}));const n=new $c(.006*e,-.06,.05),r=n.clone().add(new $c(.012*e,-.04,.028)),s=r.clone().add(new $c(.016*e,-.036,.01));return M(t,n,r,.017,.015,o),M(t,r,s,.015,.012,a),$v(t)})(-e),b,o,[n.x,n.y+.03,n.z],[.1,.25*e,-.08*e],[2.1,2.1,2.1]),o},E=w(-1,new $c(-.64,1.9,.02)),x=w(1,new $c(.66,1.9,.02)),T=new THREE.Group;T.position.set(0,2.62,.3),T.scale.setScalar(1.32),d.add(T);const R=(e,t,o,a,n=0)=>(a.moveTo(-e/2+o,n-t/2),a.lineTo(e/2-o,n-t/2),a.quadraticCurveTo(e/2,n-t/2,e/2,n-t/2+o),a.lineTo(e/2,n+t/2-o),a.quadraticCurveTo(e/2,n+t/2,e/2-o,n+t/2),a.lineTo(-e/2+o,n+t/2),a.quadraticCurveTo(-e/2,n+t/2,-e/2,n+t/2-o),a.lineTo(-e/2,n-t/2+o),a.quadraticCurveTo(-e/2,n-t/2,-e/2+o,n-t/2),a),A=new THREE.ExtrudeGeometry(R(1,.78,.12,new THREE.Shape),{depth:.52,bevelEnabled:!0,bevelThickness:.08,bevelSize:.06,bevelSegments:5,curveSegments:10,steps:6});A.translate(0,0,-.6);{const e=A.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=$u(-t.z/.68,0,1),n=1-.42*Math.pow(a,1.3),r=Math.max(0,1-(t.x*t.x/.3+t.y*t.y/.2));e.setXYZ(o,t.x*n,t.y*n+.04*a,t.z-.26*a*a*r)}A.computeVertexNormals()}$R(A,l,T,[0,0,.2]),$R(new THREE.TorusGeometry(.035,.012,6,12),l,T,[0,.42,-.25]);const H=R(1.12,.9,.12,new THREE.Shape);H.holes.push(R(.9,.58,.06,new THREE.Path,.07)),$R(new THREE.ExtrudeGeometry(H,{depth:.05,bevelEnabled:!0,bevelThickness:.025,bevelSize:.012,bevelSegments:3,curveSegments:8}),new THREE.MeshPhongMaterial({color:"#55b8c6",specular:3355443,shininess:40}),T,[0,0,.2]);const zB=document.createElement("canvas");zB.width=zB.height=512;{const e=zB.getContext("2d"),t=e.createRadialGradient(256,240,40,256,256,360);t.addColorStop(0,"#7f52c8"),t.addColorStop(1,"#5a33a0"),e.fillStyle=t,e.fillRect(0,0,512,512),e.save(),e.scale(.66,1),e.font="500 86px 'Segoe UI', Calibri, Arial, sans-serif",e.fillStyle="#f29043",e.textBaseline="top",e.fillText("gfxinfo gfxinfo",60,22),e.restore(),e.save(),e.scale(.66,1),r(e,50,130,330,290,17,["#c6d2ff","#e6ecff","#9fb4f0"],.85,3),r(e,50,425,690,70,17,["#c6d2ff","#e6ecff"],.85,5),e.restore()}
 // (MONTGUMMERY's screen face, redrawn only when it changes: his pixel eyes with a flat mouth; the mouth
-// opening and closing while he talks; a pixel smile for a while after he is given a Blossom; and a
-// pixel shovel in place of his face while he plants; while he dances the robot, a robot face: square
+// opening and closing while he talks; a pixel shovel in place of his face while he plants; while he
+// dances the robot, a robot face: square
 // eyes whose pupils flick from side to side on the beat, over a grille mouth; and in a Dance battle
 // the move he's showing: a pixel fist, pixel scissors or a blank page)
 const zF=(e,md,op)=>{e.drawImage(zB,0,0),e.fillStyle="#ffffff";const o=e=>256+.72*(e-346),px=(t,a)=>e.fillRect(o(t),a,17.28,24);if("shovel"===md){e.save(),e.translate(256,262),e.scale(.66,1),e.rotate(-.35);const q=22,B=(i,j,w,h)=>e.fillRect(i*q-q/2,j*q,w*q,h*q);B(-1,-7,3,1),B(0,-6,1,6),B(-2,0,5,3),B(-1,3,3,1),B(0,4,1,1),e.restore()}else if("rock"===md||"scissors"===md||"paper"===md){e.save(),e.translate(256,250),e.scale(.66,1);const q=22,B=(i,j,w,h)=>e.fillRect(i*q,j*q,w*q,h*q);
 if("rock"===md)B(-2,-3,5,1),B(-3,-2,7,4),B(-4,-1,1,2),B(-2,2,5,2),(e.fillStyle="rgba(40,20,90,0.85)"),B(-1.1,-3,.2,2.4),B(.9,-3,.2,2.4),B(2.9,-3,.2,2.4);
 else if("scissors"===md){[-1,1].forEach((t=>{e.save(),e.translate(0,22),e.rotate(.42*t),e.fillRect(-11,-150,22,150),e.restore(),e.strokeStyle="#ffffff",(e.lineWidth=14),e.strokeRect(54*t-30,42,60,52)}))}
 else B(-3,-4,6,8),(e.fillStyle="rgba(40,20,90,0.85)"),[-2.6,-1.4,-.2,1,2.2].forEach((t=>B(-2,t,t<0?3.4:4,.35))),e.beginPath(),e.moveTo(3*q,-4*q),e.lineTo(1.6*q,-4*q),e.lineTo(3*q,-2.6*q),e.closePath(),e.fill();
-e.restore()}else if("robot"===md){[290,398].forEach((t=>{e.fillRect(o(t)-6,138,36,8),e.fillRect(o(t)-6,190,36,8),e.fillRect(o(t)-6,138,8,60),e.fillRect(o(t)+22,138,8,60),e.fillRect(o(t)+(op?12:2),156,10,24)})),e.fillRect(o(286),306,128,8),e.fillRect(o(286),346,128,8);for(let t=286;t<=430;t+=24)e.fillRect(o(t),306,8,48)}else{e.fillRect(o(290),150,24,1.9*24),e.fillRect(o(398),150,24,1.9*24);const X=[298,322,346,370,394];if("smile"===md)[[298,298],[322,322],[346,322],[370,322],[394,298]].forEach((([t,a])=>px(t,a)));else if(op>0){const h=18*op;X.forEach((t=>(px(t,322-h),px(t,322+h))));for(let a=322-h+24;a<322+h;a+=24)px(298,a),px(394,a)}else X.forEach((t=>px(t,322)))}const a=e.createLinearGradient(0,0,512,512);a.addColorStop(0,"rgba(255,255,255,0.14)"),a.addColorStop(.45,"rgba(255,255,255,0)"),a.addColorStop(1,"rgba(0,0,0,0.12)"),e.fillStyle=a,e.fillRect(0,0,512,512)},z=$b(512,512,(e=>zF(e,"idle",0))),zT={idle0:z};let zK="idle0";const zS=$R($T.plane(.91,.6),$x.basic(16777215,{map:z}),T,[0,.07,.225]);const B=[];B.push({geo:$T.box(.3,.06,.02),matrix:$S(.03,-.335,.28),color:"#14201b"});for(let e=0;e<10;e++)B.push({geo:$T.box(.012,.04,.01),matrix:$S(.028*e-.1,-.335,.292),color:"#2c4a44"});B.push({geo:new THREE.CylinderGeometry(.035,.035,.03,16).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.285),color:"#2a3a36"}),B.push({geo:new THREE.CylinderGeometry(.02,.02,.02,12).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.3),color:"#08100e"}),B.push({geo:$T.box(.09,.016,.01),matrix:$S(-.02,-.265,.282),color:"#1c3a36"}),B.push({geo:$T.box(.03,.03,.01),matrix:$S(.24,-.265,.282),color:"#1c3a36"}),B.push({geo:new THREE.CylinderGeometry(.01,.01,.01,8).rotateX(Math.PI/2),matrix:$S(.33,-.265,.282),color:"#1c3a36"}),$R($v(B),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),T);let I=-1,P=0;const G=10*Math.random();let dB=0,mW=0,mT=0,mV=null,mL=null;const DM={eX:0,eZ:0,xX:0,xZ:0,ry:0,rx:0,py:0,hy:0,hz:0,hx:0,g0:0,g1:0,g0z:0,g1z:0},P8=[0,0,0,0,0,0,0,0];
+e.restore()}else if("robot"===md){[290,398].forEach((t=>{e.fillRect(o(t)-6,138,36,8),e.fillRect(o(t)-6,190,36,8),e.fillRect(o(t)-6,138,8,60),e.fillRect(o(t)+22,138,8,60),e.fillRect(o(t)+(op?12:2),156,10,24)})),e.fillRect(o(286),306,128,8),e.fillRect(o(286),346,128,8);for(let t=286;t<=430;t+=24)e.fillRect(o(t),306,8,48)}else{e.fillRect(o(290),150,24,1.9*24),e.fillRect(o(398),150,24,1.9*24);const X=[298,322,346,370,394];if(op>0){const h=18*op;X.forEach((t=>(px(t,322-h),px(t,322+h))));for(let a=322-h+24;a<322+h;a+=24)px(298,a),px(394,a)}else X.forEach((t=>px(t,322)))}const a=e.createLinearGradient(0,0,512,512);a.addColorStop(0,"rgba(255,255,255,0.14)"),a.addColorStop(.45,"rgba(255,255,255,0)"),a.addColorStop(1,"rgba(0,0,0,0.12)"),e.fillStyle=a,e.fillRect(0,0,512,512)},z=$b(512,512,(e=>zF(e,"idle",0))),zT={idle0:z};let zK="idle0";const zS=$R($T.plane(.91,.6),$x.basic(16777215,{map:z}),T,[0,.07,.225]);const B=[];B.push({geo:$T.box(.3,.06,.02),matrix:$S(.03,-.335,.28),color:"#14201b"});for(let e=0;e<10;e++)B.push({geo:$T.box(.012,.04,.01),matrix:$S(.028*e-.1,-.335,.292),color:"#2c4a44"});B.push({geo:new THREE.CylinderGeometry(.035,.035,.03,16).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.285),color:"#2a3a36"}),B.push({geo:new THREE.CylinderGeometry(.02,.02,.02,12).rotateX(Math.PI/2),matrix:$S(-.32,-.335,.3),color:"#08100e"}),B.push({geo:$T.box(.09,.016,.01),matrix:$S(-.02,-.265,.282),color:"#1c3a36"}),B.push({geo:$T.box(.03,.03,.01),matrix:$S(.24,-.265,.282),color:"#1c3a36"}),B.push({geo:new THREE.CylinderGeometry(.01,.01,.01,8).rotateX(Math.PI/2),matrix:$S(.33,-.265,.282),color:"#1c3a36"}),$R($v(B),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),T);let I=-1,P=0;const G=10*Math.random();let dB=0,mW=0,mT=0,mV=null,mL=null;const DM={eX:0,eZ:0,xX:0,xZ:0,ry:0,rx:0,py:0,hy:0,hz:0,hx:0,g0:0,g1:0,g0z:0,g1z:0},P8=[0,0,0,0,0,0,0,0];
 // THE ROBOT (MONTGUMMERY's dance): a new pose on every beat, snapped into in the first fifth of the
 // beat and held with a little mechanical settle. His arms go forward, out to the side or down (never
 // across him or up into his screen), his body and his screen turn in hard stops and his pots mark
@@ -7700,7 +7700,7 @@ const JGP = (() => {
 			return !(Array.isArray(mt) || mt.transparent || !g.attributes.normal || !g.attributes.position || (g.morphAttributes && g.morphAttributes.position));
 		};
 		function compact(root, moving) {
-			const still = (o) => !(moving && moving.has(o)) && !o.userData.keep && o.visible,
+			const still = (o) => !moving.has(o) && !o.userData.keep && o.visible,
 				todo = [root];
 			while (todo.length) {
 				const P = todo.pop(),
@@ -7766,7 +7766,7 @@ const JGP = (() => {
 	const _v2 = (pts) => pts.map(([r, y]) => new THREE.Vector2(Math.max(1e-4, r), y));
 	const latheGeo = (pts, seg) => new THREE.LatheGeometry(_v2(pts), seg);
 	// a lathe profile smoothed through its points (no flat bands between widely spaced points)
-	const smoothProfile = (pts, n = 56) => {
+	const smoothProfile = (pts, n) => {
 		const sp = new THREE.CatmullRomCurve3(pts.map(([r, y]) => new THREE.Vector3(r, y, 0)), !1, "centripetal");
 		return sp.getPoints(n).map((v, k, a) => [k === 0 || k === a.length - 1 ? pts[k ? pts.length - 1 : 0][0] : Math.max(0, v.x), v.y]);
 	};
@@ -7812,7 +7812,7 @@ const JGP = (() => {
 	};
 	// give a model's plain-coloured parts a tactile surface of the given kind (texture maps, vertex
 	// colours, glass, glows and small parts such as eyes keep their own materials)
-	function texturize(g, kind, o = {}) {
+	function texturize(g, kind, o) {
 		g.updateMatrixWorld(!0);
 		const sc = new THREE.Vector3();
 		g.traverse((m) => {
@@ -7836,7 +7836,7 @@ const JGP = (() => {
 		return (_starGeo = new THREE.ShapeGeometry(s));
 	};
 	// a flat decal lying on an ellipsoid surface (centre c, radii rad) in direction dir
-	function onEllipsoid(p, geo, mat, c, rad, dir, size, lift = 1.01) {
+	function onEllipsoid(p, geo, mat, c, rad, dir, size, lift) {
 		const d = new c0(dir[0], dir[1], dir[2]).normalize(),
 			pos = new c0(c[0] + d.x * rad[0] * lift, c[1] + d.y * rad[1] * lift, c[2] + d.z * rad[2] * lift),
 			n = new c0(d.x / rad[0], d.y / rad[1], d.z / rad[2]).normalize(),
@@ -7870,7 +7870,7 @@ const JGP = (() => {
 		vane: { st: [[0, 0.22], [0.1, 0.72], [0.3, 1], [0.55, 0.96], [0.78, 0.7], [0.92, 0.36], [1, 0]], curl: 0.05, droop: 0.14 },
 		fur: { st: [[0, 1], [0.4, 0.78], [0.75, 0.45], [1, 0]], curl: 0.22, droop: 0.2 },
 	};
-	function cardGeo(cards, kind = "vane") {
+	function cardGeo(cards, kind) {
 		const K = CARD[kind],
 			st = K.st,
 			n = st.length,
@@ -8002,7 +8002,7 @@ const JGP = (() => {
 	// a tube along pts tapering r0 -> r1, ridged with rid rings (horns, coils, segmented tails); with
 	// cap, its far end rounds off closed (the last stretch, about as long as the tip is wide, curves in
 	// to a point like the end of a sphere)
-	const ridgedTube = (pts, r0, r1, n, rid, depth = 0.18, rad = 10, cap = !1) => {
+	const ridgedTube = (pts, r0, r1, n, rid, depth, rad = 10, cap = !1) => {
 		const cv = new THREE.CatmullRomCurve3(pts.map((q) => new c0(...q))),
 			tg = new THREE.TubeGeometry(cv, n, 1, rad, !1),
 			Pq = tg.attributes.position,
@@ -9257,7 +9257,7 @@ const JGP = (() => {
 				const a = Math.PI + (i / NA) * l,
 					h = ht(((a % l) + l) % l) - 0.03;
 				prof.forEach(([dr, f, lift = 0], k) => {
-					const y = Math.min(f, 1) * h + lift + (f < 0 ? f * 0 : 0),
+					const y = Math.min(f, 1) * h + lift,
 						yy = f < 0 ? f : y,
 						r0 = rad(Math.max(0, yy)) + dr;
 					pos.push(r0 * Math.sin(a), yy, r0 * Math.cos(a)), uv.push((i / NA) * 4, k / NP);
@@ -9546,7 +9546,7 @@ const JGP = (() => {
 		// the tips and flop back down. Each tentacle bends in its own upright plane from where it leaves
 		// his body (bend), so it only ever lifts off the ground, never into it, and its tip never curls
 		// back as far as his body; the ripple sways it from side to side.
-		const bend = (tm, phi, amp, wph, lift = 0) => {
+		const bend = (tm, phi, amp, wph, lift) => {
 				const P = tm.geometry.attributes.position,
 					N = tm.geometry.attributes.normal,
 					p0 = tm.userData.p0,
@@ -9860,7 +9860,6 @@ const JGP = (() => {
 		});
 		return born(g, {
 			height: 2.4,
-			head,
 			lids,
 			step(t, dt, tk, wk) {
 				// she floats a little above the ground, rising and settling gently, so not even the coils of her
@@ -10038,7 +10037,7 @@ const JGP = (() => {
 		})();
 		// (each row stands a little further off the skin than the row below it, like roof shingles, so
 		// the upper plates lie over the lower ones instead of cutting through them)
-		const putPlate = (p, n, sz, tilt, twist = 0, parent = body, lift = 0.03) => {
+		const putPlate = (p, n, sz, tilt, twist, parent, lift) => {
 			const pg = faceTo(new THREE.Group(), n);
 			pg.position.copy(p).addScaledVector(n, lift), parent.add(pg);
 			R(plate, plateM, pg, [0, 0, 0], [tilt, 0, twist], [sz, sz, sz * 0.45]);
@@ -10623,9 +10622,9 @@ const JGP = (() => {
 	};
 
 	for (const k in BORN)
-		so["born_" + k] = (g, d, opts) => {
+		so["born_" + k] = (g) => {
 			try {
-				return BORN[k](g, d, opts);
+				return BORN[k](g);
 			} catch (err) {
 				vo(err, "model born_" + k);
 				while (g.children.length) g.remove(g.children[0]);
@@ -12801,7 +12800,7 @@ const JGP = (() => {
 	// Each kind stands on its own origin, its stem going into the soil there; nothing reaches lower than
 	// 0.11 m (0.26 m once drawn at PLANT_SIZE) except the stem, so the leaves stay clear of a garden row's
 	// ridge (13 cm at its crest).
-	// PLANT_KINDS: [name, the flower it is, builder(add)] (JGP.plantShow puts one on show, for renders)
+	// PLANT_KINDS: each kind's builder(add), PLANT #1 to #5 (JGP.plantShow puts one on show, for renders)
 	const PLANT_KINDS = (() => {
 		// (LO: building the light version, its flat parts from about half the outline points: see plantGeo)
 		let LO = 0;
@@ -12966,7 +12965,7 @@ const JGP = (() => {
 			// lobed leaves, one leaning far out, one tall, one short, each splitting at the top into a loose spray
 			// of heads on purplish egg-shaped buds: fluffy pink-mauve puffs, a few gone to tan seed fluff, and
 			// closed buds; smaller spiny leaves along the stems
-			["PLANT #1", "creeping thistle", (add) => {
+			(add) => {
 				const E = () => T.sphere(1, 7, 5), ribs = [[thistleRib, "#9ac070"], [thistleSpines, "#d8d890"]];
 				stems(add, [
 					// leaning far out (the photos' left)
@@ -13001,11 +13000,11 @@ const JGP = (() => {
 					const m = mul(at(0, 0.12 + 0.006 * (k % 3), 0), ry((k / 9) * l + 0.2), rx(-0.2 - 0.06 * (k % 3)), sc(0.25 + 0.03 * (k % 2), 0.25, 0.25 + 0.03 * (k % 2)));
 					add(thistleLeaf(), k % 2 ? "#30661f" : "#387224", m), ribs.forEach(([g, col]) => add(g(), col, m.clone()));
 				}
-			}],
+			},
 			// PLANT #2: a scentless mayweed (only from the owner's photos): a sprawl of branching stems over fine, feathery
 			// thread-leaves, each stem ending in daisy heads, a domed yellow centre ringed by white rays, the older
 			// heads' rays swept right back, the centres taller; a few tight green buds
-			["PLANT #2", "scentless mayweed", (add) => {
+			(add) => {
 				stems(add, [
 					{ n: [[0, 0, 0], [-0.05, 0.25, 0.02], [-0.11, 0.46, 0.04]], side: [[1, 0.6, [-0.2, 0.5, 0]], [1, 0.4, [-0.02, 0.48, 0.11]], [1, 0.2, [-0.18, 0.4, -0.06]]],
 					  h: [[2, [-0.12, 0.55, 0.05], 0], ["s0", [-0.21, 0.55, 0], 1], ["s1", [-0.02, 0.53, 0.12], 0], ["s2", [-0.2, 0.45, -0.08], 0], [1, [-0.15, 0.36, -0.04], 2], ["s0", [-0.26, 0.5, 0.04], 2]],
@@ -13033,11 +13032,11 @@ const JGP = (() => {
 				});
 				// fine leaves round the base (clear of a row's ridge)
 				for (let k = 0; k < 10; k++) add(threadLeaf(), k % 2 ? "#5aa83a" : "#4a9530", mul(at(0, 0.12 + 0.005 * (k % 3), 0), ry((k / 10) * l + 0.4), rx(-0.25 - 0.08 * (k % 3)), sc(0.2, 0.2, 0.2)));
-			}],
+			},
 			// PLANT #3: a chicory (only from the owner's photo): stiff, bare, branching stems with sky-blue flowers
 			// facing out, each a ring of strap-shaped rays with square, toothed tips round pale blue stamens;
 			// small spiky green buds along the stems and a withered head or two
-			["PLANT #3", "chicory", (add) => {
+			(add) => {
 				stems(add, [
 					{ n: [[0, 0, 0], [0.01, 0.35, 0], [-0.03, 0.6, 0.02], [0.02, 0.8, 0]], side: [[2, 0.2, [0.19, 0.69, 0.05]]],
 					  h: [[3, [0.02, 0.83, 0], 0], ["s0", [0.22, 0.7, 0.06], 0], [2, [-0.07, 0.63, 0.05], 2], [1, [0.04, 0.42, 0.04], 2], [2, [0.03, 0.64, -0.05], 1], ["s0", [0.11, 0.68, 0.0], 2]],
@@ -13068,12 +13067,12 @@ const JGP = (() => {
 						}
 					},
 				});
-			}],
+			},
 			// PLANT #4: a common milkweed (only from the owner's photo): a stout stem with broad oval leaves in opposite
 			// pairs, each pair turned a quarter from the one below, every leaf with a pale pink midrib; at the top a
 			// round umbel of small flowers on purple-red stalks, each flower's dusky mauve petals turned down under
 			// a white-pink crown, a few still closed buds
-			["PLANT #4", "common milkweed", (add) => {
+			(add) => {
 				seg(add, [0, 0, 0], [0.01, 0.6, 0], 0.017, "#6a8a4a");
 				[[0.15, 0, 0.36], [0.27, 1, 0.34], [0.39, 0, 0.3], [0.5, 1, 0.22]].forEach(([y, q, len], k) =>
 					[0, Math.PI].forEach((a) => {
@@ -13099,11 +13098,11 @@ const JGP = (() => {
 					}
 				};
 				umbel([0.01, 0.62, 0], 0.072, 40);
-			}],
+			},
 			// PLANT #5: a zebra mallow (only from the owner's photo): an upright stem with two arms reaching out sideways,
 			// big round scalloped leaves on long stalks, and flowers of five broad notched petals, pale pink with dark
 			// purple veins streaking out from a pink stamen column; clusters of round green buds in the leaf joints
-			["PLANT #5", "zebra mallow", (add) => {
+			(add) => {
 				const stem = "#6a9a48", leafCol = ["#437a2c", "#4c8634"];
 				seg(add, [0, 0, 0], [0.005, 0.66, 0.01], 0.015, stem);
 				seg(add, [0.003, 0.3, 0.005], [0.2, 0.4, 0.04], 0.009, stem), seg(add, [0.004, 0.36, 0.006], [-0.21, 0.42, -0.03], 0.009, stem);
@@ -13135,7 +13134,7 @@ const JGP = (() => {
 				flower([0.1, 0.47, 0.07], [0.004, 0.44, 0.008], 0.75);
 				flower([-0.11, 0.5, -0.05], [0.004, 0.46, 0.008], 0.8);
 				buds([0.006, 0.68, 0.01], 5), buds([0.03, 0.5, 0.04], 3), buds([-0.03, 0.42, -0.04], 3), buds([0.2, 0.41, 0.04], 2), buds([-0.21, 0.43, -0.03], 3);
-			}],
+			},
 		];
 		return (kinds.lo = (v) => (LO = v)), kinds;
 	})();
@@ -13168,7 +13167,7 @@ const JGP = (() => {
 		const parts = [],
 			big = new THREE.Matrix4().makeScale(PLANT_SIZE, PLANT_SIZE, PLANT_SIZE);
 		PLANT_KINDS.lo(lo ? 1 : 0);
-		PLANT_KINDS[kind][2]((geo, color, m) => {
+		PLANT_KINDS[kind]((geo, color, m) => {
 			if (lo) {
 				if (geo.name && LO_SKIP.has(geo.name.replace("~", ""))) return;
 				geo.boundingSphere || geo.computeBoundingSphere();
@@ -16364,16 +16363,12 @@ const JGP = (() => {
 					H(inner);
 					// IT NEVER MOVES FROM ITS SPOT; it only lives where it lies. Idle, the eye-stalks sway slowly, now and
 					// then one pulls in short and creeps back out, the head looks a little this way and that, and the
-					// mantle swells and settles as it breathes, the pore opening and closing with it. And, as every
-					// creature does, it has its own Talk, Dance and Planting moves, all done lying where it is:
-					//   Talk: it lifts its head (not turning to the player), stalks reaching up, and nods along with its words;
-					//   Dance (while FORTIZMO plays at the Event): head bobbing on the beat, stalks swinging in turn,
-					//     the body rocking and squashing with it;
-					//   Planting (while the Event plants): head dipping to the ground and back, stalks pulled short.
-					// Talk comes first (one being talked to stops dancing or planting for it, as the creatures do).
+					// mantle swells and settles as it breathes, the pore opening and closing with it. Its one move, done
+					// lying where it is, is Talk: it lifts its head (not turning to the player), stalks reaching up, and
+					// nods along with its words. It never dances or plants (the owner: it never will).
 					[slug, head, mantle, pore, tail, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
-					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray(), W = 5.45;
-					let talking = 0, look = 0, kT = 0, kD = 0, kP = 0;
+					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray();
+					let talking = 0, look = 0, kT = 0;
 					const inRoomV = new THREE.Vector3();
 					// one Talk (from anywhere round it, inside) and, with one in hand, a Blossom (the station's own "Give a
 					// blossom": it takes one, as every gift does, and it answers in silence). The script's lines: its Talk,
@@ -16403,7 +16398,7 @@ const JGP = (() => {
 						head,
 						mantle,
 						stalks: stalks.map(([st]) => st),
-						mode: () => (kT > 0.5 ? "talk" : kD > 0.5 ? "dance" : kP > 0.5 ? "plant" : "idle"),
+						mode: () => (kT > 0.5 ? "talk" : "idle"),
 						chat: (sec) => (chatTo = Re.t + sec),
 						// its stand-in for the visits and vignettes: a marker where it lies (it never moves, never turns, and
 						// the vignette's gestures go to a wrapper of its own that holds nothing: it talks instead)
@@ -16424,24 +16419,20 @@ const JGP = (() => {
 						dt = Math.min(dt || 0.016, 0.1);
 						talking = (talking && qt.isOpen) || tt < chatTo ? 1 : 0;
 						// (the ANCIENT never dances or plants, owner's rule: at the Event it stays as it always is, only talking
-						// when talked to; the dance and plant poses below stay at rest)
-						const ev = null, e2 = Math.min(1, 3 * dt);
-						(kT += (talking - kT) * e2), (kD += (("dance" === ev) - kD) * e2), (kP += (("plant" === ev) - kP) * e2);
+						// when talked to)
+						kT += (talking - kT) * Math.min(1, 3 * dt);
 						// (a slow look round, held still while talking)
 						look += ((talking ? 0 : 0.25 * Math.sin(0.21 * tt) + 0.1 * Math.sin(0.53 * tt)) - look) * Math.min(1, 2 * dt);
-						const beat = Math.sin(W * tt), bob = Math.abs(beat), dig = Math.max(0, Math.sin(1.8 * tt));
-						(head.rotation.y = -0.45 + look * (1 - kD) + kD * 0.3 * Math.sin(0.5 * W * tt)),
-							(head.rotation.x = -kT * (0.22 + 0.05 * Math.abs(Math.sin(5 * tt))) - kD * (0.1 + 0.18 * bob) + kP * 0.3 * dig);
-						// (the body rocks and squashes on the beat, staying where it lies)
+						(head.rotation.y = -0.45 + look), (head.rotation.x = -kT * (0.22 + 0.05 * Math.abs(Math.sin(5 * tt))));
 						// (at rest the body settles and swells a little, the tail's tip curls slowly and the head creeps forward and back)
-						(slug.rotation.z = kD * 0.035 * Math.sin(0.5 * W * tt)), (slug.scale.y = 0.62 * (1 + kD * 0.06 * bob + 0.012 * Math.sin(0.7 * tt))), (tail.rotation.y = 0.07 * Math.sin(0.35 * tt + 1)), (head.position.z = HZ + 0.025 * Math.sin(0.31 * tt));
-						const br = Math.sin(0.9 * tt) * (1 - kD) + kD * beat;
+						(slug.scale.y = 0.62 * (1 + 0.012 * Math.sin(0.7 * tt))), (tail.rotation.y = 0.07 * Math.sin(0.35 * tt + 1)), (head.position.z = HZ + 0.025 * Math.sin(0.31 * tt));
+						const br = Math.sin(0.9 * tt);
 						mantle.scale.set(0.253 * (1 + 0.03 * br), 0.15 * (1 + 0.06 * br), 0.63), pore.scale.setScalar(0.6 + 0.4 * Math.max(0, br));
 						stalks.forEach(([st, up, k]) => {
-							// (every 11 s or so one upper stalk pulls in for a moment; all pulled short while planting)
-							const ph = (tt + 5.5 * k) % 11, pull = Math.max(k < 2 && ph < 2.2 ? Math.sin((Math.PI * ph) / 2.2) : 0, kP * (0.4 + 0.4 * dig)), sx = k % 2 ? 1 : -1;
-							(st.rotation.x = -up - 0.25 * kT - 0.12 * Math.sin(0.6 * tt + k) - kD * 0.2 * Math.sin(W * tt + k * Math.PI)),
-								(st.rotation.y = sx * (0.35 + 0.1 * Math.sin(0.45 * tt + 2 * k)) + kD * 0.4 * Math.sin(0.5 * W * tt + k * Math.PI)),
+							// (every 11 s or so one upper stalk pulls in for a moment)
+							const ph = (tt + 5.5 * k) % 11, pull = k < 2 && ph < 2.2 ? Math.sin((Math.PI * ph) / 2.2) : 0, sx = k % 2 ? 1 : -1;
+							(st.rotation.x = -up - 0.25 * kT - 0.12 * Math.sin(0.6 * tt + k)),
+								(st.rotation.y = sx * (0.35 + 0.1 * Math.sin(0.45 * tt + 2 * k))),
 								(st.scale.z = 1 - 0.7 * pull);
 						});
 					});

@@ -372,7 +372,8 @@ Goo that runs down a body and moves like goo, without clipping:
   never silenced by the Event's no-talk check, which is for creatures with no Event line). A planter held off its
   spot by a neighbour or the stone (broad HENNRICK on the inner row) takes the spot where it stands after a
   second, within a metre, so it still plants and grows its flower. The church's ANCIENT never dances or
-  plants (owner's rule): it stays as it always is and only talks when talked to.
+  plants, and never will (owner's rule): it stays as it always is and only talks when talked to, so it has no
+  dance or planting animation at all (removed in #99).
 - **Workers come out straight:** a kiosk or bar worker walks its way out from inside only; one already out when the
   Event starts (on a visit, or stepped out to meet a visitor) goes straight to the garden, never back into its
   kiosk to walk the way out again (ZOLLOD used to get stuck walking into Garden Supplies).
