@@ -5178,6 +5178,118 @@ const xe = (() => {
 				(t.textBaseline = "middle"),
 				mw ? t.fillText(e, o, a, mw) : t.fillText(e, o, a);
 		}
+		// THE ITEM ICONS on the HUD: each painted at (x, y), the middle of its 52 px tile, in the item's own colours
+		const INV_ICON = (() => {
+			const P = (t, pts, fill, line) => {
+					t.beginPath(), pts.forEach(([a, b], i) => (i ? t.lineTo(a, b) : t.moveTo(a, b))), t.closePath();
+					fill && ((t.fillStyle = fill), t.fill());
+					line && ((t.strokeStyle = line), (t.lineWidth = 1.5), t.stroke());
+				},
+				O = (t, x, y, rx, ry, fill, rot = 0) => (t.beginPath(), t.ellipse(x, y, rx, ry, rot, 0, 2 * Math.PI), (t.fillStyle = fill), t.fill()),
+				glint = (t, x, y, r) => {
+					(t.fillStyle = "#ffffff"), t.beginPath();
+					for (let k = 0; k < 8; k++) {
+						const a = (k * Math.PI) / 4,
+							q = k % 2 ? 0.28 * r : r;
+						t.lineTo(x + q * Math.cos(a), y + q * Math.sin(a));
+					}
+					t.fill();
+				},
+				// a flame petal from (x, y) pointing at angle a
+				petal = (t, x, y, a, len, wid, fill) => {
+					t.save(), t.translate(x, y), t.rotate(a), t.beginPath(), t.moveTo(0, 0);
+					t.quadraticCurveTo(wid, -0.45 * len, 0.15 * wid, -len), t.quadraticCurveTo(-0.2 * wid, -0.6 * len, -wid, -0.2 * len);
+					t.closePath(), (t.fillStyle = fill), t.fill(), t.restore();
+				},
+				// the teal gem's brilliant cut: table, crown and pavilion
+				gemCut = (t, x, y, w, h) => {
+					const top = y - 0.42 * h,
+						gird = y - 0.12 * h,
+						tip = y + 0.55 * h;
+					P(t, [[x - 0.5 * w, top], [x + 0.5 * w, top], [x + w, gird], [x, tip], [x - w, gird]], "#178a8e", "#0b4a4e");
+					P(t, [[x - 0.5 * w, top], [x + 0.5 * w, top], [x + w, gird], [x - w, gird]], "#3fd2cc");
+					(t.strokeStyle = "rgba(255,255,255,.55)"), (t.lineWidth = 1.2), t.beginPath();
+					for (const fx of [-0.5, 0, 0.5]) t.moveTo(x + fx * w, gird), t.lineTo(x, tip);
+					t.stroke();
+				};
+			return {
+				// a Blossom: red flame petals round an orange heart and a glowing ember, on a green stem with leaves
+				blossom(t, x, y) {
+					(t.strokeStyle = "#3f9a32"), (t.lineWidth = 3), t.beginPath(), t.moveTo(x, y + 22), t.quadraticCurveTo(x - 3, y + 10, x, y + 2), t.stroke();
+					O(t, x - 7, y + 14, 7, 3, "#4fb83a", -0.5), O(t, x + 7, y + 11, 7, 3, "#4fb83a", 0.5);
+					for (let k = 0; k < 5; k++) petal(t, x, y, -1.1 + 0.55 * k, 19, 7, "#e8303a");
+					for (let k = 0; k < 3; k++) petal(t, x, y - 1, -0.55 + 0.55 * k, 12, 5, "#ff8a1a");
+					const g = t.createRadialGradient(x, y - 6, 0, x, y - 6, 8);
+					g.addColorStop(0, "#fff6b0"), g.addColorStop(0.5, "#ffd23a"), g.addColorStop(1, "rgba(255,210,58,0)"), O(t, x, y - 6, 8, 8, g);
+				},
+				// Flint: a dark faceted stone with a glint
+				flint(t, x, y) {
+					P(t, [[x - 18, y + 8], [x - 12, y - 10], [x + 2, y - 17], [x + 17, y - 6], [x + 15, y + 12], [x - 2, y + 17]], "#3a3a46", "#1a1a22");
+					P(t, [[x - 12, y - 10], [x + 2, y - 17], [x + 4, y - 2], [x - 6, y + 2]], "#5c5c6c");
+					P(t, [[x + 4, y - 2], [x + 17, y - 6], [x + 15, y + 12], [x + 2, y + 8]], "#4a4a58");
+					glint(t, x + 7, y - 8, 7);
+				},
+				// an Ancient Artifact: one of the Gem's three teal wedges, its break face glowing pale
+				artifact(t, x, y) {
+					P(t, [[x - 4, y - 18], [x + 12, y - 18], [x + 18, y - 6], [x + 2, y + 20], [x - 4, y - 6]], "#178a8e", "#0b4a4e");
+					P(t, [[x - 4, y - 18], [x + 12, y - 18], [x + 18, y - 6], [x - 4, y - 6]], "#3fd2cc");
+					P(t, [[x - 4, y - 18], [x - 4, y - 6], [x + 2, y + 20], [x - 14, y - 4]], "#9af4ec", "#0b4a4e");
+				},
+				// the Ancient Gem: the whole teal brilliant
+				gem(t, x, y) {
+					const g = t.createRadialGradient(x, y, 0, x, y, 24);
+					g.addColorStop(0, "rgba(120,255,240,.45)"), g.addColorStop(1, "rgba(120,255,240,0)"), O(t, x, y, 24, 24, g);
+					gemCut(t, x, y + 1, 19, 34), glint(t, x - 7, y - 10, 6);
+				},
+				// the Summoning Stone: a six-sided standing stone with its runes alight
+				stone(t, x, y) {
+					P(t, [[x - 12, y + 20], [x - 14, y - 10], [x - 6, y - 20], [x + 6, y - 20], [x + 14, y - 10], [x + 12, y + 20]], "#8c8c92", "#4a4a50");
+					P(t, [[x - 6, y - 20], [x + 6, y - 20], [x + 5, y + 20], [x - 5, y + 20]], "#a4a4aa");
+					(t.strokeStyle = "#7ff0e0"), (t.lineWidth = 2.2), (t.lineCap = "round"), t.beginPath();
+					t.moveTo(x - 3, y - 13), t.lineTo(x + 3, y - 9), t.lineTo(x - 3, y - 5), t.moveTo(x - 3, y + 1), t.lineTo(x + 3, y + 1), t.moveTo(x, y - 2), t.lineTo(x, y + 4);
+					t.moveTo(x - 3, y + 9), t.lineTo(x, y + 14), t.lineTo(x + 3, y + 9), t.stroke();
+				},
+				// OVERCOMING SHYNESS: the pink hardback, its little creature peeking out from behind a wall
+				book(t, x, y) {
+					S(t, x - 15, y - 20, 32, 40, 3, "#e8b8c8", "#6a3a5a", 2), S(t, x - 15, y - 20, 6, 40, 2, "#c88aa4", null, 0);
+					(t.fillStyle = "#6a3a5a"), t.fillRect(x + 3, y - 6, 5, 20), O(t, x + 1, y - 1, 6, 6, "#6a3a5a"), O(t, x - 1, y - 3, 1.3, 1.3, "#e8b8c8"), O(t, x + 3, y - 3, 1.3, 1.3, "#e8b8c8");
+					(t.fillStyle = "#6a3a5a"), t.fillRect(x - 6, y - 15, 20, 2.5);
+				},
+				// the Seeds: a paper "bagel seasoning packet" with its seeds tumbling out
+				seeds(t, x, y) {
+					P(t, [[x - 14, y - 16], [x + 10, y - 16], [x + 12, y + 18], [x - 12, y + 18]], "#f0e0b4", "#8a6a40");
+					(t.fillStyle = "#c8a060"), t.fillRect(x - 14, y - 16, 24, 6), (t.fillStyle = "#3f9a32"), t.fillRect(x - 9, y - 2, 14, 10);
+					O(t, x - 2, y + 3, 3, 4, "#ffd23a");
+					[[13, 12], [16, 6], [18, 15], [15, 19]].forEach(([dx, dy], k) => O(t, x + dx, y + dy, 2.2, 1.4, k % 2 ? "#f6eed4" : "#4a3424", k));
+				},
+				// the Snacks: a slice of NEXTESSA's pizza
+				pizza(t, x, y) {
+					P(t, [[x - 17, y - 12], [x + 17, y - 12], [x, y + 20]], "#f6d36a", "#c88a3a");
+					S(t, x - 19, y - 18, 38, 8, 4, "#d8963c", "#a86a2a", 1.5);
+					[[-7, -4], [6, -3], [0, 7]].forEach(([dx, dy]) => O(t, x + dx, y + dy, 3.6, 3.6, "#c8302a"));
+				},
+				// the Flower Hat: a big Blossom of flame petals in a cup of green leaves
+				hat(t, x, y) {
+					O(t, x, y + 8, 21, 7, "#3f9a32"), O(t, x, y + 6, 14, 6, "#2f7a2a");
+					for (let k = 0; k < 7; k++) petal(t, x, y + 6, -1.3 + 0.43 * k, 20, 6, ["#e8303a", "#ff8a1a", "#ffd23a"][k % 3]);
+				},
+				// the Sun Dress: sky blue, golden suns, a gold band at the hem
+				dress(t, x, y) {
+					P(t, [[x - 6, y - 20], [x + 6, y - 20], [x + 8, y - 8], [x + 17, y + 18], [x - 17, y + 18], [x - 8, y - 8]], "#8fd0f2", "#3a7aa8");
+					(t.fillStyle = "#e8c43a"), t.fillRect(x - 16, y + 13, 32, 4);
+					[[-4, -10], [5, -2], [-7, 6], [6, 9]].forEach(([dx, dy]) => O(t, x + dx, y + dy, 2.8, 2.8, "#ffc93a"));
+				},
+				// the Frog Shoes: a little green frog over each foot, golden eyes bulging on top
+				shoes(t, x, y) {
+					for (const sx of [-1, 1]) {
+						const cx = x + 10 * sx;
+						O(t, cx, y + 8, 9, 11, "#3f9a32"), O(t, cx, y + 14, 9, 5, "#1f4a1c");
+						O(t, cx - 4, y - 2, 3.4, 3.4, "#ffd65a"), O(t, cx + 4, y - 2, 3.4, 3.4, "#ffd65a");
+						O(t, cx - 4, y - 2, 1.2, 1.6, "#1a1a1a"), O(t, cx + 4, y - 2, 1.2, 1.6, "#1a1a1a");
+					}
+				},
+			};
+		})();
 		function V(t, e, o, a, n) {
 			const n2 = Math.max(10, Math.round(0.8 * n));
 			for (; a > n2 && ((t.font = "bold " + a + "px " + d), !(t.measureText(e).width <= o)); a -= 2);
@@ -5707,7 +5819,10 @@ const xe = (() => {
 								(F.menu = v(512, 512, 0.5, { order: 10001 })),
 								(F.toast = v(512, 64, 0.55, { order: 10002, parent: B })),
 								F.toast.mesh.position.set(0, -0.3, -1.15),
-								(F.hud = v(256, 176, 0.15, { order: 9998 })),
+								// (the HUD's canvas runs on down below the quests for the items in hand; its plane is moved down
+								// so the quests keep their place, and the panel is drawn only as tall as what it shows)
+								(F.hud = v(256, 368, 0.15, { order: 9998 })),
+								F.hud.mesh.geometry.translate(0, (0.5 * 176) / 368 - 0.5, 0),
 								(F.anchor = new THREE.Group()),
 								C.add(F.anchor),
 								(F.anchor.userData.xrUI = !0),
@@ -6309,21 +6424,55 @@ const xe = (() => {
 							null !== Ce.met && a > Ce.met && U(0.5, 70),
 							(Ce = { blossoms: Kt.blossoms, met: a });
 						const n = Kt.rewards,
-							r = [n.seeds, n.stone, n.snacks].join("|");
+							// the items in hand, in this order, each with its icon; an item the player doesn't have shows
+							// nothing at all. Blossoms, Flint and the Ancient Artifacts carry their count ("x3"); a
+							// quest item shows while it is held (the Artifacts until they are glued into the Gem, the
+							// Gem until it is traded, the book until ZOLLOD has it), and the clothes once bought.
+							inv = [
+								Kt.blossoms > 0 && ["blossom", Kt.blossoms],
+								Kt.acorns > 0 && ["flint", Kt.acorns],
+								Kt.artifacts > 0 && !n.artifacts && ["artifact", Kt.artifacts],
+								Kt.gem && ["gem"],
+								n.stone && ["stone"],
+								Kt.shyBook && !Kt.shyFree && ["book"],
+								n.seeds && ["seeds"],
+								n.snacks && ["pizza"],
+								Kt.owned.has("flowerhat") && ["hat"],
+								Kt.owned.has("sundress") && ["dress"],
+								Kt.owned.has("frogshoes") && ["shoes"],
+							].filter(Boolean),
+							r = [n.seeds, n.stone, n.snacks, inv.join(";")].join("|");
 						r !== o.sig &&
 							((o.sig = r),
 							o.draw((t) => {
-								S(t, 4, 4, 248, 168, 16, "rgba(13,13,26,.85)", E, 3);
+								// four items to a row, under a rule below the quests
+								S(t, 4, 4, 248, inv.length ? 178 + 60 * Math.ceil(inv.length / 4) : 168, 16, "rgba(13,13,26,.85)", E, 3);
 								const e = (e, o, a, n) => {
 										S(t, 12, e - 20, 232, 42, 10, "rgba(255,255,255,.06)", null, 0),
 											A(t, o, 22, e + 1, V(t, o, 180, 20, 14), n),
 											A(t, a, 234, e + 1, 26, "#ffffff", "right");
 									},
 									o = (t) => (t ? "☑" : "☐");
-								// the three main quests, and nothing else
+								// the three main quests
 								e(36, "SEEDS", o(n.seeds), M.lime),
 									e(88, "SUMMONING STONE", o(n.stone), "#5ab4ff"),
-									e(140, "SNACKS", o(n.snacks), "#ff9a3a");
+									e(140, "SNACKS", o(n.snacks), "#ff9a3a"),
+									inv.length && ((t.fillStyle = "rgba(255,255,255,.2)"), t.fillRect(16, 171, 224, 2)),
+									inv.forEach(([k, c], i) => {
+										const x = 12 + (i % 4) * 60,
+											y = 182 + 60 * ((i / 4) | 0);
+										S(t, x, y, 52, 52, 10, "rgba(255,255,255,.07)", null, 0), t.save(), INV_ICON[k](t, x + 26, y + 26), t.restore();
+										c &&
+											((t.font = "bold 17px " + d),
+											(t.textAlign = "right"),
+											(t.textBaseline = "middle"),
+											(t.lineJoin = "round"),
+											(t.lineWidth = 4),
+											(t.strokeStyle = "#0d0d1a"),
+											t.strokeText("x" + c, x + 51, y + 44),
+											(t.fillStyle = "#ffffff"),
+											t.fillText("x" + c, x + 51, y + 44));
+									});
 							}));
 					})(0, v);
 				const P = new Map();
@@ -6841,6 +6990,14 @@ const xe = (() => {
 			};
 			Ze.addEventListener("click", t), addEventListener("keydown", t);
 			// ---- TEST-MODE-END ----
+			// (the owner's start screen for desktop and phone browsers once the test modes are cut: the game's name, and
+			// that it is played in VR; pack/cutmodes.js uncomments the lines between the markers below)
+			// ---- FINAL-BUILD-BEGIN ----
+			// ($e.textContent = "-Greeblis Town-"),
+			// 	(Ke.textContent = "Greeblis Town is a VR game.\nOpen it in the Meta Quest Browser."),
+			// 	(mo("gateVer").textContent = "v1.0"),
+			// 	Ze.classList.add("on");
+			// ---- FINAL-BUILD-END ----
 		}
 		return (o.headPos = n), o;
 	})();

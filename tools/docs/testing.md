@@ -47,6 +47,7 @@ Scene scripts export `async (page, out) => {}` and drive the game through its gl
 | --- | --- |
 | `boot.js` | Boot: creatures by kind, their names, the error count and the error box. |
 | `t_give.js` | The mobile GIVE button shows only while a Blossom can be given (run with `mob.js`). |
+| `t_inventory.js` | The items on the HUD: none, some, all, and after the Artifacts, Gem and book are used; screenshots to look at. |
 | `t_shader.js` | Compiles every material (Backpacka's included) and reports shader errors. |
 | `t_errcopy.js` | The test modes' error tools: the desktop fps and error counter (bottom left) and its copy button, or the mobile panel's (`mob.js` and `?mobile=1`), and the copied text. |
 | `t_taps.js` | The mobile test mode's taps: a tap moves a dialogue on and closes it after the last page; a tap off a menu or panel closes it (`mob.js` and `?mobile=1`). |

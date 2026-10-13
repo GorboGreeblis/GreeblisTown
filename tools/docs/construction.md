@@ -321,7 +321,11 @@ to call on another, so every pair's two vignettes play in about an hour and a ha
 
 ### Quests
 
-Three quests on the HUD: **SEEDS**, the **SUMMONING STONE** and **SNACKS**.
+Three quests on the HUD: **SEEDS**, the **SUMMONING STONE** and **SNACKS**. Under them, the HUD shows the items in
+hand (`INV_ICON`, one icon painter per item; the list is built from `Kt` each frame and the card redrawn only when it
+changes): Blossoms, Flint and the Artifacts with their counts, the Gem, the Summoning Stone, the shyness book, the
+Seeds, the pizza and the clothes bought. An item not held shows nothing. The canvas runs on below the quests and its
+plane is moved down, so the quests keep their place on the wrist and in the test modes' screen corner.
 - **Seeds:** sold at Garden Supplies as a "bagel seasoning packet" for 15 flint.
 - **The Summoning Stone:** through the Ancient Artifacts chain (below).
 - **Snacks:** NEXTESSA's pizza, called from the phone booth.
@@ -652,7 +656,9 @@ Third-person modes for testing, with an avatar walked through the park (`dk`). `
 `__jgpMobile` (the mobile mode) turns on by itself on Android. They are not in the final build: their code sits
 between `TEST-MODE-BEGIN` and `TEST-MODE-END` markers, which `pack/cutmodes.js` removes (see
 [release.md](release.md)). Only the `dk = { on: false }` stub stays outside, for the shared code's `dk.on` checks.
-Write anything new that only the test modes need inside a fence.
+Write anything new that only the test modes need inside a fence. Code that only the final build runs sits commented
+out between `FINAL-BUILD-BEGIN` and `FINAL-BUILD-END` markers, which the cut uncomments: today, the start screen for
+desktop and phone browsers.
 - **Desktop:** WASD or the arrows to walk, drag (or Q and E) to look, the wheel to zoom, a click to pick. The quest HUD
   sits top left; the frame rate and the error count sit bottom left (`#jgpDeskErr`) with a `copy errors` button that
   copies the error report. Nothing sits top right.
