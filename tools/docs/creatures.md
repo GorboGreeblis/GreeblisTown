@@ -20,17 +20,17 @@ and 2.7 is half time. A move's size scales its whole-body offset.
 | MAMA GORBO | `p_mamagorbo` | `born_mamagorbo` | Wanders the park | pat, 1.3, 1.2 | jelly (5.45, 1) |
 | GOOWARD | `gorbo` | `born_gooward` | Wanders the park | pat, 1.6, 1.1 | bounce (5.45, 1.1) |
 | GEMTOE | `p_gemtoe` | `born_gemtoe` | Wanders the park | scatter, 2.4, 1 | twirl (2.7, 1) |
-| MONTGUMMERY | `w_mont` | `woods_mont` | Wanders the dance floor | pat, 1.9, 1 | His own: the robot |
+| MONTGUMMERY | `w_mont` | `pk_mont` | Wanders the dance floor | pat, 1.9, 1 | His own: the robot |
 | ETCHER | `p_etcher` | `born_etcher` | Wanders the dance floor | pat, 2.1, 0.9 | His own: the tentacle dance |
 | GLYPH | `p_glyph` | `born_glyph` | Wanders the dance floor | dig, 2.3, 1 | His own: the macarena |
-| HENNRICK | `gratelet` | `city_hennrick` | Strolls round the Portal | pat, 1.4, 1.2 | His own: a side-to-side roll |
+| HENNRICK | `gratelet` | `pk_hennrick` | Strolls round the Portal | pat, 1.4, 1.2 | His own: a side-to-side roll |
 | KING DINO | `m_kingdino` | `born_kingdino` | His drum kit behind the dance floor | Stays at his drums | Stays at his drums |
-| FORTIZMO | `frog` | `fortizmoPick` (wraps `city_fortizmo`) | Behind the Juice Bar's counter | Plays her horn | Plays her horn |
+| FORTIZMO | `frog` | `fortizmoPick` (wraps `pk_fortizmo`) | Behind the Juice Bar's counter | Plays her horn | Plays her horn |
 | SOMLET | `m_somlet` | `born_somlet` | Asleep before the Post Office | Stays asleep at home | Stays asleep at home |
 | MUSHROOM | `drifter` | `born_mushroom` | On the Sheriff's desk | pat, 1.8, 1 | shimmy (5.45, 1) |
 | ZOLLOD | `cutebex` | `born_zollod` | Behind the Garden Supplies counter | dig, 3, 0.8 | groove (5.45, 0.9) |
-| ANOMALEE | `blinker` | `anomaleePeg` (wraps `city_anomalee`) | Before the church, gazing up | dig, 1.5, 1 (eats pizza instead once Snacks is done) | stomp (5.45, 1) |
-| NEXTESSA | `t_nextessa` | `city_nextessa` | Only through the Portal, with a pizza | Never at the Event | Never at the Event |
+| ANOMALEE | `blinker` | `anomaleePeg` (wraps `pk_anomalee`) | Before the church, gazing up | dig, 1.5, 1 (eats pizza instead once Snacks is done) | stomp (5.45, 1) |
+| NEXTESSA | `t_nextessa` | `pk_nextessa` | Only through the Portal, with a pizza | Never at the Event | Never at the Event |
 | BACKPACKA | none | `BP`, made by the Garden Event | Only at the Garden Event | The Event's climax | The Event's climax |
 | THE ANCIENT | `slug` | Built by the church | The church's secret room | Never | Never |
 
@@ -209,7 +209,7 @@ shows each battle move with its own animation, and gives one Ancient Artifact fo
 
 ### MONTGUMMERY
 
-- **Build:** `woods_mont` at 0.9 scale, about 2.92 m. His hands are mirrored so the palms face his body.
+- **Build:** `pk_mont` at 0.9 scale, about 2.92 m. His hands are mirrored so the palms face his body.
 - **Face:** a CRT screen head, redrawn only when it changes: pixel eyes over a flat mouth; the mouth opens and closes
   as he talks; a pixel shovel while he plants (and for his line at the Event); a robot face (square eyes flicking on
   the beat over a grille mouth) while he dances and for a while after a Blossom; a pixel fist, scissors or blank page
@@ -263,7 +263,7 @@ Neither is of the town, and the town takes nothing of either's design.
 
 ### HENNRICK
 
-- **Build:** `city_hennrick` at 0.88 scale, 3.15 m.
+- **Build:** `pk_hennrick` at 0.88 scale, 3.15 m.
 - **Lore:** he comes from the far past, from Greeblis City, and came through the Portal some time before the player
   arrived. To him, this small town is the far future ("In my era, the towers of Greeblis City reach the clouds.").
 - **Role:** strolls from spot to spot round the Portal and stops to look at it. His own built-in dance rolls him side
@@ -271,7 +271,7 @@ Neither is of the town, and the town takes nothing of either's design.
 
 ### NEXTESSA
 
-- **Build:** `city_nextessa`.
+- **Build:** `pk_nextessa`.
 - **Lore:** she is from the far future, which is why she comes through the Portal.
 - **Role:** the pizza courier. Called from the phone booth (only once MUSHROOM has opened the Portal), she comes
   through the Portal 30 s later with a pizza box on her head, walks to wherever the player is, hands it over (+20

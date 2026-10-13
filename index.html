@@ -32,7 +32,9 @@
 </script>
 <script>
 "use strict";
-// JGP mobile test mode flag (temporary): Android phones (not Quest) or ?mobile=1; ?mobile=0 forces it off
+// ---- TEST-MODE-BEGIN: the Desktop and Mobile test modes, cut for the final build (see tools/docs/release.md) ----
+// the Mobile test mode's flag: Android phones (not the Quest) or ?mobile=1; ?mobile=0 forces it off. (Once the test
+// modes are cut it is never set, so every window.__jgpMobile check reads false and takes the headset's settings.)
 window.__jgpMobile = (() => {
 	const q = location.search;
 	if (/[?&]mobile=0/.test(q)) return !1;
@@ -40,6 +42,9 @@ window.__jgpMobile = (() => {
 	const ua = navigator.userAgent || "";
 	return /Android/i.test(ua) && !/OculusBrowser|Quest/i.test(ua);
 })();
+// ?desktop=1 runs the Desktop test mode on a Quest too
+window.__jgpWantDesktop = /[?&]desktop=1/.test(location.search);
+// ---- TEST-MODE-END ----
 // THE OWNER'S RULES FOR WHERE THE GAME RUNS: Chrome is the only browser ever supported, on desktop and on a
 // phone; a phone is only ever an Android phone (no iPhone or any other phone); Mac computers are never
 // supported (a Mac's Chrome included); and in VR only the Meta Quest line in the Meta Quest Browser (the game
@@ -190,11 +195,11 @@ const t = {
 		// (sold as a "bagel seasoning packet", 15 flint (10 before; the owner); everywhere else they are just the Seeds)
 		{ id: "seeds", slot: null, name: "bagel seasoning packet", cost: 15, reward: "seeds" },
 	],
-	// the pizza courier: NEXTESSA, as she is in Greeblis City (her model is final)
+	// the pizza courier: NEXTESSA (her model is final)
 	s = {
 		name: "NEXTESSA",
 		color: "#ef7536",
-		builder: "city_nextessa",
+		builder: "pk_nextessa",
 		bodyR: 0.92,
 		modelScale: 1,
 		phoneLabel: "Call for pizza",
@@ -246,8 +251,8 @@ const t = {
 		seedsHave: "You already have the bagel seasoning packet.",
 		seedsBought: "You bought the bagel seasoning packet! SEEDS quest complete!",
 	},
-	// DANCE BATTLES with the three Dancers (ETCHER, GLYPH and MONTGUMMERY): Greeblis City's dance-offs,
-	// now played as rock, paper, scissors, started by giving the Dancer a Blossom. Every round the
+	// DANCE BATTLES with the three Dancers (ETCHER, GLYPH and MONTGUMMERY): dance-offs
+	// played as rock, paper, scissors, started by giving the Dancer a Blossom. Every round the
 	// Dancer goes first and shows their move, then you answer with one of yours; a move always beats
 	// one other (Rock out! beats the splits, the splits beat going horizontal, going horizontal beats
 	// Rock out!). Each round you win teaches you one of their steps; learn them all and you win. The
@@ -2553,7 +2558,7 @@ function ro(t, e = 0.05, o = 24, a = 6, n = !1) {
 	);
 	return new THREE.TubeGeometry(r, o, e, a, n);
 }
-// model builders by name (filled in by the pulled and hand-built models below)
+// model builders by name (filled in by the packaged and hand-built models below)
 const so = {};
 let At = null;
 function io(t) {
@@ -3967,8 +3972,7 @@ const ee = (function () {
 				_t.update({ log: e, items: this.items(), sub: this.sub() });
 		},
 	},
-	// the Dance battle engine (Greeblis City's battle panel and its bar, with rock, paper, scissors
-	// rounds). The Dancer shows each move with its own animation (ent.battleMove) and does its own
+	// the Dance battle engine (the battle panel and its bar, with rock, paper, scissors rounds). The Dancer shows each move with its own animation (ent.battleMove) and does its own
 	// dance as a victory dance after you win.
 	Dbt = (() => {
 		const T = battleText;
@@ -4674,7 +4678,7 @@ const le = (() => {
 		},
 		solidR: 0.6,
 	},
-	// THE LIGHT BULB (from Greeblis City, where THE SCIENTIST had it over long speeches): a bulb with
+	// THE LIGHT BULB (for long speeches): a bulb with
 	// a screw base fades in over the speaker's head with a warm halo, a point light and a soft cone
 	// of light, while the rest of the town dims toward night. It follows the speaker (`at` gives a
 	// world position) and fades out a moment after the dialogue closes unless `hold` is set.
@@ -6357,8 +6361,11 @@ const xe = (() => {
 				t > e.stallMs &&
 					(s.set(0, 0, 0), o.log("stall " + Math.round(t) + "ms, recentred"), (o.lastFrame = performance.now()));
 			}, 500);
+		// the test modes' state; only this stub stays once they are cut, so the shared code's dk.on checks read false
+		const dk = { on: !1 };
+		// ---- TEST-MODE-BEGIN: the Desktop and Mobile test modes, cut for the final build (see tools/docs/release.md) ----
 		/* ==================================================================
-		 * JGP DESKTOP TEST MODE (temporary, for testing only, not for release)
+		 * THE DESKTOP TEST MODE (for testing only, not for release)
 		 * Third-person camera on a regular desktop browser. Reuses the VR UI
 		 * pipeline: the mouse acts as the right-hand pointer ray and a fixed
 		 * camera-mounted "grip" holds the wrist HUD.
@@ -6368,8 +6375,7 @@ const xe = (() => {
 		 *   Space / Enter  advance text  1-9                pick panel item
 		 *   Esc            close menu/panel
 		 * ================================================================== */
-		const dk = {
-			on: !1,
+		Object.assign(dk, {
 			yaw: 0,
 			// (a near-level start, so the billboard the player faces at the spawn is in the first frame here too)
 			pitch: 0.2,
@@ -6387,11 +6393,11 @@ const xe = (() => {
 			joy: { x: 0, y: 0 },
 			cy: 0,
 			cp: 0.2,
-		};
+		});
 		// (for the tests: the test modes' camera, so a probe can turn it)
 		window.__jgpDk = dk;
 		/* ==================================================================
-		 * JGP MOBILE TEST MODE (temporary, for testing only)
+		 * THE MOBILE TEST MODE (for testing only, not for release)
 		 * Builds on the desktop test mode: on-screen joystick + buttons, a
 		 * diagnostics panel, portrait-friendly UI placement and adaptive
 		 * resolution. Enabled automatically on phones, or with ?mobile=1.
@@ -6790,13 +6796,13 @@ const xe = (() => {
 				(be = null);
 		}
 		/* ============================ end desktop ============================ */
+		// ---- TEST-MODE-END ----
 		const Ze = mo("gate"),
 			$e = mo("gateTitle"),
 			Ke = mo("gateText");
-		const wantDesktop = /[?&]desktop=1/.test(location.search);
 		if (
 			((o.isQuest = /OculusBrowser|Quest/i.test(navigator.userAgent || "") || !!window.__gbHarness),
-			o.isQuest && navigator.xr && !wantDesktop)
+			o.isQuest && navigator.xr && !window.__jgpWantDesktop)
 		) {
 			($e.textContent = "-Greeblis Town-"),
 				(Ke.textContent = "Press A to enter VR"),
@@ -6822,6 +6828,7 @@ const xe = (() => {
 			};
 			requestAnimationFrame(e), (o.onPresenting = (t) => Ze.classList.toggle("on", !t));
 		} else {
+			// ---- TEST-MODE-BEGIN: the Desktop and Mobile test modes, cut for the final build (see tools/docs/release.md) ----
 			($e.textContent = "-Greeblis Town-"),
 				(Ke.textContent = MOB
 					? "MOBILE TEST MODE\n(temporary, VR is the real game)\n\nTap to start\n\nleft stick: move · drag: look\ntap a creature or use TALK / GIVE\ntap the screen to go on or close"
@@ -6833,6 +6840,7 @@ const xe = (() => {
 				o.presenting || ((e && e.type === "keydown" && e.repeat) || enterDesktop());
 			};
 			Ze.addEventListener("click", t), addEventListener("keydown", t);
+			// ---- TEST-MODE-END ----
 		}
 		return (o.headPos = n), o;
 	})();
@@ -7059,16 +7067,15 @@ const Ho = (() => {
 		Object.assign(o, { capture: i, restore: c })
 	);
 })();
-/* PULLED-MODELS-BEGIN */
+/* PACKAGED-MODELS-BEGIN */
 /* =========================================================================
- * CREATURE MODELS PULLED FROM GREEBLIS CITY, WOODS AND PARK (only the ones this game uses)
- * The original builder functions are copied verbatim (with the helpers
- * they use) into an isolated scope, so names from different games never clash.
- * Shared engine services (three.js helpers, scene, audio, effects) are ours.
+ * PACKAGED CREATURE MODELS: minified builders for HENNRICK, FORTIZMO, ANOMALEE and NEXTESSA, each with
+ * the helpers it uses, in an isolated scope so their names never clash with the game's. Shared engine
+ * services (three.js helpers, scene, audio, effects) come from the game.
  * ========================================================================= */
-const JGP_CITY=(()=>{const __R={};
+const PK_MODELS=(()=>{const __R={};
 __R["anomalee"]=function(t,e){const o="#b3c48f",a="#18d6ee",n="#6c7a7a",r="#1a2228",s="#e01ce0",i=(t,e,o)=>{const a=b(t,e,o);return a.magFilter=THREE.NearestFilter,a.minFilter=THREE.NearestFilter,a.generateMipmaps=!1,a},l=i(32,32,(t=>{t.fillStyle=o,t.fillRect(0,0,32,32);for(let e=-32;e<40;e+=10){t.fillStyle=a;for(let o=0;o<32;o++)t.fillRect(e+o,o,4,1);t.fillStyle=n;for(let o=0;o<32;o++)t.fillRect(e+o+5,o,2,1)}t.fillStyle="#c9d6a8";for(let e=0;e<8;e++)t.fillRect(9*e%30,13*e%30,2,2);t.fillStyle=r,t.fillRect(0,0,32,1),t.fillRect(0,31,32,1),t.fillRect(0,0,1,32),t.fillRect(31,0,1,32)}));l.wrapS=l.wrapT=THREE.RepeatWrapping;const c=new THREE.MeshPhongMaterial({map:l,shininess:8,flatShading:!0}),h=t=>new THREE.MeshPhongMaterial({color:t,shininess:20,flatShading:!0}),p=(t,e,o,a=128,n=64,r=!1)=>i(a,n,(s=>{s.fillStyle=e,s.fillRect(0,0,a,n),s.fillStyle=o,s.font="bold "+Math.floor(.62*n)+"px 'Courier New', monospace",s.textAlign="center",s.textBaseline="middle",s.fillText(t,a*(r?.6:.5),.52*n),r&&(s.strokeStyle="#ffffff",s.lineWidth=4,[10,18,26].forEach((t=>{s.beginPath(),s.arc(20,.7*n,t,1.25*Math.PI,1.75*Math.PI),s.stroke()})))})),f=new THREE.Group;t.add(f);const u=(t,e,o,a,n,r,s)=>R(new THREE.BoxGeometry(t,e,o),a,n,r,s),m=new THREE.Group;m.position.set(0,1.25,-.05),m.rotation.x=-.12,f.add(m),u(1.05,.9,1.35,c,m),u(.62,.3,.02,x.basic(16777215,{map:p("adb",o,"#2f5fd8")}),m,[0,.18,.68]),u(.5,.2,.02,x.basic(16777215,{map:i(64,32,(t=>{t.fillStyle=a,t.fillRect(0,0,64,32),t.fillStyle="#e8e8d0";for(let e=3;e<30;e+=7)for(let o=3;o<62;o+=8)t.fillRect(o,e,6,5)}))}),m,[0,-.15,.68]);const M=new THREE.Group;M.position.set(0,2.15,.35),M.scale.setScalar(1.3),f.add(M),u(1,.78,.6,h("#29c7d9"),M),u(.84,.62,.3,h("#1fa3b4"),M,[0,0,-.42]);const g=i(64,48,(t=>{t.fillStyle=s,t.fillRect(0,0,64,48),t.fillStyle="#f08af0",t.fillRect(4,4,10,2),t.fillRect(4,4,2,8),t.strokeStyle="#f6b8f6",t.lineWidth=2,[4,7,10].forEach((e=>{t.beginPath(),t.arc(52,16,e,1.25*Math.PI,1.75*Math.PI),t.stroke()})),t.fillStyle="#f6b8f6",t.fillRect(51,15,2,2)})),E=i(64,48,(t=>{for(let e=0;e<48;e+=2)for(let o=0;o<64;o+=2)t.fillStyle=Math.random()<.5?"#f0f0f0":Math.random()<.5?s:"#303040",t.fillRect(o,e,2,2)})),y=x.basic(16777215,{map:g}),T=[0,1,2,3].map((t=>i(64,48,(e=>{e.fillStyle=s,e.fillRect(0,0,64,48);for(let o=0;o<8;o++){const a=2+(7*o+5*t+o%3*t)%9;for(let t=0;t<a;t++)e.fillStyle=t>6?"#ffffff":t>4?"#f6b8f6":"#f08af0",e.fillRect(4+7*o,42-4*t,5,3)}}))));u(.82,.6,.02,y,M,[0,.02,.305]),u(.9,.12,.3,h("#f2f2ea"),M,[0,-.46,.12]);for(let t=0;t<6;t++)u(.08,.05,.02,h(r),M,[.12*t-.3,-.46,.275]);const H=new THREE.Group;H.position.set(.3,2.82,-.3),f.add(H),u(.85,.36,.5,h("#9aa88c"),H),u(.7,.24,.02,x.basic(16777215,{map:p("adb","#3a5a8a","#6fb0ff",128,48,!0)}),H,[0,0,.26]);const w=[[.3,-.18,.1],[.1,-.18,.2],[.38,-.18,-.1]].map((([t,e,o],a)=>{const n=new THREE.Group;return n.position.set(t,e,o),H.add(n),R(ao([[0,0,0],[.12+.05*a,-.3,.1],[.2+.05*a,-.7,.05],[.05,-.95,-.05]],.028,.028,16,6),h(1===a?"#1f7f9a":"#2a3f7a"),n),n})),v=new THREE.Group;v.position.set(0,1.55,.72),f.add(v),u(.55,.3,1.05,c,v,[0,0,.5]),[-1,1].forEach((t=>{u(.02,.2,.06,h(r),v,[.28*t,0,.45]),u(.02,.06,.2,h(r),v,[.28*t,0,.45]),u(.021,.05,.05,h(a),v,[.28*t,0,.45])}));for(let t=0;t<6;t++)u(.07,.07,.06,h("#f4f4ec"),v,[t%2?.12:-.12,-.18,.2+.14*t]);const S=new THREE.Group;S.position.set(0,1.32,.72),f.add(S),u(.52,.14,1,h("#8fa3b0"),S,[0,0,.5]),u(.5,.012,.9,x.basic(16777215,{map:i(64,64,(t=>{t.fillStyle="#b6c3a0",t.fillRect(0,0,64,64),t.fillStyle="#e8ecd8";for(let e=2;e<62;e+=6)for(let o=2;o<62;o+=7)t.fillRect(o,e,5,4)}))}),S,[0,.076,.48]),u(.4,.1,.02,h("#6f9fe8"),S,[0,0,1.01]);const k=new THREE.Group;k.position.set(.55,1.45,.4),f.add(k),u(.16,.5,.16,c,k,[.08,-.15,.1],[.4,0,-.3]);const P=new THREE.Group;P.position.set(.32,.1,.35),P.rotation.set(-.2,-.3,.1),k.add(P),u(.34,.4,.06,h("#f4f4f0"),P),u(.26,.2,.01,x.basic(s),P,[0,.05,.035]),u(.12,.12,.12,h(a),P,[.2,-.05,.02]);const z=[[-1,.42],[1,.42],[-1,-.55],[1,-.55]].map((([t,e],o)=>{const a=new THREE.Group;a.position.set(.45*t,.95,e),f.add(a),u(.26,.55,.3,c,a,[0,-.2,.05],[.3,0,0]);const r=new THREE.Group;return r.position.set(0,-.45,.14),a.add(r),u(.2,.52,.22,c,r,[0,-.24,-.05],[-.25,0,0]),u(.28,.1,.4,h(n),r,[0,-.48,.02]),3===o&&(a.visible=!1),{hip:a,knee:r,phase:0===o||3===o?0:Math.PI}}));u(.35,.3,.6,c,f,[0,1.1,-.95],[-.35,0,0]);const C=10*Math.random();let I=0,A=0,G=-1,B=0,F=4+6*Math.random();return{height:3.3,onTalk(){G=0,B=.4},anim(t,e,o){const a=!(!o||!o.moving),n=Bt(o,e),r=Ft(t);A+=((a?1:0)-A)*d(6,e),a&&(I+=7*e),z.forEach((t=>{const e=Math.sin(I+t.phase);t.hip.rotation.x=.4*A*e,t.knee.rotation.x=.4*A*Math.max(0,-Math.cos(I+t.phase))})),f.position.y=.075*A*Math.abs(Math.sin(I)),M.rotation.set(.03*Math.sin(1.2*t+C),.06*Math.sin(.7*t+C),0),w.forEach(((e,o)=>{e.rotation.z=.08*Math.sin(1.6*t+o)+.28*n*Math.max(0,Math.sin(Math.PI*r+1.3*o)),e.rotation.x=.06*Math.sin(1.3*t+2*o)+.1*A*Math.sin(2*I)})),k.rotation.x=.05*Math.sin(1.4*t+C)+.12*A*Math.sin(I),G<0&&Math.random()<.08*e&&(G=0),G>=0&&(G+=e,S.rotation.x=.35*Math.abs(Math.sin(9*G))*(1-G/.9),G>.9&&(G=-1,S.rotation.x=0));const s=o&&o.group.scale.x<.97;t>F&&(B=.35,F=t+5+8*Math.random()),s&&(B=Math.max(B,.15)),B=Math.max(0,B-e),y.map=B>0&&Math.floor(20*t)%2?E:n>.5?T[Math.floor(4*r)%4]:g,M.position.x=B>0?.06*(Math.random()-.5):0}}};
-// (HENNRICK's model, city_hennrick, is final: keep it as it is.)
+// (HENNRICK's model, pk_hennrick, is final: keep it as it is.)
 // (his dance rolls him side to side about his feet: he is lifted by the roll so the outer foot never dips into the ground)
 __R["hennrick"]=(t,e)=>{const o=new THREE.Group;t.add(o);const a=new THREE.Group;o.add(a);const n=(t,e,o,a,n=3)=>{let r=a;const s=()=>(r=16807*r%2147483647)/2147483647,i=b(256,256,(a=>{a.fillStyle=t,a.fillRect(0,0,256,256),a.lineCap="round";for(let t=0;t<2600;t++){const t=256*s(),n=256*s(),r=2*Math.PI*s(),i=3+5*s();a.strokeStyle=s()<.5?e:o,a.globalAlpha=.35+.4*s(),a.lineWidth=1.2+1.6*s(),a.beginPath(),a.moveTo(t,n),a.lineTo(t+Math.cos(r)*i,n+Math.sin(r)*i),a.stroke()}a.globalAlpha=1}),{smooth:!0});return i.wrapS=i.wrapT=THREE.RepeatWrapping,i.repeat.set(n,n),i},r=t=>new THREE.MeshPhongMaterial({map:t,bumpMap:t,bumpScale:.05,shininess:6,specular:1118481}),s=r(n("#c85ac8","#f08ae8","#8a3a9a",5)),i=r(n("#d8782a","#f2a050","#a8501a",9,2)),c=(t,e)=>{const o=t.attributes.position,a=t.attributes.normal;for(let t=0;t<o.count;t++){const n=o.getX(t),r=o.getY(t),s=o.getZ(t),i=43758.5453*Math.sin(12.9898*Math.round(97*n)+78.233*Math.round(97*r)+37.719*Math.round(97*s)),l=e*(i-Math.floor(i)-.5);o.setXYZ(t,n+a.getX(t)*l,r+a.getY(t)*l,s+a.getZ(t)*l)}return t.computeVertexNormals(),t},h=(t,e,o,a=32,n=.035)=>c(new THREE.SphereGeometry(1,a,Math.round(.7*a)).scale(t,e,o),n),p=new THREE.MeshPhongMaterial({color:"#9ca3ae",shininess:120,specular:16777215}),f=new THREE.MeshPhongMaterial({color:"#d8702a",shininess:110,specular:16772829}),u=new THREE.MeshBasicMaterial({color:"#3ae8f0"}),d=new THREE.MeshBasicMaterial({color:"#6aff4a"}),m=new THREE.Vector3(0,1.75,0),M=[1,1.05,.82];R(h(...M,30),s,a,[m.x,m.y,m.z]);const E=new THREE.Vector3(0,2.72,.12),g=[.86,.74,.84];R(h(...g,30),s,a,[E.x,E.y,E.z]);const y=(t,e,o,a,n=.01)=>{const r=1-(o/e[0])**2-(a/e[1])**2;if(r<=0)return null;const s=e[2]*Math.sqrt(r),i=new THREE.Vector3(o/(e[0]*e[0]),a/(e[1]*e[1]),s/(e[2]*e[2])).normalize();return{p:new THREE.Vector3(t.x+o,t.y+a,t.z+s).addScaledVector(i,n),n:i}},x=(t,e,o,a,n,r,s,i=16,l=2)=>{const c=[],h=[];for(let h=0;h<=l;h++)for(let p=0;p<=i;p++){const f=y(t,e,o+(a-o)*p/i,n+(r-n)*h/l,s)||{p:new THREE.Vector3(t.x,t.y,t.z)};c.push(f.p.x,f.p.y,f.p.z)}for(let t=0;t<l;t++)for(let e=0;e<i;e++){const o=t*(i+1)+e,a=o+i+1;h.push(o,o+1,a,o+1,a+1,a)}const p=new THREE.BufferGeometry;p.setAttribute("position",new THREE.Float32BufferAttribute(c,3)),p.setIndex(h),p.computeVertexNormals();const f=new Float32Array(c.length/3*2);for(let t=0,e=0;t<=l;t++)for(let o=0;o<=i;o++,e++)f[2*e]=o/i,f[2*e+1]=t/l;return p.setAttribute("uv",new THREE.BufferAttribute(f,2)),p};[[.6,.5],[.48,.62],[.34,.7]].forEach((([t,e])=>R(x(E,g,-e,e,t,t+.045,.03,20,1),u,a)));const H=m;for(let t=0;t<6;t++){const e=.2*t-.62,o=.58-.05*Math.abs(t-2.5);R(x(H,M,-o,o,e,e+.17,.03),i,a),R(x(H,M,.05-o,o-.05,e+.172,e+.19,.038,12,1),d,a)}[-1,1].forEach((t=>R(x(H,M,.55*t-.05,.55*t+.05,-.66,.58,.045,1,10),p,a)));const w=b(128,96,(t=>{t.fillStyle="#04120c",t.fillRect(0,0,128,96);for(let e=0;e<12;e++)for(let o=0;o<16;o++)Math.random()<.55&&(t.fillStyle=Math.random()<.3?"#9aff9a":"#3ad86a",t.fillRect(6+7.3*o,6+7.4*e,4+2*Math.random(),4))}));w.wrapT=THREE.RepeatWrapping;const v=new THREE.MeshBasicMaterial({map:w}),S=[0,1].map((t=>b(128,96,(e=>{e.fillStyle="#04120c",e.fillRect(0,0,128,96);for(let t=0;t<96;t+=4)e.fillStyle="#061a10",e.fillRect(0,t,128,2);const o=(t,o,a,n)=>{e.fillStyle="#9aff9a",e.fillRect(4*t,4*o,4*a,4*n)},a=t?-1:1;o(14,4,4,4),o(15,8,2,1),o(13,9,6,7),o(16+5*a,6,2,2),o(15+3*a,7,2,2),o(17+(t?-1:2),9,2,2),o(14-(t?-3:3),12,3,2),o(11-(t?-2:1),13,2,2),o(14,16,2,4),o(17,16,2,3),o(t?12:13,20,3,2),o(18,19,2,2),o(19,20,3,2);for(let o=0;o<6;o++){const a=2+(5*o+3*t)%7;e.fillStyle=o%2?"#3ad86a":"#2a9a5a",e.fillRect(4+21*o,92-3*a,12,3*a)}})))),k=y(E,g,0,-.05,0);R(T.box(.7,.46,.14),p,a,[0,k.p.y,k.p.z-.02]),R(T.plane(.6,.36),v,a,[0,k.p.y,k.p.z+.055]);const P=new THREE.MeshBasicMaterial({color:"#3ae8f0"});[[-.46,.17],[-.66,.06],[-.5,-.06],[-.7,-.2],[-.36,.34],[.46,.17],[.66,.06],[.5,-.06],[.36,.34]].forEach((([t,e])=>{const o=y(E,g,t,e,.01);if(!o)return;const n=(new THREE.Quaternion).setFromUnitVectors(new THREE.Vector3(0,0,1),o.n);R(T.torus(.085,.03,8,20),p,a,[o.p.x,o.p.y,o.p.z]).quaternion.copy(n),R(T.sphere(.065,12,10),P,a,[o.p.x,o.p.y,o.p.z])})),[-1,1].forEach((t=>{const e=y(E,g,.42*t,-.34,-.02).p;R(T.cyl(.11,.13,.16,16),p,a,[e.x,e.y,e.z],[Math.PI/2-.3,0,-.4*t]),R(ao([[0,0,0],[.22*t,-.24,.16],[.52*t,-.24,.2],[.74*t,.1,.14],[.82*t,.6,.04]].map((([t,o,a])=>[e.x+t,e.y+o,e.z+a])),.085,.02,30,10),f,a)}));const z=[-.22,-.075,.075,.22].map(((t,e)=>{const o=y(E,g,t,-.3,-.06),n=[];let r=a;for(let t=0;t<4;t++){const e=new THREE.Group,a=.14-.022*t,i=a-.022;t?e.position.set(0,-.36,0):e.position.copy(o.p),r.add(e),R(c(new THREE.CylinderGeometry(i,a,.38,12,2),.014),s,e,[0,-.18,0]),R(c(new THREE.SphereGeometry(a,12,8),.012),s,e),n.push(e),r=e}return R(c(new THREE.SphereGeometry(.05,10,8),.008),s,r,[0,-.38,0]),{joints:n,i:e}})),C=[-1,1].map((t=>{R(h(.56,.52,.55,24),s,a,[1.02*t,2.18,-.02]);const e=new THREE.Group;e.position.set(1.12*t,2.05,0),a.add(e),R(T.torus(.42,.07,8,24),p,e,[.07*t,-.32,0],[Math.PI/2,0,.22*t]),R(h(.36,.62,.38,24),s,e,[.12*t,-.55,0]),R(h(.32,.55,.34,24),s,e,[.2*t,-1.2,.05]),R(T.cyl(.36,.36,.26,20),p,e,[.2*t,-1.12,.05]);for(let o=0;o<3;o++)R(T.box(.08,.04,.02),u,e,[.2*t,.06*o-1.07,.4]);[[-.48,.38],[-.6,.36],[-.72,.37]].forEach((([o,a])=>R(T.box(.22,.035,.02),u,e,[.12*t,o,a+.01],[0,0,.1*t]))),R(h(.3,.26,.3,20),s,e,[.24*t,-1.68,.1]);for(let o=0;o<3;o++)R(ao([[0,0,0],[0,-.12,.06],[-.04*t,-.22,0]],.05,.012,10,6),f,e,[.12*t+.1*t*(o-1),-1.84,.22-.04*Math.abs(o-1)]);return e})),I=[-1,1].map((t=>{const e=new THREE.Group;e.position.set(.55*t,1.05,0),a.add(e),R(h(.42,.55,.44,24),s,e,[0,-.35,0]),R(new THREE.SphereGeometry(.3,20,12,0,l,0,Math.PI/2),p,e,[0,-.45,.26],[Math.PI/2,0,0]),R(T.cone(.08,.2,10),p,e,[0,-.45,.6],[Math.PI/2,0,0]),R(h(.42,.26,.55,24),s,e,[0,-.85,.12]);for(let t=0;t<4;t++)R(ao([[0,0,0],[0,-.06,.12],[0,-.16,.16]],.05,.012,8,6),f,e,[.16*t-.24,-.84,.6]);return e})),A=10*Math.random(),G=new THREE.Matrix4,B=new THREE.Matrix4,F=new THREE.Matrix4,V=new THREE.Quaternion,W=new THREE.Vector3,D=new THREE.Vector3(1,1,1);let O=0,L=0,q=-1,Y=0,U=-1;return{height:3.4,onTalk(){q=0},singing(){U=0},anim(t,e,n){e=e||.016;const r=!(!n||!n.moving);O+=((r?1:0)-O)*Math.min(1,6*e),r&&(L+=4.5*e),I.forEach(((t,e)=>t.rotation.x=.35*O*Math.sin(L+e*Math.PI))),C.forEach(((e,o)=>{e.rotation.x=-.3*O*Math.sin(L+o*Math.PI)+.04*Math.sin(1.2*t+A+o),e.rotation.z=.05*(o?-1:1)*Math.sin(1.1*t+A)}));const s=1+.012*Math.sin(1.4*t+A);a.scale.set(s,1/s,s);let i=0;q>=0&&(q+=e,q<1.1&&(i=.55*Math.sin(Math.min(1,q/1.1)*Math.PI)),q>=1.1&&(q=-1)),Y+=((et(n)?1:0)-Y)*Math.min(1,4*e),U>=0&&(U+=e,U>1&&(U=-1));const l=Y,c=Math.abs(Math.sin(3.2*t));o.position.y=.075+i+.09*O*Math.abs(Math.sin(L))+.01*Math.sin(1.4*t+A)+.22*l*c,o.rotation.y=U>=0?2*Math.PI*(t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2)(U):0,a.rotation.z=.14*l*Math.sin(1.6*t),o.position.y+=.6*Math.abs(Math.sin(a.rotation.z)),l>.001&&C.forEach(((e,o)=>{const a=o?1:-1;e.rotation.z+=l*(a*(1.75+.45*Math.sin(3.2*t+o*Math.PI))-e.rotation.z),e.rotation.x+=l*(-.3*Math.sin(1.6*t+o)-e.rotation.x)})),l>.01&&I.forEach(((e,o)=>e.rotation.x=.14*l*Math.sin(3.2*t+o*Math.PI)));const h=.75+.25*Math.sin(2.2*t+A);u.color.setRGB(.23*h,.91*h,.94*h),P.color.set((t+A)%5<.12?"#0a3a40":"#3ae8f0"),w.offset.y=.25*t%1;{const e=Y>.5?S[Math.floor(Ft(t))%2]:w;v.map!==e&&(v.map=e)}const p=(r?1.7:1)+(q>=0?1.5:0);z.forEach((({joints:e,i:o})=>e.forEach(((e,a)=>{const n=.12*(o-1.5)*a*a*.35;e.rotation.x=(0===a?-.28:.1+.08*a)+.1*p*Math.sin(1.3*t+1.1*o+.7*a+A)+.2*Y*Math.sin(3.2*t+o+.6*a),e.rotation.z=n+.07*p*Math.sin(1.05*t+1.7*o+.5*a+A)+.25*Y*Math.sin(1.6*t+1.4*o)})))),z.forEach((({joints:t})=>{G.identity();for(let e=0;e<t.length;e++){const o=t[e];for(let t=0;t<10;t++){B.copy(G).multiply(F.compose(o.position,V.setFromEuler(o.rotation),D));let t=!1;for(const o of[-.2,-.38]){W.set(0,o,0).applyMatrix4(B);const a=.15-.022*e+.03;if(((W.x-m.x)/(M[0]+a))**2+((W.y-m.y)/(M[1]+a))**2+((W.z-m.z)/(M[2]+a))**2<1){t=!0;break}}if(!t)break;o.rotation.x-=.09}G.copy(B)}}))}}};
 __R["nextessa"]=function(t,e){const o="#f47a3a",a="#f09460",n=t=>x.clay(t,{shininess:26,specular:2760728}),r=new THREE.Group;t.add(r),R(v([{geo:T.sphere(1,32,24),matrix:S(0,.74,-.2,0,0,0,.74,.72,.66),color:o},{geo:T.sphere(1,32,24),matrix:S(-.41,.58,.22,0,0,0,.57,.58,.54),color:o},{geo:T.sphere(1,32,24),matrix:S(.42,.6,.2,0,0,0,.6,.6,.55),color:o}]),x.clay("#ffffff",{vertexColors:!0,shininess:26,specular:2760728}),r);const s=[],i=(t,e,o,r)=>{const i=new THREE.Group;return i.position.set(0,e,0),t.add(i),R(T.sphere(1,24,16),n(a),i,[0,0,0],null,[o,r,.95*o]),[-1,1].forEach((t=>{R(T.cone(.065,.14,8),n("#eea06c"),i,[t*o*.8,.15*-r,.5*o],[Math.PI/2-.3,0,-1.1*t])})),s.push(i),i},l=i(r,1.32,.45,.38),c=i(l,.44,.42,.36),h=i(c,.42,.39,.34),p=new THREE.Group;p.position.set(0,.5,0),h.add(p),R(T.sphere(1,28,22),n(a),p,[0,0,0],null,[.46,.45,.45]),R(T.box(.2,.15,.24),n("#e3875a"),p,[0,-.05,.5]),[-1,1].forEach((t=>{R(T.sphere(.045,10,8),x.clay("#f2c21e",{shininess:60}),p,[.25*t,.13,.33]),R(T.sphere(.016,6,5),x.basic("#ffffff"),p,[.265*t,.155,.37])}));const f=new THREE.Group;f.position.set(0,.45,0),p.add(f);const u=10*Math.random();let d=0,m=-1;return{height:3.5,carry:f,onTalk(){m=0},anim(e,o,a){const n=!(!a||!a.moving);d+=o*(n?9:0);const i=n?Math.abs(Math.sin(d)):0,l=n?1-.1*(1-i):1+.015*Math.sin(1.8*e+u);r.scale.set(1+.8*(1-l),l,1+.8*(1-l)),t.position.y=.12*i;const c=n?.1:.05,h=n?4.5:1.5;s.forEach(((t,o)=>{t.rotation.z=c*Math.sin(e*h+u-.7*o),t.rotation.x=.7*c*Math.sin(e*h*.8+u-.7*o)+(n?.05:0)}));let f=.04*Math.sin(2.1*e+u);m>=0&&(m+=o,f+=.25*Math.sin(Math.min(1,m/.8)*Math.PI*2)*(1-m/.8),m>.8&&(m=-1)),p.rotation.set(f,.08*Math.sin(.9*e+u),0)}}};
@@ -7077,10 +7084,10 @@ __R["fortizmo"]=(t,e)=>{const o=new THREE.Group;t.add(o);const a=(t,e,o,a)=>{let
 return __R;})();
 // the bundled three.js has no OctahedronGeometry; this stand-in is what the props were made with
 THREE.OctahedronGeometry||(THREE.OctahedronGeometry=function(t=1){const n=[1,0,0,-1,0,0,0,1,0,0,-1,0,0,0,1,0,0,-1].map(n=>n*t),o=new THREE.BufferGeometry;o.setAttribute("position",new THREE.Float32BufferAttribute(n,3)),o.setIndex([0,2,4,0,4,3,0,3,5,0,5,2,1,2,5,1,5,3,1,3,4,1,4,2]);const e=o.toNonIndexed();return e.setAttribute("uv",new THREE.Float32BufferAttribute(new Float32Array(48),2)),e.computeVertexNormals(),e});
-/* MONTGUMMERY (Greeblis Woods "mont"), pulled with only the helpers it reaches. Engine services
- * come from the top-level names captured as $x aliases (locals in the original code shadow the one-letter engine names). */
-const JGP_WOODS=(()=>{const $R=R,$S=S,$T=T,$ao=ao,$b=b,$c=c,$l=l,$u=u,$v=v,$x=x;
-// (MONTGUMMERY's model, woods_mont, with its flat screen mouth, is final: keep it as it is.)
+/* MONTGUMMERY ("mont"), packaged with only the helpers it reaches. Engine services come from the
+ * top-level names captured as $x aliases (locals in the builder shadow the one-letter engine names). */
+const PK_MONT=(()=>{const $R=R,$S=S,$T=T,$ao=ao,$b=b,$c=c,$l=l,$u=u,$v=v,$x=x;
+// (MONTGUMMERY's model, pk_mont, with its flat screen mouth, is final: keep it as it is.)
 // (His screen shows the script's emotes: a robot face for his Blossom line, a shovel for his Event line.)
 return{mont:function(e,t){const o="#1d2a23",a="#3db2d6",n="#e2521f",r=(e,t,o,a,n,r,s,i,l)=>{let c=l;const h=()=>(c=16807*c%2147483647)/2147483647;e.font="bold "+r+"px 'Courier New', monospace",e.textBaseline="top";for(let l=o;l<o+n;l+=1.05*r){let o="";const n=Math.floor(a/(.6*r));for(let e=0;e<n;e++)o+=h()<.12?" ":"{}[]()<>;:'\"=,._/\\|abcdeforstuvgxinpl0123456789"[Math.floor(47*h())];e.globalAlpha=i*(.6+.4*h()),e.fillStyle=s[Math.floor(h()*s.length)],e.fillText(o,t,l)}e.globalAlpha=1},s=$b(512,512,(e=>{r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.9,7)}));s.wrapS=s.wrapT=THREE.RepeatWrapping,s.repeat.set(2.5,1.6);const i=$b(512,512,(e=>{e.fillStyle=o,e.fillRect(0,0,512,512),r(e,4,0,508,512,22,["#8fdcec","#d8f4ff","#6cc8e0"],.85,11)}));i.wrapS=i.wrapT=THREE.RepeatWrapping,i.repeat.set(1.5,1.5);const l=new THREE.MeshPhongMaterial({color:o,specular:3355443,shininess:40}),c=new THREE.MeshPhongMaterial({map:i,specular:2763306,shininess:36}),h=new THREE.MeshPhongMaterial({map:s,transparent:!0,depthWrite:!1,specular:0,shininess:1}),p=new THREE.SphereGeometry(1,40,30);{const e=p.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=t.y,n=Math.hypot(t.x,t.z),r=a>0?6:2.4,s=Math.pow(Math.max(0,1-Math.pow(Math.abs(a),r)),1/r),i=n>1e-6?s/n:0;e.setXYZ(o,t.x*i,a,t.z*i)}p.computeVertexNormals()}const u=(()=>{const e=p.attributes.position,t=p.attributes.uv;let o=-1,a=-9;for(let t=0;t<e.count;t++){const n=e.getY(t),r=e.getZ(t);Math.abs(n+.25)<.08&&r>a&&(a=r,o=t)}return{u:t.getX(o),v:t.getY(o)}})(),f=$b(512,256,(e=>{e.fillStyle=o,e.fillRect(0,0,512,256);const t=512*u.u,a=256*(1-u.v);e.fillStyle="#4cb6e0",e.beginPath(),e.ellipse(t,a,52,50,0,0,$l),e.fill()})),d=new THREE.Group;e.add(d);const m=$R(p,new THREE.MeshPhongMaterial({map:f,specular:3355443,shininess:40}),d,[0,1.5,0],null,[.7,.8,.54]);$R(p.clone().scale(1.012,1.012,1.012),h,m).renderOrder=1;const g=[-1,1].map((e=>{const t=new THREE.Group;t.position.set(.29*e,.86,.02),t.scale.setScalar(1.15),d.add(t),$R($T.cyl(.1,.1,.28,12),c,t,[0,-.1,0]);const o=[],r=(e,t,a)=>o.push({geo:e,matrix:t,color:a});r(new THREE.CylinderGeometry(.162,.15,.42,16),$S(0,-.42,0),a),r(new THREE.TorusGeometry(.158,.018,6,18),$S(0,-.21,0,Math.PI/2,0,0),"#46bede"),r($T.sphere(1,16,12),$S(0,-.62,.07,0,0,0,.16,.11,.25),a),r($T.sphere(1,14,10),$S(0,-.63,.24,0,0,0,.15,.1,.12),n),r($T.sphere(1,14,10),$S(0,-.72,.07,0,0,0,.175,.035,.3),"#c9441a"),r($T.sphere(1,12,8),$S(0,-.7,-.12,0,0,0,.15,.055,.11),n),[-1,1].forEach((e=>r($T.box(.016,.36,.012),$S(.04*e,-.42,.163),"#f0c23a")));for(let e=0;e<7;e++)r($T.box(.08,.014,.012),$S(0,-.27-.05*e,.165),"#f0c23a");return[-1,1].forEach((e=>r($T.box(.014,.012,.16),$S(.04*e,-.585,.2,-.75,0,0),"#f0c23a"))),$R($v(o),$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),t),t})),y=new THREE.Group;y.position.set(-.22,1,-.36),d.add(y),$R($ao([[0,0,0],[-.25,-.25,-.12],[-.6,-.6,-.05],[-.92,-.84,.12],[-1.15,-.92,.3]],.085,.006,40,10),c,y);const b=$x.clay("#ffffff",{vertexColors:!0,shininess:30,specular:2236962}),M=(e,t,o,a,n,r)=>{const s=(new $c).subVectors(o,t),i=s.length(),l=(new $c).addVectors(t,o).multiplyScalar(.5),c=(new THREE.Quaternion).setFromUnitVectors(new $c(0,1,0),s.clone().normalize());e.push({geo:new THREE.CylinderGeometry(n,a,i,10),matrix:(new THREE.Matrix4).compose(l,c,new $c(1,1,1)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(t,c,new $c(a,a,a)),color:r}),e.push({geo:$T.sphere(1,10,8),matrix:(new THREE.Matrix4).compose(o,c,new $c(n,n,n)),color:r})},w=(e,t)=>{const o=new THREE.Group;o.position.copy(t),d.add(o);const a=new $c(.12*e,-.34,.03),n=new $c(.14*e,-.66,.09);return $R($ao([[0,0,0],[.08*e,-.18,0],[a.x,a.y,a.z],[.14*e,-.5,.06],[n.x,n.y,n.z]],.13,.085,20,10),c,o),$R((e=>{const t=[],o="#7cc6ea",a="#6db8dc";t.push({geo:$T.box(.034,.1,.1),matrix:$S(0,-.08,0),color:o}),t.push({geo:$T.sphere(1,14,10),matrix:$S(0,-.08,0,0,0,0,.022,.055,.055),color:o}),[[-1,-1],[-1,1],[1,-1],[1,1]].forEach((([e,a])=>t.push({geo:$T.sphere(1,8,6),matrix:$S(0,.045*e-.08,.045*a,0,0,0,.017,.012,.012),color:o}))),t.push({geo:$T.sphere(1,12,10),matrix:$S(0,-.015,0,0,0,0,.022,.03,.04),color:o}),[[.036,.078,.0125],[.012,.088,.013],[-.012,.083,.0125],[-.035,.066,.0112]].forEach((([n,r,s],i)=>{const l=new $c(0,-.13-(3===i?-.006:0),n),c=l.clone().add(new $c(.012*e,.5*-r,.006+.001*i)),h=c.clone().add(new $c(.03*e,.45*-r,.004));M(t,l,c,s,.92*s,o),M(t,c,h,.92*s,.8*s,a)}));const n=new $c(.006*e,-.06,.05),r=n.clone().add(new $c(.012*e,-.04,.028)),s=r.clone().add(new $c(.016*e,-.036,.01));return M(t,n,r,.017,.015,o),M(t,r,s,.015,.012,a),$v(t)})(-e),b,o,[n.x,n.y+.03,n.z],[.1,.25*e,-.08*e],[2.1,2.1,2.1]),o},E=w(-1,new $c(-.64,1.9,.02)),x=w(1,new $c(.66,1.9,.02)),T=new THREE.Group;T.position.set(0,2.62,.3),T.scale.setScalar(1.32),d.add(T);const R=(e,t,o,a,n=0)=>(a.moveTo(-e/2+o,n-t/2),a.lineTo(e/2-o,n-t/2),a.quadraticCurveTo(e/2,n-t/2,e/2,n-t/2+o),a.lineTo(e/2,n+t/2-o),a.quadraticCurveTo(e/2,n+t/2,e/2-o,n+t/2),a.lineTo(-e/2+o,n+t/2),a.quadraticCurveTo(-e/2,n+t/2,-e/2,n+t/2-o),a.lineTo(-e/2,n-t/2+o),a.quadraticCurveTo(-e/2,n-t/2,-e/2+o,n-t/2),a),A=new THREE.ExtrudeGeometry(R(1,.78,.12,new THREE.Shape),{depth:.52,bevelEnabled:!0,bevelThickness:.08,bevelSize:.06,bevelSegments:5,curveSegments:10,steps:6});A.translate(0,0,-.6);{const e=A.attributes.position,t=new $c;for(let o=0;o<e.count;o++){t.fromBufferAttribute(e,o);const a=$u(-t.z/.68,0,1),n=1-.42*Math.pow(a,1.3),r=Math.max(0,1-(t.x*t.x/.3+t.y*t.y/.2));e.setXYZ(o,t.x*n,t.y*n+.04*a,t.z-.26*a*a*r)}A.computeVertexNormals()}$R(A,l,T,[0,0,.2]),$R(new THREE.TorusGeometry(.035,.012,6,12),l,T,[0,.42,-.25]);const H=R(1.12,.9,.12,new THREE.Shape);H.holes.push(R(.9,.58,.06,new THREE.Path,.07)),$R(new THREE.ExtrudeGeometry(H,{depth:.05,bevelEnabled:!0,bevelThickness:.025,bevelSize:.012,bevelSegments:3,curveSegments:8}),new THREE.MeshPhongMaterial({color:"#55b8c6",specular:3355443,shininess:40}),T,[0,0,.2]);const zB=document.createElement("canvas");zB.width=zB.height=512;{const e=zB.getContext("2d"),t=e.createRadialGradient(256,240,40,256,256,360);t.addColorStop(0,"#7f52c8"),t.addColorStop(1,"#5a33a0"),e.fillStyle=t,e.fillRect(0,0,512,512),e.save(),e.scale(.66,1),e.font="500 86px 'Segoe UI', Calibri, Arial, sans-serif",e.fillStyle="#f29043",e.textBaseline="top",e.fillText("gfxinfo gfxinfo",60,22),e.restore(),e.save(),e.scale(.66,1),r(e,50,130,330,290,17,["#c6d2ff","#e6ecff","#9fb4f0"],.85,3),r(e,50,425,690,70,17,["#c6d2ff","#e6ecff"],.85,5),e.restore()}
 // (MONTGUMMERY's screen face, redrawn only when it changes: his pixel eyes with a flat mouth; the mouth
@@ -7117,16 +7124,15 @@ else{const sw=Math.sin(Math.PI*b/2);(D.rx+=.5*aW),(D.py+=.145*aW+.05*Math.sin(Ma
 (E.rotation.x+=D.eX),(E.rotation.z=D.eZ),(x.rotation.x+=D.xX),(x.rotation.z=D.xZ),(d.rotation.y=D.ry),(d.rotation.x=D.rx),(d.position.y+=D.py),(g[0].rotation.x+=D.g0),(g[1].rotation.x+=D.g1),(g[0].rotation.z=D.g0z),(g[1].rotation.z=D.g1z),(hy=D.hy),(l+=D.hz),(r+=D.hx)}
 else(dB=0),(E.rotation.z=x.rotation.z=d.rotation.y=d.rotation.x=g[0].rotation.z=g[1].rotation.z=0);
 T.rotation.set(r,hy,l)}}}};})();
-/* PULLED-MODELS-END */
+/* PACKAGED-MODELS-END */
 /* =========================================================================
  * GREEBLIS TOWN LAYER
- * Built on the Greeblis City engine. Its systems (talking, blossoms, shop,
- * event/finale, pizza phone, VR UI) are the original code; this layer sets
- * out the creatures (models pulled from Greeblis City, Park and Woods),
- * names, text and scenery. To write real content later, edit ROWS below.
+ * Sets out the creatures, their names and text, and the scenery, on top of
+ * the engine above (talking, Blossoms, the shop, the Event, the pizza phone,
+ * the VR interface). The cast is in ROWS below.
  * ========================================================================= */
 const JGP = (() => {
-	// ---- the cast: every creature uses a model pulled from Greeblis City, Park or Woods ----
+	// ---- the cast ----
 	// lines: talk dialogue (cycles). gift: reply to a Blossom. campfire: finale line.
 	// NPCs stand still in their rows and never walk.
 	// The line-up: every creature in one row.
@@ -7163,14 +7169,14 @@ const JGP = (() => {
 			list: [
 				["p_etcher", "ETCHER", "born_etcher", {"color": "#9ee09a", "bodyR": 1.15, "talkR": 3.6, "modelScale": 1.16}, () => JGP.floorSpot(0)],
 				["p_glyph", "GLYPH", "born_glyph", {"color": "#e88a8a", "bodyR": 1.1, "talkR": 3.6, "modelScale": 1.11}, () => JGP.floorSpot(1)],
-				["w_mont", "MONTGUMMERY", "woods_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9, "talkR": 3.8}, () => JGP.floorSpot(2)],
+				["w_mont", "MONTGUMMERY", "pk_mont", {"color": "#55b8c6", "bodyR": 0.86, "modelScale": 0.9, "talkR": 3.8}, () => JGP.floorSpot(2)],
 			],
 		},
 		// HENNRICK (final) roams round the Portal: he starts beside its doorway, looking at it, and strolls
 		// from spot to spot around it (see his roam, by FORTIZMO's patrol)
 		portal: {
 			face: (at) => Math.atan2(ot.x - at[0], ot.z - at[1]),
-			list: [["gratelet", "HENNRICK", "city_hennrick", {"color": "#c85ac8", "bodyR": 1.25, "modelScale": 0.88}, () => JGP.portalSpot()]],
+			list: [["gratelet", "HENNRICK", "pk_hennrick", {"color": "#c85ac8", "bodyR": 1.25, "modelScale": 0.88}, () => JGP.portalSpot()]],
 		},
 		// FORTIZMO tends the Juice Bar: she starts behind the counter by its gap and walks up and down
 		// behind it (see the Juice Bar), facing the dance floor whenever she stops; for the Garden Event
@@ -7744,16 +7750,16 @@ const JGP = (() => {
 		return { surf, eye, blinker, leg, arm, stride, mouth, compact, animated };
 	})();
 
-	// ---- models pulled from Greeblis City, Woods and Park: registered as city_*, woods_*, park_* ----
+	// ---- the packaged models, registered as pk_* ----
 	// A model that throws while building never stops the game from booting; it is reported and left empty.
-	const PULLED = { city: JGP_CITY, woods: JGP_WOODS };
-	for (const g in PULLED)
-		for (const k in PULLED[g]) {
-			const id = g + "_" + k,
-				fn = PULLED[g][k];
+	const PACKAGED = [PK_MODELS, PK_MONT];
+	for (const P of PACKAGED)
+		for (const k in P) {
+			const id = "pk_" + k,
+				fn = P[k];
 			so[id] = (grp, d, opts) => {
 				try {
-					return fn.call(PULLED[g], grp, d || {}, opts || {});
+					return fn.call(P, grp, d || {}, opts || {});
 				} catch (err) {
 					vo(err, "model " + id);
 					while (grp.children.length) grp.remove(grp.children[0]);
@@ -7761,9 +7767,8 @@ const JGP = (() => {
 				}
 			};
 		}
-	// ---- new creatures born from merges -------------------------------------------------------
-	// Each one is a new design that blends its parents (silhouette, palette, signature features)
-	// into a single creature, rather than parts of the parents stuck together.
+	// ---- the hand-built creatures ---------------------------------------------------------------
+	// Each one is a whole design (silhouette, palette, signature features), not parts stuck together.
 	const BORN = {};
 	const _v2 = (pts) => pts.map(([r, y]) => new THREE.Vector2(Math.max(1e-4, r), y));
 	const latheGeo = (pts, seg) => new THREE.LatheGeometry(_v2(pts), seg);
@@ -8183,7 +8188,7 @@ const JGP = (() => {
 	// down his throat and chest, tall ears lined in purple with two little purple horn nubs, yellow
 	// eyes and a glossy black nose; yellow daffodils on his shoulder and a dark feather fin between his
 	// shoulders; SHOPSTAR's collar with the orange APR coin and red sleeve garters; and a long tail with
-	// a gold star at its tip, trailing Sparkakus's glowing mist from Greeblis Park.
+	// a gold star at its tip, trailing his glowing mist.
 	// (SPARKAKUS's model (the librarian and his row stand-in) is final: keep it as it is.)
 	BORN.sparkakus = (g) => {
 		const root = new THREE.Group(),
@@ -8347,8 +8352,7 @@ const JGP = (() => {
 			const a = KIT.arm(body, [0.44 * sx, 1.5, 0.02], { len: 0.66, r: 0.1, mat: blueM, hand: "mitt", handMat: orangeM, rot: [0.12, 0, 0.16 * sx] });
 			return R(T.torus(0.105, 0.025, 6, 18), x.clay("#c8282a", { shininess: 40 }), a.sh, [0, -0.17, 0], [Math.PI / 2, 0, 0]), a;
 		});
-		// the long tail with a gold star at its tip, and from it Sparkakus's glowing mist (as in Greeblis
-		// Park): little puffs that curl up out of the tip and swirl away, pink as they leave and fading
+		// the long tail with a gold star at its tip, and from it Sparkakus's glowing mist: little puffs that curl up out of the tip and swirl away, pink as they leave and fading
 		// through cyan
 		const tail = new THREE.Group();
 		tail.position.set(0, 0.86, -0.36), body.add(tail);
@@ -8881,10 +8885,9 @@ const JGP = (() => {
 	};
 
 
-	// MUSHROOM = Mushroom (Greeblis City) + MUSHROOM (Greeblis Woods).
-	// One mushroom: City's domed cap with Woods' rim band and white spots in both sizes, glowing from
-	// gold at the crown to deep orange at the rim; a cream stem with City's grain, Woods' collar skirt,
-	// City's little feet and brows, and the blush both share. He is the town's sheriff: a gold sheriff's
+	// MUSHROOM: a domed cap with a rim band and white spots in both sizes, glowing from gold at the
+	// crown to deep orange at the rim; a cream stem with a fine grain, a collar skirt, little feet and
+	// brows, and a blush. He is the town's sheriff: a gold sheriff's
 	// star on his stem and a sheriff's hat on his cap. (This model, badge and hat included, is final:
 	// keep it as it is.)
 	BORN.mushroom = (g) => {
@@ -8895,7 +8898,7 @@ const JGP = (() => {
 			stem = new THREE.Group();
 		g.add(root), root.add(stem), (cap.position.y = 1.3), stem.add(cap);
 		R(latheGeo(smoothProfile([[0, 0.04], [0.55, 0.06], [0.62, 0.25], [0.55, 0.6], [0.5, 1.0], [0.46, 1.3], [0, 1.32]], 40), 36), cream, stem);
-		// Woods' collar skirt, now a frilled ring of drooping scallops
+		// the collar skirt, a frilled ring of drooping scallops
 		const frill = KIT.surf("soft", "#fbf6e4", { rep: 1, bump: 0.015, shine: 30 });
 		R(latheGeo([[0.45, 1.13], [0.58, 1.07], [0.62, 1.04]], 30), frill, stem);
 		for (let k = 0; k < 18; k++) {
@@ -8925,7 +8928,7 @@ const JGP = (() => {
 				sz = 0.06 + 0.12 * r7();
 			onEllipsoid(cap, T.sphere(1, 14, 10), spot, [0, 0.02, 0], [1.22, 0.64, 1.22], [Math.sin(ph) * Math.cos(a), Math.cos(ph), Math.sin(ph) * Math.sin(a)], [sz, sz * 0.85, 0.045 + 0.03 * r7()], 0.985);
 		}
-		// City's little feet, with threads of mycelium trailing off them
+		// little feet, with threads of mycelium trailing off them
 		[-1, 1].forEach((sx) => {
 			R(T.sphere(1, 14, 10), cream, root, [0.32 * sx, 0.06, 0.38], null, [0.22, 0.1, 0.18]);
 			for (let k = 0; k < 3; k++) {
@@ -8942,7 +8945,7 @@ const JGP = (() => {
 			R(new THREE.SphereGeometry(0.22 * sz * 2.6, 16, 8, 0, l, 0, Math.PI / 2), KIT.surf("skin", cc, { rep: 1, bump: 0.02, shine: 50 }), stem, [px + 0.14 * sz * Math.sign(px), py + 0.33 * sz * 2, pz], [0, 0, -0.4 * Math.sign(px)], [1, 0.75, 1]);
 			R(T.sphere(0.035 * sz * 3, 8, 6), spot, stem, [px + 0.14 * sz * Math.sign(px), py + 0.33 * sz * 2 + 0.11 * sz * 2.6, pz]);
 		});
-		// face: eyes, City's brows, blush, and a little smile
+		// face: eyes, brows, blush, and a little smile
 		const lids = [];
 		[-1, 1].forEach((sx) => {
 			lids.push(KIT.eye(stem, [0.2 * sx, 0.78, 0.47], 0.095, { iris: "#1a1a20", lid: "#f6eed4", open: -0.3, rot: [0, 0.35 * sx, 0] }).lid);
@@ -10651,12 +10654,12 @@ const JGP = (() => {
 				return { height: 2, anim() {} };
 			}
 		};
-	// (FORTIZMO's model, city_fortizmo, is final: keep it as it is.)
+	// (FORTIZMO's model, pk_fortizmo, is final: keep it as it is.)
 	// FORTIZMO sculpts her geometry after its bounds are computed (and bends her horn at runtime), so
 	// taps on her outer body missed her and could select a creature behind her. Refresh the bounds
 	// with some headroom so picking always finds her.
 	so.fortizmoPick = (g, d, opts) => {
-		const r = so.city_fortizmo(g, d, opts);
+		const r = so.pk_fortizmo(g, d, opts);
 		g.traverse((m) => {
 			if (!m.isMesh || !m.geometry || !m.geometry.attributes.position) return;
 			m.geometry.computeBoundingSphere(), m.geometry.boundingSphere && (m.geometry.boundingSphere.radius *= 1.3);
@@ -10664,11 +10667,11 @@ const JGP = (() => {
 		return r;
 	};
 
-	// ANOMALEE lost her back-right leg in Greeblis City; here she stomps about on a wooden peg leg.
+	// ANOMALEE has lost her back-right leg; she stomps about on a wooden peg leg.
 	// The empty hip still swings with her walk cycle, so the peg goes on that hip.
 	// (ANOMALEE's model, peg leg included, is final: keep it as it is.)
 	so.anomaleePeg = (g, d, opts) => {
-		const r = so.city_anomalee(g, d, opts);
+		const r = so.pk_anomalee(g, d, opts);
 		let hip = null;
 		g.traverse((n) => {
 			!hip && n.isGroup && !n.visible && Math.abs(n.position.x - 0.45) < 0.01 && Math.abs(n.position.z + 0.55) < 0.01 && (hip = n);
@@ -10779,13 +10782,17 @@ const JGP = (() => {
 	// (th.dh lifts the roof, and everything over the walls, by that much; th.desk is the height of the
 	// top of the desk at the front, 1.12 m unless set)
 	function kioskFrame(o, th) {
-		const dh = th.dh || 0,
+		// the frame's parts are closed boxes, drawn from the front only: drawn from both sides (every material's
+		// default here), a box's inside faces meet its outside ones along each edge, and the edge shimmers between
+		// the two (the counter top's rim did, seen from behind the counter)
+		const front = (m) => Object.assign(m.clone(), { side: THREE.FrontSide }),
+			dh = th.dh || 0,
 			D = th.desk || 1.12,
-			deck = KIT.surf("wood", "#a8865c", { rep: 2, bump: 0.03, shine: 12 }),
-			wall = KIT.surf("wood", th.wall, { rep: 1, bump: 0.03, shine: 10 }),
-			wall2 = KIT.surf("wood", th.wall2, { rep: 1, bump: 0.03, shine: 10 }),
-			white = x.clay("#f6f2e8", { shininess: 30 }),
-			crate = KIT.surf("wood", "#c8a070", { rep: 1, bump: 0.03, shine: 10 }),
+			deck = front(KIT.surf("wood", "#a8865c", { rep: 2, bump: 0.03, shine: 12 })),
+			wall = front(KIT.surf("wood", th.wall, { rep: 1, bump: 0.03, shine: 10 })),
+			wall2 = front(KIT.surf("wood", th.wall2, { rep: 1, bump: 0.03, shine: 10 })),
+			white = front(x.clay("#f6f2e8", { shininess: 30 })),
+			crate = front(KIT.surf("wood", "#c8a070", { rep: 1, bump: 0.03, shine: 10 })),
 			[tr, tg, tb] = th.tin,
 			tinTex = b(64, 64, (c) => {
 				for (let k = 0; k < 64; k++) {
@@ -10871,8 +10878,8 @@ const JGP = (() => {
 			rug: [-5.5, -6.8, 5.5, 1.0],
 			rugTop: 0.03,
 			// the things that stand face-out on a shelf, one to a shelf, in a gap in its row: [case, side (1 = its +z
-			// face), shelf, x along the case, what]: five books, each with its own cover, a Wish Blossom from
-			// Greeblis Park in a little pot, an Electric Blossom from Greeblis City and an Acorn from Greeblis Woods
+			// face), shelf, x along the case, what]: five books, each with its own cover, a Wish Blossom in a
+			// little pot, an Electric Blossom and an Acorn
 			// (the side cases' +z face looks into the room on the left, -z on the right)
 			features: [
 				[0, 1, 2, 0.46, "patchoolee"],
@@ -10983,7 +10990,7 @@ const JGP = (() => {
 				}
 			});
 		};
-		// A WISH BLOSSOM from Greeblis Park, as its pickups were, at 22% in a little terracotta pot: a green stem
+		// A WISH BLOSSOM in a little terracotta pot: a green stem
 		// and leaf, a glowing teal crystal for a head (turning slowly, as they did) and a pale halo that rises and
 		// falls around it (40 cm tall in all, clear of the shelf above)
 		const wishBlossom = (bx, by, bz, face) => {
@@ -11000,7 +11007,7 @@ const JGP = (() => {
 				halo = R(T.torus(0.5, 0.035, 8, 20), x.basic("#9df3ec", { transparent: !0, opacity: 0.8 }), f, [0, 1.05, 0], [Math.PI / 2, 0, 0]);
 			L.push((tt) => ((head.rotation.y = 1.4 * tt), (halo.position.y = 1.05 + 0.08 * Math.sin(2 * tt))));
 		};
-		// AN ELECTRIC BLOSSOM from Greeblis City, as its pickups were, at 30%: a dark base and a silver stem with a
+		// AN ELECTRIC BLOSSOM: a dark base and a silver stem with a
 		// leaf, six yellow lightning petals round a pale cyan core with a yellow ring (turning slowly, as they did),
 		// and a yellow halo that rises and falls (33 cm tall in all)
 		const electricBlossom = (bx, by, bz, face) => {
@@ -11028,7 +11035,7 @@ const JGP = (() => {
 			const halo = R(T.torus(0.3, 0.015, 4, 20), x.basic("#ffe23a", { transparent: !0, opacity: 0.7 }), f, [0, 1.05, 0], [Math.PI / 2, 0, 0]);
 			L.push((tt) => ((hd.rotation.y = 1.4 * tt + 1), (halo.position.y = 1.05 + 0.06 * Math.sin(2 * tt + 1))));
 		};
-		// AN ACORN from Greeblis Woods, as its pickups were, at 1.1x: a tan nut under a dark brown cap with a little
+		// AN ACORN: a tan nut under a dark brown cap with a little
 		// stem, tipped a little to the side, with its glint (it stands on the shelf, 32 cm tall)
 		const acorn = (bx, by, bz, face) => {
 			const g = new THREE.Group(),
@@ -11066,7 +11073,7 @@ const JGP = (() => {
 				{ smooth: !0 },
 			);
 		const COVERS = {
-			// the repair doctor of Greeblis City's clinic: his monitor head with its pixel face, and a wrench
+			// a repair doctor: his monitor head with its pixel face, and a wrench
 			patchoolee: {
 				cloth: "#2f5a2a",
 				ink: "#c8e070",
@@ -11299,7 +11306,7 @@ const JGP = (() => {
 		G.done(o);
 	}
 
-	// NO Z-FIGHTING IN MERGED SCENERY (Greeblis Park's load-time fix): given the parts of a merge ({geo, matrix},
+	// NO Z-FIGHTING IN MERGED SCENERY (a load-time fix): given the parts of a merge ({geo, matrix},
 	// world or merge space), every part's flat faces are grouped by plane; wherever two parts have faces in
 	// the same plane (within 4 mm) overlapping by more than a centimetre each way, the smaller part moves.
 	// Faces looking the same way (a sign, a window or a mat lying on a wall or a pavement, a cubby's back on
@@ -11753,7 +11760,7 @@ const JGP = (() => {
 						(c.fillStyle = skin), c.beginPath(), c.moveTo(78, 103), c.quadraticCurveTo(68, 105, 62, 111), c.lineTo(66, 115), c.quadraticCurveTo(73, 110, 80, 108), c.closePath(), c.fill();
 						(c.strokeStyle = "#5a3a22"), c.beginPath(), c.moveTo(62, 111), c.lineTo(68, 116), c.stroke();
 					} else if ("stranger" === kind) {
-						// a stranger drawn from the owner's photo, as cartoony as the visitor and never a likeness: shaggy
+						// a stranger, as cartoony as the visitor: shaggy
 						// pale-blond hair with darker roots falling over the brow, dark brows, two dark eyes, a small
 						// quiet smile, a little gold earring, and a brown leather jacket with a wide collar over a cream
 						// shirt collar and a sage knit sweater
@@ -11792,7 +11799,7 @@ const JGP = (() => {
 						[[48, 108], [62, 104], [78, 110], [42, 120], [57, 118], [72, 121], [87, 117]].forEach(([px, py]) => { for (let k = 0; k < 6; k++) c.beginPath(), c.arc(px + 2.4 * Math.cos((k / 6) * l), py + 2.4 * Math.sin((k / 6) * l), 1.1, 0, l), c.fill(); c.beginPath(), c.arc(px, py, 1, 0, l), c.fill(); });
 						[[52, 115], [68, 113], [83, 124], [44, 103], [88, 104], [60, 124]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 0.9, 0, l), c.fill()));
 					} else if ("olag" === kind) {
-						// OLAG, drawn from a picture the owner sent: the name right under WANTED, then a wrinkled tan bald head
+						// OLAG: the name right under WANTED, then a wrinkled tan bald head
 						// with long ears swept up and out, a deep-set scowl under a heavy brow, a long thin neck rising from a
 						// high blue collar, a blue robe with pointed shoulder flaps and little gold diamonds, a white belt over
 						// a blue and gold checked panel, and a pale grey-green book held in both hands
@@ -11840,10 +11847,10 @@ const JGP = (() => {
 			[0, 1.88, "rabbit", "#8a5a36", 0.04],
 			// (beside the goo poster's corner, clear of it)
 			[-0.76, 2.22, "visitor", "#f4dcc6", -0.07],
-			// (and, on the right, a stranger drawn from a photo the owner sent, between the alien and the rabbit,
+			// (and, on the right, a stranger, between the alien and the rabbit,
 			// clear of both: no two posters on this wall share any of the same spot, so none can ever flicker)
 			[0.88, 2.2, "stranger", "#f1d7c2", 0.06],
-			// (and OLAG, from a picture the owner sent, up on the left above the visitor, between the alien and the star,
+			// (and OLAG, up on the left above the visitor, between the alien and the star,
 			// clear of all three)
 			[-0.92, 3.08, "olag", "#d2bc90", -0.04],
 		].forEach(([px, py, kind, skin, rz]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35] })));
@@ -12226,9 +12233,8 @@ const JGP = (() => {
 	}
 
 	// ---- garden event ---------------------------------------------------------
-	// The concert was replaced by planting a garden. The event engine (gathering,
-	// per-creature animation hook, return home) is the original finale system;
-	// this block provides the garden, the plants and the planting behaviour.
+	// The event engine (gathering, a per-creature animation hook, the walk home) is
+	// shared; this block provides the garden, the plants and the planting.
 	const GARDEN_R = 15,
 		GATHER_S = 0.5, // seconds before planting starts (everyone walks straight into the garden)
 		// (round: how many Events with planters there have been; see beginPlanting)
@@ -12315,8 +12321,8 @@ const JGP = (() => {
 	})();
 	// THE CHURCH WINDOWS ARE FINAL: the Traveler window over the door and the Garden window down each
 	// side (and its mirrored copy) are the owner's final designs. Keep them exactly as they are.
-	// THE TRAVELER SAVES THE ORIGINATOR (final): the stained glass window of the cathedral in Greeblis City,
-	// redrawn at twice the resolution with more detail (no words, and no face on the Traveler). The winged Traveler comes down a beam of light
+	// THE TRAVELER SAVES THE ORIGINATOR (final): the stained glass window over the church door (no words,
+	// and no face on the Traveler). The winged Traveler comes down a beam of light
 	// over a dead, burning world and carries the old computer (the Originator, its AI still stirring
 	// on the screen) up out of the ruins, its cable pulled free of the ground. Painted on a 384 x 1024
 	// layout (a lancet: the top 256 px is the pointed arch) and drawn into a canvas `SC` times larger.
@@ -12436,8 +12442,7 @@ const JGP = (() => {
 		};
 		return { W0, LEAD, mix, shade, rnd, reseed, glass, oval, panes, border };
 	};
-	// THE GARDEN WINDOW (final) (the right-hand window of the cathedral in Greeblis City), redrawn at twice
-	// the resolution with more detail: a bright summer sky with a rayed sun and clouds over a meadow of
+	// THE GARDEN WINDOW (final), down each side of the church: a bright summer sky with a rayed sun and clouds over a meadow of
 	// flowers; a figure in a white robe (no face: a smooth oval of pale light under the hair) stands
 	// with MAMA GORBO beside them: her round cyan body with its highlights, her octagon port eyes, her
 	// lime goo tail, smoke wisps, her AP / IP / wifi tags and crackling sparks. swap puts the figure on
@@ -16408,10 +16413,10 @@ const JGP = (() => {
 							const q = inner.worldToLocal(inRoomV.copy(At.position));
 							return Math.abs(q.x) < IX && q.z > ZB && q.z < ZF ? "Talk" : null;
 						},
-						// ("Hello Kate" at the Event is the owner's script, as written: never flag it)
+						// (at the Event it says only "Hello")
 						// (pointed at anywhere on its body, head to tail)
 						pickObj: [slug, head],
-						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", me.active ? "Hello Kate" : "I am the one reborn.")),
+						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", me.active ? "Hello" : "I am the one reborn.")),
 						gift: () => Kt.blossoms > 0 && (Kt.blossoms--, G.heart(), (talking = 1), qt.open("ANCIENT", "#9a7a5a", "...")),
 					});
 					// (a visit's exchange with it: it talks, lifting its head, for so long, see JGP.slug.chat)
@@ -16468,8 +16473,7 @@ const JGP = (() => {
 			// door's square top is hidden behind the innermost), the line between its leaves at its own depth
 			B.box("boards", "#8a1e24", 0, 2.3, 3.245, 1.9, 3.0, 0.1).box("plain", "#2a2a2e", 0, 2.3, 3.31, 0.04, 3.0, 0.02);
 			B.geo("stone", frame(3.3, 2.1, 1.0, 2.1, 2.1, 0.75, 0.22), dress, 0, 0.8, 3.3).geo("stone", frame(3.9, 2.1, 1.1, 3.1, 2.1, 0.95, 0.18), dress, 0, 0.8, 3.52).geo("stone", frame(4.3, 2.1, 1.15, 3.7, 2.1, 1.05, 0.14), dark, 0, 0.8, 3.7);
-			// over the door, the tall lancet of THE TRAVELER SAVES THE ORIGINATOR (from the cathedral in
-			// Greeblis City) in a carved stone frame with a sill; the glass glows, brighter at night
+			// over the door, the tall lancet of THE TRAVELER SAVES THE ORIGINATOR in a carved stone frame with a sill; the glass glows, brighter at night
 			{
 				const WW = 3.4,
 					WH = (WW * 12) / 6,
@@ -16495,8 +16499,8 @@ const JGP = (() => {
 					gw = new THREE.Group();
 				gw.position.set(cx, 0, cz), (gw.rotation.y = ry), (gw.userData.keepInFinale = !0), C.add(gw);
 				R(gg, gm, gw, [0, Y0, 3.23]);
-				// on each side wall, THE GARDEN (the other window of the Greeblis City cathedral): on the
-				// right side (local +x, the right as you face the church) as it was there, on the left a copy
+				// on each side wall, THE GARDEN: on the right side (local +x, the right as you face the church)
+				// as drawn, on the left a copy
 				// with the figure and MAMA GORBO changing places. Smaller lancets in the same carved stone
 				// frames, at the middle of the nave; painted at 1.5x the layout's resolution.
 				const SW = 2.6,
@@ -18538,7 +18542,7 @@ const JGP = (() => {
 				JGP.onDance = onDance;
 				for (let i = 1; i < NX; i += 2) for (let j = 1; j < NZ; j += 2) E.add(X0 + (i + 0.5) * TS, Z0 + (j + 0.5) * TS, 1.3, "dance");
 			}
-			// KING DINO's drum set from Greeblis Woods, on the grass behind the dance floor's south half
+			// KING DINO's drum set, on the grass behind the dance floor's south half
 			// (its rug and cymbals stop just short of the floor), facing out across it: red shells with white heads and chrome rims, his name on the bass drum, two rack toms, a snare, a floor tom,
 			// a hi-hat and a crash (which he rides). KING DINO stands behind it with his sticks and stays there
 			// through the Garden event. While he is at his kit and the player is anywhere near (or a Dance
@@ -18736,7 +18740,7 @@ const JGP = (() => {
 				kit.position.set(-34.8, 0, 19.2), (kit.rotation.y = Math.PI / 2), (kit.userData.keepInFinale = !0), C.add(kit);
 				// (no lawn tufts or pickups under the kit's rug or round KING DINO)
 				keepAt.push([-35.05, 19.2], [-36.35, 19.2]), E.add(-35.35, 19.2, 2.6, "scenery");
-				// sized for KING DINO standing behind it: a third bigger than the Woods kit, the toms and cymbals set lower
+				// sized for KING DINO standing behind it: scaled up a third, the toms and cymbals set lower
 				kit.scale.setScalar(1.35);
 				// (the rug's centre, reach and top, for creatures standing on it: see JGP.groundAt)
 				kit.updateMatrixWorld(!0);

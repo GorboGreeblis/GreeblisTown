@@ -25,19 +25,29 @@ Contents: [What a packed page must meet](#what-a-packed-page-must-meet) · [The 
    `test/copycheck.sh` confirms). That copy is never minified or packed; once the root is packed, it is the only
    readable page and every later change starts from it.
 1. **Start clean.** The game starts with no quest or item progress; the tests give themselves what they need.
-2. **Cut the game script out** (the last `<script>` in `index.html`) to `game.js`.
-3. **Strip every label and comment from it:** every comment and section banner, every object name and test-only
+2. **Cut the Desktop and Mobile test modes** (the owner's plan: they are not in the final build):
+   `node pack/cutmodes.js ../index.html cut.html`. Every line from a `TEST-MODE-BEGIN` marker through the next
+   `TEST-MODE-END` goes; the tool fails on a fence left open or nested. What is left still runs as it is:
+   - the `dk = { on: false }` stub stays outside the fences, so the shared code's `dk.on` checks read false;
+   - `window.__jgpMobile` is never set, so every check on it takes the headset's settings;
+   - the start screen's flat-screen branch is left empty. Before the release, give it the notice the owner wants
+     for desktop and phone browsers (see the platforms in [rules.md](rules.md#platforms-every-game)).
+
+   Checked on 13 Oct 2026: the cut page parses, boots with 0 errors and builds the whole world. Work on `cut.html`
+   from here on.
+3. **Cut the game script out** (the last `<script>` in `index.html`) to `game.js`.
+4. **Strip every label and comment from it:** every comment and section banner, every object name and test-only
    label or hook (the `window.__jgp…` and `__gb…` hooks, the test modes' text) the game does not need to run. The
    readable copy keeps all of it.
-4. **Minify it:** `node pack/min.js game.js game.min.js` (terser 5.31.0, pinned: ECMAScript 2020, top-level
+5. **Minify it:** `node pack/min.js game.js game.min.js` (terser 5.31.0, pinned: ECMAScript 2020, top-level
    mangling, two compress passes, no parentheses wrapped round function arguments). The probes rely on the global
    names, so test the readable page and ship the minified one.
-5. **Put `game.min.js` back** in place of the game script, and boot-test that page with `test/ordtest.js`, desktop
+6. **Put `game.min.js` back** in place of the game script, and boot-test that page with `test/ordtest.js`, desktop
    and `MOBILE=1`.
-6. **Pack it:** `node pack/pack.js page.html index.html "Greeblis Town"`. Check the round trip with
+7. **Pack it:** `node pack/pack.js page.html index.html "Greeblis Town"`. Check the round trip with
    `node pack/unpack.js index.html check.html`: it must report `decoder matches model.js: true`, and `check.html`
    must be identical to `page.html`.
-7. **Test the packed page** with `test/ordtest.js`, desktop and `MOBILE=1`, and go through the
+8. **Test the packed page** with `test/ordtest.js`, desktop and `MOBILE=1`, and go through the
    [release checklist](#release-checklist).
 
 `node pack/size.js [index.html] [outdir]` measures every step without touching the repo: the readable page, the page
@@ -142,6 +152,7 @@ Why each step is safe:
 
 - [ ] `tools/index.html` holds the readable page and matches it (`test/copycheck.sh`), made before the root was
       minified or packed.
+- [ ] The test modes are cut (`pack/cutmodes.js`), and the flat-screen start screen shows the owner's notice.
 - [ ] The round trip is exact with the decoder that ships in the page (`decoder matches model.js: true`, and the
       unpacked page identical to the minified one).
 - [ ] The packed page passes `test/ordtest.js`, direct and in the sandboxed iframe, desktop and `MOBILE=1`: start
