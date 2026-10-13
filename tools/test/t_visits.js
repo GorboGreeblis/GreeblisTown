@@ -6,7 +6,7 @@
 // MUSHROOM, ETCHER to GLYPH, ZOLLOD to KING DINO, SPARKAKUS out of his Library and GLYPH to the Ancient;
 // VISITS=v>h,v>h picks others, VISITS=none only checks the plans. Each gets there, the two exchange their lines,
 // and it walks slowly home and is back at its place (MUSHROOM back up on his desk).
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_visits.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_visits.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(100, 60); await W(1500);

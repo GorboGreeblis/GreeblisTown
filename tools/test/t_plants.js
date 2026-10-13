@@ -3,7 +3,7 @@
 // 7 m of the eye), what the church's Ancient did meanwhile (never a dance or a plant: it stays as it always is, owner's rule), and
 // how fast game time ran against real time (a slow-down means the plants cost too much). Renders the grown
 // garden from its edge and from across the square (<out>_garden_near.png, <out>_garden_far.png).
-//   NOSHOT=1 node shot2.js <url> plants.png ./t_plants.js
+//   NOSHOT=1 node shot.js <url> plants.png ./t_plants.js
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);

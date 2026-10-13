@@ -1,38 +1,42 @@
 #!/bin/bash
-# The FULL battery (two hours and more, the visits alone 30 to 60 min): run it once in a while (before a release
-# build, after a change to a whole system such as the Event, the visits or the roaming, and every few PRs).
-# Between builds use quick.sh. Runs every check, one browser at a time. Serve the repo root first:  python3 -m http.server 8765
-# (from the repo root), then:  tools/test/battery.sh > tools/test/battery.log 2>&1
-# (the Garden Event with the new flowers is t_plants.js, run on its own: it is slow)
+# The full battery: every regression probe, one browser at a time (two hours and more; the visits alone take 30 to
+# 60 minutes headless). Run it once in a while: before a release build, after a change to a whole system (the
+# Event, the visits, the roaming, the battles), every few PRs, or when the owner asks. Between builds, run quick.sh.
+#   tools/test/battery.sh > tools/test/battery.log 2>&1
+# Serve the repo root first (python3 -m http.server 8765, from the repo root), or set URL=file:///…/index.html.
+# Every probe's lines are printed in full; each section header carries the seconds elapsed. A clean run has no
+# FAIL and every error count at 0.
 cd "$(dirname "$0")"; U=${URL:-http://localhost:8765/index.html}; G=$(cd ../.. && pwd)/index.html
 h() { echo "== $* [${SECONDS} s]"; }
-h "the readable copy (tools/index.html)"; sh ./copycheck.sh 2>&1 | tail -2
-h "boot desktop"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./boot.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-400
-h "boot mobile + GIVE button"; timeout 300 node mob.js $U x_mob.png ./t_give.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-300
-h "ordinal sandbox, desktop"; timeout 300 node ordtest.js $G x_ord.png 2>&1 | tail -3
-h "ordinal sandbox, mobile"; MOBILE=1 timeout 300 node ordtest.js $G x_ordm.png 2>&1 | tail -3
-h "talk to everyone"; NOSHOT=1 timeout 400 node shot2.js $U x.png ./talk.js 2>&1 | grep -v "^$" | tail -16
-h "battles, Artifacts, Library"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_blog2.js 2>&1 | grep -v "^$" | tail -16
-h "Ancient Gem trade"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_gem.js 2>&1 | grep -v "^$" | tail -6
-h "pizza"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_pizza.js 2>&1 | grep -v "^$" | tail -3
-h "vignettes"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./vigrun.js 2>&1 | grep -v "^$" | tail -2
-h "pickups reachable"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_reach2.js 2>&1 | grep -v "^$" | tail -2 | cut -c1-300
-h "jazz on the floor, respawn, Blossom option"; VW=320 VH=240 NOSHOT=1 timeout 400 node shot2.js $U x.png ./t_misc.js 2>&1 | grep -v "^$" | tail -9
-h "Fortizmo's patrol"; NOSHOT=1 timeout 400 node shot2.js $U x.png ./t_fz.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-700
-h "shaders"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_shader.js 2>&1 | grep -v "^$" | tail -3
-h "walking soak"; NOSHOT=1 timeout 600 node shot2.js $U x.png ./soak.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-400
-h "King Dino's jazz"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_jazz.js 2>&1 | grep -v "^$" | tail -14 | cut -c1-300
-h "Somlet asleep on her side"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_somlet.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
-h "roamers (short; ROAM_S/TRAP_S longer for a full check)"; VW=320 VH=240 ROAM_S=40 TRAP_S=40 NOSHOT=1 timeout 1800 node shot2.js $U x.png ./t_roam.js 2>&1 | grep -v "^$" | tail -17 | cut -c1-300
-h "the church's secret room and the Ancient"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_church.js 2>&1 | grep -v "^$" | tail -9 | cut -c1-300
-h "a Dance battle costs a Blossom"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_battlecost.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
-h "the phone lock"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_phone.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-300
-h "the avatar's walk (test modes)"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_avatar.js 2>&1 | grep -v "^$" | tail -2
-h "VR head guard"; VW=320 VH=240 NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_headguard.js 2>&1 | grep -v "^$" | tail -10
-h "Sparkakus browsing"; VW=320 VH=240 NOSHOT=1 timeout 900 node shot2.js $U x.png ./t_library.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-300
-h "the script (Sparkakus, shelves, posters)"; VW=320 VH=240 NOSHOT=1 timeout 900 node shot2.js $U x.png ./t_script.js 2>&1 | grep -v "^$" | tail -12 | cut -c1-300
-h "every pair's vignette"; NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_vigall.js 2>&1 | grep -v "^$" | tail -4 | cut -c1-400
-h "visits (long: 30 to 60 min headless)"; VW=320 VH=240 NOSHOT=1 timeout 4000 node shot2.js $U x.png ./t_visits.js 2>&1 | grep -v "^$" | tail -8 | cut -c1-400
-h "the Summoning Stone requirement"; NOSHOT=1 timeout 300 node shot2.js $U x.png ./t_stone.js 2>&1 | grep -v "^$" | tail -3 | cut -c1-300
-h "z-fighting (visible clashes; check any with t_zcheck.js)"; VW=320 VH=240 NOSHOT=1 timeout 600 node shot2.js $U x.png ./t_zfight.js 2>&1 | grep -v "^$" | sed -n "1p;\$p"
+run() { local t=$1; shift; timeout "$t" node "$@" 2>&1 | grep -v "^$" | cut -c1-400; }
+small() { VW=320 VH=240 NOSHOT=1 run "$@"; }
+h "the readable copy"; sh ./copycheck.sh 2>&1 | tail -1
+h "lint"; sh ../lint/lint.sh 2>&1
+h "boot, desktop"; NOSHOT=1 run 300 shot.js $U x.png ./boot.js
+h "boot, mobile, and the GIVE button"; run 300 mob.js $U x_mob.png ./t_give.js
+h "ordinal sandbox, desktop"; run 300 ordtest.js $G x_ord.png
+h "ordinal sandbox, mobile"; MOBILE=1 run 300 ordtest.js $G x_ordm.png
+h "shaders"; NOSHOT=1 run 300 shot.js $U x.png ./t_shader.js
+h "talk to everyone"; NOSHOT=1 run 400 shot.js $U x.png ./talk.js
+h "the flavor and Event lines"; small 600 shot.js $U x.png ./t_flavor.js
+h "Dance battles, Artifacts, the Library finale"; NOSHOT=1 run 300 shot.js $U x.png ./t_battles.js
+h "a Dance battle costs a Blossom"; NOSHOT=1 run 300 shot.js $U x.png ./t_battlecost.js
+h "the Ancient Gem trade"; NOSHOT=1 run 300 shot.js $U x.png ./t_gem.js
+h "the phone and the pizza courier"; NOSHOT=1 run 400 shot.js $U x.png ./t_pizza.js
+h "the Summoning Stone"; NOSHOT=1 run 300 shot.js $U x.png ./t_stone.js
+h "SPARKAKUS"; small 1800 shot.js $U x.png ./t_sparkakus.js
+h "ZOLLOD"; NOSHOT=1 run 1200 shot.js $U x.png ./t_zollod.js
+h "the script"; small 900 shot.js $U x.png ./t_script.js
+h "the church's secret room and the Ancient"; NOSHOT=1 run 300 shot.js $U x.png ./t_church.js
+h "KING DINO's jazz"; small 900 shot.js $U x.png ./t_jazz.js
+h "FORTIZMO's patrol"; NOSHOT=1 run 400 shot.js $U x.png ./t_fortizmo.js
+h "pickups reachable"; NOSHOT=1 run 300 shot.js $U x.png ./t_reach.js
+h "the roamers (short; ROAM_S, TRAP_S longer for a full check)"; ROAM_S=40 TRAP_S=40 small 1800 shot.js $U x.png ./t_roam.js
+h "walking home: stopping for the player"; small 900 shot.js $U x.png ./t_nearstop.js
+h "vignettes"; NOSHOT=1 run 600 shot.js $U x.png ./t_vigall.js
+h "visits"; small 4000 shot.js $U x.png ./t_visits.js
+h "the avatar"; small 600 shot.js $U x.png ./t_avatar.js
+h "the VR head guard"; small 300 shot.js $U x.png ./t_headguard.js
+h "a walking soak"; NOSHOT=1 run 600 shot.js $U x.png ./soak.js
+h "z-fighting (check any clash with t_zcheck.js)"; small 600 shot.js $U x.png ./t_zfight.js
 h "DONE"

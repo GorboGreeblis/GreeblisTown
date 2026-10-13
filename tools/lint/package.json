@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "ESLint 8 for tools/lint/lint.sh (npm run lint in tools/ installs it here)",
+  "dependencies": {
+    "eslint": "8.57.0"
+  }
+}

@@ -1,6 +1,6 @@
 // What the game weighs at each step of the release pass: the readable page, the page with its scripts
-// minified (the game script with the Woods terser settings, as pack/woods-build/min.js), and that page packed into the ordinal
-// (pack/park/woods-pack.js, round trip checked). Writes the intermediate files to <outdir> so they can be
+// minified (the game script with the release terser settings, as pack/min.js), and that page packed into the ordinal
+// (pack/pack.js, round trip checked). Writes the intermediate files to <outdir> so they can be
 // boot-tested (test/ordtest.js). Nothing in the repo is changed.
 //   node pack/size.js [index.html] [outdir]        (needs terser: `npm install` in tools/)
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
@@ -18,8 +18,8 @@ const { minify } = require('terser');
   for (const [k, m] of blocks.entries()) {
     const code = m[2], start = m.index + m[1].length;
     let min = code;
-    if (k === last) (game = code), (r = await minify(code, { ecma: 2020, toplevel: true, compress: { passes: 2 }, mangle: { toplevel: true }, format: { ascii_only: false } })), (min = r.code);
-    else if (!/^\s*var THREE=/.test(code) && code.trim()) min = (await minify(code, { ecma: 2020, compress: { passes: 2 }, format: { ascii_only: false } })).code;
+    if (k === last) (game = code), (r = await minify(code, { ecma: 2020, toplevel: true, compress: { passes: 2 }, mangle: { toplevel: true }, format: { ascii_only: false, wrap_func_args: false } })), (min = r.code);
+    else if (!/^\s*var THREE=/.test(code) && code.trim()) min = (await minify(code, { ecma: 2020, compress: { passes: 2 }, format: { ascii_only: false, wrap_func_args: false } })).code;
     (page += html.slice(at, start) + min), (at = start + code.length);
   }
   page += html.slice(at);
@@ -28,6 +28,6 @@ const { minify } = require('terser');
   console.log(`readable page   ${Buffer.byteLength(html).toLocaleString()} B (game script ${Buffer.byteLength(game).toLocaleString()} B)`);
   console.log(`minified page   ${Buffer.byteLength(page).toLocaleString()} B (game script ${Buffer.byteLength(r.code).toLocaleString()} B, ${((Date.now() - t0) / 1e3).toFixed(1)} s)`);
   const t1 = Date.now();
-  execFileSync('node', [path.join(__dirname, 'park/woods-pack.js'), pagePath, packed, 'Greeblis Town'], { stdio: 'pipe' });
+  execFileSync('node', [path.join(__dirname, 'pack.js'), pagePath, packed, 'Greeblis Town'], { stdio: 'pipe' });
   console.log(`packed ordinal  ${fs.statSync(packed).size.toLocaleString()} B (${((Date.now() - t1) / 1e3).toFixed(1)} s)  -> ${packed}`);
 })().catch((e) => { console.error(e); process.exit(1); });

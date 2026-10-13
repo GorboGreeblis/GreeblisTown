@@ -1,7 +1,7 @@
 // The Blossom option always costs a Blossom: given to each creature in turn, every gift takes one from the hand.
 // And a Dance battle costs a Blossom: with none in hand a Dancer's menu holds only Talk and a gift does nothing (no
 // battle); with one, "Give a blossom" takes it from the inventory and the battle opens once the thanks is said.
-//   NOSHOT=1 node shot2.js <url> x.png ./t_battlecost.js
+//   NOSHOT=1 node shot.js <url> x.png ./t_battlecost.js
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(640, 60); await W(1500);

@@ -1,5 +1,5 @@
 // Removes three.js class methods that never ran in any recorded session and that nothing (three.js
-// itself or the game) can name. Adapted from Greeblis Woods' engine trimmer.
+// itself or the game) can name.
 // node prune3.js <three.js> <game.js (all other scripts)> <out.js> cov1.json [cov2.json ...]
 const acorn = require('acorn'), fs = require('fs');
 const [srcPath, gamePath, outPath, ...covs] = process.argv.slice(2);

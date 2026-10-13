@@ -1,4 +1,4 @@
-// Two builds compared pixel by pixel: ten fixed views (px.js's seven and three along the kiosks) rendered from
+// Two builds compared pixel by pixel: ten fixed views (seven round the park and three along the kiosks) rendered from
 // both pages in one browser, seeded alike, with everything that moves with time hidden (the frame loop stopped,
 // the creatures, the avatar, the pickups and the UFO hidden), so a lossless change shows 0 differing pixels per
 // view (a pixel differs when a channel differs by more than 8). The worst view is written as A, B and the

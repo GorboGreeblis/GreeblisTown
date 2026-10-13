@@ -225,6 +225,8 @@ const t = {
 		done: "Well done, Human!",
 		// (given a Blossom he drops to all fours and runs a lap round the Library first)
 		gift: "…sorry I don’t know what got into me.",
+		// (given one away from his Library: a visit, the walk home, a visitor; no lap out here)
+		giftAway: "A Blossom! …I must resist the urge to run.|Not out here, in front of everyone.",
 		event: "Digging in the dirt like an animal? …don’t tell the others at the genealogical society.",
 	},
 	// GEMTOE's trade: the Summoning Stone for the Ancient Gem SPARKAKUS gives you (she spins for joy as you take it)
@@ -2449,7 +2451,7 @@ function heldBy(e) {
 	return !!e && xe.lastTarget === e && ("dialogue" === jt.top || ("panel" === jt.top && "shop" === _t.kind));
 }
 const CFG = t;
-const st = { join() {}, leave() {}, romp(d) { d && d(); }, romping: () => !1, held: () => !1, away: () => !1, pos: () => ({ x: 0, z: 0 }), talking: !1, dancing: 0 };
+const st = { join() {}, leave() {}, romp(d) { d && d(); }, romping: () => !1, atHome: () => !1, held: () => !1, away: () => !1, pos: () => ({ x: 0, z: 0 }), talking: !1, dancing: 0 };
 function to(
 	t,
 	{ y: e, z: o, sep: a, r: n = 0.09, pupil: r = 0.56, white: s = !0, color: i = M.nearblack, spread: l = 0.22 },
@@ -7227,7 +7229,7 @@ const JGP = (() => {
 		},
 		// (HENNRICK is from the far past: to him, paradoxically, this small American town is the far future)
 		gratelet: {
-			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until he decides to reopen the Portal.", "In my era, the towers of Greeblis City reach the clouds.|I never imagined the far future would have… picket fences."],
+			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until he decides to reopen the Portal.", "In my era, the towers of Greeblis City reach the clouds.|I never imagined the far future would have… picket fences.", "I have catalogued every Blossom in this park.|They grow back faster than my notes can keep up."],
 			gift: "Adding to a collection jar.",
 			campfire: "Sometimes worry that doing these things will alter the timeline…",
 		},
@@ -8387,7 +8389,17 @@ const JGP = (() => {
 			lids,
 			// (ent: the worker's entity record, with his dance weight)
 			step(t, dt, tk, wk, ent) {
-				(tail.rotation.y = 0.22 * Math.sin(2.0 * t) + 0.25 * wk * Math.sin(8 * t)), body.scale.set(1, 1 + 0.01 * Math.sin(2 * t), 1);
+				// his walk (the owner asked for more articulation; ph: the stride, a leg's step each half turn): the body
+				// rolls over onto the leg he stands on, turns a little with his hips and leans into the walk, lifted by
+				// however much the roll and the lean would dip his feet, and sinks as his legs spread (the stride lifts
+				// both feet then), so a foot stays on the ground; his tail bounces with each step and swings with his hips
+				const ph = 8 * t,
+					sw = Math.sin(ph),
+					roll = 0.035 * wk * sw,
+					lean = 0.05 * wk;
+				(body.rotation.z = roll), (body.rotation.y = 0.07 * wk * sw), (body.rotation.x = lean);
+				body.position.y = 0.24 * Math.abs(roll) + 0.2 * lean - 0.035 * wk * Math.abs(sw);
+				(tail.rotation.y = 0.22 * Math.sin(2.0 * t) + 0.25 * wk * sw), (tail.rotation.x = 0.1 * wk * Math.sin(2 * ph + 0.6)), body.scale.set(1, 1 + 0.01 * Math.sin(2 * t), 1);
 				// the mist: each puff lives two seconds, rising and swirling out of the tail's tip
 				const md = Math.min(0.05, Math.max(0, t - mistT));
 				mistT = t;
@@ -8398,9 +8410,17 @@ const JGP = (() => {
 					(mCol[3 * k] = c.r * f), (mCol[3 * k + 1] = c.g * f), (mCol[3 * k + 2] = c.b * f);
 				}
 				(mistGeo.attributes.position.needsUpdate = !0), (mistGeo.attributes.color.needsUpdate = !0);
-				ears.forEach((ea, k) => (ea.rotation.x = 0.06 * Math.max(0, Math.sin(0.7 * t + 2 * k)) ** 8));
-				arms.forEach((a, k) => (a.sh.rotation.x = 0.12 + 0.1 * Math.sin(1.5 * t + 3 * k) + 0.5 * wk * Math.sin(8 * t + k * Math.PI)));
-				legs.forEach((lg, k) => KIT.stride(lg, 8 * t + k * Math.PI, 0.5 * wk, 0.8 * wk));
+				// his ears flop back on each step and wobble out of time with each other
+				ears.forEach((ea, k) => ((ea.rotation.x = 0.06 * Math.max(0, Math.sin(0.7 * t + 2 * k)) ** 8 - 0.14 * wk * Math.abs(Math.sin(ph + 0.5))), (ea.rotation.z = (k ? -0.14 : 0.14) * (1 - 0.35 * wk * Math.sin(2 * ph + k)))));
+				// arms swing against his legs: the elbow folds more on the forward swing, the paw trails the swing at
+				// the wrist, and the arm rolls out a little as it passes his side
+				arms.forEach((a, k) => {
+					const as = Math.sin(ph + k * Math.PI),
+						sx = k ? 1 : -1;
+					(a.sh.rotation.x = 0.12 + 0.1 * Math.sin(1.5 * t + 3 * k) + 0.5 * wk * as), (a.sh.rotation.z = sx * (0.16 + 0.07 * wk * (1 - Math.abs(as))));
+					(a.el.rotation.x = -wk * (0.2 + 0.45 * Math.max(0, -as))), (a.hand.rotation.x = 0.3 * wk * Math.sin(ph + k * Math.PI - 0.9));
+				});
+				legs.forEach((lg, k) => KIT.stride(lg, ph + k * Math.PI, 0.5 * wk, 0.8 * wk));
 				// his funky dance at the Garden Event (dw: its weight, from the Event's move loop), on the beat of his
 				// move wrapper's "funk" (5.45 rad/s, near the drums' 104 bpm): his paws pump up over his head and back
 				// to his chest on alternate beats, out to the sides so they clear his ears and muzzle, his feet step
@@ -8420,7 +8440,7 @@ const JGP = (() => {
 					});
 					ears.forEach((ea, k) => (ea.rotation.x += dw * 0.45 * Math.max(0, Math.sin(ph + k * Math.PI)) ** 2));
 					(tail.rotation.y += dw * 0.7 * Math.sin(ph)), (tail.rotation.x = dw * 0.25 * Math.sin(2 * ph));
-				} else (tail.rotation.x = 0), arms.forEach((a, k) => ((a.sh.rotation.z = 0.16 * (k ? 1 : -1)), (a.el.rotation.x = 0)));
+				}
 			},
 		});
 	};
@@ -19593,6 +19613,10 @@ if (
 										(wT = null), (RUN = { k: 0, t: 0, lean: 0, done });
 									}),
 									(st.romping = () => !!RUN),
+									// (at his own place in the Library, free for his Blossom lap: not out on a visit or walking home from
+									// one, and not with a visitor. Anywhere else a Blossom gets his `giftAway` line instead: the
+									// owner's rule, as the lap belongs to the Library floor)
+									(st.atHome = () => !H && !RUN && e.parent === t && !st.ent.visiting && !st.ent.hosting && !st.ent.vig),
 									// his stand-in for the vignettes (they work in world space, he lives in the Library's frame): a
 									// marker kept at his world position and heading, whose wrapper is one round his model, so their
 									// gestures and turns move him. He takes part only standing still, not called away or talked to,
@@ -19777,10 +19801,11 @@ if (
 								run: () => {
 									st.romping() || Bulb.hold || (me.active ? LIB.say(i.event) : LIB.talk());
 								},
-								// (a Blossom for him, before or after his quest: off he runs on all fours, then says sorry; called away he
-								// skips the lap. No one takes a Blossom at the Event: the option is not offered there)
+								// (a Blossom for him, before or after his quest: at his place in the Library off he runs on all fours,
+								// then says sorry; out on a visit, walking home or with a visitor he takes it with his `giftAway`
+								// line and no lap. No one takes a Blossom at the Event: the option is not offered there)
 								gift: () => {
-									me.active || st.romping() || Bulb.hold || Kt.blossoms < 1 || (Kt.blossoms--, G.heart(), st.romp(() => LIB.say(i.gift)));
+									me.active || st.romping() || Bulb.hold || Kt.blossoms < 1 || (Kt.blossoms--, G.heart(), st.atHome() ? st.romp(() => LIB.say(i.gift)) : LIB.say(i.giftAway));
 								},
 							});
 					})(-24.75, -24.75),

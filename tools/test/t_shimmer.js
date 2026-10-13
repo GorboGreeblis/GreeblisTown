@@ -7,7 +7,7 @@
 // through the flickering pixels and named by owner as t_perf names them, with the mean distance), plus a heat
 // map PNG, <out>_<spot>.png (the view dimmed, flickering pixels red). SPOTS (JSON {name: [x, z, yawDeg, pitchDeg]})
 // replaces the built-in spots; PX sets the size; THRESH the change (0 to 255 on a channel) that counts, default 40.
-//   VW=320 VH=240 NOSHOT=1 node shot2.js <url> x.png ./t_shimmer.js
+//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_shimmer.js
 module.exports = async (p, out) => {
   const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
   await p.mouse.click(160, 120); await W(2500);
