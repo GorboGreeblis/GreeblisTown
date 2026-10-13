@@ -294,7 +294,7 @@ Goo that runs down a body and moves like goo, without clipping:
 
 ### Quests and Dance battles
 
-- **Three quests** on the HUD: the Seeds (sold at Garden Supplies as a "bagel seasoning packet", 10 flint), the
+- **Three quests** on the HUD: the Seeds (sold at Garden Supplies as a "bagel seasoning packet", 15 flint), the
   Summoning Stone and the Snacks (Nextessa's pizza, called from the phone booth).
 - **The phone is locked** until Mushroom has been given a Blossom (`Kt.phone`, set in `te()`): before, the booth only says
   the connection to the Portal seems blocked, so Nextessa can't be called; after, it works for the rest of the session (also in testing).
