@@ -408,7 +408,7 @@ serif capitals with a little emblem under it.
 | **WORKS OF PATCHOOLEE** | Green cloth, lime ink; a monitor head with a pixel face, and a wrench (a repair doctor's works). |
 | **ADVENTURES OF APPTERIX** | Red cloth, gold ink; a fedora and a curl of bullwhip (the archaeologist). |
 | **SONGS OF ORSON** | Navy cloth, gold ink; musical notes over a solar panel (the cleaner bot's songbook). |
-| **STAPLERS** | Grey cloth, dark ink; a line diagram of a stapler. A very dry office manual, and the only cover with an author's name at its foot. |
+| **STAPLERS** | Grey cloth, dark ink; a line diagram of a stapler. A very dry office manual, and the only cover with an author's name at its foot: "by Walter Bigsby". |
 | **RANGER BOBERT** | Green cloth, cream ink; a ranger's hat over a tall pine (a storybook of the woods). |
 | **OVERCOMING SHYNESS** | Pink cloth, plum ink; a little creature peeking out from behind a wall (a gentle self-help book). Bigger than the rest, alone at eye level: "Take OVERCOMING SHYNESS". |
 
