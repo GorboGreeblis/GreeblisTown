@@ -764,6 +764,16 @@ plant row 279 → 231, Juice Bar 345 → 277; triangles per view unchanged. Goow
 and drips, transparent and depth-written: merging them would change what blends behind what where they overlap,
 so they stay.
 
+**Part three (#96), hidden faces and uniform uploads, lossless to the pixel.** `dropInside` leaves out of each
+kiosk merge the faces that lie wholly inside another solid part (a letter's underside sunk into the one below,
+a stalk's end in its bulb): 8,900 faces, the Garden Supplies kiosk 52.8k → 47.6k triangles, the Library 20.9k →
+18.7k, the Juice Bar 16.9k → 15.8k, the views 3 to 12k triangles lighter (spawn 366k → 356k, the Library 383k →
+371k, the Post Office 412k → 402k); about 80 ms at load, the 4,000-letter mail heap skipped as not worth its
+time. Each batch's `gcR` array holds only its own parts, so the per-draw upload shrank from 2 KB to a few
+hundred bytes (`uniform4fv` 1.43 → 1.05 ms a frame here). `test/pxcmp.js` compares two builds pixel by pixel
+with everything time-dependent hidden: 0 differing pixels on ten views. The profiler's `[getParameter]` time is
+a misattribution (the page makes one such call a second), not a target.
+
 **What is left, in order of likely worth:** (1) fewer objects: the batched creature parts (~850 hidden meshes)
 and the scenery's small props are the bulk of the 2,122 nodes the two per-frame passes walk; (2) the GPU's
 triangles per view (360k to 540k, drawn twice in VR): the 52.8k-triangle Garden Supplies kiosk and the 46k Post

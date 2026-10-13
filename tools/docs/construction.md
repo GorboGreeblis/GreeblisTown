@@ -754,6 +754,20 @@ Goo that runs down a body and moves like goo, without clipping:
   The slot sits in the matrix's bottom row, which the instancing would multiply into the position's `w`, so the
   patch replaces the projection chunk and puts `w` back to 1 (left as it was, the glints drew as long white
   blades). The south gate view went from 400 to 323 draws.
+- **Faces hidden inside solid parts are left out of the kiosk merges** (`dropInside`, #96): in a `goods()` merge
+  every part is opaque, so a face whose three corners lie a millimetre or more inside another part's solid (a
+  box, sphere, cylinder, cone or icosahedron, the geometries that carry `lp`, how they were made) can never be
+  seen: a letter's underside sunk into the letter below it by `unfightParts`, a stalk's end in its bulb, a leaf
+  ball half in a pot. Parts are paired by their boxes in merge space (a flat letter's box meets only the letters
+  right on it), each corner is judged once per pair in the container's space, and a face goes when all three of
+  its corners are in (`pt.drop`, honoured by `v()`). Lossless to the pixel (`test/pxcmp.js`: 0 differing pixels
+  on ten views); 8,900 faces in about 80 ms at load (Garden Supplies 52.8k → 47.6k triangles, the Library 20.9k
+  → 18.7k, the Juice Bar 16.9k → 15.8k). The Post Office's mail heap (4,000 letters) is skipped: it would take
+  three quarters of the time for a quarter of the faces. Not for creatures (a head can come close enough to a
+  locked model to tell) nor for the town's bins (their boxes carry no `lp`).
+- **The batcher's uniform array holds its batch's parts only** (#96): `gcR` is `16 × parts` floats, not the
+  `16 × N` the shader declares; a shorter upload is allowed and most batches hold a handful of parts, so the
+  per-draw `uniform4fv` fell from 1.43 to 1.05 ms a frame here (2 KB a draw became a few hundred bytes).
 - **Keep per-frame work tiny:** search on from last frame's answer (Somlet's tentacles take a step or two),
   repaint textures a few times a second at most, and never allocate in loops.
 - **Compile early:** anything that first shows mid-game (the bulb, Backpacka, his water) is built and compiled
