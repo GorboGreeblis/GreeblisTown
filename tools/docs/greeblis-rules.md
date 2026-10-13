@@ -86,6 +86,9 @@ of them. Read the guides here before changing the game.
   never dances or plants). Planting and dancing are creature
   animations, never menu options: a creature's menu holds only Talk, plus "Give a blossom" while the player has
   one, and Zollod (Garden Supplies) only opens the shop.
+- **In-world text is big** (the owner's rule): any words in the world (book titles, parcel labels, the names on
+  signs, the billboard's banner) are sized to read comfortably in VR from where a player naturally stands; when
+  in doubt, bigger. (The Library's book titles and the parcels' labels were too small for some players in VR.)
 - The pickups are called Blossoms (never Fire Blossoms).
 - Dialogue is placeholder text unless asked otherwise; shop and quest menus are written in full. Keep menu text
   short.
