@@ -459,6 +459,8 @@ The old tools went with their repos unless a Town path is given.
   never supported; in VR only the Meta Quest line in the Meta Quest Browser. Anything else gets a notice, not
   the game (Town's `__jgpBlocked`). Only ever optimise for those supported platforms, never for anything else.
 - The final pre-compression build has every label and comment stripped: only what runs the game is packed.
+- **For all games: an uncompressed copy is kept in the game's tools folder at all times, in that game's repo**
+  (Town: `tools/index.html`, refreshed with every change).
 - Only `index.html` is pushed; every game is fully playable as an ordinal.
 - Smallest file over load time, with no content cut.
 - Keep a ported creature exactly the same (Hennrick in all four games).
@@ -706,6 +708,18 @@ old ids for several (`gratelet` is Hennrick, `frog` Fortizmo, `drifter` Mushroom
   T-rex who sprang on a coiled orange tail and hosted the dance-off.
 - **Gemtoe, Etcher and Backpacka** were built new from artwork. Park had a magenta gem-hoarding bird, Gemwing, and a
   rune carver, Etchelon; nothing links them to Gemtoe or Etcher.
+
+## Flicker in VR: design for a 16-bit depth buffer (Town #95)
+
+The owner's three flicker reports (distance flicker in VR above all; the secret room's floor details, 1 to 3.5 mm
+over the floor; the street lines, 3 to 5 cm over the roads, on a phone) all fit one cause: a depth buffer far
+coarser than the 24 bits a desktop gives. A 16-bit one with the near plane at 0.15 m tells 1 mm at 3 m, 1.5 cm at
+10 m and 9 cm at 30 m, so every "lies on" surface a few centimetres over another fights in the distance. The fix
+that holds whatever the buffer: constant `polygonOffset` steps (the ground back 4, the lawn back 2, road markings
+and window panes forward 2; never a slope factor), 2 cm gaps for wide overlaps, a near plane as far as the game
+allows (0.2 m flat, 0.15 m in VR), and a depth-bits readout in the error report to confirm on the device. The
+headless renderer is no judge of this: it fights 2 cm gaps next to the camera for reasons of its own (a road
+triangle straddling the near plane) and differs frame to frame at a pitch of exactly 0°.
 
 ## Next: the Meta Quest optimisation pass (started, not yet built)
 
