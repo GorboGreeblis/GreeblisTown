@@ -15336,11 +15336,6 @@ const JGP = (() => {
 				cx.fill();
 			}
 		});
-		slot("flag", 256, 144, (cx, w, h) => {
-			for (let k = 0; k < 13; k++) (cx.fillStyle = k % 2 ? "#ffffff" : "#c22a32"), cx.fillRect(0, (k * h) / 13, w, h / 13 + 1);
-			(cx.fillStyle = "#2a3a7a"), cx.fillRect(0, 0, 0.42 * w, (7 * h) / 13), (cx.fillStyle = "#ffffff");
-			for (let r2 = 0; r2 < 5; r2++) for (let k = 0; k < 6; k++) cx.fillRect(9 + 17 * k + (r2 % 2 ? 8 : 0), 8 + 15 * r2, 4, 4);
-		});
 		slot("stop", 128, 128, (cx) => {
 			cx.clearRect(0, 0, 128, 128);
 			const oct = (r2, col) => {
@@ -17602,7 +17597,7 @@ const JGP = (() => {
 			// by the door with her magenta glow in their screens
 			[9, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { bin: "siding", col: "#c8ccd2", pier: "#9aa0a8", front: "#2a2a36", lintel: "#9aa0a8", band: "repair", extra: (B, w2, h2) => (aerial(B, 1.4, h2, -3.0, 1.7), tvStack(B, -w2 / 2 + 1.6, 0.75, 0)) })],
 		].forEach(([w, h, mk]) => (mk(-52.6, ZS - (zc + (w * MK) / 2), w * MK, h), (zc += w * MK)));
-		// north: courthouse with a flagpole and the fire station; a hotel on the corner (the church is in
+		// north: the courthouse and the fire station; a hotel on the corner (the church is in
 		// the square now)
 		COURTHOUSE(0, -62), FIRE_STATION(29, -58);
 		STORE(-70, -55, 0, 14, 12.5, {
@@ -17626,8 +17621,6 @@ const JGP = (() => {
 
 		});
 		put("concrete", UB, WALK, S(0, -0.05, -53.6, 0, 0, 0, 3, 0.12, 3.2));
-		put("plain", ucyl(8), "#d8dce0", S(-10, 6.6, -54.5, 0, 0, 0, 0.18, 13.2, 0.18)), put("plain", usph(8), "#d8b040", S(-10, 13.3, -54.5, 0, 0, 0, 0.3, 0.3, 0.3));
-		put("concrete", ucyl(8), "#c8c2b6", S(-10, 0.15, -54.5, 0, 0, 0, 1.2, 0.3, 1.2)), place(-10, -54.5, 0).sign("flag", 1.55, 12.0, 0, 2.9, 1.63);
 		// south: porch houses facing the square, more on the side streets, the schoolhouse
 		[
 			// KING DINO's: lemon yellow with turquoise trim, his crown on the ridge, a drum on the porch

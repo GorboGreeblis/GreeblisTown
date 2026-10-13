@@ -200,8 +200,8 @@ strands of dry grass and damp stains lie about. **THE ANCIENT** lies across the 
 
 **North of the square**
 - **The courthouse (Town Hall):** a portico with the **town seal** in its entablature, a wreath round the garden's
-  five flowers (1.3), the same five flowers in beds by its steps, a clock tower with a copper dome, and a flagpole
-  flying the stars and stripes.
+  five flowers (1.3), the same five flowers in beds by its steps, and a clock tower with a copper dome. The town flies
+  no flags but the Consortium's standard.
 - **The fire station** (one bay open with the engine's nose in it, a brass bell, a hose-drying tower with a siren),
   **a hotel** with iron balconies and a brass luggage cart, and **the gas station** on the north-east corner. The gas
   station is the far-future kind (HENNRICK's paradox: small-town America ahead of its time): its pumps are charging
@@ -2070,7 +2070,7 @@ drive-in burger place. Open prairie runs from the last street to the hazy horizo
   blue, the alebrije band, MUSHROOM's cap, ANOMALEE's scanlines, the family tree, the town seal, GEMTOE's gold scales
   on plum, a row of cassettes with the last one bitten, ZOLLOD's pots from seed to flower, a Blossom stencil, a
   lightning bolt.
-- Fixed civic pieces: a cream clock face with Roman numerals, the US flag, the red STOP sign.
+- Fixed civic pieces: a cream clock face with Roman numerals, the red STOP sign. No national flags.
 
 **Vegetation**
 - **Trees:** crowns of lumpy noise-pushed spheres, sunlit on top and dark beneath (the shading is painted in), with
