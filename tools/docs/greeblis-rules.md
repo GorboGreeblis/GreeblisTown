@@ -134,8 +134,8 @@ and any game after them.
   knapping, and nothing inspired by the church's Ancient: no element of the background outside the park comes
   from it), built into the town's merged meshes and sign atlas. Since the performance passes, small increases in
   the background's complexity are allowed (the owner, #97): small, measured, and still merged.
-- **Show, don't tell:** lore comes into the environment through visual elements, never through text (words on
-  signs don't count as visual). Keep words and signs in the background to a minimum. Only creatures of the town
+- **Show, don't tell** (the owner's general rule for the background environment outside the park, in every game we
+  make): lore comes into it through visual elements, never through text (words on signs don't count as visual). Keep words and signs in the background to a minimum. Only creatures of the town
   give the town its design: Hennrick (from the far past) and Nextessa (from the far future, which is why she
   comes through the Portal) are not from here, and the town takes nothing from either.
   (The one exception is the billboard the owner asked for, with the words they gave it.)
