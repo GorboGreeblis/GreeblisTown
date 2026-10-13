@@ -891,6 +891,7 @@ plane.
    clipping, floating parts, wrong colours and faces that vanish.
 3. After layout changes, render a top view (`town/test/topview.js`) and head-height views inside buildings to
    catch z-fighting, then run `test/t_zfight.js`.
-4. Run the battery (`test/battery.sh`), and for Event changes `t_event3.js`, `t_rounds.js` and `t_stress.js`.
+4. Run the quick check (`test/quick.sh`, naming the probes for what changed; the full `test/battery.sh` once in
+   a while), and for Event changes `t_event3.js`, `t_rounds.js` and `t_stress.js`.
 5. Check every creature's menu holds only Talk (and Give a blossom), and that each plants and dances by itself at
    the Garden Event (`town/test/dance-plant.js`).

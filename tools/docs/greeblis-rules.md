@@ -30,7 +30,7 @@ of them. Read the guides here before changing the game.
 5. **A second, readable copy of the game lives at `tools/index.html` and is never compressed** (the owner's
    rule, for this and every game we make: **an uncompressed copy of every game is kept in its tools folder at
    all times, in that game's repo**). Every change to `index.html` is copied there before the push
-   (`cp index.html tools/index.html`; `tools/test/copycheck.sh` checks, and the battery runs it first). Before
+   (`cp index.html tools/index.html`; `tools/test/copycheck.sh` checks, and both test runners run it first). Before
    the final pass compresses the root `index.html`, the copy must hold the uncompressed page; from then on only
    the copy is readable.
 6. **Creature models and their characteristics are protected.** Never change a creature's shape, palette,
@@ -65,6 +65,10 @@ of them. Read the guides here before changing the game.
     The lore points established here will not and should not change in future games. Past games (Greeblis City,
     Park and Woods) can and should be updated retroactively, when or if they are worked on again, to reflect the
     world fully established here.
+14. **Quick checks between builds, the full battery once in a while** (the owner, #99): between builds run
+    `tools/test/quick.sh` (about 4 minutes), naming the probes for what the change touched; the full
+    `tools/test/battery.sh` (two hours and more) is kept for before a release build, a change to a whole system,
+    every few PRs, or when the owner asks.
 
 ## Platforms and browsers (from the owner, for this and every Greeblis game)
 
@@ -113,7 +117,8 @@ and any game after them.
   both can show (keep a clear gap, a centimetre or more, two where one surface lies on another over a wide area,
   or move them apart so they don't overlap at all; design for a 16-bit depth buffer, see construction.md), no
   thin, high-contrast lines that shimmer as the head moves, and VR renders at the headset's full resolution unless
-  the frame rate needs a step down. Check with `tools/test/t_zfight.js` and close renders before every push.
+  the frame rate needs a step down. Check with `tools/test/t_zfight.js` (`Z=1 tools/test/quick.sh`) and close renders before every push that changes
+  what is drawn.
 - **Every creature stops a while for the player coming near, on any walk it is on** (out on a visit, home from one,
   home after a battle or a Talk), and turns to them; **and nothing stops a creature resuming whatever it was doing
   once the interaction with the player has ended** (its visit, its walk home, its roam): the visit's clocks wait

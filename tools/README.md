@@ -19,8 +19,8 @@ cd tools && npm install          # acorn, terser 5.31.0 (pinned), playwright
 python3 -m http.server 8765      # from the repo root, in another terminal: the tests load http://localhost:8765/index.html
 ```
 
-- `package.json` pins the tools' own packages and has two scripts: `npm test` runs the battery, `npm run lint`
-  runs the lint (below).
+- `package.json` pins the tools' own packages and has three scripts: `npm test` runs the quick check, `npm run battery` the full
+  battery, and `npm run lint` the lint (below).
 - `.gitignore` keeps `node_modules`, renders, logs, the lint's cut-out script and the battery's `test/x*` images
   out of git.
 - Where Playwright and its Chromium are already installed globally (as in a cloud session), point Node at them
@@ -28,6 +28,16 @@ python3 -m http.server 8765      # from the repo root, in another terminal: the 
 - The browser tests render with SwiftShader WebGL (`--use-angle=swiftshader`).
 
 ## Checking the game
+
+**Between builds, run the quick check; save the full battery for once in a while** (the owner, #99: the full
+battery takes two hours and more).
+
+- `test/quick.sh` (about 4 minutes) checks the readable copy and the lint, boots on desktop and on mobile (with
+  the GIVE button), runs both ordinal sandboxes, compiles the shaders and walks the church and its Ancient. Name
+  the probes for what the change touched after it (`test/quick.sh t_misc.js t_script.js`), each on its own page at
+  a small viewport so it runs near full speed; `Z=1` adds the z-fighting scan, for a change to what is drawn.
+- The full battery: before a release build, after a change to a whole system (the Event, the visits, the
+  roaming, the battles), every few PRs, or when the owner asks. Each section prints the seconds elapsed.
 
 `test/battery.sh > test/battery.log 2>&1` runs, one browser at a time: boot on desktop and on mobile (with the GIVE
 button); both ordinal sandboxes; talking to every creature; battles, Artifacts and the Library finale; the Gem
@@ -39,7 +49,8 @@ scan. Every line should end with
 
 | Runner | What it does |
 | --- | --- |
-| `test/battery.sh` | The battery above (`URL` overrides the page) |
+| `test/quick.sh [probe.js …]` | The quick check above, plus the named probes (`URL` overrides the page, `Z=1` adds the z-fighting scan) |
+| `test/battery.sh` | The full battery above (`URL` overrides the page) |
 | `test/shot2.js <url> <out.png> <scene.js>` | Loads the page on desktop (1280×720; `VW`, `VH` change it), waits `WAIT` ms (default 6000), runs the scene script, then screenshots unless `NOSHOT=1` |
 | `test/mob.js <url> <out.png> <scene.js>` | The same as a Pixel 7 in Chrome, the one kind of phone the game runs on (`EXTRA` adds browser flags) |
 | `test/copycheck.sh` | The readable copy: `tools/index.html` must be the root `index.html` byte for byte until the final pass packs the root, and after that the root must be the packed page (exit 1 when the copy is missing or stale). The battery runs it first |
@@ -182,7 +193,7 @@ Check a name still exists before trusting a result: a rename in the game breaks 
    out of `index.html` into `block6.js` (keeping line numbers aligned), `lint.sh` runs ESLint with
    `.eslintrc.json` and prints each finding at its `index.html` line, and `package.json` lists ESLint 8 for that
    folder. The `'p' is not modified in this loop` warning is known.
-5. Re-run the battery, and measure with `pack/size.js`.
+5. Re-run the quick check (and the full battery before a release), and measure with `pack/size.js`.
 
 ## Trimming three.js
 
