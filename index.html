@@ -7067,15 +7067,19 @@ const Re = (() => {
 			}),
 				i("camera", () => we.post(c, o)),
 				Ho.contextLost || i("render", () => O.render(C, B));
-			// (the depth buffer's bits, read once a second from whatever is being drawn into: the page's canvas, or the
-			// headset's VR layer while presenting, whose buffer may be coarser; shown by the test modes' error tools.
-			// A 16-bit buffer resolves only centimetres at 30 m: surfaces that close together then flicker there)
-			if (t - (s.depthAt || 0) > 1e3)
+			// (the depth buffer's bits, read from whatever is being drawn into: the page's canvas, or the headset's VR
+			// layer while presenting, whose buffer may be coarser; shown by the test modes' error tools. A 16-bit buffer
+			// resolves only centimetres at 30 m: surfaces that close together then flicker there. Read once for each,
+			// a second after it starts: getParameter makes the CPU wait for the GPU to finish all it has queued, a
+			// stall in a headset, and the bits never change while the target stays the same)
+			const xrOn = !!(O.xr && O.xr.isPresenting);
+			xrOn !== s.depthXr && ((s.depthXr = xrOn), (s.depthAt = t));
+			if (s.depthAt && t - s.depthAt > 1e3)
 				try {
-					s.depthAt = t;
+					s.depthAt = 0;
 					const gl = O.getContext(),
 						bits = gl.getParameter(gl.DEPTH_BITS);
-					O.xr && O.xr.isPresenting ? (window.__jgpDepthXr = bits) : (window.__jgpDepthBits = bits);
+					xrOn ? (window.__jgpDepthXr = bits) : (window.__jgpDepthBits = bits);
 				} catch (e) {}
 		}
 		return (
@@ -11568,19 +11572,67 @@ const JGP = (() => {
 		unfightParts.ms = (unfightParts.ms || 0) + performance.now() - t0;
 	}
 
-	// small goods are collected per kiosk and merged into one vertex-coloured mesh
+	// small goods are collected per kiosk and merged into one vertex-coloured mesh. Parts added while fine(1) is on
+	// (fine detail, such as the Garden Supplies curiosities' roots and blooms) go into a second merge that is drawn
+	// only from close by (FAR_DETAIL); a part given a coarse stand-in (add's fourth argument, such as TOP, a unit
+	// box's top face for a letter lying on the mail heap) goes into that close merge too, and its stand-in into a
+	// third merge drawn only from further off (given null, a part is drawn only from close by, with no stand-in).
+	// The lists are cleaned together first, so they fit each other exactly
 	const goods = () => {
 		const list = [],
 			UBX = T.box(1, 1, 1),
+			TOP = cachedGeo("ktop", () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2).translate(0, 0.5, 0)),
 			m = (px, py, pz, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1) => S(px, py, pz, rx, ry, rz, sx, sy, sz);
+		let fine = !1;
 		return {
 			UBX,
+			TOP,
 			m,
-			add: (geo, color, mat) => list.push({ geo, color, matrix: mat }),
-			box: (color, px, py, pz, w, h, d, rx = 0, ry = 0, rz = 0) => list.push({ geo: UBX, color, matrix: m(px, py, pz, rx, ry, rz, w, h, d) }),
-			done: (o) => list.length && (unfightParts(list), dropInside(list), R(v(list, !0), V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })), o)),
+			fine: (on) => (fine = !!on),
+			add: (geo, color, mat, coarse) => list.push({ geo, color, matrix: mat, fine: fine || void 0 !== coarse, coarse }),
+			box: (color, px, py, pz, w, h, d, rx = 0, ry = 0, rz = 0) => list.push({ geo: UBX, color, matrix: m(px, py, pz, rx, ry, rz, w, h, d), fine }),
+			done: (o) => {
+				if (!list.length) return;
+				unfightParts(list), dropInside(list);
+				const mat = V.kioskM || (V.kioskM = new THREE.MeshPhongMaterial({ vertexColors: !0, shininess: 25, specular: 1118481 })),
+					base = list.filter((p) => !p.fine),
+					fl = list.filter((p) => p.fine),
+					far = list.filter((p) => p.coarse).map((p) => ({ geo: p.coarse, color: p.color, matrix: p.matrix }));
+				// (with fine detail, two whole versions: all of it for close by, and the rest with the stand-ins for further
+				// off, one shown at a time; so the detail costs no extra draw)
+				fl.length ? FAR_DETAIL.add(R(v(list, !0), mat, o), R(v(base.concat(far), !0), mat, o)) : R(v(base, !0), mat, o);
+			},
 		};
 	};
+	// FINE DETAIL DRAWN ONLY FROM CLOSE BY: a kiosk with fine detail has two versions, and while the camera (the
+	// headset's eyes in VR) is more than 30 m from its middle the one without the detail (and with the stand-ins) is
+	// shown, until it is back inside 28 m. From that far the curiosities' roots and petals are a pixel or two across,
+	// and a letter on the mail heap shows only its top: fewer triangles for the same look from that far.
+	const FAR_DETAIL = (() => {
+		const list = [],
+			c = new THREE.Vector3();
+		let at = 0;
+		L.push((t) => {
+			// (four times a second is plenty: the camera moves a few metres a second at most)
+			if (!list.length || t - at < 0.25) return;
+			at = t;
+			const e = B.matrixWorld.elements;
+			for (const it of list) {
+				// (its middle in the world, found the first time round, once its building stands in its place)
+				it.x === void 0 &&
+					(it.mesh.geometry.computeBoundingSphere(),
+					it.mesh.updateWorldMatrix(!0, !1),
+					c.copy(it.mesh.geometry.boundingSphere.center).applyMatrix4(it.mesh.matrixWorld),
+					(it.x = c.x),
+					(it.y = c.y),
+					(it.z = c.z));
+				const d = Math.hypot(e[12] - it.x, e[13] - it.y, e[14] - it.z);
+				(it.mesh.visible = it.mesh.visible ? d < 30 : d < 28), (it.far.visible = !it.mesh.visible);
+			}
+		});
+		// (the close version, and the one for further off; window.__jgpFar, for the tests)
+		return (window.__jgpFar = { list, add: (mesh, far) => ((far.visible = !1), list.push({ mesh, far })) });
+	})();
 	const capGeo = new THREE.SphereGeometry(1, 16, 8, 0, l, 0, Math.PI / 2),
 		kioskGeo = {},
 		cachedGeo = (key, mk) => kioskGeo[key] || (kioskGeo[key] = mk());
@@ -11690,9 +11742,12 @@ const JGP = (() => {
 					mm = lean(px, pz, up ? 0.05 : 0.01)
 						.multiply(new THREE.Matrix4().makeRotationY(rs() * l))
 						.multiply(new THREE.Matrix4().makeRotationX(up ? 1.1 + 0.4 * rs() : 0.6 * (rs() - 0.5)));
-				G.add(G.UBX, ENV[(rs() * ENV.length) | 0], mm.clone().multiply(S(0, 0, 0, 0, 0, 0, w, 0.014, d)));
-				rs() < 0.3 && G.add(G.UBX, rs() < 0.5 ? "#c8282a" : "#2a5aa8", mm.clone().multiply(S(0.36 * w, 0.009, -0.28 * d, 0, 0, 0, 0.035, 0.004, 0.04)));
-				rs() < 0.15 && G.add(G.UBX, "#c8a868", mm.clone().multiply(S(0.08 * w, 0.012, 0.05 * d, 0, 0.3, 0, 1.25 * w, 0.012, 1.3 * d)));
+				// (one lying down shows only its top from further off: its top face stands in for it there, and its stamp
+				// and band, a few millimetres over it, are left out there, as too close to it for the depth buffer at
+				// that range; one standing on edge is always drawn whole)
+				G.add(G.UBX, ENV[(rs() * ENV.length) | 0], mm.clone().multiply(S(0, 0, 0, 0, 0, 0, w, 0.014, d)), up ? void 0 : G.TOP);
+				rs() < 0.3 && G.add(G.UBX, rs() < 0.5 ? "#c8282a" : "#2a5aa8", mm.clone().multiply(S(0.36 * w, 0.009, -0.28 * d, 0, 0, 0, 0.035, 0.004, 0.04)), up ? void 0 : null);
+				rs() < 0.15 && G.add(G.UBX, "#c8a868", mm.clone().multiply(S(0.08 * w, 0.012, 0.05 * d, 0, 0.3, 0, 1.25 * w, 0.012, 1.3 * d)), up ? void 0 : null);
 			}
 			// tied bundles stuck in the slopes
 			for (let k = 0; k < 34; k++) {
@@ -12063,7 +12118,10 @@ const JGP = (() => {
 			trumpetGeo = cachedGeo("vtrump", () => latheGeo(smoothProfile([[0, 0], [0.022, 0.02], [0.03, 0.12], [0.085, 0.21], [0.078, 0.216], [0.022, 0.125], [0.012, 0.03], [0, 0.03]], 30), 14)),
 			sph = T.sphere(1, 10, 6),
 			sphLo = T.sphere(1, 8, 5);
-		const voy = (px, py, pz, s, kind, rot, seed) => {
+		// (a small one, in a jar or on the back shelf, is fine detail, drawn only from close by; the big ones out on the
+		// deck and by the walk always show, as their going would be seen)
+		const voy = (px, py, pz, s, ...a) => (G.fine(s < 1), voy0(px, py, pz, s, ...a), G.fine(0));
+		const voy0 = (px, py, pz, s, kind, rot, seed) => {
 			const r = srand(seed),
 				cs = Math.cos(rot),
 				sn = Math.sin(rot),

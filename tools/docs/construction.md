@@ -756,6 +756,17 @@ the cost is CPU per draw), then triangles and per-frame JavaScript. Measure with
   inside another opaque part's solid (a box, sphere, cylinder, cone or icosahedron carrying `lp`) can never be seen and
   is dropped. Lossless to the pixel; about 8,900 faces in about 80 ms at load. Not for the mail heap (too slow for what
   it saves), creatures, or the town's bins.
+- **Far versions of the busiest kiosk goods** (`FAR_DETAIL`): a `goods()` merge with fine detail is built twice, all
+  of it for close by and a lighter one for further off, and one is shown at a time by the camera's distance from its
+  middle (the far one beyond 30 m, the near one again inside 28 m; checked four times a second). A part added while
+  `G.fine(1)` is on (Garden Supplies' small curiosities, in the jars and on the back shelf) is left out of the far
+  one; a part given a coarse stand-in (`G.add(geo, colour, matrix, G.TOP)`: a letter lying on the mail heap, as its top
+  face) is drawn as the stand-in there; a part given `null` (the heap letters' stamps and bands) is left out. It costs
+  no extra draw. Garden Supplies goes from 47.6k to 35.4k triangles from afar, the Post Office from 46.2k to 17.3k;
+  the big curiosities out on the deck always show. `window.__jgpFar` lists them for the tests.
+- **Read GPU state once, not every frame:** `getParameter` makes the CPU wait for the GPU to finish everything queued.
+  The depth buffer's bits are read once for the page's canvas and once for the headset's layer, a second after each
+  starts.
 - **Mobile counts:** `window.__jgpMobile` places fewer envelopes, tufts and fence pickets.
 - **One canvas texture over many meshes** for flat patterns (the dance floor, the rug).
 - **Keep per-frame work tiny:** search on from last frame's answer, repaint textures a few times a second at most, never
