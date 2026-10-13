@@ -10879,10 +10879,12 @@ const JGP = (() => {
 			HH = 2.1,
 			SH = [0.12, 0.62, 1.12, 1.62];
 		// a row of upright books from x0 to x1 standing on y, spines facing +z (or -z when back), leaning now and then
+		// (big books, 32 to 44 cm tall and 6 to 14 wide, in keeping with the face-out hardbacks since those grew for
+		// their titles to read in VR: the owner wants the rows bigger with them)
 		const row = (Q, x0, x1, y, z, hMax, back) => {
 			for (let px = x0; px < x1 - 0.05; ) {
-				const w = 0.05 + 0.07 * rs(),
-					h = (0.6 + 0.4 * rs()) * hMax,
+				const w = 0.06 + 0.08 * rs(),
+					h = (0.72 + 0.28 * rs()) * hMax,
 					c = SPINE[(rs() * SPINE.length) | 0];
 				if (rs() < 0.07 && px + 0.25 < x1) {
 					// a gap with a book leaning into it
@@ -10912,8 +10914,8 @@ const JGP = (() => {
 					// (a featured thing's shelf leaves it a gap: the books to its left stop short, as the last of a
 					// row can reach 7 cm past where it stops)
 					const f = mine.find((f) => f[1] === sd && f[2] === j),
-						hw = f && ({ wish: 0.16, electric: 0.14, acorn: 0.12, shyness: 0.18 }[f[4]] || 0.11);
-					f ? (row(Q, -1.02, f[3] - hw - 0.13, y, 0.13 * sd, 0.42, sd < 0), row(Q, f[3] + hw + 0.04, 1.02, y, 0.13 * sd, 0.42, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.42, sd < 0);
+						hw = f && ({ wish: 0.16, electric: 0.14, acorn: 0.12, shyness: 0.19 }[f[4]] || 0.17);
+					f ? (row(Q, -1.02, f[3] - hw - 0.13, y, 0.13 * sd, 0.44, sd < 0), row(Q, f[3] + hw + 0.04, 1.02, y, 0.13 * sd, 0.44, sd < 0)) : row(Q, -1.02, 1.02, y, 0.13 * sd, 0.44, sd < 0);
 				}),
 			);
 			const ry = al ? Math.PI / 2 : 0,
@@ -10930,12 +10932,14 @@ const JGP = (() => {
 				if ("electric" === what) return electricBlossom(bx, SH[fsh], bz, face);
 				if ("acorn" === what) return acorn(bx, SH[fsh], bz, face);
 				// a cloth hardback standing face-out in its gap, leaning back a little (OVERCOMING SHYNESS is
-				// half as big again, its title readable from the floor: the one book a player hunts for)
+				// bigger still, the one book a player hunts for). All of them are big hardbacks, 40 to 44 cm tall
+				// under 46 cm of shelf, their titles readable from the floor in VR (the owner's rule: in-world text
+				// is big; they were 30 cm and too small to read in a headset)
 				const bk = new THREE.Group(),
 					C = COVERS[what],
 					big = "shyness" === what,
-					bw = big ? 0.32 : 0.22,
-					bh = big ? 0.42 : 0.3;
+					bw = big ? 0.34 : 0.3,
+					bh = big ? 0.44 : 0.4;
 				bk.position.set(bx, SH[fsh] + bh / 2 + 0.002, bz), bk.rotation.set(-0.08, face, 0, "YXZ"), o.add(bk);
 				R(T.box(bw, bh, 0.035), x.clay(C.cloth), bk);
 				R(new THREE.PlaneGeometry(bw - 0.02, bh - 0.02), new THREE.MeshLambertMaterial({ map: cover(C) }), bk, [0, 0, 0.0215]);
@@ -11027,12 +11031,15 @@ const JGP = (() => {
 				352,
 				(c) => {
 					(c.fillStyle = C.cloth), c.fillRect(0, 0, 256, 352);
-					(c.strokeStyle = C.ink), (c.lineWidth = 5), c.strokeRect(14, 14, 228, 324), (c.lineWidth = 2), c.strokeRect(24, 24, 208, 304);
+					(c.strokeStyle = C.ink), (c.lineWidth = 5), c.strokeRect(10, 10, 236, 332), (c.lineWidth = 2), c.strokeRect(18, 18, 220, 316);
 					(c.fillStyle = C.text), (c.textAlign = "center"), (c.textBaseline = "alphabetic");
-					C.title.forEach(([t, size], k) => {
-						let fs = size;
-						for (; fs > 14 && ((c.font = "bold " + fs + "px Georgia, serif"), c.measureText(t).width > 196); fs -= 2);
-						c.fillText(t, 128, 86 + 50 * k);
+					// (each line as big as the cover's width allows, a fifth bigger than it was set, the lines spaced by
+					// their size: the owner's rule, in-world text is big)
+					let ty = 40;
+					C.title.forEach(([t, size]) => {
+						let fs = Math.round(1.2 * size);
+						for (; fs > 14 && ((c.font = "bold " + fs + "px Georgia, serif"), c.measureText(t).width > 224); fs -= 2);
+						(ty += fs), c.fillText(t, 128, ty), (ty += 0.18 * fs);
 					});
 					C.by && ((c.font = "italic 20px Georgia, serif"), c.fillText(C.by, 128, 312));
 					(c.fillStyle = c.strokeStyle = C.ink), (c.lineWidth = 4), (c.lineCap = c.lineJoin = "round"), C.emblem(c);
@@ -11540,19 +11547,21 @@ const JGP = (() => {
 								(c.fillStyle = "#fbf8ee"), c.fillRect(0, 0, 256, 128), (c.strokeStyle = "#c8b890"), (c.lineWidth = 4), c.strokeRect(4, 4, 248, 120);
 								(c.fillStyle = "#c8282a"), c.fillRect(200, 12, 42, 32), (c.fillStyle = "#fbf8ee"), c.fillRect(206, 18, 30, 20);
 								(c.fillStyle = "#1e2440"), (c.textAlign = "center"), (c.textBaseline = "middle");
-								// (the name fitted to the label)
-								for (let fs = 40; fs > 20 && ((c.font = "italic bold " + fs + "px Georgia, serif"), c.measureText(txt).width > 200); fs -= 2);
-								c.fillText(txt, 118, 70);
-								(c.strokeStyle = "#5a6070"), (c.lineWidth = 2), c.beginPath(), c.moveTo(30, 100), c.lineTo(206, 100), c.stroke();
+								// (the name fitted to the label, as big as it allows: the owner's rule, in-world text is big)
+								for (let fs = 56; fs > 20 && ((c.font = "italic bold " + fs + "px Georgia, serif"), c.measureText(txt).width > 232); fs -= 2);
+								c.fillText(txt, 124, 68);
+								(c.strokeStyle = "#5a6070"), (c.lineWidth = 2), c.beginPath(), c.moveTo(20, 104), c.lineTo(236, 104), c.stroke();
 							},
 							{ smooth: !0 },
 						),
 					// a parcel w by h by d in the group Q, the twine a centimetre proud of the paper all round, and its label
-					// on the left half of its front face, clear of the twine
+					// over most of its front face, the twine crossing it (the label stands 4 mm proud of the paper, the
+					// twine 10 mm, so neither flickers against the other). It used to sit on the left half only, and
+					// its name was too small to read in VR for some players (the owner's rule: in-world text is big).
 					parcel = (Q, w, h, d, txt) => {
 						R(T.box(w, h, d), kraft, Q);
 						R(T.box(w + 0.02, h + 0.02, 0.02), twine, Q), R(T.box(0.02, h + 0.02, d + 0.02), twine, Q);
-						R(T.box(0.42 * w, 0.36 * h, 0.004), new THREE.MeshLambertMaterial({ map: tag(txt) }), Q, [-0.26 * w, 0.05 * h, d / 2 + 0.004]);
+						R(T.box(0.9 * w, 0.56 * h, 0.004), new THREE.MeshLambertMaterial({ map: tag(txt) }), Q, [0, 0.06 * h, d / 2 + 0.004]);
 					};
 				// [x, z, a little turn off straight, its lean, its size, the name]: each sits with its bottom in the paper,
 				// clear of the buried parcels and the stacks round it, and its label always faces straight out of the heap
@@ -16087,7 +16096,8 @@ const JGP = (() => {
 			// on the floor lie pebbles, a few big flat dark stones, white flakes of shell, dark cracks and strands of
 			// dry grass; and across the middle crawls the ANCIENT, a big, glossy, near-black slug that can be talked to. Its walls
 			// stand 35 cm inside the outer ones (whose faces only show from outside), the floor at ground level.
-			// (The room and the ANCIENT, built only from that photo, are final: keep them as they are.)
+			// (The room and the ANCIENT, built only from that photo, are final: keep them as they are. The ANCIENT's
+			// model is LOCKED DOWN: the owner called it perfect, and no direct change is made to it from here on.)
 			{
 				let seed = 7;
 				const rnd2 = () => ((seed = (16807 * seed) % 2147483647) / 2147483647),

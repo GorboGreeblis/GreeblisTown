@@ -314,7 +314,7 @@ Goo that runs down a body and moves like goo, without clipping:
   shop, and he neither visits nor is visited (`Kt.shyFree` false). The Garden Supplies counter's own Shop prompt
   (`gshop`) is hidden too until he is freed — it would open the shop straight past him (the owner hit exactly
   that with the book in hand). OVERCOMING SHYNESS stands alone at eye level in the middle of a side case on the
-  left, half as big again as the other hardbacks (0.32 × 0.42 m, its title large), and is taken by pointing at it
+  left, the biggest of the hardbacks (0.34 × 0.44 m, its title large), and is taken by pointing at it
   and selecting (a mouse click, a tap on a phone, the caster in VR — the same
   pointer pick as everything else; `Kt.shyBook`): it leaves the shelf, "Overcoming Shyness book obtained", and its
   station stops offering it. The first Talk with the book in hand frees him ("…|That book…|Let me see..|Wow I'm
@@ -573,7 +573,10 @@ Goo that runs down a body and moves like goo, without clipping:
     `kioskSignTex`) (the reading table was removed at the owner's request: the Library doesn't hold the
     Artifacts);
   - one thing stands face-out in a gap on each of nine shelves (`LIB_LAYOUT.features`): six cloth hardbacks with
-    their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby, OVERCOMING SHYNESS, RANGER BOBERT) and a
+    their own covers (WORKS OF PATCHOOLEE, ADVENTURES OF APPTERIX, SONGS OF ORSON, STAPLERS by Walter Bigsby, OVERCOMING SHYNESS, RANGER BOBERT; 30 × 40 cm,
+    OVERCOMING SHYNESS 34 × 44, under 46 cm of shelf, each cover line fitted to the cover's width so the titles
+    read in VR, and the rows' books 32 to 44 cm tall with them, the owner's rule that in-world text is big;
+    `test/t_shelf.js` renders each) and a
     Wish Blossom from Greeblis Park in a little pot (its pickups' model at 22%, crystal turning, halo bobbing),
     an Electric Blossom from Greeblis City (its pickups' model at 30%, head turning, halo bobbing) and an Acorn
     from Greeblis Woods (its pickups' model at 1.1x, standing tipped on the shelf);
