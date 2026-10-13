@@ -459,7 +459,7 @@ The old tools went with their repos unless a Town path is given.
   direct changes to it, as with finished creature models; the owner says when it is done.
 - **Locked models and designs can still change, with the owner's approval first** (every game we make): a
   finished creature, a locked room or a locked environment is never changed on our own; ask, and wait for a yes.
-- **Keep the checks between builds short** (Town, #99): a quick check of a few minutes (boots, the ordinal
+- **Keep the checks between builds short** (Town, #100): a quick check of a few minutes (boots, the ordinal
   sandboxes, the shaders, plus the probes for what changed) runs between builds; the full battery, hours long, is
   kept for once in a while. Run game-logic probes at a small viewport: a full-size headless page runs the game at
   about a fifth of real speed.

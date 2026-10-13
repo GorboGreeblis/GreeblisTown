@@ -29,7 +29,7 @@ python3 -m http.server 8765      # from the repo root, in another terminal: the 
 
 ## Checking the game
 
-**Between builds, run the quick check; save the full battery for once in a while** (the owner, #99: the full
+**Between builds, run the quick check; save the full battery for once in a while** (the owner, #100: the full
 battery takes two hours and more).
 
 - `test/quick.sh` (about 4 minutes) checks the readable copy and the lint, boots on desktop and on mobile (with

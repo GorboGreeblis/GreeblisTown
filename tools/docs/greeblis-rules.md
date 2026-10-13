@@ -41,7 +41,7 @@ of them. Read the guides here before changing the game.
    to be reopened. A fix that would touch a locked model (a clip, a flicker) is made around it (its placement,
    its animation, the thing it clips into) or put to the owner first. Locked so far: every creature whose builder
    says its model is final, the Ancient (the owner: "perfect"), the design of the church's secret room (the
-   owner, #99), and **the Event flowers** (the owner, #99): the five plant models the Garden Event grows, and only
+   owner, #100), and **the Event flowers** (the owner, #100): the five plant models the Garden Event grows, and only
    those. **A locked model or design can still change, but only with the owner's approval first** (the
    owner's rule, for every game we make): ask before touching it, and wait for a yes. (The owner reopened GOOWARD and SOMLET for the
    bug pass's two fixes, #98: their squint and their eyes opening for a Blossom, baked into merged meshes, were kept
@@ -65,7 +65,7 @@ of them. Read the guides here before changing the game.
     The lore points established here will not and should not change in future games. Past games (Greeblis City,
     Park and Woods) can and should be updated retroactively, when or if they are worked on again, to reflect the
     world fully established here.
-14. **Quick checks between builds, the full battery once in a while** (the owner, #99): between builds run
+14. **Quick checks between builds, the full battery once in a while** (the owner, #100): between builds run
     `tools/test/quick.sh` (about 4 minutes), naming the probes for what the change touched; the full
     `tools/test/battery.sh` (two hours and more) is kept for before a release build, a change to a whole system,
     every few PRs, or when the owner asks.
@@ -153,7 +153,7 @@ and any game after them.
   footing) is made around it or put to the owner first, and any change to it needs the owner's approval first. The
   owner says when an environment is done; Greeblis Town's is not marked done yet (the church's inside and its
   secret room already are, below).
-- **The inside of the church is final, and the secret room's design is locked down** (the owner, #99): never
+- **The inside of the church is final, and the secret room's design is locked down** (the owner, #100): never
   change or update it (its room, the Ancient's corner, its props, the secret way in) without the owner's approval
   first.
 

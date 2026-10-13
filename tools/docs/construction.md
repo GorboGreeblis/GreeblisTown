@@ -373,7 +373,7 @@ Goo that runs down a body and moves like goo, without clipping:
   spot by a neighbour or the stone (broad HENNRICK on the inner row) takes the spot where it stands after a
   second, within a metre, so it still plants and grows its flower. The church's ANCIENT never dances or
   plants, and never will (owner's rule): it stays as it always is and only talks when talked to, so it has no
-  dance or planting animation at all (removed in #99).
+  dance or planting animation at all (removed in #100).
 - **Workers come out straight:** a kiosk or bar worker walks its way out from inside only; one already out when the
   Event starts (on a visit, or stepped out to meet a visitor) goes straight to the garden, never back into its
   kiosk to walk the way out again (ZOLLOD used to get stuck walking into Garden Supplies).
@@ -557,9 +557,9 @@ Goo that runs down a body and moves like goo, without clipping:
   of those remembers: this three.js keeps no geometry `parameters`, so the light meshes used to be just as heavy).
   With the Snacks done, Anomalee's pizza box goes 0.8 m to her side if a flower of hers from an earlier Event
   stands where it would.
-- **The plants** (final, and locked down as the Event flowers by the owner in #99: no change without the owner's
+- **The plants** (final, and locked down as the Event flowers by the owner in #100: no change without the owner's
   approval first; each built only from the owner's photos of it): five kinds in `PLANT_KINDS`, each its builder
-  `(add) => …` (#99 removed the unread name labels): a creeping thistle, a scentless mayweed, a chicory, a common milkweed and
+  `(add) => …` (#100 removed the unread name labels): a creeping thistle, a scentless mayweed, a chicory, a common milkweed and
   a zebra mallow. One merged vertex-coloured mesh per kind, drawn at `PLANT_SIZE` 2.4; leaves stay 0.11 model units
   up (stems aside) so they clear a row's ridge.
   - The toolkit inside `PLANT_KINDS`: `part(name, make, lit)` builds a flat double-sided part once from its
@@ -725,7 +725,7 @@ Goo that runs down a body and moves like goo, without clipping:
   diagnostics panel) sits top left, the game's HUD (the quest checklist on `dk.grip`) top right, the joystick
   bottom left and TALK / GIVE bottom right; there are no zoom buttons (removed on request; the desktop mode keeps
   its wheel).
-- **The desktop test mode's screen** (owner's choices, #99): the game's HUD (the quest checklist on `dk.grip`)
+- **The desktop test mode's screen** (owner's choices, #100): the game's HUD (the quest checklist on `dk.grip`)
   sits top left, and the frame rate and the error count sit bottom left (`#jgpDeskErr`) with a `copy errors`
   button that copies the error report to paste anywhere. Nothing sits top right.
 - **Where the game runs** (the owner's platform rules, in [`greeblis-rules.md`](greeblis-rules.md#platforms-and-browsers-from-the-owner-for-this-and-every-greeblis-game)):
