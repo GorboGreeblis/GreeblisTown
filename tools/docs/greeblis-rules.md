@@ -7,7 +7,7 @@ of them. Read the guides here before changing the game.
 
 ## The game (from the owner)
 
-0. **The game is called Greeblis Town** (the owner, from #97; it was "Greeblis Town USA" from #31).
+0. **The game is called Greeblis Town** (the owner, from #98; it was "Greeblis Town USA" from #31).
 
 1. **Fully playable as a Bitcoin ordinal, in its final form** (the owner's rule for every game): it must work on
    ordinals.com and the other ordinal sites in particular. One self-contained `index.html`: no external URLs,
@@ -41,7 +41,7 @@ of them. Read the guides here before changing the game.
    to be reopened. A fix that would touch a locked model (a clip, a flicker) is made around it (its placement,
    its animation, the thing it clips into) or put to the owner first. Locked so far: every creature whose builder
    says its model is final, and the Ancient (the owner: "perfect"). (The owner reopened GOOWARD and SOMLET for the
-   bug pass's two fixes, #97: their squint and their eyes opening for a Blossom, baked into merged meshes, were kept
+   bug pass's two fixes, #98: their squint and their eyes opening for a Blossom, baked into merged meshes, were kept
    apart from the merges; their shapes, parts and palettes are unchanged. Both are locked again.)
 7. **Branches:** commit and push to the branch you are given, and open a PR when the work is ready or when asked.
    Once the previous PR is merged, restart the branch from `main`.
@@ -133,9 +133,9 @@ and any game after them.
   lore, style and design (its creatures, the Consortium, the Portal and Greeblis City, goo and VHS; never flint
   knapping, and nothing inspired by the church's Ancient: no element of the background outside the park comes
   from it), built into the town's merged meshes and sign atlas. Since the performance passes, small increases in
-  the background's complexity are allowed (the owner, #97): small, measured, and still merged.
-- **Show, don't tell:** lore comes into the environment through visual elements, never through text (words on
-  signs don't count as visual). Keep words and signs in the background to a minimum. Only creatures of the town
+  the background's complexity are allowed (the owner, #98): small, measured, and still merged.
+- **Show, don't tell** (the owner's general rule for the background environment outside the park, in every game we
+  make): lore comes into it through visual elements, never through text (words on signs don't count as visual). Keep words and signs in the background to a minimum. Only creatures of the town
   give the town its design: Hennrick (from the far past) and Nextessa (from the far future, which is why she
   comes through the Portal) are not from here, and the town takes nothing from either.
   (The one exception is the billboard the owner asked for, with the words they gave it.)

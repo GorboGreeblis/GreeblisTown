@@ -190,8 +190,8 @@ const t = {
 		{ id: "flowerhat", slot: "hat", name: "Flower Hat", cost: 3 },
 		{ id: "sundress", slot: "dress", name: "Sun Dress", cost: 3 },
 		{ id: "frogshoes", slot: "shoes", name: "Frog Shoes", cost: 3 },
-		// (sold as a "bagel seasoning packet"; everywhere else they are just the Seeds)
-		{ id: "seeds", slot: null, name: "bagel seasoning packet", cost: 10, reward: "seeds" },
+		// (sold as a "bagel seasoning packet", 15 flint (10 before; the owner); everywhere else they are just the Seeds)
+		{ id: "seeds", slot: null, name: "bagel seasoning packet", cost: 15, reward: "seeds" },
 	],
 	// the pizza courier: NEXTESSA, as she is in Greeblis City (her model is final)
 	s = {
@@ -266,12 +266,13 @@ const t = {
 		bowed: "You take a bow.",
 		stuck: "The beat won't let you go!",
 		// you can battle each Dancer as often as you like, but their Ancient Artifact is given only the
-		// first time you win
+		// first time you win. Each Dancer has ten steps to learn, so a battle is won in ten winning rounds
+		// (it was three; the owner asked for longer battles); the bar counts down from ten, a tenth a win
 		award: (name) => name + " awards you an Ancient Artifact!",
 		bowOut: (name) => name + " takes a bow.",
-		w_mont: { title: "DANCE BATTLE: MONTGUMMERY", stamina: 3, bar: "Robot steps left", barColor: "#55b8c6", hitSound: "drumSnare" },
-		p_etcher: { title: "DANCE BATTLE: ETCHER", stamina: 3, bar: "Tentacle twists left", barColor: "#7a4ab8", hitSound: "drumTom" },
-		p_glyph: { title: "DANCE BATTLE: GLYPH", stamina: 3, bar: "Macarena moves left", barColor: "#e88a8a", hitSound: "drumKick" },
+		w_mont: { title: "DANCE BATTLE: MONTGUMMERY", stamina: 10, bar: "Robot steps left", barColor: "#55b8c6", hitSound: "drumSnare" },
+		p_etcher: { title: "DANCE BATTLE: ETCHER", stamina: 10, bar: "Tentacle twists left", barColor: "#7a4ab8", hitSound: "drumTom" },
+		p_glyph: { title: "DANCE BATTLE: GLYPH", stamina: 10, bar: "Macarena moves left", barColor: "#e88a8a", hitSound: "drumKick" },
 	},
 	l = 2 * Math.PI,
 	c = THREE.Vector3,
@@ -11797,7 +11798,7 @@ const JGP = (() => {
 		// small caps topping the sign posts on the ridge
 		[-1.6, 1.6].forEach((px) => G.add(capGeo, "#c82a24", G.m(px, 6.08 + SHERIFF_DH, -0.12, 0, 0, 0, 0.2, 0.12, 0.2)));
 		G.done(o);
-		// wanted posters on parchment: a little green alien, the UFO it flies, or GLOOPERNAUGHT, a goo creature
+		// wanted posters on parchment: a little green alien, the UFO it flies, GLOOPERNAUGHT, a goo creature, or OLAG
 		const poster = (kind, skin) =>
 			b(
 				128,
@@ -11892,6 +11893,32 @@ const JGP = (() => {
 						(c.fillStyle = "#f6f4ee");
 						[[48, 108], [62, 104], [78, 110], [42, 120], [57, 118], [72, 121], [87, 117]].forEach(([px, py]) => { for (let k = 0; k < 6; k++) c.beginPath(), c.arc(px + 2.4 * Math.cos((k / 6) * l), py + 2.4 * Math.sin((k / 6) * l), 1.1, 0, l), c.fill(); c.beginPath(), c.arc(px, py, 1, 0, l), c.fill(); });
 						[[52, 115], [68, 113], [83, 124], [44, 103], [88, 104], [60, 124]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 0.9, 0, l), c.fill()));
+					} else if ("olag" === kind) {
+						// OLAG, drawn from a picture the owner sent: the name right under WANTED, then a wrinkled tan bald head
+						// with long ears swept up and out, a deep-set scowl under a heavy brow, a long thin neck rising from a
+						// high blue collar, a blue robe with pointed shoulder flaps and little gold diamonds, a white belt over
+						// a blue and gold checked panel, and a pale grey-green book held in both hands
+						const robe = "#3a64b4", deep = "#26478a", gold = "#e8c040", lines = "#8a7048";
+						(c.fillStyle = "#3a2414"), (c.font = "bold 16px Georgia, serif"), c.fillText("OLAG", 64, 47);
+						(c.fillStyle = skin), [-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 12 * sd, 70), c.lineTo(64 + 42 * sd, 54), c.lineTo(64 + 14 * sd, 82), c.closePath(), c.fill()));
+						(c.strokeStyle = lines), (c.lineWidth = 1), [-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 16 * sd, 72), c.lineTo(64 + 36 * sd, 58), c.stroke()));
+						(c.fillStyle = skin), c.fillRect(58, 86, 12, 14), c.beginPath(), c.ellipse(64, 73, 14, 17, 0, 0, l), c.fill();
+						(c.strokeStyle = lines), [62, 65, 68].forEach((py) => (c.beginPath(), c.moveTo(56, py), c.quadraticCurveTo(64, py - 2, 72, py), c.stroke()));
+						[-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 10 * sd, 82), c.quadraticCurveTo(64 + 8 * sd, 86, 64 + 4 * sd, 87), c.stroke()));
+						c.beginPath(), c.moveTo(60, 90), c.lineTo(60, 99), c.moveTo(68, 90), c.lineTo(68, 99), c.stroke();
+						(c.fillStyle = "#6a5434"), [-1, 1].forEach((sd) => (c.beginPath(), c.ellipse(64 + 6 * sd, 75, 4, 3, 0, 0, l), c.fill()));
+						(c.fillStyle = "#14141a"), [-1, 1].forEach((sd) => (c.beginPath(), c.arc(64 + 6 * sd, 75.5, 1.6, 0, l), c.fill()));
+						(c.strokeStyle = "#4a3820"), (c.lineWidth = 2.5), [-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 1 * sd, 72.5), c.lineTo(64 + 11 * sd, 69), c.stroke()));
+						(c.lineWidth = 1.5), c.beginPath(), c.moveTo(64, 74), c.lineTo(62.5, 81), c.lineTo(65, 81), c.stroke();
+						c.beginPath(), c.arc(64, 89, 5, 1.2 * Math.PI, 1.8 * Math.PI), c.stroke();
+						(c.fillStyle = robe), c.beginPath(), c.moveTo(30, 142), c.quadraticCurveTo(30, 112, 50, 106), c.lineTo(78, 106), c.quadraticCurveTo(98, 112, 98, 142), c.closePath(), c.fill();
+						(c.fillStyle = deep), [-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 14 * sd, 105), c.lineTo(64 + 40 * sd, 112), c.lineTo(64 + 22 * sd, 120), c.closePath(), c.fill()));
+						(c.fillStyle = robe), c.beginPath(), c.moveTo(50, 110), c.lineTo(53, 94), c.lineTo(58, 99), c.lineTo(70, 99), c.lineTo(75, 94), c.lineTo(78, 110), c.closePath(), c.fill();
+						(c.fillStyle = gold), [[42, 124], [86, 124], [38, 136], [90, 136], [64, 104]].forEach(([px, py]) => (c.beginPath(), c.moveTo(px, py - 3), c.lineTo(px + 2, py), c.lineTo(px, py + 3), c.lineTo(px - 2, py), c.closePath(), c.fill()));
+						(c.fillStyle = "#f4f0e4"), c.fillRect(32, 130, 64, 3);
+						for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) (c.fillStyle = (i + j) % 2 ? gold : deep), c.fillRect(46 + 9 * i, 133 + 4.5 * j, 9, 4.5);
+						(c.fillStyle = "#b4c2ae"), c.fillRect(48, 112, 32, 16), (c.fillStyle = "#e8e6d8"), c.fillRect(49, 126, 30, 2), (c.strokeStyle = "#7a8a74"), (c.lineWidth = 1), c.strokeRect(48, 112, 32, 16);
+						(c.fillStyle = skin), [-1, 1].forEach((sd) => (c.beginPath(), c.ellipse(64 + 17 * sd, 120, 4, 6, 0, 0, l), c.fill()));
 					} else {
 						// the saucer: a glass dome on a grey disc with portholes, and its tractor beam
 						(c.fillStyle = "rgba(255,240,120,.55)"), c.beginPath(), c.moveTo(52, 92), c.lineTo(76, 92), c.lineTo(100, 128), c.lineTo(28, 128), c.fill();
@@ -11900,7 +11927,7 @@ const JGP = (() => {
 						(c.fillStyle = "#5a5e66"), c.fillRect(20, 78, 88, 3);
 						for (let k = 0; k < 5; k++) (c.fillStyle = k % 2 ? "#ffe04a" : "#7ae8ff"), c.beginPath(), c.arc(34 + 15 * k, 75, 3.5, 0, l), c.fill();
 					}
-					(c.fillStyle = "#3a2414"), (c.font = "bold 16px Georgia, serif"), c.fillText("REWARD", 64, "goo" === kind ? 154 : 146);
+					(c.fillStyle = "#3a2414"), (c.font = "bold 16px Georgia, serif"), c.fillText("REWARD", 64, "goo" === kind || "olag" === kind ? 154 : 146);
 				},
 				{ smooth: !0 },
 			);
@@ -11918,6 +11945,9 @@ const JGP = (() => {
 			// (and, on the right, a stranger drawn from a photo the owner sent, between the alien and the rabbit,
 			// clear of both: no two posters on this wall share any of the same spot, so none can ever flicker)
 			[0.88, 2.2, "stranger", "#f1d7c2", 0.06],
+			// (and OLAG, from a picture the owner sent, up on the left above the visitor, between the alien and the star,
+			// clear of all three)
+			[-0.92, 3.08, "olag", "#d2bc90", -0.04],
 		].forEach(([px, py, kind, skin, rz, dz = 0]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35 + dz], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35 + dz] })));
 	}
 

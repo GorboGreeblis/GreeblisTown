@@ -294,14 +294,14 @@ Goo that runs down a body and moves like goo, without clipping:
 
 ### Quests and Dance battles
 
-- **Three quests** on the HUD: the Seeds (sold at Garden Supplies as a "bagel seasoning packet", 10 flint), the
+- **Three quests** on the HUD: the Seeds (sold at Garden Supplies as a "bagel seasoning packet", 15 flint), the
   Summoning Stone and the Snacks (Nextessa's pizza, called from the phone booth).
 - **The phone is locked** until Mushroom has been given a Blossom (`Kt.phone`, set in `te()`): before, the booth only says
   the connection to the Portal seems blocked, so Nextessa can't be called; after, it works for the rest of the session (also in testing).
   `test/t_phone.js` checks both.
 - **Dance battles** (Greeblis City's panel and bar) with the three Dancers: rock, paper, scissors. The Dancer goes
   first and shows its move with its own animation; Rock out! beats the splits, the splits beat going horizontal,
-  going horizontal beats Rock out!. Each round won teaches one of the Dancer's steps; learn them all to win. The
+  going horizontal beats Rock out!. Each round won teaches one of the Dancer's ten steps; learn all ten to win (three before #98: the owner asked for longer battles). The bar counts the steps left down from ten. The
   panel shows only the Dancer's move; the bar shows how it is going. The winner does a victory dance.
 - **The chain:** each Dancer's first win gives one Ancient Artifact (a third of one teal brilliant-cut diamond;
   later wins get a bow). Sparkakus's talk follows the count (none, one or two, all three). With all three he stays
@@ -524,11 +524,16 @@ Goo that runs down a body and moves like goo, without clipping:
   parchment: two little green aliens, their UFO, GLOOPERNAUGHT (a big green goo creature, named under its
   picture), a brown rabbit dressed as Napoleon Bonaparte (bicorne with gold trim and a tricolour cockade, navy coat
   with red collar and gold epaulettes, a paw tucked in) front and centre under the star, and a drawing of the
-  player's own avatar (copper hair and ponytail band, freckles, the flowered yellow sun dress), pinned a few
-  millimetres proud of the goo poster's corner so the two never flicker, and on the right, between the rabbit and
+  player's own avatar (copper hair and ponytail band, freckles, the flowered yellow sun dress), clear of the goo
+  poster's corner, and on the right, between the rabbit and
   the alien, a stranger drawn from a photo the owner sent (as cartoony as the visitor and never a likeness: shaggy
   pale-blond hair with darker roots over the brow, dark brows and eyes, a small smile, a little gold earring, a
-  brown leather jacket with a wide collar over a cream shirt collar and a sage knit sweater). Its back wall is plain: the battens
+  brown leather jacket with a wide collar over a cream shirt collar and a sage knit sweater). Up on the left, between
+  the alien and the star and above the avatar, OLAG, from a picture the owner sent, the name under WANTED as on
+  GLOOPERNAUGHT's poster: a wrinkled tan bald head with long ears swept up and out, a deep-set scowl, a long thin neck,
+  a high blue collar and blue robe with pointed shoulder flaps and gold diamonds, a white belt over a blue and gold
+  checked panel, and a pale grey-green book in both hands. No two posters overlap anywhere, so none can flicker.
+  Its back wall is plain: the battens
   every other kiosk has would cut across the posters, so the owner had them taken off (`noBattens`).
   Garden Supplies' wheelbarrow of flowers out front stands on its wheel: two fork rails run from under the tray's
   front edge down to the axle, the wheel's top level with the tray's bottom, and two legs at the back.
@@ -830,7 +835,7 @@ plane.
   the far faces level and they fight), and not at all when both are only a few millimetres thick. Up to three
   passes. It moves about 5,900 parts in about 0.5 s (`JGP.unfightParts.moved` / `.ms`). Merged faces lying flat on
   the ground facing down are dropped (no eye goes below the ground).
-- **A part its animation changes only in a rare state must be kept out of the merges** (#97): a creature's build
+- **A part its animation changes only in a rare state must be kept out of the merges** (#98): a creature's build
   plays its animation at a handful of sample times (`KIT.animated`, and the spawn-time test that feeds `io`), and
   merges every part that never changed in them. A part moved, hidden or rescaled only in a state those samples
   never reach (GOOWARD's squint every 4.3 s, SOMLET's lids hiding when her eyes open for a Blossom) was baked into

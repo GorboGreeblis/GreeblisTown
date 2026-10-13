@@ -453,6 +453,8 @@ The old tools went with their repos unless a Town path is given.
 ### Owner decisions that recurred
 
 - VR only in the final build; test modes are temporary (Town also targets Android phones).
+- **Show, don't tell outside the park** (every game we make): the background environment carries its lore in what
+  is seen, never in text; words and signs kept to a minimum.
 - **A finished environment is locked down** (every game we make): when the general environment is done, no more
   direct changes to it, as with finished creature models; the owner says when it is done.
 - **Platforms, for every game we make** (Town, 13 Oct 2026; all Greeblis games past and future, and any game
