@@ -167,13 +167,12 @@ const t = {
 			at: [-18.1, -2.2],
 			bodyR: 1,
 			goo: ["#37b3e8", "#ff5fb0", "#a8e830", "#f2c72e", "#8a3ffc", "#35d0c5", "#ff7a2f"],
-			emotes: ["~", "!", "♪"],
 		},
 	},
 	o = {
-		gratelet: { emotes: ["~", "!", "♪"] },
-		drifter: { emotes: ["..."] },
-		frog: { emotes: ["♪", "!"] },
+		gratelet: {},
+		drifter: {},
+		frog: {},
 		blinker: {},
 	},
 	// each creature's emote and sound when it greets at the gathering
@@ -2893,78 +2892,16 @@ function ho(e, o, a) {
 				(e.goHome && ((e.goHome = !1), (e.gcNavHome = !1), (e.gcStuckN = 0)));
 }
 const po = () => [M.white, M.lime, M.teal, M.pink, M.yellow, "#ffb0d8", "#b39ae8"];
-function fo(t, e) {
+// every creature holds itself upright and at its own size: its life comes from its own model's animation (the owner:
+// no shared idle breathing, idle actions or idle emotes for anyone)
+function fo(t) {
 	const o = t.group;
-	let a = t.life;
-	if (
-		(a ||
-			(a = t.life =
-				{
-					ph: l * Math.random(),
-					rate: 1.2 + 0.7 * Math.random(),
-					next: e + 5 * Math.random(),
-					act: !1,
-					aT: 0,
-					aDur: 0,
-					aType: 0,
-				}),
-		(t.def && t.def.stationary) || et(t))
-	)
-		return (o.rotation.z = 0), (o.rotation.x = 0), o.scale.set(1, 1, 1), (a.act = !1), void (t.presence = 1);
-	const n = 0.02 * Math.sin(e * a.rate + a.ph);
-	let r = 1 - 0.5 * n,
-		s = 1 + n,
-		i = 1 - 0.5 * n,
-		c = 0,
-		h = 0;
-	if (
-		!a.act &&
-		e > a.next &&
-		((a.act = !0),
-		(a.aT = e),
-		(a.aDur = 0.55 + 0.7 * Math.random()),
-		(a.aType = p(0, 6)),
-		(a.next = e + 4 + 6 * Math.random()),
-		Math.random() < 0.7)
-	) {
-		let e = (t.def && t.def.emotes) || ["!"];
-		"finale" !== t.busy || bt.live || (e = e.filter((t) => "♪" !== t)), e.length && Ut.above(t, f(e), f(po()));
-	}
-	if (a.act) {
-		const t = (e - a.aT) / a.aDur;
-		if (t >= 1) a.act = !1;
-		else {
-			const e = Math.sin(t * Math.PI);
-			switch (a.aType) {
-				case 0: {
-					const o = Math.abs(Math.sin(t * l)) * e;
-					(s += 0.28 * o), (r -= 0.14 * o), (i -= 0.14 * o);
-					break;
-				}
-				case 1:
-					(s += 0.34 * e), (r -= 0.17 * e), (i -= 0.17 * e);
-					break;
-				case 2:
-					c = 0.22 * Math.sin(t * Math.PI * 5) * e;
-					break;
-				case 3:
-					h = 0.3 * e;
-					break;
-				case 4:
-					c = 0.34 * e;
-					break;
-				case 5:
-					(c = 0.12 * Math.sin(t * Math.PI * 8) * e), (s += 0.12 * e);
-			}
-		}
-	}
-	const u = void 0 === t.presence ? 1 : t.presence;
-	(o.rotation.z = c), (o.rotation.x = h), o.scale.set(r * u, s * u, i * u);
+	(o.rotation.z = 0), (o.rotation.x = 0), o.scale.set(1, 1, 1);
 }
 const uo = {
 	fixed: [],
 	radius: (e) => (e === At ? t.player.bodyR : Math.max(e.bodyR * t.bodies.solidK, e.lieR || 0)),
-	solid: (t) => t.group.visible && (void 0 === t.presence || t.presence >= 0.5),
+	solid: (t) => t.group.visible,
 	resolve(e, o, a) {
 		let n = !1;
 		// (most pairs are far apart: a squared-distance test first, the square root only for those touching)
@@ -3053,7 +2990,7 @@ function Lt(e, o, a, n) {
 			// (busy is not held: the held flag is worked out below, which a busy creature never reaches)
 			(e.held = !1),
 			(e.moving = !1),
-			fo(e, o),
+			fo(e),
 			void (
 				"dialogue" === jt.top &&
 				xe.lastTarget === e &&
@@ -3096,7 +3033,7 @@ function Lt(e, o, a, n) {
 		e.moving && Math.hypot(s.x - i, s.z - l) < 0.1 * a && (e.moving = !1);
 	// creatures stay inside the square park fence (a circular limit cut off the ends of the rows)
 	const f = t.parkHalf - 0.6;
-	(s.x = Math.max(-f, Math.min(f, s.x))), (s.z = Math.max(-f, Math.min(t.parkSouth - 0.6, s.z))), fo(e, o);
+	(s.x = Math.max(-f, Math.min(f, s.x))), (s.z = Math.max(-f, Math.min(t.parkSouth - 0.6, s.z))), fo(e);
 }
 const Ut = (() => {
 		const t = [],
@@ -10896,7 +10833,7 @@ const JGP = (() => {
 			row.list.forEach(([id, name, builder, extra, at0]) => {
 				const at = "function" == typeof at0 ? at0() : "string" == typeof at0 && /^kiosk:/.test(at0) ? KIOSK_AT.spot(at0.slice(6)) : "string" == typeof at0 && /^kiosk-desk:/.test(at0) ? KIOSK_AT.desk(at0.slice(11)) : at0;
 				let d = all[id];
-				if (!d) d = o[id] = { emotes: ["!", "♥", "✿"] };
+				if (!d) d = o[id] = {};
 				Object.assign(d, extra, {
 					name,
 					builder,
