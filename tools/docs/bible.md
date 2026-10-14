@@ -63,7 +63,7 @@ Contents: [1.1 Setting](#11-setting) · [1.2 Greeblis Park](#12-greeblis-park) �
 [1.13 Objects and items](#113-objects-and-items) ·
 [1.14 The Garden Event and the legend of Backpacka](#114-the-garden-event-and-the-legend-of-backpacka) ·
 [1.15 Written things](#115-written-things) · [1.16 Canon facts (fixed)](#116-canon-facts-fixed) ·
-[1.17 Running jokes](#117-running-jokes)
+[1.17 Running jokes](#117-running-jokes) · [1.18 GOOWARD's painting](#118-goowards-painting)
 
 ### 1.1 Setting
 
@@ -213,7 +213,7 @@ GOOWARD keeps the Gallery from the lawn outside.
 | **POST OFFICE** (north-east) | SOMLET | Navy walls and a red roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, faceted heaps of paper under loose envelopes, tied bundles and parcels stuck in its slopes, tall stacks leaning on its sides and an avalanche of letters fanned out round its foot. Five buried parcels carry readable labels (1.15). SOMLET sleeps in front of it. |
 | **SHERIFF'S** (north-east, beside the Post Office) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts, and **the Consortium's flag** flying from a pole behind the sign (1.10). A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the plain back wall over the wanted posters (1.10). Its roof stands 1 m higher than the others' and its desk is raised (top 1.5 m up), so the Sheriff, standing on it, looks down on his visitors. |
 | **GARDEN SUPPLIES** (south-east) | ZOLLOD | Sage walls and a terracotta roof, with plants everywhere: potted shrubs, flowers, ferns, succulents and little trees, seedling trays, a sunflower tray, hanging baskets, bags of soil and compost, a wheelbarrow of flowers out front, a rake and a shovel against the side wall. Among them grow **strange curiosities** after the plates of the Voynich manuscript, in faded inks (pale blue, olive, red-brown, ochre, parchment): bare bulbous roots as big as the plant, striped cup blooms, an "eye of a flower" (a ringed blue eye on legs of forked roots), trumpet clusters on a knot of roots, a scaled bud on a hand of fat roots, a striped lantern bloom on an onion with a beard of roots. A parchment card on the counter is written in the manuscript's unread script. The town's one shop (1.13); ZOLLOD is too shy to keep it until OVERCOMING SHYNESS frees him (1.13). |
-| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big **empty canvas** (6.9 m wide and 2.6 m tall), stretched and primed, hangs on the back wall, waiting to be filled. On the lawn in front, either side of the walk up to it, two framed paintings stand on wooden easels, turned a little toward whoever comes up the walk: a summer landscape (hills, a tree, a lake under a big sky) and a still life (a jug of flowers and fruit on a table). GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
+| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big **empty canvas** (6.9 m wide and 2.6 m tall), stretched and primed, hangs on the back wall, waiting to be filled with GOOWARD's painting (designed in 1.18). On the lawn in front, either side of the walk up to it, two framed paintings stand on wooden easels, turned a little toward whoever comes up the walk: a summer landscape (hills, a tree, a lake under a big sky) and a still life (a jug of flowers and fruit on a table). GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
 
 ### 1.5 The Juice Bar, the dance floor and the phone booth
 
@@ -823,6 +823,185 @@ This section lists the world's recurring jokes; each must keep its form when reu
 - **STAPLERS**, a very dry office manual, shelved among the Library's treasures.
 - **GLYPH's macarena**, whose arms are too short to reach behind his head.
 
+
+### 1.18 GOOWARD's painting
+
+This section is the design of the painting on the big canvas in GOOWARD'S GALLERY (1.4): the lore it draws on, the
+symbol that carries each piece of lore, its composition, palette and technique, and the two small paintings on the
+easels in front. It is the plan the painting is built to; the build follows this section.
+
+**What it is.** One very abstract painting of the whole of Greeblis: its far, far past and its far, far future, its
+origin, its faith, its kinds of being, its creatures and the town round them. It fills the canvas on the Gallery's
+back wall (6.9 m × 2.6 m; the Gallery is built 2 m wider than the other kiosks to hold it), the Gallery's focal
+point and its point. The visual joke is the painter: GOOWARD, who says only "Gomp", lives in goo and seems silly and
+sloppy, has painted something complex, deep and serious. No line
+in the game explains the painting, names it or decodes it, and no creature comments on what it shows.
+
+**Rules for the painting**
+
+| Rule | Canon |
+| --- | --- |
+| **Abstract symbols, realistic figures** | Every idea is carried by an abstract symbol: a shape, a colour field, a texture, a mark. Wherever a being appears as a figure, it is painted as a real body under real light (anatomy, weight, modelling, cast shadow), never as a cartoon: no outlines, no round cartoon eyes, no smiles. |
+| **Nothing easily understood** | No symbol is literal. Each is cropped, partly hidden, turned, distorted in scale, glazed over or merged with its neighbours, so a viewer senses meaning before finding it. No two related symbols sit side by side where a pairing would give them away. |
+| **No words** | No letters, numerals or rune strokes that read as letters anywhere in the painting. The one exception is the painter's signature (below). |
+| **Painted, not drawn** | Layered brushwork, thin glazes over thick impasto, scraped and etched passages, and runs of paint left to drip. Edges are lost and found; nothing is outlined. |
+| **Reverence** | The faith's elements (the Traveler and the visit) are painted with the most care and the quietest light, never as a joke and never at the centre of any joke. The painting does not preach: they are present, not explained. |
+| **One light** | The painting has one sun of its own, high right of centre; every figure is lit from it. |
+| **The painter's hand** | GOOWARD's goo is in the paint: drips of cyan, magenta, violet and lime run down over every era, the one thing that crosses the whole canvas besides time. |
+
+**The lore breakdown.** Every big-picture element of the world, from the far, far past to the far, far future, with
+the symbol that carries it. Placement is given as (u, v): u runs 0 → 1 left to right, v runs 0 → 1 top to bottom.
+
+*The far, far past: the Ancients (u 0 to 0.2)*
+
+| Lore | Source | Symbol in the painting |
+| --- | --- | --- |
+| The Ancients, the first kind, whom no one remembers | 1.8 | The ground of the whole left fifth: a near-black of umber, blue-black and oxblood, worked in many thin layers so it seems to have depth but no bottom. Shapes rise half out of it and sink back. |
+| The first thing; "A dot. Everything starts as a dot" (GLYPH); "I was the first symbol." (THE ANCIENT) | 1.11, 2.17 | A single small dot of raw gold leaf low at the far left (u 0.03, v 0.78): the point the whole painting grows from. |
+| THE ANCIENT, the last of the Ancients, "the one reborn" | 1.8, 2.17 | One long glossy black form, painted as a real slug's back (wet sheen, a breathing pore, the skin's fine grain), runs from the gold dot along the bottom of the canvas as a low horizon, sinks out of sight under the centre, and rises again at the far right edge: the painting begins and ends with it. Two thin eye-stalks rise at the right end only, so the head is in the future and the tail in the past. |
+| The Ancients made the Synthetics | 1.8 | Fine threads of gold run out of the gold dot to the right, branching like roots and then straightening into circuit traces; they become the code under everything (below). |
+| The Computer Core | 1.9 | A dark cube in steep perspective (u 0.09, v 0.38), its faces cut with a fine lattice of lines and lit from inside by a cold green-white glow that leaks at its seams. |
+| The Great Sphinx, its guardian, and its riddles | 1.9 | A great recumbent lion-bodied stone mass in front of the cube, painted realistically (haunches, forepaws, the planes of a headdress, weathered sandstone) but cropped by the left edge and the dark, so it reads as rock before it reads as a body. Round it a single line coils inward and never closes: the riddle. |
+| The Sphinx's missing Eye | 1.9, 1.12 | One eye socket in the stone face, empty, a deep teal-black hollow. |
+| The Ancient Gem, broken into three Artifacts, one held by each Dancer | 1.12 | Three wedges of a teal brilliant-cut diamond, each faceted outside with two pale glowing break faces, drift apart across the canvas: one at the Sphinx's eye (u 0.12, v 0.34), one in the Synthetic band (u 0.38, v 0.5), one by the town (u 0.62, v 0.46). Their glow is the same pale teal so the eye links them. |
+| Mended with school glue | 1.12 | A thin white run of glue, opaque and ropy, drips from above toward the three wedges and stops short of joining them. |
+| The black obelisks, meaning lost | 1.9 | Three thin black tapering slabs, of different heights, standing at u 0.05, 0.16 and 0.24, their tips dissolving into the sky so no top is seen. |
+| The Ancient texts, missing a page | 1.8 | A pale torn rectangle of parchment tone, blank, one edge ragged, laid in at u 0.18, v 0.62; a second rectangle beside it is only a pale ghost: the missing page. |
+
+*The far past: the dead world, the Originator and the Traveler (u 0.15 to 0.38)*
+
+| Lore | Source | Symbol in the painting |
+| --- | --- | --- |
+| The dead world, destroyed by its own Organics | 1.8, 1.9 | A burning sphere high left (u 0.2, v 0.16), red-orange to black, crazed with lava cracks; broken vertical strokes on its limb are ruined towers with a few points of window light; dark shards fall away from it down the canvas. |
+| The solar system: one sun, one gas giant, no moon | 1.1, 1.16 | The painting's one sun, a white-gold disc high right of centre (u 0.66, v 0.12), the light of every figure; a banded ochre-and-cream gas giant cut by the top edge (u 0.44, v 0); and an empty ring of thin pale paint near the sun where a moon would be: the absence. |
+| The Traveler, an angel, coming down a beam of light | 1.6, 1.9 | A beam of pale light slants from the top edge down to the right (from u 0.24 to u 0.34), under a tall pointed arch of thin stone tone that frames it as the church's lancet frames its window. In it, painted realistically, a winged figure seen from below: long flight feathers and scalloped coverts with real weight, a robe with a gold sash in real folds, curls of golden hair, a rayed halo of thin gold lines, and where a face would be only a smooth oval of pale light. It is the most finished figure in the painting. |
+| The Originator, an AI in an old computer, carried up | 1.6, 1.9 | In the figure's arms a small square of cool light, and in it a seed of light in rings with threads running out of it: the threads join the gold circuit threads from the left, so the Originator and the Ancients' code meet. |
+| Its cable torn from the ground | 1.6 | A dark cable hangs from the square, its two-pronged plug dangling over a small crater in the burning ground. |
+| Brought to an empty, desolate world | 1.8 | The beam ends on a flat grey plain (u 0.3 to 0.45), bare, cold and wide: the world before life. |
+
+*The making: the Synthetics bring Greeblis to life (u 0.3 to 0.5)*
+
+| Lore | Source | Symbol in the painting |
+| --- | --- | --- |
+| The Synthetics, beings of code, made by the Ancients | 1.8 | Hard geometric shapes laid over the grey plain: hexagon plates, square pixels, parallel grooves, a cube; edges crisp and colours flat, the only flat paint in the picture. |
+| A team of Synthetics geoengineers the world; HENNRICK among them | 1.8, 2.14 | A survey grid of fine lines over the plain, bending as it recedes; at one node a small pale cube (HENNRICK's mark) and beside it a glass jar painted realistically, holding one seed. |
+| Greeblis City, its towers reaching the clouds, before the flora evolved | 1.1, 1.8 | Far back on the plain, thin teal-grey spires rise into a cloud bank and vanish; there is no green near them. |
+| Code under everything; "ROOTS run like CODE beneath the soil" | 1.8 | The gold threads run on under the whole lower canvas as a mesh of traces carrying short and long ticks in rows, a pattern of on and off that is never a letter or a numeral; in the Organic half they turn back into roots. |
+| Synthetics made to dream; Organics brought to life by the Synthetics | 1.8 | At u 0.45 the flat shapes soften: hexagons swell into cells, pixels blur into pollen, grooves become furrows in soil. |
+| ETCHER's three ages: etched, being etched, still to be etched | 1.8 | Three long horizontal bands are scratched through the paint across the middle (sgraffito, showing the layers under): the first fully cut, the second half cut, the third only begun. |
+| ANOMALEE, the oldest Synthetic, too glitchy to tell it; "WAS there WITHIN." | 1.8, 1.9 | Across the making, one horizontal slice of the painting is shifted sideways a hand's width, as if the canvas skipped; in the gap a single square of magenta light. Under it, a short upright of worn wood. |
+
+*The faith (u 0.48 to 0.58, high)*
+
+| Lore | Source | Symbol in the painting |
+| --- | --- | --- |
+| Jesus visited the creatures of Greeblis once, in its vast history | 1.6, 1.9 | High in the brightest part of the sky, small and still: a figure in a white robe with sandals and brown hair, painted with real drapery and real weight, the face a smooth oval of pale light; beside it a glossy peach sphere (MAMA GORBO as the Garden window shows her), both standing in a small meadow of flowers. Nothing points to it. |
+| Greeblis is without sin | 1.9 | That meadow alone casts no shadow, and a circle of unbroken light lies round it. |
+| The Ancients, the Originator and the Traveler are honoured, never worshipped | 1.9 | No figure stands on a plinth, an altar or a raised place; every figure stands on the same ground as the land. |
+
+*The eons and the present: Greeblis, the park and the town (u 0.45 to 0.75)*
+
+| Lore | Source | Symbol in the painting |
+| --- | --- | --- |
+| A world of many biomes, eons old | 1.1 | Under the centre, the ground is cut away to show strata in band after band (ochre sand, forest green, ice white, sea blue, red earth), thinner and thinner as they go down. |
+| KING DINO's drums "in the family since the Cretaceous" | 1.16 | In a deep stratum, a fossil theropod jaw painted as real bone, teeth and all, with a thin ring of gold lying over its crown. |
+| The garden at the park's heart | 1.2 | Concentric rings of tilled earth seen from above, tipped up into the picture plane at the centre (u 0.55, v 0.62), with four paths to its middle. |
+| The Summoning Stone and its runes | 1.3 | A six-sided standing stone at the rings' middle, painted as weathered stone, its faces cut with rows of short strokes that glow faintly: shapes, never letters. |
+| BACKPACKA, the legend, who drinks from the pond and waters the garden | 1.14, 2.16 | Rising from the right of the rings, painted realistically as a real sauropod in the manner of the schoolhouse mural: the long neck and the line of the back, tan hide scaled and crackled, glassy patches set in it like scutes, veined teal leaf wings spread over the back. Only the neck and back are seen; the head is lost in spray. |
+| His four arcs of water and the rainbow | 1.14 | Four arcs of white mist sweep down over the rings; a rainbow fades in behind them, half rubbed out. |
+| The five Event flowers (thistle, mayweed, chicory, milkweed, mallow) | 1.3 | Where the arcs land, five real flowers painted small and true to life: a pink-mauve thistle puff, a white mayweed daisy, a sky-blue chicory, a dusky mauve milkweed umbel, a pink mallow with dark veins. |
+| Only one batch ever grows; "All that grows, grows again." | 1.14, 2.17 | The flowers are painted once in full colour; a second set of the same five shapes lies beside them in grey underpainting only, never finished. |
+| Blossoms, the town's great gift | 1.11 | Flame-shaped strokes of red with orange within, each with one ember point over its heart, scattered through the present; one, larger, held out low by the human (below). |
+| Flint, the currency of this time | 1.11 | Dark knapped shards with one hard glint each, stacked in a small cairn on the strata's edge. |
+| Goo, the Gorbos' substance; "GOO... is also a kind of CODE." | 1.11 | The painter's own drips (the rule above); where two goo masses meet in the centre they burst into one splash: "Love at first splat", MAMA GORBO and GOOWARD. |
+| MAMA GORBO's restaurant, the town's goo burger | 1.7 | A stack of discs in warm browns, cream and green, its goo running over, tilted and cut off by a teal arch behind it. |
+| MONTGUMMERY: made to learn, eats tapes, always rewinds | 1.11, 2.5 | A black rectangle with two spiral reels; its brown ribbon is pulled out and wanders across the present in one long loop that winds back into the reels. |
+| GLYPH: symbols make up everything | 1.11, 2.7 | From one small dot near the rings, hexagon tiles tessellate outward and fade; one is red with three prongs. |
+| ETCHER: records everything, backups of backups | 1.11, 2.6 | Fine parallel grooves cut into a block of deep blue (u 0.5, v 0.86), and the same grooves repeated smaller beside it, and smaller again. |
+| FORTIZMO's horn and "Backpacka's Rain Strut" | 1.11, 2.9 | A gold horn's bell, painted as real brass, opens toward the arcs; from it a band of waving parallel lines runs into the mist and becomes the water. |
+| KING DINO's jazz, 104 BPM | 1.5 | Along the bottom edge, short upright strokes at a strict even beat, with a gold ellipse of a cymbal riding over them. |
+| SOMLET, always asleep; the town is gentle with sleep | 1.11, 2.10 | A soft cream form like cotton, one closed eyelid painted as a real lid in a single downward curve; a white rectangle (a letter) falling past it, and behind it a heaped mountain of white planes (the mail). |
+| ZOLLOD: growing, and shyness overcome | 1.11, 2.12 | A sprout breaking through a pane of glass; beside the pane a small form half hidden behind a vertical edge, the edge thinning to let it out. |
+| SPARKAKUS: the librarian and his research | 2.1 | A five-pointed gold star half buried in stacked book spines, with yellow daffodil trumpets painted true to life, and a warm halo of light (the light bulb) over the Gem's middle wedge. |
+| GEMTOE: Avarice, the hoard, and learning to share | 1.11, 2.4 | A tight cluster of amethyst crystals painted as real stone, gripped by a curl of crimson; a few crystals have broken off and lie scattered far from it in the meadow. "What you hoard, you will lose." |
+| The creatures' ties to each other: the vignettes, visits and messengers | 1.13, 2.20 | A stream of tiny tokens arcs across the present from figure to figure (a cube, spores, a pixel, a crown, goo, a sprout, a letter, a note, a card, a gem, a tile, a coin), each painted as a real small object, none larger than a fingertip at the canvas's scale. |
+| The Library's unexplained curiosities: the Wish Blossom, the Electric Blossom, the Acorn | 1.13 | Three small things painted from life on a ledge of shadow, unexplained: a teal crystal on a green stem, six yellow lightning petals round a pale core, and an acorn tipped on its side with a glint. |
+| ZOLLOD's strange curiosities after the Voynich plates | 1.4 | A bare bulbous root as big as its plant, with a ringed blue bloom like an eye, in the faded inks of an old herbal (pale blue, olive, red-brown, ochre). |
+| The Juice Bar: Blossoms only, and carrot juice on the rocks | 1.5 | A tall glass of carrot orange with clear cubes, painted true to life, standing on a band of fruit stripes. |
+| Mistergummery's, founded by MONTGUMMERY's father | 1.7 | The teal arch behind the goo burger is the same teal as MONTGUMMERY's square in the future: one lineage. |
+| The Ancient Artifacts held by the three Dancers | 1.12 | The middle wedge of the Gem sits among the Synthetic shapes (above); the three Dancers are its setting, not shown. |
+| The Consortium, the law and the watch; MUSHROOM, its deputy | 1.10 | A red domed form with white warts, seen from beneath and looming at the upper right edge (u 0.84, v 0.14); in it a single round lens, a telescope's eye, that looks over the whole present. A band of navy with a gold hem runs under it. |
+| The Portal, locked by the Consortium, joining the times | 1.3, 1.10 | A grey stone trilithon (two pillars and a lintel), painted as real stone, at the boundary of the present and the future (u 0.74, v 0.5); inside it a blue swirl that pulls MONTGUMMERY's ribbon and the gold threads through; one dark bar lies across it. |
+| HENNRICK, stranded on this side | 1.3, 2.14 | A second small pale cube on the near side of the Portal, turned back toward the left (toward his own era). |
+| The bribe that opens the Portal | 1.3 | One Blossom stroke laid on the dark bar. |
+| The human visitor (the player), suspect on the wanted wall | 1.8, 2.19 | At the bottom, small and painted realistically from behind: a woman in a yellow sun dress with copper hair in a low ponytail with a navy band, standing in the grass and looking into the painting, holding a Blossom low. She is the viewer's stand-in. |
+| Earth animals on Greeblis: the two birds | 1.2, 2.18 | On a bare twig at the upper right edge, two small birds painted from life: a red cardinal and a robin with an orange breast, each in its own space of the twig. |
+
+*The future and the far, far future (u 0.75 to 1)*
+
+| Lore | Source | Symbol in the painting |
+| --- | --- | --- |
+| MONTGUMMERY will be mayor; minor conflicts with MUSHROOM | 1.10 | A teal square crowned with a thin gold line, pressed against the edge of the red dome; a small crackle of white strokes where they touch. |
+| NEXTESSA's inter-temporal pizza shop | 1.5, 2.15 | A warm disc divided into wedges, coming through the Portal's far side, its rim scorched. |
+| The Consortium's caution and its time travel | 1.10 | The navy band doubles back on itself in a loop. |
+| The aliens and the UFO the Consortium hunts | 1.2, 1.10 | A chrome ellipse with a ring of coloured points, almost lost in haze high right; below it a thin cone of light. |
+| The alien factions on the wanted wall | 1.10 | In the storm of the far right, half seen: a slumped green dome running with drips (GLOOPERNAUGHT), two long ears rising past the peak of a bicorne (the rabbit dressed as Napoleon), a long-necked robed figure holding a pale grey-green book (OLAG), and two big black almond eyes with nothing round them (the little green aliens). Each is painted realistically and each is cropped. |
+| The far, far future war between the Consortium and some of those factions | 1.8, 1.10 | The sky at the right edge breaks into sharp diagonal shards of navy and gold against green and chrome, with smoke in grey glazes. |
+| The cycle back to the beginning | 1.14, 2.17 | THE ANCIENT's black form rises again at the right edge (above) and its two eye-stalks lean toward the left, toward the gold dot: the end of time looks back at the start. |
+
+*The painter himself*
+
+| Lore | Source | Symbol in the painting |
+| --- | --- | --- |
+| GOOWARD: an egg-shaped jelly of fused bubbles, cyan above and peach below, white "+" eyes, crystal wings | 2.3, 3.4 | Low in the bottom-right corner, nearly invisible, a translucent egg of cyan over peach glazes with two small crossed glints for eyes and two thin crystal wing-lights: the painter has painted himself in, small, beside his name. |
+
+**Composition**
+
+- **Time runs left to right.** The far, far past is at the left edge, the far, far future at the right. The left is
+  dark, deep and slow; the centre is light and full; the right breaks into storm.
+- **One undercurrent.** THE ANCIENT's black form runs the length of the bottom as a horizon, under the strata and
+  the rings, from the gold dot to the right edge.
+- **One thread.** The gold threads of code run from the dot through the Originator's seed, under the plain, through
+  the Portal and on into the future.
+- **One loop.** MONTGUMMERY's ribbon crosses the present in a long loop through the Portal and winds back: time
+  rewound.
+- **Diagonals.** The Traveler's beam (down to the right) and BACKPACKA's neck (up to the right) cross the canvas's
+  upper half; the four arcs and the horn's lines curve down across them.
+- **Scale.** No figure is taller than a quarter of the canvas except BACKPACKA's neck; the faith's figures are small
+  and placed in the brightest light.
+
+**Palette**
+
+| Zone | Colours |
+| --- | --- |
+| Far, far past | Umber, blue-black, oxblood; raw gold for the dot and threads; teal for the Eye. |
+| Far past | Red-orange, ember, char black; pale gold and white for the beam and the Traveler. |
+| The making | Cool greys, flat teal, magenta (one square), sandstone. |
+| The faith | White, warm sky blue, peach, meadow greens. |
+| The present | Meadow greens, the five flowers' colours, Blossom red and orange, goo cyan, magenta, violet and lime, tan hide, brass. |
+| The future | Navy and gold against green and chrome; teal; smoke greys; the black of THE ANCIENT again. |
+
+**The signature.** "Gooward" in the bottom-right corner, small but readable at the Gallery's walk: a loose,
+right-leaning hand in deep violet (the Gallery's ink), painted with a round brush, the G large and looped, the line
+underscored with one drip of goo. It is the only word on the canvas.
+
+**The two small paintings on the easels.** The summer landscape and the still life are replaced by two small goo
+splat paintings, GOOWARD's everyday work: abstract and colourful, made of goo balls thrown at the canvas. Each has a
+different ground (one cream, one deep violet-black); on it, splats of cyan, magenta, violet and lime in a few sizes,
+each a burst with a dense centre, a ragged crown of spikes and flung droplets, some overlapping wet into wet, with
+drips running down from the larger ones. No figures and no symbols: they are the joke's other half, what everyone
+expects GOOWARD to paint.
+
+**Build notes**
+
+- The painting is drawn procedurally at load time onto one canvas texture (2048 × 772 px, the canvas's 6.9 : 2.6
+  ratio) and laid on a plane 1 cm proud of the canvas's face, so the two never fight. The two easel paintings share
+  one small texture, as the old pair did.
+- It is seeded, so it is the same painting in every session.
+- Figures are built from shaded shapes, many small strokes following their form and a light side and a shadow side
+  from the painting's sun; symbols are built from flat shapes, scraped bands and dripped lines.
+- It is readable from the Gallery's walk in VR: the large forms carry the composition at a distance, and the detail
+  rewards walking up to it.
 
 ## 2. The cast
 
