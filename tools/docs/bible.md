@@ -843,7 +843,7 @@ serious. No line in the game explains the painting, names it or decodes it, and 
 
 | Rule | Canon |
 | --- | --- |
-| **Abstract symbols, realistic figures** | Every idea is carried by an abstract symbol: a shape, a colour field, a texture, a mark. Wherever a being appears as a figure, it is painted as a real body under real light (anatomy, weight, modelling, cast shadow), never as a cartoon: no outlines, no round cartoon eyes, no smiles. The creatures of the town never appear as figures, only as signs. |
+| **Abstract symbols, realistic figures** | Every idea is carried by an abstract symbol: a shape, a colour field, a texture, a mark. Wherever a being appears as a figure, it is painted as a real body under real light (anatomy, weight, modelling, cast shadow), never as a cartoon: no outlines, no round cartoon eyes, no smiles. The creatures of the town never appear as figures, only as signs; nor do the Traveler and the Originator, and no object is painted as the thing itself. |
 | **Nothing easily understood** | No symbol is literal. Each is cropped, partly hidden, turned, distorted in scale, glazed over or merged with its neighbours, so a viewer senses meaning before finding it. Every creature's sign also appears a second time, vast and faint, glazed into the ground somewhere else (the echoes). |
 | **No words** | No letters, numerals or rune strokes that read as letters anywhere in the painting. The one exception is the painter's signature (below). |
 | **Painted, not drawn** | The whole canvas is repainted at the end as brush strokes (the paint pass); edges are lost and found; nothing is outlined; goo runs down over everything. |
@@ -871,10 +871,10 @@ that carries it and where it lies.
 | The Great Sphinx, its guardian, and its riddles | 1.9 | A recumbent lion of weathered limestone, cropped by the left edge, its hind part glazed into the dark (left edge to u 0.24, its base at v 0.64): haunch, back, the headdress's pleated flaps, the face worn smooth with its nose gone, the forelegs laid out along the ground with the great paws' toes (the far leg a step behind and in shadow), its courses of stone, pits and cracks, its shadow thrown left. Round it a single line coils inward and never closes: the riddle (u 0.11, v 0.6). |
 | The Sphinx's missing Eye | 1.9, 1.12 | One eye socket in the stone face, empty, a deep teal-black hollow with a faint teal light in it. |
 | The Ancient Gem, broken into three Artifacts, one held by each Dancer | 1.12 | Three wedges of a teal diamond, each dark teal outside with a pale glowing break face, drift apart across the canvas: one floating just above the Sphinx's empty socket, one in the Synthetic band (u 0.385, v 0.52), one by the town (u 0.64, v 0.5). Their glow is the same pale teal so the eye links them. |
-| Mended with school glue | 1.12 | A small white glue bottle with a red band and an orange nozzle (u 0.37, v 0.38), and a white run of glue from it, opaque and ropy, that stops short of the wedges. |
+| Mended with school glue | 1.12 | No bottle: an orange point (u 0.37, v 0.38) over a bead of opaque white, and from it a white run of glue, ropy, crossed by three short white stitches, that stops short of the wedges. |
 | The black obelisks, meaning lost | 1.9 | Three thin black tapering slabs at u 0.05, 0.15 and 0.215, of different heights, their tips dissolving into the sky, a faint violet light down one edge of each. |
 | The Ancient texts, missing a page | 1.8 | A pale torn sheet, blank, slanted, one edge ragged (u 0.19, v 0.76); beside it the faint ghost of a second: the missing page. |
-| KING DINO's family "since the Cretaceous" | 1.16 | Far off on the waste, a theropod's silhouette, mouth open, a faint ring of a crown over its skull (u 0.13, on the horizon). |
+| KING DINO's family "since the Cretaceous" | 1.16 | Far off on the waste (u 0.13, on the horizon), one long low dark stroke rising to an open angle of jaw with a row of small pale teeth in it, and a faint ring of a crown above: no animal drawn, only its line and its bite. |
 
 *The far past: the dead world, the Originator and the Traveler (u 0.15 to 0.4)*
 
@@ -882,9 +882,9 @@ that carries it and where it lies.
 | --- | --- | --- |
 | The dead world, destroyed by its own Organics | 1.8, 1.9 | A burning sphere high left (u 0.2, v 0.17), lava-orange to black, crazed with thirty glowing cracks, half in its own shadow; eleven broken towers on its upper limb, some with a lit window; twenty-two dark shards falling away beneath it. |
 | The solar system: one sun, one gas giant, no moon | 1.1, 1.16 | The painting's one sun, a white disc high right of centre (u 0.66, v 0.12), the light of every figure, its glow over a third of the canvas, three faint orbits round it; a banded ochre-and-cream gas giant cut by the top edge (u 0.44); and, near the sun, an empty ring of thin pale paint where a moon would be: the absence. |
-| The Traveler, an angel, coming down a beam of light | 1.6, 1.9 | A beam of pale light slants from the top edge down to the right (u 0.24 to 0.39), eleven finer rays in it, under a tall pointed arch of thin stone tone that frames it as the church's lancet frames its window. In it, painted realistically (u 0.296, v 0.36): a halo of 28 thin gold rays round a gold ring; golden curls round a face that is only a smooth oval of pale light; two wings spread up and out, each a mass of real feathers (three rows of scalloped coverts, eight secondaries along the trailing edge, nine long primaries fanning to the tip), lit on the right and shaded on the left; a white robe in real folds with a gold sash; a pale drape streaming back up the beam. |
-| The Originator, an AI in an old computer, carried up | 1.6, 1.9 | In the Traveler's hands, an old computer (a cream bezel, a glowing screen, three buttons), and on its screen a seed of light in rings. A fine gold thread runs from the gold dot up to the Originator's seed (u 0.297, v 0.31), where a larger seed of light in rings sends eight threads out: the Ancients' code and the Originator meet. |
-| Its cable torn from the ground | 1.6 | A dark cable hangs below the beam (u 0.31), its two-pronged plug dangling over a small crater glowing orange. |
+| The Traveler, an angel, coming down a beam of light | 1.6, 1.9 | A sign, never a figure, and nothing of the church's window (no arch, no rays, no robe, halo or face). A soft fall of pale light slants from the top edge down to the right (u 0.27 to 0.37), bending a little as it falls, its edges frayed like a dry brush dragged down, a wider faint veil round it and seventy motes drifting in it. In it (u 0.297, v 0.31): two great sweeps of feathered light, mirror images, rising from one low point and opening up and out, like folded wings or two cupped hands; each is fifteen tapering feather strokes, cream at the root and gold at the tip, fanning from near upright to near level, with a fine shaft down each and soft down where the two meet. Lit from the right: the left sweep is in soft shade. |
+| The Originator, an AI in an old computer, carried up | 1.6, 1.9 | No machine: only the Originator's seed of light in rings, held in the warm hollow between the Traveler's two sweeps (u 0.297, v 0.31), a white point at its heart. A fine gold thread runs from the gold dot up to it, and it sends eight threads out: the Ancients' code and the Originator meet. |
+| Its cable torn from the ground | 1.6 | A dark cable hangs below the fall of light (u 0.31), its end frayed into three loose strands over a small crater glowing orange. |
 | Brought to an empty, desolate world | 1.8 | The beam ends on a flat grey plain (u 0.3 to 0.45), bare, cold and wide: the world before life. |
 
 *The making: the Synthetics bring Greeblis to life (u 0.3 to 0.5)*
@@ -892,11 +892,11 @@ that carries it and where it lies.
 | Lore | Source | Symbol in the painting |
 | --- | --- | --- |
 | The Synthetics, beings of code, made by the Ancients | 1.8 | Hard geometric shapes, the only flat paint in the picture: three clusters of hexagon plates and square pixels in teal, pale teal, grey, magenta, cyan and lime (u 0.4, v 0.55; u 0.345, v 0.66, half again as large; u 0.445, v 0.46), and four larger flat hexagons, each with a pair of grooves beneath it (u 0.31 to 0.43). |
-| A team of Synthetics geoengineers the world; HENNRICK among them | 1.8, 2.14 | A survey grid of fine lines over the plain, bending as it recedes; at one node a small pale cube (HENNRICK's mark) and beside it a glass jar holding one seed (u 0.42, v 0.71), and a short run of white pickets (his surprise at picket fences). |
+| A team of Synthetics geoengineers the world; HENNRICK among them | 1.8, 2.14 | A survey grid of fine lines over the plain, bending as it recedes; at one node a small pale cube (HENNRICK's mark) and beside it one seed held in a ring of glassy light, his collection jar (u 0.42, v 0.71), and a short rhythm of white ticks, the pickets of his surprise at picket fences. |
 | Greeblis City, its towers reaching the clouds, before the flora evolved | 1.1, 1.8 | Far back on the plain, eleven thin teal-grey spires rise into a cloud bank and vanish (u 0.34 to 0.46); there is no green near them. |
 | Code under everything; "ROOTS run like CODE beneath the soil" | 1.8 | The gold code: seven traces of raw gold run across the lower canvas (v 0.7 to 0.91), level runs and 45° steps, each carrying a row of short and long ticks (on and off, never a letter or a numeral) and a gold pad at every third corner; across the Organic half (u 0.46 to 0.73) they lose their ticks and wander like roots; they pass under the strata and through the Portal into the future. |
 | Synthetics made to dream; Organics brought to life by the Synthetics | 1.8 | At u 0.47 (v 0.52) the flat shapes soften: sixteen pale green cells, each with its nucleus. |
-| ETCHER's three ages: etched, being etched, still to be etched | 1.8 | Three long grooves scratched through the paint across the middle (v 0.48 to 0.51), each a light line between two dark ones: the first cut across nine tenths of the canvas, the second half way, the third only begun. At the end of the second, the one being cut, ETCHER's chisel and mallet, raised (u 0.5). |
+| ETCHER's three ages: etched, being etched, still to be etched | 1.8 | Three long grooves scratched through the paint across the middle (v 0.48 to 0.51), each a light line between two dark ones: the first cut across nine tenths of the canvas, the second half way, the third only begun. At the end of the second, the one being cut, ETCHER's chisel as a bright steel wedge driven in, the mallet's blow only short marks of light round its head (u 0.5). |
 | ANOMALEE, the oldest Synthetic, too glitchy to tell it; "WAS there WITHIN." | 1.8, 1.9 | Across the making, one slice of the painting (u 0.27 to 0.49, v 0.55) is shifted sideways, as if the canvas skipped; in the gap a single square of magenta light, then a trail of eight pixels in magenta and violet. Under it, a short upright of worn wood (her peg leg). Lower, her dinner: a plate with a Blossom on it, a bite gone (u 0.275, v 0.66). |
 
 *The faith (u 0.48 to 0.62, high)*
@@ -912,7 +912,7 @@ that carries it and where it lies.
 | Lore | Source | Symbol in the painting |
 | --- | --- | --- |
 | A world of many biomes, eons old | 1.1 | Under the centre, the ground is cut away (u 0.46 to 0.74, from v 0.76 to the bottom, its sides ragged) to show nine strata, each tilted its own way: ochre sand `#b8925a`, a thin grey-blue band of ice `#b4c0bc`, forest green `#3f5e36`, sea teal `#2c5a6a`, a thin umber seam `#4a3e30`, red earth `#8a4a30`, sand `#a89068`, umber `#5a4a3a` and the deep `#2a2420`; root threads hang into them from the turf, stones lie in them, and the cut's top edge catches the light. (No run of the bands ever reads as a flag.) |
-| KING DINO's drums "in the family since the Cretaceous" | 1.16 | In the deep stratum, a fossil theropod jaw, real bone with its teeth, a thin ring of gold lying over its crown. |
+| KING DINO's drums "in the family since the Cretaceous" | 1.16 | In the deep stratum, the fossil jaw as only its bite: a sagging arc of seventeen small pale teeth on a faint line of bone, half sunk in the dark, a thin ring of gold over it. |
 | The garden at the park's heart | 1.2 | Six concentric rings of tilled earth seen from above, tipped up into the picture plane (u 0.555, v 0.64), with four pale paths to its middle. |
 | The Summoning Stone and its runes | 1.3 | A six-sided standing stone at the rings' middle, weathered grey, its face cut with five short strokes that glow teal: shapes, never letters. |
 | BACKPACKA, the legend, who drinks from the pond and waters the garden | 1.14, 2.16 | Rising from the right of the rings, painted realistically as a real sauropod, as the schoolhouse mural paints him (1.7): the hump of his back settled in the meadow grass (u 0.62 to 0.77, v 0.63 to 0.77), a foreleg under the shoulder, and from the shoulder (u 0.73) the long neck rising and leaning left over the rings, tapering, modelled round in fifteen bands from its shaded underside to its lit top, with soft folds on the inside of the bend; tan hide scaled (420 fine cells) and mottled; a green stripe up the neck and a crest of green spines along its top; glassy patches set in the hide like scutes on cream rims (five up the neck, five along the back); two veined teal leaf wings spread up from the back. His head is lost in a cloud of spray (u 0.635, v 0.38), pond water running from where his chin would be. |
@@ -926,21 +926,21 @@ that carries it and where it lies.
 | MONTGUMMERY: made to learn, eats tapes, always rewinds | 1.11, 2.5 | A teal square holding a grid of pixels, two spiral reels joined by tape, a terracotta pot's curve (u 0.53, v 0.82). Out of the reels his tape is pulled: a real tape, twisting as it goes and catching the light at each turn, it wanders across the present in one long loop, through the Portal, out into the future and back, and winds back into the reels: time rewound. |
 | GLYPH: symbols make up everything | 1.11, 2.7 | From one small gold dot (u 0.49, v 0.6), twelve porcelain-blue hexagons tessellate outward in a spiral and fade, a gold point in each; his red trident on a gold shield, his two purple tiles with gold coins. |
 | ETCHER: records everything, backups of backups | 1.11, 2.6 | A block of deep blue cut with fine teal grooves, repeated smaller beside it, and smaller again (u 0.58, v 0.9); his green gem above; three purple tentacles curling as they etch. |
-| FORTIZMO's horn and "Backpacka's Rain Strut" | 1.11, 2.9 | A gold spiral flaring into a brass bell (u 0.575, v 0.47) in a green field, a carrot's orange stroke by it; from the bell five waving lines of music rise toward the spray and become the water. Beside it her tip jar, a glass with three coins. |
+| FORTIZMO's horn and "Backpacka's Rain Strut" | 1.11, 2.9 | A gold spiral flaring into a brass bell (u 0.575, v 0.47) in a green field, a carrot's orange stroke by it; from the bell five waving lines of music rise toward the spray and become the water. Beside it her tip jar: three coins held in a faint round of glassy light. |
 | KING DINO's jazz, 104 BPM | 1.5 | His drum (red shell, white head, chrome rim) under his turquoise crown and a plume of three purple arcs tipped orange, a beat of sixteen even ticks running out of it, and four of his own coins stamped with his crown (u 0.66, v 0.86). Along the bottom edge (u 0.44 to 0.8), short upright strokes at a strict even beat, every fourth taller, with a gold ride cymbal riding over them (u 0.645). |
-| SOMLET, always asleep; the town is gentle with sleep | 1.11, 2.10 | A cream cloud of sleep, one plum lid closed in a single downward curve, three soft waves of dream, letters drifting down, and behind it a heap of white planes (u 0.785, v 0.3); her empty hammock slung beneath; the mail mountain, heaped white planes on a navy line (u 0.8, v 0.395). |
+| SOMLET, always asleep; the town is gentle with sleep | 1.11, 2.10 | A cream cloud of sleep, one plum lid closed in a single downward curve, three soft waves of dream, pale leaves of mail drifting down, and behind it a heap of white planes (u 0.785, v 0.3); her empty hammock beneath, only its sag, one soft curve of cream; the mail mountain, heaped white planes on a navy line (u 0.8, v 0.395). |
 | ZOLLOD: growing, and shyness overcome | 1.11, 2.12, 1.13 | A sage disc, five dots growing from seed to flower, a sprout breaking through a pane of glass, a small form coming out from behind a vertical edge, three small flowers (u 0.74, v 0.84); beside the pane, one closed book, untitled (OVERCOMING SHYNESS). |
-| SPARKAKUS: the librarian and his research | 2.1, 1.17 | A gold star in a royal blue disc, the orange coin at its rim, his alebrije vines looping out in five colours, two daffodils, and a row of book spines in coloured cloth with no titles (u 0.43, v 0.6); among the spines one plain grey one (STAPLERS). His paw prints lope across the meadow (u 0.47, v 0.9), and the light bulb of his long speech hangs in its warm halo (u 0.39, v 0.36). |
+| SPARKAKUS: the librarian and his research | 2.1, 1.17 | A gold star in a royal blue disc, the orange coin at its rim, his alebrije vines looping out in five colours, two daffodils, and a row of book spines in coloured cloth with no titles (u 0.43, v 0.6); among the spines one plain grey one (STAPLERS). His paw prints lope across the meadow (u 0.47, v 0.9), and the light of his long speech, a warm halo round a coil of gold filament with no glass or base (u 0.39, v 0.36). |
 | GEMTOE: Avarice, the hoard, and learning to share | 1.11, 2.4 | Seven amethyst crystals gripped by a curl of crimson (u 0.47, v 0.8); four have broken off and fly away up and to the right, to be shared. In the town, her trader's scales: an amethyst on the high pan outweighing coins spilling off the low one. |
 | SPARKAKUS's genealogical society | 1.7 | In the town, a family tree in a gold oval, its fruit in teal and green. |
 | The creatures' ties to each other | 1.13, 2.20 | The threads (below), and the messengers: a row of twelve tiny tokens arcing across the present (from u 0.47, v 0.33): a cube, spores, a pixel, a crown, goo, a sprout, a letter, a note, a card, a gem, a tile, a coin. |
 | The Library's unexplained curiosities: the Wish Blossom, the Electric Blossom, the Acorn | 1.13 | Three small things (u 0.455, v 0.25): a teal crystal on a green stem in its glow, six yellow lightning petals round a pale core on a silver stem, an acorn tipped on its side with a glint. |
 | ZOLLOD's strange curiosities after the Voynich plates | 1.4 | A bulbous root as big as its plant, roots like hair, a ringed blue bloom like an eye (u 0.8, v 0.77). |
-| The Juice Bar: Blossoms only, and carrot juice on the rocks | 1.5 | A column of carrot orange with three clear cubes standing on five fruit stripes, the purple dance floor's tiles beyond it (u 0.8, v 0.66); below, a carrot and three cubes of ice (the drink is only that). |
+| The Juice Bar: Blossoms only, and carrot juice on the rocks | 1.5 | A column of carrot orange with three clear cubes standing on five fruit stripes, the purple dance floor's tiles beyond it (u 0.8, v 0.66); below, one tapering stroke of carrot orange touched with green at its head, and three clear cubes (the drink is only a carrot and ice). |
 | The Library's rug | 1.4 | Two red paisleys curled round each other, gold sprigs in them (u 0.585, v 0.29). |
-| The duck pond | 1.2, 1.7 | A kidney of still blue, nine lily pads, every third in flower, cattails on its bank (u 0.69, v 0.82), and on it a duck (as in the schoolhouse mural). |
-| The park | 1.2 | The iron fence (thirty pickets between brick pillars, u 0.44, v 0.7), the white octagon of the gazebo with its gold ball (u 0.505, v 0.66), the lit glass box of the phone booth (u 0.475, v 0.74), two butterflies in the open sky (u 0.5, v 0.2). |
-| The town on the horizon | 1.7 | Along the horizon (u 0.46 to 0.74), small and hazed, the emblems of its trades: the bank's pediment and columns, the barber's pole, the water tower with MAMA GORBO's tail round it and her goo running down, ZOLLOD's greenhouse with its bloom through the roof, the gas station's teal post and lightning bolt, the courthouse's red brick and white portico, the picture house's marquee and searchlight, ANOMALEE's stacked sets glowing magenta, the diner's goo shake, the ice cream parlour's winged cone, GEMTOE's scales, SPARKAKUS's family tree, the fire station's weathervane (BACKPACKA on the arrow) and the church's tower; the town seal (a wreath of the five flowers round the garden) above them; 240 strokes of haze over them; the four streets running on to the horizon as county roads. |
+| The duck pond | 1.2, 1.7 | A kidney of still blue, nine lily pads, every third in flower, cattails on its bank (u 0.69, v 0.82), and on it the duck of the schoolhouse mural, only a dot of its green and a point of its gold with three rings spreading out from it. |
+| The park | 1.2 | The iron fence (thirty pickets between brick pillars, u 0.44, v 0.7), the gazebo as an octagon of white line under a gold point (u 0.505, v 0.66), the phone booth as an upright of pale light (u 0.475, v 0.74), two butterflies in the open sky (u 0.5, v 0.2). |
+| The town on the horizon | 1.7 | Along the horizon (u 0.46 to 0.74), small and hazed, the emblems of its trades: the bank's pediment and columns, the barber's stripes (red, white and blue dashes, no pole), the water tower with MAMA GORBO's tail round it and her goo running down, ZOLLOD's greenhouse with its bloom through the roof, the gas station's teal post and lightning bolt, the courthouse's red brick and white portico, the picture house's marquee and searchlight, ANOMALEE's stacked sets glowing magenta, the diner's goo shake, the ice cream parlour's winged cone, GEMTOE's scales, SPARKAKUS's family tree, the fire station's weathervane (BACKPACKA on the arrow) and the church's tower with a gold point of light at its top; the town seal (a wreath of the five flowers round the garden) above them; 240 strokes of haze over them; the four streets running on to the horizon as county roads. |
 | The Consortium, the law and the watch; MUSHROOM, its deputy | 1.10 | A red dome with white warts, seen from beneath and looming from the top edge (u 0.86, v 0.06), its gills beneath; in it a single round lens, a telescope's eye, and a gold star on navy. Fine dashed sight-lines run from the lens down to what it watches (1.10): SPARKAKUS, GEMTOE, GOOWARD, GLYPH, KING DINO, SOMLET, MONTGUMMERY, ANOMALEE and ZOLLOD's signs. One navy thread is let down from the lens across the sky and wound round the town seal: its quiet work against the town's civil systems. |
 | The Portal, locked by the Consortium, joining the times | 1.3, 1.10 | A grey stone trilithon (two pillars and a lintel), painted as real stone (u 0.785, v 0.62), a blue swirl inside it drawing points of light in; MONTGUMMERY's tape and the gold code pass through it; one dark bar lies across it. Beside it an hourglass whose seeds run upward (the timeline's paradox). |
 | HENNRICK, stranded on this side | 1.3, 2.14 | A second small pale cube on the near side of the Portal, turned back toward the left (toward his own era). |
@@ -954,10 +954,10 @@ that carries it and where it lies.
 | Lore | Source | Symbol in the painting |
 | --- | --- | --- |
 | MONTGUMMERY will be mayor; minor conflicts with MUSHROOM | 1.10 | A teal square crowned with a thin gold line, pressed against the dome's edge; a crackle of white strokes where they touch. |
-| NEXTESSA's inter-temporal pizza shop | 1.5, 2.15 | A warm disc in eight wedges with red rounds, its rim scorched, ringed in red, past the Portal's far side (u 0.84, v 0.56). |
+| NEXTESSA's inter-temporal pizza shop | 1.5, 2.15 | A warm disc come apart into its eight wedges, each turned a little and drifting from the middle, red rounds loose among them, scorched arcs of rim on each, and a broken red ring round them: slices of time, past the Portal's far side (u 0.84, v 0.56). |
 | The Consortium's caution and its time travel | 1.10 | A band of navy with a gold hem runs across the future (from u 0.66, v 0.29) and doubles back on itself in a loop: laid in as one loaded brush stroke after another along its path. |
-| The Consortium's presence: the field office, the dish and its find | 1.10 | A listening dish on a lattice mast turned up to the sky (u 0.83, v 0.64); the find, a scorched ring taped off between orange posts under two floodlights (u 0.87, v 0.94); the Consortium's flag as a pennant, navy with a gold hem and a red toadstool (u 0.905, v 0.44); eight blank parchment sheets pinned in two rows, the wanted wall's ghost (u 0.86, v 0.33). |
-| The aliens and the UFO the Consortium hunts | 1.2, 1.10 | A chrome ellipse with a ring of coloured points, almost lost in haze high right (u 0.93, v 0.23); below it a cone of pale light. |
+| The Consortium's presence: the field office, the dish and its find | 1.10 | Listening as three nested pale arcs turned up to the sky over a thin upright, a white point at their focus (u 0.83, v 0.64); the find, a scorched ring crossed by a dashed orange line, two wedges of hard white light falling on it from above (u 0.87, v 0.94); the Consortium's flag as a pennant, navy with a gold hem and a red toadstool (u 0.905, v 0.44); eight blank parchment sheets pinned in two rows, the wanted wall's ghost (u 0.86, v 0.33). |
+| The aliens and the UFO the Consortium hunts | 1.2, 1.10 | A broken ring of chrome line strung with coloured points, almost lost in haze high right (u 0.93, v 0.23); below it a cone of pale light. |
 | The alien factions on the wanted wall | 1.10 | In the storm, half seen and glazed back: GLOOPERNAUGHT, a slumped dark-green dome running with five drips (u 0.83, v 0.82); two long ears rising past the peak of a navy bicorne with a red cockade (the rabbit dressed as Napoleon, u 0.88, v 0.43 to 0.52); OLAG, painted as a body (u 0.955, v 0.66): a long thin neck from a high blue collar, a wrinkled bald head under a heavy brow, long ears swept up and out, the blue robe with pointed shoulder flaps and gold diamonds, the white belt over the blue-and-gold checked panel, the pale grey-green book in both hands; two big black almond eyes with nothing round them (the little green aliens, u 0.92, v 0.82). The stranger from the wall, cropped by the bottom edge: shaggy pale-blond hair with darker roots, a brown leather jacket (u 0.885). |
 | The far, far future war between the Consortium and some of those factions | 1.8, 1.10 | The sky at the right edge (u 0.77 to 1) breaks into storm: twenty-six smoke glazes, 260 long wind strokes, 110 sharp shards of navy, gold, green, chrome and green-gold (every seventh shard larger, every third with a chrome edge), and nine gold cracks of fire. |
 | The cycle back to the beginning | 1.14, 2.17 | THE ANCIENT's head rises at the right edge and its stalks lean back toward the gold dot: the end of time looks back at the start. |
@@ -1050,7 +1050,7 @@ smooth noise field (`flow`), and each later layer is painted over the earlier on
    comes alive before anything is painted on it.
 3. **The great forms.** The Ancients' dark triangle and its three obelisks; the great circle and its four orbits; the
    time spiral (one line of 260 points winding 3.2 times); the gas giant, the empty moon ring, the sun and its three
-   orbits; the dead world, its towers and its falling shards; the lancet arch and the Traveler's beam; the survey grid
+   orbits; the dead world, its towers and its falling shards; the Traveler's fall of light; the survey grid
    (fourteen lines each way); Greeblis City's eleven spires and their cloud bank (140 strokes); the rainbow (six bands
    at under a fifth of strength); the storm (smoke, wind, shards and fire, above); the Consortium's band.
 4. **The echoes.** Fifteen of the signs painted again, three to eight times their size, each turned, at a quarter
@@ -1080,18 +1080,20 @@ smooth noise field (`flow`), and each later layer is painted over the earlier on
    signs there are partly lost and found, merged with their neighbours.
 10. **The ground of the present.** The strata cut away under the centre, their roots, stones and the fossil jaw; then
     the five flowers and their grey twins.
-11. **The figures.** The Sphinx (its legs first, under its chest), the first wedge over its socket, the chisel and
-    mallet; the Traveler; BACKPACKA; the faith's figures; OLAG (glazed to 85 %), GLOOPERNAUGHT, the rabbit's ears and
-    bicorne, the aliens' eyes, the stranger; THE ANCIENT and its head at the right edge; the human; the birds on their
-    twig; GOOWARD's self-portrait (glazed to 55 %). Shaded forms are lit volumes (a radial gradient from the sun's
-    side); a shape whose painting must stay inside its outline (the Sphinx, the slug, BACKPACKA, the strata, the dead
-    world, the gas giant) is painted on a scratch canvas and cut to the outline once.
+11. **The figures, and the Traveler's sign.** The Sphinx (its legs first, under its chest), the first wedge over its
+    socket, the chisel's wedge; the Traveler's sign holding the Originator's seed; BACKPACKA; the faith's figures;
+    OLAG (glazed to 85 %), GLOOPERNAUGHT, the rabbit's ears and bicorne, the aliens' eyes, the stranger; THE ANCIENT
+    and its head at the right edge; the human; the birds on their twig; GOOWARD's self-portrait (glazed to 55 %).
+    Shaded forms are lit volumes (a radial gradient from the sun's side); a shape whose painting must stay inside its
+    outline (the Sphinx, the slug, BACKPACKA, the strata, the dead world, the gas giant) is painted on a scratch
+    canvas and cut to the outline once.
 12. **The paint.** The whole canvas is repainted as brush strokes, coarse to fine. Each stroke is a tapered leaf shape
     that takes the colour of the canvas under its middle and lies along the flow, or, where the canvas has an edge (a
     change in brightness of more than 18), along that edge, so the forms keep their shape. 9,000 broad strokes (radius
     12) go only where the canvas is smooth, at half strength; 16,000 middle strokes (radius 6) where it is not too
     busy, at 62 %; 30,000 fine strokes (radius 2.6) only where there is detail, at 80 %. The broad and middle strokes
-    carry a faint light ridge, the edge of the paint.
+    carry a faint light ridge, the edge of the paint. Every stroke takes the same four random draws whether it is laid
+    or not, so a change in one part of the painting leaves the strokes everywhere else as they were.
 13. **The painter's hand.** Goo flung at the top edge in five throws (u 0.07, 0.33, 0.52, 0.81 and 0.95), each a splat
     with a crown of spikes and droplets and two to five runs down from it, each run wobbling as it thins, beaded at
     its end, with a wet light down its side; and three smaller spatters lower down (u 0.23, v 0.56; u 0.66, v 0.2; u
@@ -1256,7 +1258,8 @@ each creature's entry gives a one-line look and the design section to read.
 - **Post:** wanders round his gallery, 6.6 to 10 m from its middle, in front of it or to either side, never inside or
   behind it, and stops facing it. He shares the Gorbos' house.
 - **Look:** an egg-shaped jelly of fused bubbles, cyan above and peach below, with white "+" eyes, crystal wings, a
-  small smile and a ribbon tongue; see 3.4.
+  small smile, a ribbon tongue and a deep violet painter's beret flecked with goo paint, worn on the right side of
+  his head; see 3.4.
 - **Personality:** cheerful, eager, affectionate and easily cowed.
 - **Voice:** says only "Gomp". Meaning is carried by repetition, length, capitals and punctuation ("Gomp?",
   "Goooooomp!", "GOOMP"); actions are stage directions between asterisks ("* His crystal wings flutter *").
@@ -2630,7 +2633,7 @@ This section specifies GOOWARD's model, materials, face and motion.
 #### Overview
 
 - **Lock.** Locked (the builder is marked final in code). His small smile and ribbon tongue are an approved exception
-  to the no-smile rule.
+  to the no-smile rule. The painter's beret was added later with the owner's permission to alter the model.
 - **Builder and id.** `BORN.gooward` (roster builder `born_gooward`); id `gorbo`. Def: name colour `#30b4e4`, bodyR
   1.2, talkR 3.4 (default); thrown-goo colours `#37b3e8`, `#ff5fb0`, `#a8e830`, `#f2c72e`, `#8a3ffc`, `#35d0c5`,
   `#ff7a2f`.
@@ -2643,7 +2646,8 @@ This section specifies GOOWARD's model, materials, face and motion.
   radiating over the ground.
 - Signatures: (1) the float ring, the widest part, with white stripes; (2) two gold three-leaf crests splayed outward;
   (3) crystal wing spikes fanning behind the upper back.
-- Secondary reads: white "+" eyes, pastel root tendrils, purple octagon ports on the upper sides.
+- Secondary reads: white "+" eyes, pastel root tendrils, purple octagon ports on the upper sides, the violet beret
+  on his right side.
 
 #### Proportions
 
@@ -2700,6 +2704,10 @@ Positions are local to the body group (y 0.55) unless marked.
 | Valve | cylinder + cap | on top at his front right (−x), 0.4 rad from −x toward +z | 0.05 → 0.06 × 0.1; cap 0.035 | `#e040c8`; cap `#fbf8f0` | clay | 60; cap 14 |
 | Under-ring | torus 0.1 below | | 1.28 / 0.2 | `#e040c8` | clay | 50 |
 | AP tag | octagon circle, red octagon texture with bold white "AP" | ring-local (0.95, −0.12, 1.02), turned 0.75: front left (+x) of the under-ring | r 0.17 | `#e83a2a` | Phong canvas | 30 |
+| Beret | sphere 28 × 14 squashed to a 0.5 × 0.5 × 0.13 disc at +0.07 (offset 0.04, −0.03), bent round a sphere of radius 0.6 so it hugs the head | group on the right upper bubble's surface, 0.47 out from its centre along (−0.75, 0.55, −0.37): ≈ (−1.07, 1.81, −0.29), +z the outward normal (`faceTo`) | 1.0 across | `#4a2a6a` | clay | 8 |
+| Beret band | torus, bent the same way | at the beret's rim, z 0 | 0.40 / 0.04 | `#3a1e56` | clay | 12 |
+| Beret stalk | cylinder along +z, bent | on the crown, z 0.24 | r 0.03 → 0.045, 0.1 long | `#4a2a6a` | clay | 8 |
+| Paint flecks ×5 | flattened spheres on the crown's top surface, bent | 0.12–0.36 from the crown centre, seeded (`srand(83)`) | 0.05–0.08 × 0.035 × 0.012 | `#3ae8ff`, `#ff3ac8`, `#a8e830`, `#3ae8ff`, `#ffd23a` | clay | 60 |
 | Roots ×9 | `ao` from (0.3, 0.55) under the body out through 0.75 at y 0.18 to the ground at y 0.03/0.01, curling 0.2–0.4 rad | on the root | r 0.045 → 0.012; reach 1.55–2.05 | `#c7a0f0`, `#b8e858`, `#f4f4f4`, `#e8a0d8` in turn | clay | 30 |
 
 #### Palette
@@ -2716,6 +2724,7 @@ Positions are local to the body group (y 0.55) unless marked.
 | `#d8f0ff` (emissive `#203848`), `#e8faff` | wings, jelly bubbles |
 | `#c8f03a`, `#fbf8f0`, `#e040c8`, `#e83a2a` | ring, stripes and valve cap, valve and under-ring, AP tag |
 | `#c7a0f0`, `#b8e858`, `#f4f4f4`, `#e8a0d8` | roots |
+| `#4a2a6a`, `#3a1e56`; `#3ae8ff`, `#ff3ac8`, `#a8e830`, `#ffd23a` | beret felt and band (the Gallery's ink); its goo-paint flecks |
 
 #### Surfaces and materials
 
@@ -2762,6 +2771,9 @@ Positions are local to the body group (y 0.55) unless marked.
 - The ring is its own group; stripes use tube 0.265 over 0.26 against z-fighting. Eye layers are offset in z (ink
   1.13, white 1.16).
 - Bubbles skip the face zone (abs(sin a) > 0.75, cos a > 0, y 0.9–1.9).
+- The beret is built flat (+z out of the head) and every part's geometry is then bent round a sphere of radius 0.6
+  (a point at distance d from the axis and height z goes to angle d / 0.6 on a shell of radius 0.6 + z), so its rim
+  follows the head instead of standing off it. It sits behind the port and below the crest, touching neither.
 - Roots lie static on the root at y 0.01–0.03. The drips' lowest point (≈ world y 0.44) stays above the ring's lower
   edge.
 
@@ -2776,6 +2788,7 @@ Positions are local to the body group (y 0.55) unless marked.
 - **Do** keep two gold three-leaf crests splayed outward, two wavy teal brows, purple octagon ports and faceted
   crystal wing fans behind.
 - **Do** keep the nine pastel roots splayed over the ground.
+- **Do** keep the beret soft deep violet, hugging the right side of his head, clear of the port and the crest.
 - **Don't** give him round eyes, pupils, lids, teeth or a wider or bigger mouth.
 - **Don't** attach the wings to the breathing body, or let bubbles cover the face.
 - **Don't** make the ring matte or drop its stripes.
