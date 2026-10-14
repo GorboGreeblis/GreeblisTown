@@ -1284,6 +1284,7 @@ each creature's entry gives a one-line look and the design section to read.
     2. "Goooooomp!"
     3. "Gomp?"
     4. "\* His crystal wings flutter \* / Gomp Gomp!" (*flavour*)
+    5. "Goomp! Goomp! Goomp!"
   - Blossom: "GOOMP"
   - Event: "\* Happy planting sounds \*"
   - Vignettes: the GOOWARD rows of the pair register ([2.20.4](#2204-the-pair-register)) and its row in THE
