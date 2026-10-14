@@ -136,6 +136,9 @@ Rules for where the game runs. The gate that enforces them is described in
 6. Any other browser or device must be shown a plain notice on the start screen instead of the game, naming where the
    game does play, and the game must not boot.
 7. Test tools must emulate only supported devices.
+8. Performance work always puts VR in the Meta Quest Browser first: where a choice helps one platform at another's
+   cost, VR on the Quest wins, then Android, then the desktop. A change that would cost VR frame rate, comfort or
+   load time to gain elsewhere is not made.
 
 ## Privacy and conduct
 
