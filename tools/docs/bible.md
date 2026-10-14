@@ -143,6 +143,9 @@ iron fence (about 75 m east to west and 87 m north to south), crossed by walks, 
 - SOMLET's mail cart at the kerb opposite the Post Office, its sack slumped, two letters dropped beside it.
 - SPARKAKUS's paw prints set in the north sidewalk by the Library's corner: a lope heading east.
 
+**The trees.** Big park trees stand by the fence corners and the south walk; one more fills the open corner between
+the church and the dance floor's south end, so that side of the park never looks empty.
+
 **The birds.** A male northern cardinal on a low bough of the maple by the north-east corner, and an American robin on
 a low bough of the oak by the north fence's west half. Both are about twice life size. One bird to a tree; they
 never fly and never leave their trees (design: 3.19).
