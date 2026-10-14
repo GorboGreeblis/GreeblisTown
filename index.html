@@ -12202,9 +12202,11 @@ const JGP = (() => {
 
 		yield;
 		// ==== II. THE GREAT FORMS =========================================================================================
+		yield;
 		// the Ancients: a vast dark triangle rising out of the far left, its apex lost
 		c.fillStyle = grad(0, 0, U(0.24), 0, [[0, "rgba(4,2,6,0.7)"], [1, "rgba(10,6,12,0.2)"]]);
 		c.beginPath(), c.moveTo(U(0.11), -20), c.lineTo(U(0.25), H), c.lineTo(-20, H), c.closePath(), c.fill();
+		yield;
 		// the three black obelisks inside it
 		[[0.05, 0.14, 0.64], [0.15, 0.24, 0.62], [0.215, 0.3, 0.63]].forEach(([u, t, b]) => {
 			const x = U(u), w = 8 + 6 * rnd();
@@ -12212,6 +12214,7 @@ const JGP = (() => {
 			c.beginPath(), c.moveTo(x - w * 0.3, V(t)), c.lineTo(x + w * 0.3, V(t)), c.lineTo(x + w, V(b)), c.lineTo(x - w, V(b)), c.fill();
 			line([[x + w * 0.2, V(t + 0.1)], [x + w * 0.7, V(b)]], "rgba(130,120,160,0.25)", 1.2);
 		});
+		yield;
 		// the great circle of Greeblis: the world brought to life, its rings the orbits and the ages
 		{
 			const gx = U(0.6), gy = V(0.44);
@@ -12222,6 +12225,7 @@ const JGP = (() => {
 				c.beginPath(), c.ellipse(gx, gy, r, r * 0.92, -0.08, 0, TAU), c.stroke();
 			});
 		}
+		yield;
 		// the time spiral: one line winding from the first dot out through every era (an interconnecting symbol)
 		{
 			const pts = [];
@@ -12231,6 +12235,7 @@ const JGP = (() => {
 			}
 			curve(pts, "rgba(255,240,200,0.14)", 1.2);
 		}
+		yield;
 		// the sun, the gas giant cut by the top edge, the empty ring where a moon would be, and their orbits
 		{
 			vol(U(0.44), V(-0.04), 120, 120, 0, "#e8d4a0", "#5a4428", 0.95);
@@ -12242,6 +12247,7 @@ const JGP = (() => {
 			c.strokeStyle = "rgba(255,240,200,0.18)", (c.lineWidth = 1);
 			[[0.3, 0.09], [0.36, 0.12], [0.24, 0.16]].forEach(([rx, ry]) => (c.beginPath(), c.ellipse(SUN[0], SUN[1], U(rx), V(ry), -0.04, 0, TAU), c.stroke()));
 		}
+		yield;
 		// the dead world high left: a burning sphere crazed with lava, ruined towers on its limb, shards falling
 		{
 			const x = U(0.2), y = V(0.17), r = 74;
@@ -12265,6 +12271,7 @@ const JGP = (() => {
 				poly([[sx, sy - s], [sx + s * 0.6, sy], [sx, sy + s * 1.4], [sx - s * 0.5, sy + s * 0.2]], k % 2 ? "#2a1410" : "#7a3a1e", 0.75);
 			}
 		}
+		yield;
 		// the lancet arch and the Traveler's beam slanting down to the right
 		{
 			const x0 = U(0.255), x1 = U(0.345), y0 = V(0.06), y1 = V(0.8);
@@ -12277,24 +12284,30 @@ const JGP = (() => {
 				line([[U(0.24) + U(0.06) * t, 0], [U(0.3) + U(0.09) * t, V(0.8)]], "rgba(255,255,240,0.16)", 1.1);
 			}
 		}
+		yield;
 		// the Synthetics' plane: a survey grid in perspective over the grey waste, bending as it recedes
 		for (let k = 0; k < 14; k++) {
 			const t = k / 13;
 			curve([[U(0.3), V(0.64 + t * 0.2)], [U(0.4), V(0.64 + t * 0.2) - 5 * (1 - t)], [U(0.5), V(0.64 + t * 0.2)]], "rgba(200,255,250,0.2)", 0.8);
 			line([[U(0.33 + t * 0.15), V(0.64)], [U(0.29 + t * 0.23), V(0.86)]], "rgba(200,255,250,0.16)", 0.8);
 		}
+		yield;
 		// Greeblis City: thin teal-grey spires rising into a cloud bank, far back, before any green
 		for (let k = 0; k < 11; k++) {
 			const x = U(0.34 + k * 0.011 + rnd() * 0.005), h = rr(90, 200), y = HZ(x);
 			c.fillStyle = grad(0, y - h, 0, y, [[0, "rgba(120,170,170,0)"], [0.4, "rgba(110,150,152,0.55)"], [1, "rgba(90,120,124,0.75)"]]), c.fillRect(x, y - h, rr(3, 7), h);
 		}
 		field(U(0.33), V(0.34), U(0.5), V(0.44), 140, 50, 16, () => rr(-0.1, 0.1), () => jit("#d8dcd8", 20), 0.3);
+		yield;
 		// the rainbow behind the four arcs of water, half rubbed out
 		["#ff4a4a", "#ffa83a", "#ffe84a", "#6ae84a", "#4ab4ff", "#8a5ae8"].forEach((col, k) => {
 			c.strokeStyle = col, (c.globalAlpha = 0.17), (c.lineWidth = 7), c.beginPath(), c.arc(U(0.6), V(0.74), 240 - k * 7, Math.PI * 1.06, Math.PI * 1.8), c.stroke(), (c.globalAlpha = 1);
 		});
+		yield;
 		// the storm of the far, far future: shards of navy and gold against green and chrome
+		yield;
 		// (smoke in grey glazes first, then the wind in long strokes, then the shards, some catching a chrome glint, and
+		yield;
 		// a few gold cracks of fire running through it)
 		for (let k = 0; k < 26; k++) ell(U(0.76 + rnd() * 0.26), V(rnd()), rr(40, 130), rr(20, 60), rr(-0.8, -0.3), jit("#5a5e66", 30), rr(0.08, 0.18));
 		field(U(0.78), 0, W, H, 260, 70, 16, () => rr(-0.9, -0.5), () => jit("#40465a", 26), 0.28);
@@ -12309,6 +12322,7 @@ const JGP = (() => {
 			for (let j = 0; j < 7; j++) (x += rr(-14, 10)), (y += rr(8, 22)), pts.push([x, y]);
 			line(pts, "rgba(255,200,90,0.25)", 4), line(pts, "rgba(255,230,150,0.7)", 1.1);
 		}
+		yield;
 		// the Consortium's band: navy with a gold hem, running across the future and looping back on itself (time travel)
 		{
 			const band = [[U(0.66), V(0.29)], [U(0.75), V(0.31)], [U(0.84), V(0.27)], [U(0.92), V(0.31)], [U(0.9), V(0.39)], [U(0.84), V(0.34)], [U(0.97), V(0.32)]];
@@ -12789,6 +12803,7 @@ const JGP = (() => {
 		G.ages();
 		yield;
 		// the present: the park and the town
+		yield;
 		G.roads(U(0.58), HZ(U(0.58)) - 4);
 		{
 			const fr = ["bank", "barber", "tower", "greenhouse", "bolt", "courthouse", "marquee", "tvs", "shake", "cone", "avarice", "lineage", "vane", "church"];
@@ -12802,11 +12817,13 @@ const JGP = (() => {
 				brush(x, y, 30, 8, rr(-0.1, 0.1), "rgba(236,230,212,1)", 0.12);
 			}
 		}
+		yield;
 		G.fence(U(0.44), V(0.7), 30);
 		G.gazebo(U(0.505), V(0.66));
 		G.booth(U(0.475), V(0.74));
 		G.garden(U(0.555), V(0.64));
 		// the meadow and the strata cut away below it come later (they lie over the frieze's foot); the signs of the present
+		yield;
 		G.water(U(0.605) + 62, V(0.7) - 250);
 		G.paisley(U(0.585), V(0.29), 0.9);
 		G.butterflies(U(0.5), V(0.2));
@@ -12814,6 +12831,7 @@ const JGP = (() => {
 		G.juice(U(0.8), V(0.66));
 		ghost(() => (c.save(), c.translate(U(0.47), V(0.42)), c.rotate(-0.55), G.burger(0, 0), c.restore()), 0.72, U(0.47) - 60, V(0.42) - 60, 120, 120);
 		G.pond(U(0.69), V(0.82));
+		yield;
 		G.mail(U(0.8), V(0.395));
 		G.curios(U(0.455), V(0.25));
 		G.voynich(U(0.8), V(0.77));
@@ -12832,6 +12850,7 @@ const JGP = (() => {
 			FORTIZMO: [0.575, 0.47, "fortizmo", 1], SOMLET: [0.785, 0.3, "somlet", 0.9], ZOLLOD: [0.74, 0.84, "zollod", 0.9], NEXTESSA: [0.84, 0.56, "nextessa", 1],
 		};
 		for (const k in CRE) {
+			yield;
 			const [u, v, g, s] = CRE[k];
 			(NODE[k] = [U(u), V(v)]), G[g](U(u), V(v), s);
 		}
@@ -12842,12 +12861,14 @@ const JGP = (() => {
 		NODE.ANCIENT = [U(0.94), V(0.78)];
 		NODE.MAMA_W = [U(0.555), V(0.32)];
 		// the future
+		yield;
 		G.portal(U(0.785), V(0.62));
 		G.dish(U(0.83), V(0.64));
 		G.scorch(U(0.87), V(0.94));
 		G.pennant(U(0.905), V(0.44));
 		G.wanted(U(0.86), V(0.33));
 		G.ufo(U(0.93), V(0.23));
+		yield;
 		G.mushroom(U(0.86), V(0.06), 1);
 		field(U(0.86) - 140, 0, U(0.86) + 140, V(0.16), 120, 50, 10, () => rr(-0.9, -0.5), () => jit("#3a4258", 20), 0.32);
 		G.mayor(U(0.86) - 130, V(0.06) + 36);
@@ -12984,7 +13005,7 @@ const JGP = (() => {
 			// [stroke radius, count, length / radius, the least detail it lies on, the most, opacity]
 			for (const [r, n, el, minEdge, maxEdge, al] of [[12, 9000, 1.5, 0, 14, 0.5], [6, 16000, 1.5, 0, 40, 0.62], [2.6, 30000, 1.6, 8, 999, 0.8]]) {
 				for (let k = 0; k < n; k++) {
-					if (k % 1500 === 0) yield;
+					if (k % 400 === 0) yield;
 					const x = rnd() * W, y = rnd() * H, i = at(x, y);
 					const gx = lum(at(x + 3, y)) - lum(at(x - 3, y)), gy = lum(at(x, y + 3)) - lum(at(x, y - 3)), g = Math.hypot(gx, gy);
 					if (g < minEdge || g > maxEdge) continue;
@@ -13014,7 +13035,11 @@ const JGP = (() => {
 		}
 		signature(W - 150, H - 30);
 		yield;
-		for (let k = 0; k < 14000; k++) ell(rnd() * W, rnd() * H, 0.7, 0.7, 0, rnd() < 0.5 ? "#ffffff" : "#000000", 0.05);
+		for (let k = 0; k < 14000; k++) {
+			if (k % 2000 === 0) yield;
+			ell(rnd() * W, rnd() * H, 0.7, 0.7, 0, rnd() < 0.5 ? "#ffffff" : "#000000", 0.05);
+		}
+		yield;
 		c.fillStyle = rgrad(W / 2, H / 2, H * 0.3, W * 0.65, [[0, "rgba(0,0,0,0)"], [1, "rgba(20,12,4,0.35)"]]), c.fillRect(0, 0, W, H);
 
 		// ---- pass 5 ------------------------------------------------------------------------------------------------------
@@ -13724,11 +13749,17 @@ const JGP = (() => {
 			ch = Math.round(ART.h * ART.s),
 			done = (img) => (tex.image.getContext("2d").drawImage(img, 0, 0), (tex.needsUpdate = !0)),
 			here = () => {
+				// (each slice ends by reading one pixel back, so the canvas draws that slice's strokes within it rather than
+				// saving them all up for one long stall)
 				const cv = mkCanvas(cw, ch),
-					gen = paintGallery(cv.getContext("2d", { willReadFrequently: !0 }), ART.w, ART.h, mkCanvas),
+					cx = cv.getContext("2d", { willReadFrequently: !0 }),
+					gen = paintGallery(cx, ART.w, ART.h, mkCanvas),
 					step = () => {
 						const t0 = performance.now();
-						for (; performance.now() - t0 < 6; ) if (gen.next().done) return done(cv);
+						for (; performance.now() - t0 < 6; ) {
+							if (gen.next().done) return done(cv);
+							cx.getImageData(0, 0, 1, 1);
+						}
 						setTimeout(step, 20);
 					};
 				step();
