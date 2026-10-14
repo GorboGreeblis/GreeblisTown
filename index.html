@@ -7356,7 +7356,7 @@ const JGP = (() => {
 		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!", "Gooward, that wild cat painted my billboard!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
 		// (asleep through it all: her eyes open only for her thanks, and she sleeps on at home through the Event)
 		m_somlet: { lines: ["Zzz", "Zzz", "Zzz", "* A letter peeks out from under her cap *|Zzz"], gift: "Thank you", campfire: "Zzz" },
-		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!", "Goomp! Goomp! Goomp!"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
+		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!", "Goomp! Goomp! Goomp!", "Goomp?"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
 		// (with the Ancient Gem in hand, Talk is her trade instead: gemTrade)
 		p_gemtoe: {
 			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?", "I seek the rarest gems.", "My tails never let go of my crystals.|Not even while I sleep."],
@@ -13900,6 +13900,31 @@ const JGP = (() => {
 			at(T.cyl(0.0105, 0.004, 0.04, 8), "#3a2a1e", 0.25, 0.6), at(T.cyl(0.006, 0.003, 0.016, 8), col, 0.268, 0.6);
 			G.add(T.sphere(1, 12, 6), col, base.clone().multiply(G.m(0.33, -0.011, 0, 0, 0.4, 0, 0.045, 0.006, 0.03)));
 		});
+		// a house painter's roller and wide brush on the floor under the canvas: the roller's cover loaded with magenta,
+		// its wire frame bending back to a handle that rests on the floor; the brush flat and wide, cyan to its ferrule.
+		// Each lies along its own +x
+		{
+			const r = G.m(1.45, 0.02, -1.7, 0, 0.35, 0),
+				at = (geo, c, px, py, pz, rx, ry, rz, sx = 1, sy = 1, sz = 1) => G.add(geo, c, r.clone().multiply(G.m(px, py, pz, rx, ry, rz, sx, sy, sz)));
+			// the cover (its axis along z), its two end caps, a wet smear where it rests
+			at(T.cyl(0.036, 0.036, 0.23, 16), "#ff3ac8", 0, 0.036, 0, Math.PI / 2, 0, 0), [-1, 1].forEach((e) => at(T.cyl(0.03, 0.03, 0.012, 12), "#c8ccd4", 0, 0.036, e * 0.12, Math.PI / 2, 0, 0));
+			G.add(T.sphere(1, 12, 6), "#ff3ac8", r.clone().multiply(G.m(0.02, 0, 0, 0, 0, 0, 0.06, 0.006, 0.14)));
+			// the frame: out of the cover's near end along its axis, then bent back along -x down to the handle
+			at(T.cyl(0.004, 0.004, 0.04, 6), "#9a9ea6", 0, 0.036, 0.14, Math.PI / 2, 0, 0);
+			at(T.cyl(0.004, 0.004, 0.2, 6), "#9a9ea6", -0.1, 0.028, 0.16, 0, 0, Math.PI / 2 + 0.08);
+			at(T.cyl(0.004, 0.004, 0.05, 6), "#9a9ea6", -0.2, 0.02, 0.135, Math.PI / 2, 0, 0);
+			// the handle, red plastic, lying on the floor
+			at(T.cyl(0.016, 0.014, 0.14, 10), "#c8302a", -0.29, 0.016, 0.11, 0, 0, Math.PI / 2);
+		}
+		{
+			const r = G.m(-1.8, 0.02, -1.85, 0, -0.5, 0),
+				at = (geo, c, px, py, pz, sx, sy, sz) => G.add(geo, c, r.clone().multiply(G.m(px, py, pz, 0, 0, 0, sx, sy, sz)));
+			// the handle (a flat wooden paddle with a rounded end), the steel ferrule, the bristles, their cyan tips
+			at(G.UBX, "#c89a5a", 0, 0.012, 0, 0.16, 0.022, 0.034), at(T.cyl(0.017, 0.017, 0.022, 10), "#c89a5a", -0.08, 0.012, 0, 1, 1, 1);
+			at(G.UBX, "#c8ccd4", 0.1, 0.014, 0, 0.04, 0.026, 0.1);
+			at(G.UBX, "#3a2a1e", 0.15, 0.012, 0, 0.06, 0.02, 0.098), at(G.UBX, "#3ae8ff", 0.19, 0.011, 0, 0.022, 0.018, 0.096);
+			G.add(T.sphere(1, 12, 6), "#3ae8ff", r.clone().multiply(G.m(0.25, 0, 0, 0, 0, 0, 0.05, 0.006, 0.07)));
+		}
 		// the easels: two splayed front legs, a raking back leg, a ledge and a top clamp, each holding a framed painting
 		// tilted back a little
 		const paint = [];
