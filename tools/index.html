@@ -7353,7 +7353,7 @@ const JGP = (() => {
 			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice.", "I’ve been practicing a song for the coming of the legendary Backpacka."],
 			gift: "Add it to the tip jar.",
 		},
-		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
+		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!", "Gooward, that wild cat painted my billboard!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
 		// (asleep through it all: her eyes open only for her thanks, and she sleeps on at home through the Event)
 		m_somlet: { lines: ["Zzz", "Zzz", "Zzz", "* A letter peeks out from under her cap *|Zzz"], gift: "Thank you", campfire: "Zzz" },
 		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
@@ -12041,10 +12041,1712 @@ const JGP = (() => {
 	// Garden Supplies: sage walls, terracotta roof, and plants everywhere: potted shrubs, flowers,
 	// ferns, succulents and little trees, seedling trays, hanging baskets, bags of soil, a
 	// wheelbarrow of flowers and tools leaning on the wall.
+	// GOOWARD's painting (bible 1.18), drawn into a 2D canvas laid out as W x H (2048 x 772) at any resolution: the
+	// canvas's own width over W is the scale. Time runs left to right: the far, far past at the left edge, the far, far
+	// future at the right. Seeded: the same painting every time. A generator: it yields between steps, so it can be
+	// painted a few milliseconds at a time; mk(w, h) makes a scratch canvas.
+	function* paintGallery(c, W, H, mk) {
+		// ---- tools ----------------------------------------------------------------------------------------------------
+		let seed = 1187;
+		const S = c.canvas.width / W,
+			CW = c.canvas.width,
+			CH = c.canvas.height,
+			// the index into the canvas's pixels of the point (x, y) of the layout
+			px = (x, y) => (Math.max(0, Math.min(CH - 1, (y * S) | 0)) * CW + Math.max(0, Math.min(CW - 1, (x * S) | 0))) * 4;
+		c.setTransform(S, 0, 0, S, 0, 0);
+		const CLIPS = [];
+		let clipDepth = 0;
+		const rnd = () => ((seed = (seed * 16807) % 2147483647), (seed - 1) / 2147483646),
+			rr = (a, b) => a + (b - a) * rnd(),
+			U = (u) => u * W,
+			V = (v) => v * H,
+			TAU = Math.PI * 2,
+			hex = (h) => (h[0] === "#" ? [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)] : h.match(/\d+/g).slice(0, 3).map(Number)),
+			hex2 = (h) => (h[0] === "#" ? h : "#" + hex(h).map((v) => ("0" + v.toString(16)).slice(-2)).join("")),
+			mix = (a, b, t) => {
+				const A = hex(a), B = hex(b);
+				return "rgb(" + A.map((x, i) => Math.round(x + (B[i] - x) * t)).join(",") + ")";
+			},
+			jit = (h, k) => {
+				const A = hex(h);
+				return "rgb(" + A.map((x) => Math.max(0, Math.min(255, Math.round(x + (rnd() - 0.5) * k)))).join(",") + ")";
+			},
+			A = (a) => (c.globalAlpha = a),
+			ell = (x, y, rx, ry, rot, col, a = 1) => {
+				A(a), (c.fillStyle = col), c.beginPath(), c.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot, 0, TAU), c.fill(), A(1);
+			},
+			poly = (pts, col, a = 1) => {
+				A(a), (c.fillStyle = col), c.beginPath(), pts.forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y))), c.closePath(), c.fill(), A(1);
+			},
+			line = (pts, col, w, a = 1, cap = "round") => {
+				A(a), (c.strokeStyle = col), (c.lineWidth = w), (c.lineCap = cap), (c.lineJoin = "round"), c.beginPath();
+				pts.forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y))), c.stroke(), A(1);
+			},
+			curve = (pts, col, w, a = 1) => {
+				// a smooth line through the points (quadratic midpoints)
+				A(a), (c.strokeStyle = col), (c.lineWidth = w), (c.lineCap = "round"), c.beginPath(), c.moveTo(pts[0][0], pts[0][1]);
+				for (let i = 1; i < pts.length - 1; i++) c.quadraticCurveTo(pts[i][0], pts[i][1], (pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2);
+				const l = pts[pts.length - 1];
+				c.lineTo(l[0], l[1]), c.stroke(), A(1);
+			},
+			// a brush stroke: a tapered ribbon along angle ang, with faint bristle lines in it
+			brush = (x, y, len, w, ang, col, a = 0.8) => {
+				const dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx;
+				A(a), (c.fillStyle = col), c.beginPath();
+				c.moveTo(x - dx * len * 0.5, y - dy * len * 0.5);
+				c.quadraticCurveTo(x + nx * w * 0.6, y + ny * w * 0.6, x + dx * len * 0.5, y + dy * len * 0.5);
+				c.quadraticCurveTo(x - nx * w * 0.6, y - ny * w * 0.6, x - dx * len * 0.5, y - dy * len * 0.5);
+				c.fill();
+				A(a * 0.25), (c.strokeStyle = "rgba(255,255,255,0.5)"), (c.lineWidth = 0.6);
+				for (let k = 0; k < 2; k++) {
+					const o = (rnd() - 0.5) * w * 0.6;
+					c.beginPath(), c.moveTo(x - dx * len * 0.4 + nx * o, y - dy * len * 0.4 + ny * o), c.lineTo(x + dx * len * 0.4 + nx * o, y + dy * len * 0.4 + ny * o), c.stroke();
+				}
+				A(1);
+			},
+			// many strokes over a box, their direction from fn(x, y), their colour from colFn(x, y)
+			field = (x0, y0, x1, y1, n, len, w, angFn, colFn, a = 0.6) => {
+				for (let k = 0; k < n; k++) {
+					const x = rr(x0, x1), y = rr(y0, y1);
+					brush(x, y, len * rr(0.6, 1.3), w * rr(0.6, 1.3), angFn(x, y), colFn(x, y), a * rr(0.6, 1));
+				}
+			},
+			// paint body() only inside the path fn() makes: painted on a scratch canvas, cut to the path once and laid in (a
+			// clip on the canvas itself makes every stroke inside it pay for the cut)
+			// (one scratch canvas per depth of nesting, kept and cleared for reuse)
+			clip = (fn, body) => {
+				const main = c, off = CLIPS[clipDepth] || (CLIPS[clipDepth] = mk(CW, CH));
+				clipDepth++, (c = off.getContext("2d")), c.setTransform(1, 0, 0, 1, 0, 0), (c.globalCompositeOperation = "source-over"), c.clearRect(0, 0, CW, CH), c.setTransform(main.getTransform()), body();
+				(c.globalCompositeOperation = "destination-in"), (c.globalAlpha = 1), (c.fillStyle = "#000"), c.setTransform(main.getTransform()), c.beginPath(), fn(), c.fill(), (c = main);
+				c.save(), c.setTransform(1, 0, 0, 1, 0, 0), c.drawImage(off, 0, 0), c.restore(), clipDepth--;
+			},
+			grad = (x0, y0, x1, y1, stops) => {
+				const g = c.createLinearGradient(x0, y0, x1, y1);
+				stops.forEach(([t, col]) => g.addColorStop(t, col));
+				return g;
+			},
+			rgrad = (x, y, r0, r1, stops) => {
+				const g = c.createRadialGradient(x, y, r0, x, y, r1);
+				stops.forEach(([t, col]) => g.addColorStop(t, col));
+				return g;
+			},
+			// a drip of paint from (x, y) running down len, with a bead at its end
+			drip = (x, y, len, w, col, a = 0.9) => {
+				// a run of paint: a pool at its top, a body that thins and swells as it wobbles down, a bead at its end, a wet
+				// highlight down its lit side
+				ell(x, y, w * 1.4, w * 0.8, 0, col, a);
+				let px = x;
+				for (let k = 0; k < 12; k++) {
+					const t0 = k / 12, t1 = (k + 1) / 12, nx = x + Math.sin(t1 * 5 + x * 0.1) * w * 0.4;
+					line([[px, y + len * t0], [nx, y + len * t1]], col, w * (1 - 0.45 * t1) * (0.85 + 0.3 * Math.sin(t1 * 9 + x)), a);
+					px = nx;
+				}
+				ell(px, y + len + w * 0.2, w * 0.7, w * 0.9, 0, col, a);
+				line([[x - w * 0.2, y + 2], [px - w * 0.15, y + len * 0.85]], "rgba(255,255,255,0.45)", Math.max(0.6, w * 0.18), a * 0.8);
+				ell(px - w * 0.2, y + len, w * 0.18, w * 0.25, 0, "rgba(255,255,255,0.7)", a);
+			},
+			// a lit volume: a radial gradient from the light side (the painting's sun is high right)
+			vol = (x, y, rx, ry, rot, light, dark, a = 1) => {
+				c.save(), c.translate(x, y), c.rotate(rot), A(a);
+				c.fillStyle = rgrad(rx * 0.35, -ry * 0.4, Math.min(rx, ry) * 0.1, Math.max(rx, ry) * 1.2, [[0, light], [1, dark]]);
+				c.beginPath(), c.ellipse(0, 0, rx, ry, 0, 0, TAU), c.fill(), A(1), c.restore();
+			};
+		// value noise and its fractal sum, seeded: the flow of the brushwork and the drift of the colour
+		const PERM = [];
+		for (let k = 0; k < 512; k++) PERM.push(rnd());
+		const vn = (x, y) => {
+				const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, sx = xf * xf * (3 - 2 * xf), sy = yf * yf * (3 - 2 * yf);
+				const h = (i, j) => PERM[((((i * 73856093) ^ (j * 19349663)) >>> 0) % 512)];
+				const a = h(xi, yi), b = h(xi + 1, yi), cc = h(xi, yi + 1), d = h(xi + 1, yi + 1);
+				return a + (b - a) * sx + (cc - a) * sy + (a - b - cc + d) * sx * sy;
+			},
+			fbm = (x, y) => vn(x, y) * 0.5 + vn(x * 2.1, y * 2.1) * 0.25 + vn(x * 4.3, y * 4.3) * 0.15 + vn(x * 8.7, y * 8.7) * 0.1,
+			flow = (x, y) => fbm(x / 260, y / 260) * TAU * 1.6;
+		const SUN = [U(0.66), V(0.12)];
+		let HZ = (x) => V(0.6);
+
+		HZ = (x) => V(0.62) + (fbm(x / 300, 3.1) - 0.5) * 50 + Math.sin(x / 230) * 8;
+
+		// ==== I. THE ERAS: one field of colour across time, laid in soft layers ===========================================
+		c.fillStyle = "#efe8d8", c.fillRect(0, 0, W, H);
+		c.fillStyle = grad(0, 0, W, 0, [[0, "#0e0a0e"], [0.1, "#1a1218"], [0.2, "#3a1c18"], [0.3, "#4a4448"], [0.4, "#7a8a8c"], [0.5, "#c8d0cc"], [0.6, "#f0e8cc"], [0.7, "#d8d8c0"], [0.78, "#5a6a80"], [0.88, "#262c44"], [1, "#0e1016"]]);
+		c.fillRect(0, 0, W, H);
+		// the land below a soft horizon, its colour following time
+		{
+			const gc = [[0, "#160e0c"], [0.22, "#2a1a14"], [0.3, "#4a4038"], [0.45, "#8a8a84"], [0.5, "#7a9a4a"], [0.72, "#5a7a3a"], [0.78, "#2a3434"], [1, "#0c1014"]];
+			c.beginPath(), c.moveTo(0, H);
+			for (let x = 0; x <= W; x += 8) c.lineTo(x, HZ(x));
+			c.lineTo(W, H), c.closePath();
+			c.fillStyle = grad(0, 0, W, 0, gc), c.fill();
+			c.fillStyle = grad(0, V(0.55), 0, H, [[0, "rgba(0,0,0,0)"], [1, "rgba(6,4,2,0.6)"]]), c.fill();
+			// far hills in a blue distance
+			c.beginPath(), c.moveTo(0, HZ(0));
+			for (let x = 0; x <= W; x += 12) c.lineTo(x, HZ(x) - 18 - fbm(x / 110, 7.7) * 40);
+			for (let x = W; x >= 0; x -= 12) c.lineTo(x, HZ(x));
+			c.closePath(), (c.fillStyle = "rgba(120,140,160,0.3)"), c.fill();
+		}
+		// the light of the one sun, high right of centre
+		c.fillStyle = rgrad(SUN[0], SUN[1], 10, W * 0.34, [[0, "rgba(255,248,224,0.95)"], [0.3, "rgba(255,238,196,0.5)"], [1, "rgba(255,236,190,0)"]]), c.fillRect(0, 0, W, H);
+		// the underpainting: soft dabs, their tone drifting with the noise, along its flow
+		{
+			const base = c.getImageData(0, 0, CW, CH).data;
+			for (let k = 0; k < 9000; k++) {
+				if (k % 1000 === 0) yield;
+				const x = rnd() * W, y = rnd() * H, i = px(x, y), n = fbm(x / 140, y / 140) - 0.5;
+				const col = "rgb(" + [0, 1, 2].map((j) => Math.max(0, Math.min(255, Math.round(base[i + j] * (1 + n * 0.8) + n * 36 + (j === 2 ? -n * 26 : 0))))).join(",") + ")";
+				const a = flow(x, y), r = rr(6, 26);
+				c.save(), c.translate(x, y), c.rotate(a), (c.globalAlpha = 0.2), (c.fillStyle = col), c.beginPath(), c.ellipse(0, 0, r * 2.2, r * 0.6, 0, 0, TAU), c.fill(), c.restore();
+			}
+			c.globalAlpha = 1;
+		}
+
+		yield;
+		// ==== II. THE GREAT FORMS =========================================================================================
+		// the Ancients: a vast dark triangle rising out of the far left, its apex lost
+		c.fillStyle = grad(0, 0, U(0.24), 0, [[0, "rgba(4,2,6,0.7)"], [1, "rgba(10,6,12,0.2)"]]);
+		c.beginPath(), c.moveTo(U(0.11), -20), c.lineTo(U(0.25), H), c.lineTo(-20, H), c.closePath(), c.fill();
+		// the three black obelisks inside it
+		[[0.05, 0.14, 0.64], [0.15, 0.24, 0.62], [0.215, 0.3, 0.63]].forEach(([u, t, b]) => {
+			const x = U(u), w = 8 + 6 * rnd();
+			c.fillStyle = grad(0, V(t), 0, V(b), [[0, "rgba(6,4,8,0)"], [0.35, "rgba(6,4,8,0.9)"], [1, "rgba(4,2,4,1)"]]);
+			c.beginPath(), c.moveTo(x - w * 0.3, V(t)), c.lineTo(x + w * 0.3, V(t)), c.lineTo(x + w, V(b)), c.lineTo(x - w, V(b)), c.fill();
+			line([[x + w * 0.2, V(t + 0.1)], [x + w * 0.7, V(b)]], "rgba(130,120,160,0.25)", 1.2);
+		});
+		// the great circle of Greeblis: the world brought to life, its rings the orbits and the ages
+		{
+			const gx = U(0.6), gy = V(0.44);
+			c.fillStyle = rgrad(gx, gy - 40, 20, 300, [[0, "rgba(255,250,232,0.5)"], [0.7, "rgba(250,236,200,0.22)"], [1, "rgba(250,236,200,0)"]]);
+			c.beginPath(), c.arc(gx, gy, 300, 0, TAU), c.fill();
+			[180, 236, 296, 340].forEach((r, k) => {
+				c.strokeStyle = ["rgba(200,160,80,0.35)", "rgba(120,180,170,0.28)", "rgba(200,120,160,0.22)", "rgba(255,255,255,0.18)"][k], (c.lineWidth = 1.4 - k * 0.2);
+				c.beginPath(), c.ellipse(gx, gy, r, r * 0.92, -0.08, 0, TAU), c.stroke();
+			});
+		}
+		// the time spiral: one line winding from the first dot out through every era (an interconnecting symbol)
+		{
+			const pts = [];
+			for (let k = 0; k < 260; k++) {
+				const t = k / 259, a = t * TAU * 3.2, r = 20 + t * 360;
+				pts.push([U(0.03) + t * U(0.95) + Math.cos(a) * r * 0.18, V(0.78) - Math.sin(t * Math.PI) * V(0.25) + Math.sin(a) * r * 0.12]);
+			}
+			curve(pts, "rgba(255,240,200,0.14)", 1.2);
+		}
+		// the sun, the gas giant cut by the top edge, the empty ring where a moon would be, and their orbits
+		{
+			vol(U(0.44), V(-0.04), 120, 120, 0, "#e8d4a0", "#5a4428", 0.95);
+			clip(() => c.ellipse(U(0.44), V(-0.04), 120, 120, 0, 0, TAU), () => {
+				for (let k = 0; k < 11; k++) ell(U(0.44), V(-0.04) - 110 + k * 22, 140, 5 + rnd() * 6, 0.05, k % 2 ? "rgba(120,80,40,0.35)" : "rgba(255,240,200,0.3)");
+			});
+			c.strokeStyle = "rgba(255,250,235,0.55)", (c.lineWidth = 1.4), c.beginPath(), c.ellipse(SUN[0] + 150, SUN[1] + 18, 30, 30, 0, 0, TAU), c.stroke();
+			ell(SUN[0], SUN[1], 46, 46, 0, "#fff8e8"), ell(SUN[0], SUN[1], 34, 34, 0, "#ffffff");
+			c.strokeStyle = "rgba(255,240,200,0.18)", (c.lineWidth = 1);
+			[[0.3, 0.09], [0.36, 0.12], [0.24, 0.16]].forEach(([rx, ry]) => (c.beginPath(), c.ellipse(SUN[0], SUN[1], U(rx), V(ry), -0.04, 0, TAU), c.stroke()));
+		}
+		// the dead world high left: a burning sphere crazed with lava, ruined towers on its limb, shards falling
+		{
+			const x = U(0.2), y = V(0.17), r = 74;
+			vol(x, y, r, r, 0, "#ff8a3a", "#2a0c08");
+			clip(() => c.ellipse(x, y, r, r, 0, 0, TAU), () => {
+				for (let k = 0; k < 30; k++) {
+					let px = x + rr(-r, r), py = y + rr(-r, r);
+					const pts = [[px, py]];
+					for (let j = 0; j < 5; j++) (px += rr(-14, 14)), (py += rr(-14, 14)), pts.push([px, py]);
+					line(pts, k % 3 ? "rgba(255,190,80,0.8)" : "rgba(255,240,170,0.9)", rr(0.8, 2.2));
+				}
+				ell(x - r * 0.4, y + r * 0.5, r * 0.8, r * 0.5, -0.4, "rgba(10,4,2,0.5)");
+			});
+			for (let k = 0; k < 11; k++) {
+				const a = -2.3 + k * 0.15, h = rr(8, 22), tx = x + Math.cos(a) * r, ty = y + Math.sin(a) * r;
+				line([[tx, ty], [tx + Math.cos(a) * h, ty + Math.sin(a) * h]], "#1a0806", 4, 1, "butt");
+				rnd() < 0.5 && ell(tx + Math.cos(a) * h * 0.6, ty + Math.sin(a) * h * 0.6, 1.2, 1.2, 0, "#ffd27a");
+			}
+			for (let k = 0; k < 22; k++) {
+				const sx = x + rr(-40, 140), sy = y + r + rr(10, 280), s = rr(3, 9);
+				poly([[sx, sy - s], [sx + s * 0.6, sy], [sx, sy + s * 1.4], [sx - s * 0.5, sy + s * 0.2]], k % 2 ? "#2a1410" : "#7a3a1e", 0.75);
+			}
+		}
+		// the lancet arch and the Traveler's beam slanting down to the right
+		{
+			const x0 = U(0.255), x1 = U(0.345), y0 = V(0.06), y1 = V(0.8);
+			c.strokeStyle = "rgba(200,190,170,0.3)", (c.lineWidth = 5), c.beginPath();
+			c.moveTo(x0, y1), c.lineTo(x0, y0 + 90), c.quadraticCurveTo(x0, y0, (x0 + x1) / 2, y0 - 10), c.quadraticCurveTo(x1, y0, x1, y0 + 90), c.lineTo(x1, y1), c.stroke();
+			c.fillStyle = grad(0, 0, 0, V(0.8), [[0, "rgba(255,250,225,0.62)"], [0.7, "rgba(255,246,215,0.3)"], [1, "rgba(255,246,215,0.04)"]]);
+			c.beginPath(), c.moveTo(U(0.24), 0), c.lineTo(U(0.3), 0), c.lineTo(U(0.39), V(0.8)), c.lineTo(U(0.3), V(0.8)), c.fill();
+			for (let k = 0; k < 11; k++) {
+				const t = k / 10;
+				line([[U(0.24) + U(0.06) * t, 0], [U(0.3) + U(0.09) * t, V(0.8)]], "rgba(255,255,240,0.16)", 1.1);
+			}
+		}
+		// the Synthetics' plane: a survey grid in perspective over the grey waste, bending as it recedes
+		for (let k = 0; k < 14; k++) {
+			const t = k / 13;
+			curve([[U(0.3), V(0.64 + t * 0.2)], [U(0.4), V(0.64 + t * 0.2) - 5 * (1 - t)], [U(0.5), V(0.64 + t * 0.2)]], "rgba(200,255,250,0.2)", 0.8);
+			line([[U(0.33 + t * 0.15), V(0.64)], [U(0.29 + t * 0.23), V(0.86)]], "rgba(200,255,250,0.16)", 0.8);
+		}
+		// Greeblis City: thin teal-grey spires rising into a cloud bank, far back, before any green
+		for (let k = 0; k < 11; k++) {
+			const x = U(0.34 + k * 0.011 + rnd() * 0.005), h = rr(90, 200), y = HZ(x);
+			c.fillStyle = grad(0, y - h, 0, y, [[0, "rgba(120,170,170,0)"], [0.4, "rgba(110,150,152,0.55)"], [1, "rgba(90,120,124,0.75)"]]), c.fillRect(x, y - h, rr(3, 7), h);
+		}
+		field(U(0.33), V(0.34), U(0.5), V(0.44), 140, 50, 16, () => rr(-0.1, 0.1), () => jit("#d8dcd8", 20), 0.3);
+		// the rainbow behind the four arcs of water, half rubbed out
+		["#ff4a4a", "#ffa83a", "#ffe84a", "#6ae84a", "#4ab4ff", "#8a5ae8"].forEach((col, k) => {
+			c.strokeStyle = col, (c.globalAlpha = 0.17), (c.lineWidth = 7), c.beginPath(), c.arc(U(0.6), V(0.74), 240 - k * 7, Math.PI * 1.06, Math.PI * 1.8), c.stroke(), (c.globalAlpha = 1);
+		});
+		// the storm of the far, far future: shards of navy and gold against green and chrome
+		// (smoke in grey glazes first, then the wind in long strokes, then the shards, some catching a chrome glint, and
+		// a few gold cracks of fire running through it)
+		for (let k = 0; k < 26; k++) ell(U(0.76 + rnd() * 0.26), V(rnd()), rr(40, 130), rr(20, 60), rr(-0.8, -0.3), jit("#5a5e66", 30), rr(0.08, 0.18));
+		field(U(0.78), 0, W, H, 260, 70, 16, () => rr(-0.9, -0.5), () => jit("#40465a", 26), 0.28);
+		for (let k = 0; k < 110; k++) {
+			const x = U(0.77 + rnd() * 0.25), y = V(rnd() * 0.98), s = rr(14, 60) * (k % 7 ? 1 : 2.4), a = rr(-1.2, -0.5), col = ["#1a2a5a", "#d8b04a", "#3a8a3a", "#b8c0c8", "#5ac85a", "#1a2a5a"][k % 6];
+			const p = [[x, y], [x + Math.cos(a) * s, y + Math.sin(a) * s], [x + Math.cos(a + 0.2) * s * 0.5, y + Math.sin(a + 0.2) * s * 0.5 + s * 0.12]];
+			poly(p, col, rr(0.35, 0.6)), k % 3 || line([p[0], p[1]], "rgba(235,240,250,0.55)", 0.9);
+		}
+		for (let k = 0; k < 9; k++) {
+			let x = U(0.8 + rnd() * 0.2), y = V(rnd() * 0.7);
+			const pts = [[x, y]];
+			for (let j = 0; j < 7; j++) (x += rr(-14, 10)), (y += rr(8, 22)), pts.push([x, y]);
+			line(pts, "rgba(255,200,90,0.25)", 4), line(pts, "rgba(255,230,150,0.7)", 1.1);
+		}
+		// the Consortium's band: navy with a gold hem, running across the future and looping back on itself (time travel)
+		{
+			const band = [[U(0.66), V(0.29)], [U(0.75), V(0.31)], [U(0.84), V(0.27)], [U(0.92), V(0.31)], [U(0.9), V(0.39)], [U(0.84), V(0.34)], [U(0.97), V(0.32)]];
+			// laid in as one long loaded stroke after another along its path, the gold hem on its lower edge
+			const P = [];
+			for (let i = 0; i < band.length - 1; i++) {
+				const a = band[Math.max(0, i - 1)], b = band[i], cc = band[i + 1], d = band[Math.min(band.length - 1, i + 2)];
+				for (let t = 0; t < 1; t += 0.04) {
+					const t2 = t * t, t3 = t2 * t;
+					P.push([0, 1].map((j) => 0.5 * (2 * b[j] + (-a[j] + cc[j]) * t + (2 * a[j] - 5 * b[j] + 4 * cc[j] - d[j]) * t2 + (-a[j] + 3 * b[j] - 3 * cc[j] + d[j]) * t3)));
+				}
+			}
+			P.forEach(([px, py], i) => {
+				const q = P[Math.min(P.length - 1, i + 1)], r = P[Math.max(0, i - 1)], a = Math.atan2(q[1] - r[1], q[0] - r[0]), w = 9 + Math.sin(i * 0.13) * 3;
+				brush(px, py, 22, w, a, jit("#1a2a5a", 18), 0.8), i % 2 || ell(px - Math.sin(a) * -w * 0.55, py + Math.cos(a) * w * 0.55, 1.6, 0.9, a, "#d8b04a", 0.85);
+			});
+		}
+
+		// ==== III. THE GLYPHS: one sign for every element of the lore, geometry and colour only ===========================
+		// (each creature's sign is built from its own shapes and colours; the town's places, the objects and the ideas
+		// have theirs; nothing is drawn as the thing itself)
+		const NODE = {};
+		const G = {
+			// the first symbol: a dot of raw gold
+			dot: (x, y, s = 1) => (ell(x, y, 7 * s, 7 * s, 0, "#e8b84a"), ell(x - 2 * s, y - 2 * s, 2.5 * s, 2.5 * s, 0, "#fff4c8")),
+			// the Computer Core: a lattice cube, a cold glow leaking at its seams
+			core: (x, y, s = 1) => {
+				const q = 60 * s;
+				ell(x, y, q * 1.8, q * 1.5, 0, "rgba(150,255,210,0.07)");
+				poly([[x, y - q * 0.9], [x + q, y - q * 0.55], [x, y - q * 0.2], [x - q, y - q * 0.55]], "#1c2422"), poly([[x - q, y - q * 0.55], [x, y - q * 0.2], [x, y + q * 0.85], [x - q, y + q * 0.45]], "#0e1312"), poly([[x, y - q * 0.2], [x + q, y - q * 0.55], [x + q, y + q * 0.45], [x, y + q * 0.85]], "#151d1b");
+				for (let k = 1; k < 7; k++) {
+					const t = k / 7;
+					line([[x - q + q * t, y - q * 0.55 + q * 0.35 * t], [x - q + q * t, y + q * 0.45 + q * 0.4 * t]], "rgba(170,255,220,0.18)", 0.8);
+					line([[x + q * t, y - q * 0.2 - q * 0.35 * t], [x + q * t, y + q * 0.85 - q * 0.4 * t]], "rgba(170,255,220,0.14)", 0.8);
+				}
+				line([[x, y - q * 0.2], [x, y + q * 0.85]], "rgba(200,255,230,0.6)", 1.5);
+			},
+			// the riddle: one line coiling inward, never closing
+			riddle: (x, y, s = 1) => {
+				const pts = [];
+				for (let k = 0; k < 120; k++) {
+					const t = k / 120, a = t * TAU * 2.6, r = 160 * s * (1 - t * 0.85);
+					pts.push([x + Math.cos(a) * r * 1.2, y + Math.sin(a) * r * 0.55]);
+				}
+				curve(pts, "rgba(220,200,150,0.24)", 1.3);
+			},
+			// a shard of the Ancient Gem: a teal wedge with a pale glowing break face
+			shard: (x, y, s = 1, rot = 0) => {
+				c.save(), c.translate(x, y), c.rotate(rot);
+				poly([[-12 * s, -6 * s], [4 * s, -10 * s], [8 * s, 14 * s]], "#14646a"), poly([[4 * s, -10 * s], [12 * s, -4 * s], [8 * s, 14 * s]], "#2a8a8a");
+				line([[4 * s, -10 * s], [8 * s, 14 * s]], "#bff8f0", 1.4), ell(6 * s, 2 * s, 14 * s, 16 * s, 0, "rgba(160,255,240,0.14)"), c.restore();
+			},
+			// the Ancient texts with a page missing: a torn pale sheet and the ghost of another
+			page: (x, y, s = 1) => {
+				const t = [[x - 30 * s, y - 24 * s], [x + 28 * s, y - 28 * s], [x + 30 * s, y + 24 * s]];
+				for (let k = 0; k < 9; k++) t.push([x + 30 * s - k * 7 * s, y + 26 * s + (k % 2 ? 4 : -2)]);
+				t.push([x - 32 * s, y + 22 * s]);
+				poly(t.map(([px, py]) => [px + (py - y) * 0.2, py]), "#c8b890", 0.26), poly(t.map(([px, py]) => [px + 66 * s, py + 4]), "#d8c8a0", 0.1);
+			},
+			// the Originator: a seed of light in rings, threads running out of it
+			seed: (x, y, s = 1) => {
+				ell(x, y, 14 * s, 14 * s, 0, "rgba(200,255,250,0.35)");
+				for (let k = 1; k < 5; k++) (c.strokeStyle = "rgba(220,255,250," + (0.7 - k * 0.12) + ")"), (c.lineWidth = 0.8), c.beginPath(), c.arc(x, y, k * 4 * s, 0, TAU), c.stroke();
+				ell(x, y, 2.4 * s, 2.4 * s, 0, "#ffffff");
+				for (let k = 0; k < 8; k++) {
+					const a = (k / 8) * TAU;
+					line([[x + Math.cos(a) * 16 * s, y + Math.sin(a) * 16 * s], [x + Math.cos(a) * 30 * s, y + Math.sin(a) * 30 * s], [x + Math.cos(a + 0.3) * 38 * s, y + Math.sin(a + 0.3) * 38 * s]], "rgba(200,255,240,0.4)", 0.7);
+				}
+			},
+			// the torn cable: two short prongs at the end of a hanging line, over a crater's glow
+			plug: (x, y) => (curve([[x, y], [x - 6, y + 40], [x + 4, y + 80], [x - 2, y + 106]], "#141010", 3), poly([[x - 7, y + 106], [x + 5, y + 106], [x + 5, y + 118], [x - 7, y + 118]], "#2a2420"), line([[x - 4, y + 118], [x - 4, y + 126]], "#a89878", 2), line([[x + 2, y + 118], [x + 2, y + 126]], "#a89878", 2), ell(x + 4, y + 150, 40, 8, 0, "#120806"), ell(x + 4, y + 148, 34, 5, 0, "rgba(255,110,40,0.5)")),
+			// the Synthetics: hexagon plates, square pixels, grooves (flat colour, crisp edges: the only flat paint)
+			synth: (x, y, s = 1) => {
+				for (let k = 0; k < 7; k++) hexagon(x + rr(-50, 50) * s, y + rr(-24, 24) * s, rr(7, 15) * s, ["#3fa8a0", "#7acfc8", "#c8d0cc", "#2a6a74"][k % 4], 0.8);
+				for (let k = 0; k < 12; k++) (c.fillStyle = ["#ff3ac8", "#3ac8ff", "#e8e8e8", "#7aff9a"][k % 4]), (c.globalAlpha = 0.7), c.fillRect(x + rr(-60, 60) * s, y + rr(-30, 30) * s, 5 * s, 5 * s), (c.globalAlpha = 1);
+			},
+			// the Organics: cells swelling out of the hexagons, pollen out of the pixels
+			organic: (x, y, s = 1) => {
+				for (let k = 0; k < 16; k++) {
+					const px = x + rr(-30, 30) * s, py = y + rr(-20, 20) * s, r = rr(4, 9) * s;
+					ell(px, py, r, r, 0, jit("#9ad87a", 40), 0.45), (c.strokeStyle = "rgba(40,90,30,0.4)"), (c.lineWidth = 0.6), c.beginPath(), c.arc(px, py, r, 0, TAU), c.stroke(), ell(px + 1, py, r * 0.25, r * 0.25, 0, "#3a6a2a", 0.6);
+				}
+			},
+			// ETCHER's three ages: grooves scratched through the paint, the first cut far, the second half, the third begun
+			ages: () => [[0, 0.9], [1, 0.5], [2, 0.14]].forEach(([k, len]) => {
+				let x = U(0.03);
+				const y0 = V(0.48) + k * 12;
+				while (x < U(0.03 + 0.94 * len)) {
+					const seg = rr(30, 110), y = y0 + Math.sin(x / 160 + k) * 6;
+					for (let j = 0; j < 3; j++) line([[x, y + j * 2], [x + seg, y + j * 2 + rr(-1.5, 1.5)]], j === 1 ? "rgba(255,245,215,0.22)" : "rgba(0,0,0,0.14)", 0.9);
+					x += seg + rr(8, 40);
+				}
+			}),
+			// ANOMALEE: a slice of the canvas skipped sideways, a magenta square in the gap, a trail of pixels, a worn peg of wood
+			glitch: (x, y) => {
+				const img = c.getImageData(x * S, y * S, U(0.22) * S, 16 * S);
+				c.putImageData(img, (x + 22) * S, y * S), (c.fillStyle = "#ff2ad0"), (c.globalAlpha = 0.85), c.fillRect(x + 2, y + 3, 10, 10), (c.globalAlpha = 1);
+				for (let k = 0; k < 8; k++) (c.fillStyle = k % 2 ? "#ff3ad0" : "#8a2aa8"), (c.globalAlpha = 0.6 - k * 0.06), c.fillRect(x + 16 + k * 8, y + 22 + Math.sin(k) * 3, 4, 4), (c.globalAlpha = 1);
+				poly([[x + 6, y + 18], [x + 10, y + 18], [x + 9, y + 54], [x + 6, y + 54]], "#7a5a3a", 0.85);
+			},
+			// a cube (HENNRICK's mark), and his collection jar holding one seed
+			cubeJar: (x, y) => (cube(x, y, 9, "#e8f0ee"), jar(x + 16, y)),
+			// SPARKAKUS: a gold star in a royal blue disc, the orange coin at its rim, alebrije vines looping out, a daffodil's trumpet
+			sparkakus: (x, y, s = 1) => {
+				ell(x, y, 26 * s, 26 * s, 0, "#2a4ab8", 0.85), star(x, y, 15 * s, "#ffd23a"), ell(x + 22 * s, y + 14 * s, 5 * s, 5 * s, 0, "#f08a1e"), ell(x + 22 * s, y + 14 * s, 3 * s, 3 * s, 0, "#ffd23a");
+				["#e8b84a", "#3fa83a", "#e83ab8", "#ff8a1a", "#2ab4a8"].forEach((col, k) => {
+					const a = (k / 5) * TAU + 0.4;
+					curve([[x + Math.cos(a) * 26 * s, y + Math.sin(a) * 26 * s], [x + Math.cos(a + 0.4) * 44 * s, y + Math.sin(a + 0.4) * 40 * s], [x + Math.cos(a + 0.1) * 54 * s, y + Math.sin(a + 0.1) * 50 * s], [x + Math.cos(a - 0.3) * 48 * s, y + Math.sin(a - 0.3) * 46 * s]], col, 1.4, 0.85);
+				});
+				daffodil(x - 34 * s, y + 18 * s), daffodil(x - 42 * s, y + 6 * s);
+				// book spines, coloured cloth, no titles
+				["#7a2a2a", "#2a4a7a", "#3a6a3a", "#7a6a2a", "#5a2a5a", "#e8a0c0"].forEach((col, k) => poly([[x + 30 * s + k * 6, y + 30 * s], [x + 35 * s + k * 6, y + 30 * s], [x + 35 * s + k * 6, y + 10 * s - (k % 2) * 4], [x + 30 * s + k * 6, y + 10 * s - (k % 2) * 4]], col, 0.9));
+			},
+			// MAMA GORBO: a glossy peach balloon, an octagon port, three tag arcs, her lime tail sweeping beneath
+			mama: (x, y, s = 1) => {
+				vol(x, y, 22 * s, 24 * s, 0, "#ffe2cc", "#d88a6a"), ell(x + 7 * s, y - 10 * s, 6 * s, 4 * s, -0.5, "rgba(255,255,255,0.8)");
+				[6, 10, 14].forEach((r) => ((c.strokeStyle = "rgba(232,90,60,0.75)"), (c.lineWidth = 1.2), c.beginPath(), c.arc(x + 26 * s, y - 20 * s, r * s, -2.4, -0.7), c.stroke()));
+				curve([[x - 18 * s, y + 18 * s], [x, y + 30 * s], [x + 22 * s, y + 24 * s], [x + 30 * s, y + 10 * s]], "#a8e830", 3.2 * s);
+			},
+			// GOOWARD: an egg of fused bubbles, cyan over peach, two white crossed eyes, two crystal wings, the float ring below
+			gooward: (x, y, s = 1) => {
+				ell(x, y + 24 * s, 24 * s, 6 * s, 0, "#ffe84a", 0.85), ell(x, y + 24 * s, 16 * s, 3 * s, 0, "rgba(255,255,255,0.7)");
+				vol(x, y + 6 * s, 16 * s, 14 * s, 0, "#ffd8c0", "#c8906a"), vol(x, y - 6 * s, 16 * s, 14 * s, 0, "#a8f0ff", "#2a9ab8", 0.9);
+				for (let k = 0; k < 6; k++) (c.strokeStyle = "rgba(255,255,255,0.35)"), (c.lineWidth = 0.7), c.beginPath(), c.arc(x + rr(-10, 10) * s, y + rr(-12, 10) * s, rr(3, 6) * s, 0, TAU), c.stroke();
+				s < 0.7 && [-6, 6].forEach((d) => (line([[x + d * s - 3 * s, y - 6 * s], [x + d * s + 3 * s, y - 6 * s]], "rgba(255,255,255,0.55)", 1), line([[x + d * s, y - 9 * s], [x + d * s, y - 3 * s]], "rgba(255,255,255,0.55)", 1)));
+				[-1, 1].forEach((sd) => poly([[x + sd * 14 * s, y - 8 * s], [x + sd * 34 * s, y - 26 * s], [x + sd * 26 * s, y - 4 * s]], "rgba(220,250,255,0.75)"));
+			},
+			// GEMTOE: amethyst prisms gripped by a curl of crimson; some broken off and flying away (to be shared)
+			gemtoe: (x, y, s = 1) => {
+				curve([[x - 24 * s, y + 10 * s], [x - 30 * s, y - 8 * s], [x - 10 * s, y - 20 * s], [x + 14 * s, y - 14 * s], [x + 24 * s, y + 6 * s]], "#b8202a", 5 * s);
+				for (let k = 0; k < 7; k++) crystal(x - 15 * s + k * 5 * s, y + 6 * s, rr(9, 18) * s, rr(-0.4, 0.4));
+				for (let k = 0; k < 4; k++) crystal(x + rr(30, 90) * s, y - rr(20, 70) * s, 5 * s, rr(-1, 1));
+			},
+			// MONTGUMMERY: a teal square holding a grid of pixels, two reels joined by tape, a terracotta pot's curve
+			mont: (x, y, s = 1) => {
+				poly([[x - 20 * s, y - 20 * s], [x + 20 * s, y - 20 * s], [x + 20 * s, y + 20 * s], [x - 20 * s, y + 20 * s]], "#2ab4a8");
+				for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) (c.fillStyle = (i === 1 || i === 2) && j === 1 ? "#0e2a2a" : j === 3 && i > 0 && i < 3 ? "#0e2a2a" : "rgba(255,255,255,0.12)"), c.fillRect(x - 16 * s + i * 8 * s, y - 16 * s + j * 8 * s, 6 * s, 6 * s);
+				[-12, 12].forEach((d) => {
+					const pts = [];
+					for (let k = 0; k < 26; k++) pts.push([x + d * s + Math.cos(k * 0.6) * (1 + k * 0.28) * s, y + 34 * s + Math.sin(k * 0.6) * (1 + k * 0.28) * s]);
+					curve(pts, "#1a1a1a", 1.2);
+				});
+				line([[x - 12 * s, y + 42 * s], [x + 12 * s, y + 42 * s]], "#5a3a1e", 1.6);
+				c.strokeStyle = "#c86a3e", (c.lineWidth = 3 * s), c.beginPath(), c.arc(x, y + 20 * s, 26 * s, 0.2, Math.PI - 0.2), c.stroke();
+			},
+			// ETCHER: a block of deep blue cut with fine grooves, repeated smaller and smaller (backups of backups); his green
+			// gem; his purple tentacles curling as they etch
+			etcher: (x, y, s = 1) => {
+				[[0, 0, 1], [36, 4, 0.6], [56, 7, 0.36]].forEach(([dx, dy, k]) => {
+					poly([[x + dx * s - 24 * k * s, y + dy * s - 14 * k * s], [x + dx * s + 24 * k * s, y + dy * s - 14 * k * s], [x + dx * s + 24 * k * s, y + dy * s + 14 * k * s], [x + dx * s - 24 * k * s, y + dy * s + 14 * k * s]], "#1e3a6a");
+					for (let j = 0; j < 7; j++) line([[x + dx * s - 20 * k * s, y + dy * s - 11 * k * s + j * 3.6 * k * s], [x + dx * s + 20 * k * s, y + dy * s - 11 * k * s + j * 3.6 * k * s]], "rgba(120,230,220,0.55)", 0.8);
+				});
+				poly([[x, y - 26 * s], [x + 6 * s, y - 20 * s], [x, y - 14 * s], [x - 6 * s, y - 20 * s]], "#3ac86a");
+				[0, 1, 2].forEach((k) => curve([[x - 26 * s, y + 10 * s + k * 4], [x - 40 * s - k * 6, y + 2 * s], [x - 34 * s - k * 10, y - 14 * s], [x - 46 * s - k * 6, y - 22 * s]], "#8a3ab8", 3 - k * 0.6));
+			},
+			// GLYPH: porcelain-blue hexagons tessellating out of a dot, gold filigree, his red trident on a gold shield, two purple tiles
+			glyph: (x, y, s = 1) => {
+				ell(x, y, 2.5 * s, 2.5 * s, 0, "#ffd23a");
+				for (let k = 0; k < 12; k++) {
+					const a = k * 0.6, d = (12 + k * 6) * s;
+					hexagon(x + Math.cos(a) * d, y + Math.sin(a) * d * 0.7, 7 * s, "#3a6ac8", 0.85 - k * 0.05);
+					ell(x + Math.cos(a) * d, y + Math.sin(a) * d * 0.7, 1.2, 1.2, 0, "#ffd23a");
+				}
+				const tx = x + 40 * s, ty = y - 24 * s;
+				poly([[tx - 9 * s, ty - 10 * s], [tx + 9 * s, ty - 10 * s], [tx + 9 * s, ty + 2 * s], [tx, ty + 12 * s], [tx - 9 * s, ty + 2 * s]], "#d8b04a");
+				[-4, 0, 4].forEach((d) => line([[tx + d * s, ty + 4 * s], [tx + d * s, ty - 6 * s]], "#c8202a", 1.6)), line([[tx - 4 * s, ty + 1 * s], [tx + 4 * s, ty + 1 * s]], "#c8202a", 1.6), line([[tx, ty + 4 * s], [tx, ty + 8 * s]], "#c8202a", 1.6);
+				[[-36, 18], [-24, 26]].forEach(([dx, dy]) => (poly([[x + dx * s - 6 * s, y + dy * s - 6 * s], [x + dx * s + 6 * s, y + dy * s - 6 * s], [x + dx * s + 6 * s, y + dy * s + 6 * s], [x + dx * s - 6 * s, y + dy * s + 6 * s]], "#7a3ab8"), ell(x + dx * s, y + dy * s, 3 * s, 3 * s, 0, "#e8c84a")));
+			},
+			// KING DINO: a drum's rings (red shell, white head, chrome rim), his turquoise crown's zigzag, a plume of purple arcs
+			// tipped orange, a beat of even ticks running out of it
+			king: (x, y, s = 1) => {
+				ell(x, y, 28 * s, 28 * s, 0, "#d82a2a"), ell(x, y, 22 * s, 22 * s, 0, "#f6f2e8"), (c.strokeStyle = "#d8d8e0"), (c.lineWidth = 2), c.beginPath(), c.arc(x, y, 25 * s, 0, TAU), c.stroke();
+				ell(x, y, 22 * s, 22 * s, 0, "rgba(255,230,80,0.2)");
+				poly([[x - 16 * s, y - 30 * s], [x - 16 * s, y - 40 * s], [x - 8 * s, y - 34 * s], [x, y - 44 * s], [x + 8 * s, y - 34 * s], [x + 16 * s, y - 40 * s], [x + 16 * s, y - 30 * s]], "#2ad8c8"), ell(x, y - 46 * s, 3 * s, 3 * s, 0, "#e8c84a");
+				[0, 1, 2].forEach((k) => (curve([[x + 12 * s, y - 40 * s], [x + (26 + k * 8) * s, y - (60 + k * 4) * s], [x + (40 + k * 10) * s, y - (58 - k * 6) * s]], "#8a3ac8", 2.6), ell(x + (40 + k * 10) * s, y - (58 - k * 6) * s, 2.6, 2.6, 0, "#ff8a1a")));
+				for (let k = 0; k < 16; k++) line([[x + 34 * s + k * 8, y + 22 * s], [x + 34 * s + k * 8, y + (k % 4 ? 14 : 8) * s]], "rgba(255,230,160,0.5)", 1.6);
+				// his own coins, stamped with his crown
+				for (let k = 0; k < 4; k++) ell(x - 40 * s - k * 10, y + 24 * s - (k % 2) * 3, 5, 2.6, 0, "#c8a040"), poly([[x - 42.5 * s - k * 10, y + 24 * s], [x - 42.5 * s - k * 10, y + 22.4 * s], [x - 40 * s - k * 10, y + 21 * s], [x - 37.5 * s - k * 10, y + 22.4 * s], [x - 37.5 * s - k * 10, y + 24 * s]], "#2ad8c8");
+			},
+			// FORTIZMO: a gold spiral flaring into a bell (her horn, which is her mouth), green round it, music running out
+			fortizmo: (x, y, s = 1) => {
+				ell(x, y, 30 * s, 26 * s, 0, "rgba(90,170,90,0.4)");
+				const pts = [];
+				for (let k = 0; k < 60; k++) {
+					const t = k / 59, a = t * TAU * 1.6, r = (3 + t * t * 26) * s;
+					pts.push([x + Math.cos(a) * r, y + Math.sin(a) * r * 0.8]);
+				}
+				for (let k = 0; k < pts.length - 1; k++) line([pts[k], pts[k + 1]], mix("#fff2a8", "#a8762a", k / pts.length), 1 + (k / pts.length) * 6 * s);
+				const e = pts[pts.length - 1];
+				ell(e[0] + 4, e[1], 5 * s, 14 * s, 0.2, "#5a3a14"), ell(e[0] + 4, e[1], 3 * s, 11 * s, 0.2, "#c8962e");
+				for (let k = 0; k < 5; k++) {
+					const ln = [];
+					for (let j = 0; j < 14; j++) ln.push([e[0] + 8 + j * 9, e[1] - 10 - j * 8 + k * 5 + Math.sin(j * 0.9 + k) * 4]);
+					curve(ln, "rgba(255,240,200,0.42)", 1.2);
+				}
+				line([[x - 34 * s, y + 20 * s], [x - 26 * s, y + 6 * s]], "#ff8a1a", 3);
+			},
+			// SOMLET: a cream cloud of sleep, a plum lid closed in one downward curve, soft waves of dream, letters drifting down,
+			// and behind, a heap of white planes (the mail)
+			somlet: (x, y, s = 1) => {
+				for (let k = 0; k < 9; k++) poly([[x - 50 * s + k * 10 * s, y], [x - 40 * s + k * 10 * s, y - (20 + rnd() * 18) * s], [x - 26 * s + k * 10 * s, y]], jit("#eeeae0", 16), 0.65);
+				for (let k = 0; k < 8; k++) vol(x + rr(-20, 20) * s, y + (18 + rr(-6, 6)) * s, rr(10, 16) * s, rr(8, 12) * s, 0, "#fffaf0", "#c8bca8", 0.85);
+				curve([[x - 8 * s, y + 18 * s], [x, y + 23 * s], [x + 8 * s, y + 18 * s]], "#5a3a6a", 2);
+				for (let k = 0; k < 3; k++) {
+					const ln = [];
+					for (let j = 0; j < 10; j++) ln.push([x + 22 * s + j * 6, y + (4 - k * 8) * s + Math.sin(j * 0.8 + k) * 3]);
+					curve(ln, "rgba(160,140,200,0.4)", 1);
+				}
+				for (let k = 0; k < 4; k++) {
+					const lx = x + (30 + k * 12) * s, ly = y + (26 + k * 9) * s;
+					poly([[lx, ly], [lx + 10, ly + 3], [lx + 7, ly + 10], [lx - 3, ly + 7]], "#fffaf0", 0.9), line([[lx, ly], [lx + 4, ly + 6], [lx + 10, ly + 3]], "rgba(120,110,100,0.6)", 0.7);
+				}
+			},
+			// MUSHROOM and the Consortium: a red dome with white warts looming from above, a lens in it that watches, a gold
+			// star on navy
+			mushroom: (x, y, s = 1) => {
+				vol(x, y, 130 * s, 70 * s, 0.08, "#b8402e", "#3a0806");
+				for (let k = 0; k < 6; k++) vol(x + rr(-90, 90) * s, y - rr(0, 30) * s, rr(5, 9) * s, rr(3, 6) * s, 0, "rgba(250,240,230,0.75)", "rgba(150,130,120,0.5)");
+				ell(x, y + 52 * s, 70 * s, 14 * s, 0.08, "#d8c8a8", 0.85);
+				for (let k = 0; k < 24; k++) line([[x - 60 * s + k * 5, y + 46 * s], [x - 58 * s + k * 5, y + 58 * s]], "rgba(120,90,60,0.4)", 1);
+				ell(x + 34 * s, y + 56 * s, 13, 13, 0, "#1a1e26"), ell(x + 34 * s, y + 56 * s, 9, 9, 0, rgrad(x + 30 * s, y + 52 * s, 1, 9, [[0, "#9ad0ff"], [1, "#14304a"]])), ell(x + 31 * s, y + 53 * s, 2.5, 2.5, 0, "#ffffff");
+				ell(x - 60 * s, y + 66 * s, 11, 11, 0, "#1a2a5a"), star(x - 60 * s, y + 66 * s, 7, "#ffd23a");
+			},
+			// ZOLLOD: a sage disc, five dots growing from seed to flower, a sprout breaking a pane, a small form coming out
+			// from behind an edge (shyness overcome)
+			zollod: (x, y, s = 1) => {
+				ell(x, y, 26 * s, 26 * s, 0, "#7a9a5a", 0.75);
+				for (let k = 0; k < 5; k++) {
+					const px = x - 20 * s + k * 10 * s, py = y + 6 * s;
+					k ? (line([[px, py], [px, py - k * 4 * s]], "#3a6a2a", 1.2), k > 2 && ell(px + 2, py - k * 4 * s, 2.5 * s, 1.4 * s, 0.4, "#6ab43a"), k === 4 && ell(px, py - 18 * s, 3 * s, 3 * s, 0, "#e83ab8")) : ell(px, py, 1.6, 1.4, 0, "#6a4a2a");
+				}
+				poly([[x + 30 * s, y - 30 * s], [x + 54 * s, y - 30 * s], [x + 54 * s, y], [x + 30 * s, y]], "rgba(200,240,250,0.35)");
+				line([[x + 40 * s, y - 30 * s], [x + 44 * s, y - 20 * s], [x + 40 * s, y - 12 * s]], "rgba(255,255,255,0.85)", 0.8), curve([[x + 42 * s, y], [x + 41 * s, y - 18 * s], [x + 44 * s, y - 42 * s]], "#4a8a2a", 2), ell(x + 39 * s, y - 42 * s, 6, 3, -0.5, "#6ab43a"), ell(x + 50 * s, y - 44 * s, 6, 3, 0.5, "#6ab43a");
+				poly([[x + 60 * s, y - 24 * s], [x + 63 * s, y - 24 * s], [x + 63 * s, y + 4 * s], [x + 60 * s, y + 4 * s]], "#5a7a48"), vol(x + 58 * s, y - 6 * s, 5 * s, 7 * s, 0, "#8ab858", "#3a5a28");
+				[0, 1, 2].forEach((k) => ell(x - 10 * s + k * 10 * s, y - 24 * s, 3, 3, 0, ["#ff7ab8", "#ffd23a", "#ffffff"][k]));
+			},
+			// NEXTESSA: a warm disc in wedges, its rim scorched, coming through the far side of the swirl
+			nextessa: (x, y, s = 1) => {
+				ell(x, y, 22 * s, 22 * s, 0, "#3a1a0a"), ell(x, y, 19 * s, 19 * s, 0, "#f6c85a");
+				for (let k = 0; k < 8; k++) line([[x, y], [x + Math.cos(k * 0.785) * 19 * s, y + Math.sin(k * 0.785) * 19 * s]], "#a85a1a", 1);
+				[[4, -6], [-7, 4], [6, 7], [-3, -10]].forEach(([dx, dy]) => ell(x + dx * s, y + dy * s, 3 * s, 3 * s, 0, "#c8302a"));
+				c.strokeStyle = "#c8302a", (c.lineWidth = 1.4), c.beginPath(), c.arc(x, y, 26 * s, 0, TAU), c.stroke();
+			},
+			// the Portal: a trilithon of grey stone, the blue swirl inside pulling things through, a dark bar across it (locked),
+			// a Blossom laid on the bar (the bribe)
+			portal: (x, y) => {
+				const w = 62, h = 120;
+				c.fillStyle = rgrad(x, y - h * 0.4, 4, 60, [[0, "rgba(200,250,255,0.95)"], [0.4, "rgba(60,140,240,0.75)"], [1, "rgba(20,40,120,0.3)"]]), c.fillRect(x - w / 2, y - h, w, h);
+				for (let k = 0; k < 50; k++) {
+					const a = k * 0.5, r = 2 + k * 0.6;
+					ell(x + Math.cos(a) * r * 0.8, y - h * 0.45 + Math.sin(a) * r, 1.4, 1.4, 0, "rgba(220,250,255,0.5)");
+				}
+				[[x - w / 2 - 12, y - h, 14, h + 4], [x + w / 2 - 2, y - h, 14, h + 4], [x - w / 2 - 18, y - h - 16, w + 36, 18]].forEach(([px, py, pw, ph]) => {
+					c.fillStyle = grad(px, 0, px + pw, 0, [[0, "#4a4a4c"], [0.6, "#8a8a88"], [1, "#6a6a6a"]]), c.fillRect(px, py, pw, ph);
+					field(px, py, px + pw, py + ph, 30, 8, 2, () => 1.57, () => jit("#5a5a5a", 30), 0.5);
+				});
+				line([[x - w / 2 - 4, y - h * 0.38], [x + w / 2 + 4, y - h * 0.52]], "#141418", 6), blossom(x + 6, y - h * 0.47 - 8, 0.6);
+				// the hourglass by it, its seeds running upward (the timeline's paradox)
+				const hx = x - w / 2 - 40, hy = y - 30;
+				poly([[hx - 8, hy - 18], [hx + 8, hy - 18], [hx, hy - 2]], "rgba(220,240,255,0.4)"), poly([[hx - 8, hy + 14], [hx + 8, hy + 14], [hx, hy - 2]], "rgba(220,240,255,0.4)");
+				for (let k = 0; k < 14; k++) ell(hx + rr(-4, 4), hy - 4 - k * 1.1, 0.8, 0.8, 0, "#6a4a2a");
+				line([[hx - 9, hy - 18], [hx + 9, hy - 18]], "#8a6a4a", 1.4), line([[hx - 9, hy + 14], [hx + 9, hy + 14]], "#8a6a4a", 1.4);
+				// HENNRICK's second cube on the near side, turned back toward his own era
+				cube(x - w / 2 - 22, y - 4, 8, "#e8f0ee");
+			},
+			// the garden seen from above and tipped up: rings of tilled earth, four paths, the six-sided stone with its runes
+			garden: (x, y) => {
+				for (let k = 6; k >= 1; k--) {
+					c.strokeStyle = k % 2 ? "rgba(90,60,36,0.7)" : "rgba(140,100,60,0.6)", (c.lineWidth = 9), c.beginPath(), c.ellipse(x, y, 24 * k, 8 * k, 0, 0, TAU), c.stroke();
+				}
+				for (let k = 0; k < 4; k++) {
+					const a = (k / 4) * TAU + 0.4;
+					line([[x, y], [x + Math.cos(a) * 150, y + Math.sin(a) * 50]], "rgba(220,214,200,0.55)", 3);
+				}
+				poly([[x - 7, y + 4], [x - 9, y - 30], [x - 3, y - 36], [x + 5, y - 36], [x + 9, y - 30], [x + 7, y + 4]], "#7a7468"), poly([[x + 1, y + 4], [x + 2, y - 36], [x + 5, y - 36], [x + 9, y - 30], [x + 7, y + 4]], "#a8a294");
+				for (let k = 0; k < 5; k++) line([[x - 5, y - 28 + k * 6], [x - 1, y - 27 + k * 6]], "rgba(120,255,210,0.65)", 1.2);
+			},
+			// the four arcs of water from BACKPACKA's feet sweeping the garden
+			water: (x, y) => {
+				for (let k = 0; k < 4; k++) {
+					const a = Math.PI * (1.15 + k * 0.17), pts = [];
+					for (let j = 0; j < 12; j++) {
+						const t = j / 11;
+						pts.push([x + Math.cos(a) * 30 + (U(0.555) + (k - 1.5) * 64 - x) * t, y + 10 + Math.sin(a) * 20 - 40 * Math.sin(Math.PI * t) + (V(0.62) - y) * t]);
+					}
+					curve(pts, "rgba(255,255,255,0.42)", 9), curve(pts, "rgba(255,255,255,0.32)", 3);
+					for (let j = 0; j < 30; j++) {
+						const p = pts[Math.floor(rnd() * pts.length)];
+						ell(p[0] + rr(-8, 8), p[1] + rr(-6, 6), 1.2, 1.2, 0, "rgba(255,255,255,0.7)");
+					}
+				}
+			},
+			// the town seal: a wreath of the five flowers round a dot (the garden)
+			seal: (x, y, s = 1) => {
+				for (let k = 0; k < 15; k++) ell(x + Math.cos(k * 0.42) * 14 * s, y + Math.sin(k * 0.42) * 14 * s, 2.4 * s, 2.4 * s, 0, ["#d88ac8", "#ffffff", "#7ab4f0", "#b87a9a", "#f0b8d0"][k % 5]);
+				ell(x, y, 3 * s, 3 * s, 0, "#6a4a30");
+			},
+			// the Juice Bar: a column of carrot orange with clear cubes (on the rocks), standing on a band of fruit stripes
+			juice: (x, y) => {
+				["#ff4a5a", "#ffb43a", "#ffe84a", "#7ad84a", "#ff7ab8"].forEach((col, k) => poly([[x - 30, y + 22 + k * 3], [x + 30, y + 22 + k * 3], [x + 30, y + 25 + k * 3], [x - 30, y + 25 + k * 3]], col, 0.8));
+				c.fillStyle = grad(x - 9, 0, x + 9, 0, [[0, "#d8601a"], [0.5, "#ff9a3a"], [1, "#c8501a"]]), c.fillRect(x - 9, y - 16, 18, 38);
+				[[-4, -10], [3, -2], [-3, 6]].forEach(([dx, dy]) => ((c.globalAlpha = 0.55), (c.fillStyle = "#fff4e8"), c.fillRect(x + dx - 3, y + dy - 3, 6, 6), (c.globalAlpha = 1)));
+				line([[x - 9, y - 20], [x - 9, y + 22], [x + 9, y + 22], [x + 9, y - 20]], "rgba(255,255,255,0.7)", 1.2);
+				// the purple dance floor beyond it, its tiles in perspective
+				for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) poly([[x + 40 + i * 10 + j * 4, y + 30 - j * 6], [x + 49 + i * 10 + j * 4, y + 30 - j * 6], [x + 52 + i * 10 + j * 4, y + 25 - j * 6], [x + 43 + i * 10 + j * 4, y + 25 - j * 6]], (i + j) % 2 ? "#5a2a8a" : "#4a1a7a", 0.8);
+			},
+			// the goo: two masses meeting in one splash (love at first splat)
+			splatPair: (x, y) => (splat(x - 18, y, 18, "#ff8ac8"), splat(x + 16, y + 4, 16, "#3ae8ff"), splat(x, y + 2, 10, "#ffffff")),
+			// Blossoms: flames of red with orange within, an ember over each heart
+			blossom: (x, y, s = 1) => blossom(x, y, s),
+			// flint: dark knapped shards with one glint each, in a small cairn
+			flint: (x, y) => {
+				for (let k = 0; k < 7; k++) {
+					const px = x + (k % 3) * 9 + rnd() * 4, py = y - Math.floor(k / 3) * 8;
+					poly([[px - 6, py + 4], [px - 2, py - 5], [px + 6, py - 3], [px + 5, py + 5]], jit("#2a2a30", 20)), ell(px + 2, py - 2, 1.2, 1.2, 0, "#ffffff");
+				}
+			},
+			// Avarice: a balance beam with an amethyst on its high pan outweighing coins spilling off the low one
+			avarice: (x, y) => {
+				line([[x, y], [x, y - 26]], "#c8a040", 1.4), line([[x - 16, y - 32], [x + 16, y - 22]], "#c8a040", 1.4);
+				ell(x - 16, y - 26, 7, 1.8, 0, "#c8a040"), ell(x + 16, y - 16, 7, 1.8, 0, "#c8a040"), line([[x - 16, y - 32], [x - 16, y - 26]], "#c8a040", 0.6), line([[x + 16, y - 22], [x + 16, y - 16]], "#c8a040", 0.6);
+				crystal(x - 16, y - 27, 10, 0), [0, 1, 2, 3].forEach((k) => ell(x + 14 + k * 4, y - 18 + k * 3, 2.2, 1.1, 0, "#e8c84a"));
+			},
+			// lineage: a family tree in a gold oval (the genealogical society; a father's chain wearing his son's colour)
+			lineage: (x, y) => {
+				c.strokeStyle = "#d8b04a", (c.lineWidth = 1.2), c.beginPath(), c.ellipse(x, y, 13, 18, 0, 0, TAU), c.stroke();
+				line([[x, y + 14], [x, y - 4]], "#6a4a2a", 1.2);
+				[[-7, -12], [7, -12], [-5, 2], [6, 0], [0, -14]].forEach(([dx, dy]) => (line([[x, y - 2], [x + dx, y + dy]], "#6a4a2a", 0.8), ell(x + dx, y + dy, 1.8, 1.8, 0, k2col(dx))));
+			},
+			// the town on the horizon: emblems of its trades, small and hazed
+			bank: (x, y) => (poly([[x - 16, y - 22], [x + 16, y - 22], [x, y - 32]], "#d8d0b8"), [-12, -4, 4, 12].forEach((d) => line([[x + d, y - 22], [x + d, y]], "#e8e0c8", 3)), ell(x, y - 26, 3, 2, 0, "#2a2a30")),
+			barber: (x, y) => { (c.fillStyle = "#f0f0f0"), c.fillRect(x - 3, y - 28, 6, 28); for (let k = 0; k < 6; k++) line([[x - 3, y - 2 - k * 5], [x + 3, y - 6 - k * 5]], k % 2 ? "#2a4aa8" : "#c8202a", 1.6); },
+			tower: (x, y) => (line([[x - 7, y], [x - 4, y - 18]], "#6a6a6a", 1), line([[x + 7, y], [x + 4, y - 18]], "#6a6a6a", 1), vol(x, y - 26, 11, 9, 0, "#ffd8c0", "#c88a6a"), curve([[x - 11, y - 24], [x, y - 20], [x + 11, y - 26]], "#a8e830", 1.6), drip(x - 4, y - 30, 8, 1.4, "#3ae8ff", 0.7)),
+			greenhouse: (x, y) => (poly([[x - 14, y], [x - 14, y - 14], [x, y - 22], [x + 14, y - 14], [x + 14, y]], "rgba(200,240,240,0.45)"), line([[x + 4, y - 12], [x + 6, y - 34]], "#4a8a2a", 1.4), [0, 1, 2, 3, 4].forEach((k) => ell(x + 6 + Math.cos(k * 1.26) * 4, y - 36 + Math.sin(k * 1.26) * 4, 3.6, 2, k * 1.26, "#e83ab8")), ell(x + 6, y - 36, 2, 2, 0, "#ffd23a")),
+			bolt: (x, y) => ((c.fillStyle = "#2ab4a8"), c.fillRect(x - 3, y - 30, 6, 30), poly([[x + 1, y - 28], [x - 4, y - 18], [x, y - 18], [x - 2, y - 10], [x + 4, y - 21], [x, y - 21]], "#ffe84a")),
+			courthouse: (x, y) => ((c.fillStyle = "#9a4a3a"), c.fillRect(x - 9, y - 22, 18, 22), [-6, -2, 2, 6].forEach((d) => line([[x + d, y - 22], [x + d, y - 4]], "#f6f2e8", 1.6)), poly([[x - 10, y - 22], [x + 10, y - 22], [x, y - 29]], "#f6f2e8"), ell(x, y - 25, 1.6, 1.6, 0, "#d8b04a")),
+			marquee: (x, y) => { poly([[x - 14, y - 16], [x + 14, y - 16], [x + 14, y - 8], [x - 14, y - 8]], "#3a1a1a"); for (let k = 0; k < 9; k++) ell(x - 12 + k * 3, y - 17, 1, 1, 0, "#ffe8a0"); c.fillStyle = grad(x, y - 18, x + 30, y - 120, [[0, "rgba(255,250,220,0.25)"], [1, "rgba(255,250,220,0)"]]); c.beginPath(), c.moveTo(x - 2, y - 18), c.lineTo(x + 2, y - 18), c.lineTo(x + 40, y - 130), c.lineTo(x + 20, y - 130), c.fill(); },
+			tvs: (x, y) => { [[0, 0], [12, 0], [6, -11]].forEach(([dx, dy]) => (poly([[x + dx - 6, y + dy], [x + dx + 6, y + dy], [x + dx + 6, y + dy - 10], [x + dx - 6, y + dy - 10]], "#8a8a8e"), poly([[x + dx - 4, y + dy - 2], [x + dx + 3, y + dy - 2], [x + dx + 3, y + dy - 8], [x + dx - 4, y + dy - 8]], "#ff3ad0", 0.75))); line([[x + 6, y - 21], [x + 2, y - 30]], "#3a3a3a", 0.8), line([[x + 6, y - 21], [x + 11, y - 29]], "#3a3a3a", 0.8); },
+			shake: (x, y) => (poly([[x - 6, y - 22], [x + 6, y - 22], [x + 4, y], [x - 4, y]], "#f0f0f0"), vol(x, y - 24, 7, 5, 0, "#ff8ad8", "#c83aa8"), line([[x + 2, y - 26], [x + 5, y - 36]], "#e83a3a", 1.6), drip(x - 4, y - 22, 9, 1.6, "#ff8ad8", 0.8)),
+			cone: (x, y) => (poly([[x - 6, y - 14], [x + 6, y - 14], [x, y]], "#d8a058"), ["#3ae8ff", "#ff3ac8", "#a8e830"].forEach((col, k) => vol(x + (k - 1) * 4, y - 17 - (k === 1 ? 6 : 0), 5, 5, 0, col, mix(col, "#000000", 0.4))), [-1, 1].forEach((sd) => poly([[x + sd * 6, y - 18], [x + sd * 18, y - 28], [x + sd * 14, y - 16]], "rgba(220,250,255,0.75)"))),
+			vane: (x, y) => (line([[x, y], [x, y - 30]], "#4a8a7a", 1), line([[x - 10, y - 30], [x + 10, y - 30]], "#4a8a7a", 1), poly([[x + 10, y - 32], [x + 14, y - 30], [x + 10, y - 28]], "#4a8a7a"), poly([[x - 6, y - 32], [x + 4, y - 32], [x + 8, y - 42], [x + 6, y - 32]], "#5a9a8a"), poly([[x - 2, y - 33], [x - 8, y - 42], [x + 1, y - 34]], "#5a9a8a")),
+			church: (x, y) => ((c.fillStyle = "#8a8680"), c.fillRect(x - 6, y - 40, 12, 40), poly([[x - 7, y - 40], [x + 7, y - 40], [x, y - 52]], "#4a4a50"), line([[x, y - 52], [x, y - 60]], "#e8c84a", 1.2), line([[x - 2.5, y - 57], [x + 2.5, y - 57]], "#e8c84a", 1.2), ell(x, y - 30, 2.4, 4, 0, "#2a2a2a")),
+			// the park: the iron fence (pickets between brick pillars), the octagon of the gazebo with its gold ball, the lit
+			// glass box of the phone booth
+			fence: (x, y, n) => { for (let k = 0; k < n; k++) k % 6 ? line([[x + k * 5, y], [x + k * 5, y - 12]], "#141414", 1.2) : ((c.fillStyle = "#8a3a2a"), c.fillRect(x + k * 5 - 2, y - 15, 4, 15)); line([[x, y - 10], [x + n * 5, y - 10]], "#141414", 0.8); },
+			gazebo: (x, y) => { const o = []; for (let k = 0; k < 8; k++) o.push([x + Math.cos(k * 0.785) * 14, y + Math.sin(k * 0.785) * 5]); poly(o, "#f0ece0", 0.8); for (let k = 0; k < 5; k++) line([[x - 12 + k * 6, y], [x - 12 + k * 6, y - 14]], "#f6f2e8", 1); poly([[x - 16, y - 14], [x + 16, y - 14], [x, y - 24]], "#4a8a5a"); ell(x, y - 26, 2, 2, 0, "#ffd23a"); },
+			booth: (x, y) => (poly([[x - 7, y], [x + 7, y], [x + 7, y - 30], [x - 7, y - 30]], "rgba(220,240,255,0.35)"), line([[x - 7, y], [x - 7, y - 30], [x + 7, y - 30], [x + 7, y]], "#c8ccd4", 1.4), ell(x, y - 33, 9, 3, 0, "rgba(255,250,200,0.8)"), ell(x, y - 33, 14, 6, 0, "rgba(255,250,200,0.2)")),
+			// the Library's rug: two paisleys curled round each other (a great medallion), red, gold sprigs
+			paisley: (x, y, s = 1) => [0, 1].forEach((k) => {
+				c.save(), c.translate(x, y), c.rotate(k * Math.PI);
+				c.fillStyle = "#9a1a1a", c.beginPath(), c.moveTo(0, 0), c.bezierCurveTo(14 * s, -2 * s, 16 * s, 16 * s, 2 * s, 18 * s), c.bezierCurveTo(-8 * s, 18 * s, -6 * s, 6 * s, 0, 0), c.fill();
+				ell(4 * s, 11 * s, 4 * s, 3 * s, 0, "#d8a83a"), c.restore();
+			}),
+			// the mail mountain: heaped white planes, a tidy front, the heap behind
+			mail: (x, y) => {
+				for (let k = 0; k < 18; k++) poly([[x + rr(-30, 30), y - rr(0, 34)], [x + rr(-30, 30), y - rr(0, 34)], [x + rr(-30, 30), y]], jit("#f0ece4", 20), 0.7);
+				poly([[x - 34, y], [x + 34, y], [x + 34, y + 6], [x - 34, y + 6]], "#1a2a5a");
+			},
+			// the light bulb of the long speech, and the glue that mends the relic (a white run, its bottle's orange tip)
+			bulb: (x, y) => (ell(x, y, 20, 20, 0, "rgba(255,230,150,0.25)"), vol(x, y, 7, 8, 0, "#fffbe0", "#e8c870"), poly([[x - 4, y + 7], [x + 4, y + 7], [x + 3, y + 13], [x - 3, y + 13]], "#a8a8b0")),
+			glue: (x, y) => (poly([[x - 5, y], [x + 5, y], [x + 5, y - 16], [x - 5, y - 16]], "#f6f6f0"), poly([[x - 5, y - 10], [x + 5, y - 10], [x + 5, y - 5], [x - 5, y - 5]], "#d8302a"), poly([[x - 2, y - 16], [x + 2, y - 16], [x, y - 22]], "#ff8a1a"), curve([[x, y + 2], [x + 3, y + 30], [x + 2, y + 60], [x + 6, y + 84]], "rgba(255,255,255,0.75)", 2.4)),
+			// the Seeds sold as a bagel seasoning packet: a speckled paper packet
+			seeds: (x, y) => { poly([[x - 8, y - 11], [x + 8, y - 11], [x + 8, y + 9], [x - 8, y + 9]], "#e8d8b0"); for (let k = 0; k < 22; k++) ell(x + rr(-6, 6), y + rr(-8, 7), 0.9, 0.6, rnd() * 3, k % 3 ? "#f8f0d8" : "#1a1a1a"); },
+			// the unexplained curiosities: a crystal on a stem, lightning petals round a pale core, an acorn tipped on its side
+			curios: (x, y) => {
+				line([[x - 18, y + 8], [x - 18, y - 6]], "#4a8a2a", 1.2), poly([[x - 18, y - 14], [x - 13, y - 8], [x - 18, y - 2], [x - 23, y - 8]], "#3ae8d0"), ell(x - 18, y - 8, 10, 10, 0, "rgba(160,255,240,0.18)");
+				line([[x + 6, y + 8], [x + 6, y - 4]], "#c8c8d0", 1.2), ell(x + 6, y - 7, 3, 3, 0, "#c8f8ff");
+				for (let k = 0; k < 6; k++) { const a = (k / 6) * TAU; line([[x + 6, y - 7], [x + 6 + Math.cos(a) * 5, y - 7 + Math.sin(a) * 5], [x + 6 + Math.cos(a + 0.3) * 8, y - 7 + Math.sin(a + 0.3) * 8]], "#ffe23a", 1); }
+				ell(x + 30, y + 4, 5, 4, 0.8, "#b88a4a"), ell(x + 27, y + 1, 5, 2.5, 0.8, "#5a3a1e"), ell(x + 31, y + 3, 1, 1, 0, "#fff");
+			},
+			// the strange root after an old herbal: a bulb as big as its plant, roots like hair, a ringed blue bloom like an eye
+			voynich: (x, y) => {
+				vol(x, y, 14, 11, 0, "#d8b888", "#8a5a3a", 0.85);
+				for (let k = 0; k < 6; k++) curve([[x - 6 + k * 2.5, y + 8], [x - 12 + k * 5, y + 18], [x - 16 + k * 6.5, y + 26]], "#6a4a2a", 1);
+				line([[x, y - 10], [x + 2, y - 30]], "#7f9448", 1.6), ell(x + 2, y - 36, 9, 7, 0, "#eadcb4"), ell(x + 2, y - 36, 6, 5, 0, "#7fa8c8"), ell(x + 2, y - 36, 2.5, 2.5, 0, "#2a2a3a");
+			},
+			// the goo burger under a teal arch, its goo running over
+			burger: (x, y) => {
+				c.strokeStyle = "#2ab4a8", (c.lineWidth = 7), (c.globalAlpha = 0.7), c.beginPath(), c.arc(x, y + 6, 36, Math.PI, TAU), c.stroke(), (c.globalAlpha = 1);
+				[["#c88a3a", 9], ["#6aa83a", 4], ["#5a2a14", 7], ["#ffd23a", 3], ["#c88a3a", 10]].reduce((yy, [col, h], k) => (ell(x, yy, 26 - (k === 4 ? 2 : 0), h, -0.08, col), yy - h * 1.1), y + 12);
+				drip(x - 10, y, 22, 4, "#ff3ac8"), drip(x + 8, y + 2, 16, 3.5, "#3ae8ff");
+			},
+			// the pond: a kidney of still colour, lily pads, every third in flower, cattails on its bank
+			pond: (x, y) => {
+				ell(x, y, 54, 14, -0.05, "#3a6a8a", 0.9), ell(x - 18, y - 2, 30, 9, -0.05, "#5a8aa8", 0.8), ell(x + 10, y - 4, 26, 4, 0, "rgba(220,240,255,0.35)");
+				for (let k = 0; k < 9; k++) { const px = x + rr(-44, 44), py = y + rr(-8, 8); ell(px, py, 5, 2.4, 0, "#4a8a3a"), k % 3 === 0 && ell(px, py - 1.5, 1.8, 1.4, 0, "#ffd8e8"); }
+				for (let k = 0; k < 12; k++) line([[x + 50 + k * 2, y + 6], [x + 52 + k * 2, y - 14 - (k % 3) * 4]], "#5a6a2a", 1.1), k % 3 || ell(x + 52 + k * 2, y - 16 - (k % 3) * 4, 1.2, 3, 0, "#6a3a1a");
+			},
+			// the field office: a listening dish on a lattice mast turned up to the sky; the find, a scorched ring taped off
+			// between orange posts under two floodlights; the flag as a pennant
+			dish: (x, y) => {
+				line([[x, y], [x, y - 40]], "#6a6a70", 1.4);
+				for (let k = 0; k < 6; k++) line([[x - 3, y - k * 7], [x + 3, y - k * 7 - 7]], "#6a6a70", 0.6);
+				c.save(), c.translate(x, y - 44), c.rotate(-0.6), ell(0, 0, 12, 4, 0, "#c8ccd4"), ell(0, -1, 9, 2.4, 0, "#8a8e98"), c.restore();
+			},
+			scorch: (x, y) => {
+				ell(x, y, 30, 7, 0, "#120c08"), (c.strokeStyle = "rgba(255,120,40,0.5)"), (c.lineWidth = 1), c.beginPath(), c.ellipse(x, y, 26, 5.5, 0, 0, TAU), c.stroke();
+				[-36, -12, 12, 36].forEach((d) => line([[x + d, y + 6], [x + d, y - 6]], "#ff8a1a", 1.6)), line([[x - 36, y - 4], [x + 36, y - 4]], "rgba(255,200,40,0.8)", 1);
+				[-44, 44].forEach((d) => (line([[x + d, y + 6], [x + d, y - 26]], "#5a5a60", 1), (c.fillStyle = grad(x + d, y - 26, x, y, [[0, "rgba(255,255,230,0.4)"], [1, "rgba(255,255,230,0)"]])), c.beginPath(), c.moveTo(x + d, y - 26), c.lineTo(x + d * 0.2, y + 2), c.lineTo(x + d * 0.6, y + 6), c.fill()));
+			},
+			pennant: (x, y) => (line([[x, y], [x, y - 40]], "#8a8a90", 1.2), poly([[x, y - 40], [x + 30, y - 36], [x + 26, y - 30], [x + 30, y - 24], [x, y - 22]], "#1a2a5a"), line([[x + 26, y - 30], [x + 30, y - 36]], "#d8b04a", 1.2), ell(x + 12, y - 33, 5, 3, 0, "#c8302a"), line([[x + 12, y - 31], [x + 12, y - 26]], "#f0e8d0", 2)),
+			// the wanted wall's ghost: eight blank parchment sheets pinned, no two overlapping
+			wanted: (x, y) => { for (let k = 0; k < 8; k++) { const px = x + (k % 4) * 22, py = y + Math.floor(k / 4) * 28; poly([[px - 8, py - 11], [px + 8, py - 11], [px + 8, py + 11], [px - 8, py + 11]], "#d8c8a0", 0.35), ell(px, py - 10, 1, 1, 0, "#8a6a4a", 0.5); } },
+			// Mayor Mont to come: a teal square crowned with a thin gold line, pressed to the dome; a crackle where they touch
+			mayor: (x, y) => { poly([[x - 14, y - 14], [x + 14, y - 14], [x + 14, y + 14], [x - 14, y + 14]], "#2ab4a8"), line([[x - 14, y - 17], [x + 14, y - 17]], "#ffd23a", 1.6); for (let k = 0; k < 6; k++) line([[x + 16, y - 4 + k * 2], [x + 22 + rr(0, 6), y - 6 + k * 2 + rr(-3, 3)]], "rgba(255,255,255,0.8)", 0.8); },
+			// the UFO the Consortium hunts: a chrome ellipse with a ring of coloured lights, a cone of light below
+			ufo: (x, y) => {
+				c.fillStyle = grad(x, y, x, y + 140, [[0, "rgba(200,255,220,0.25)"], [1, "rgba(200,255,220,0)"]]), c.beginPath(), c.moveTo(x - 6, y), c.lineTo(x + 6, y), c.lineTo(x + 40, y + 140), c.lineTo(x - 40, y + 140), c.fill();
+				vol(x, y, 34, 8, 0, "#f0f4f8", "#6a7078", 0.7), vol(x, y - 6, 12, 7, 0, "#d8f0ff", "#5a8aa8", 0.6);
+				for (let k = 0; k < 12; k++) ell(x + Math.cos((k / 12) * TAU) * 30, y + 1 + Math.sin((k / 12) * TAU) * 5, 1.4, 1.4, 0, ["#ff4a5a", "#ffd23a", "#4ae8ff"][k % 3], 0.85);
+			},
+			// a painting within the painting: a tiny framed canvas holding this one's dark, light and storm, and a tinier frame
+			mise: (x, y) => {
+				const w = 34, h = 13;
+				c.fillStyle = grad(x - w, 0, x + w, 0, [[0, "#1a1214"], [0.35, "#8a8a88"], [0.5, "#f0e8cc"], [0.75, "#5a6878"], [1, "#14161e"]]), c.fillRect(x - w, y - h, 2 * w, 2 * h);
+				(c.strokeStyle = "#c8962e"), (c.lineWidth = 2.2), c.strokeRect(x - w, y - h, 2 * w, 2 * h), ell(x + 4, y - 7, 2, 2, 0, "#ffffff"), (c.lineWidth = 0.7), c.strokeRect(x + 14, y + 2, 9, 4);
+			},
+			// the human visitor's sign: the Flower Hat's flame petals in a cup of leaves, the sun dress's golden suns, the frogs'
+			// golden eyes (her clothes as colours only)
+			visitor: (x, y) => { blossom(x, y, 0.6), ell(x, y + 4, 9, 3, 0, "#5aa83a"); for (let k = 0; k < 4; k++) ell(x - 14 + k * 9, y + 14, 3, 3, 0, "#ffd23a"); [[-6, 22], [6, 22]].forEach(([dx, dy]) => (ell(x + dx, y + dy, 4, 3, 0, "#3f9a32"), ell(x + dx - 1.5, y + dy - 2, 1.2, 1.2, 0, "#ffd65a"), ell(x + dx + 1.5, y + dy - 2, 1.2, 1.2, 0, "#ffd65a"))); },
+			// two butterflies in the open sky (as in the Garden windows)
+			butterflies: (x, y) => [[0, 0], [22, -10]].forEach(([dx, dy]) => [-1, 1].forEach((sd) => (ell(x + dx + sd * 4, y + dy - 2, 4, 3, sd * 0.5, "#ffb43a", 0.9), ell(x + dx + sd * 3, y + dy + 3, 3, 2, -sd * 0.4, "#ff7a3a", 0.9), line([[x + dx, y + dy - 4], [x + dx, y + dy + 4]], "#2a1a1a", 1)))),
+			// the four streets running on to the horizon as county roads, converging on one far point
+			roads: (vx, vy) => [[U(0.47), H], [U(0.53), H], [U(0.64), H], [U(0.71), H]].forEach(([x, y]) => line([[x, y], [vx, vy]], "rgba(230,220,190,0.13)", 1.4)),
+			// SPARKAKUS's paw prints, a lope across the meadow
+			paws: (x, y) => { for (let k = 0; k < 9; k++) { const px = x + k * 22, py = y + (k % 2 ? 6 : -4); ell(px, py, 3.4, 2.4, 0, "rgba(60,40,24,0.55)"), [-3, -1, 1, 3].forEach((d) => ell(px + 4, py + d * 1.1, 1, 1, 0, "rgba(60,40,24,0.55)")); } },
+			// constellations of the Ancients' stars, joined by faint lines (never letters)
+			stars: () => {
+				for (let g = 0; g < 5; g++) {
+					const cx = U(0.03 + g * 0.05 + rnd() * 0.03), cy = V(0.05 + rnd() * 0.24), pts = [];
+					for (let k = 0; k < 6; k++) pts.push([cx + rr(-34, 34), cy + rr(-26, 26)]);
+					line(pts, "rgba(200,210,255,0.18)", 0.7), pts.forEach(([x, y]) => (ell(x, y, 1.6, 1.6, 0, "#f0f4ff", 0.85), ell(x, y, 4, 4, 0, "rgba(200,220,255,0.15)")));
+				}
+				for (let k = 0; k < 200; k++) ell(rr(0, U(0.3)), rr(0, V(0.42)), 0.8, 0.8, 0, "#e8ecff", rr(0.2, 0.7));
+			},
+			// a theropod far off on the waste, mouth open, a faint ring of a crown on its skull (in the family since the Cretaceous)
+			theropod: (x, y) => {
+				c.fillStyle = "rgba(30,20,18,0.55)", c.beginPath();
+				c.moveTo(x - 60, y - 34), c.quadraticCurveTo(x - 20, y - 50, x + 10, y - 44), c.quadraticCurveTo(x + 30, y - 56, x + 44, y - 58), c.lineTo(x + 58, y - 54), c.lineTo(x + 46, y - 49), c.lineTo(x + 56, y - 46), c.lineTo(x + 36, y - 44);
+				c.quadraticCurveTo(x + 26, y - 36, x + 20, y - 26), c.lineTo(x + 14, y), c.lineTo(x + 8, y), c.lineTo(x + 6, y - 20), c.lineTo(x - 6, y - 22), c.lineTo(x - 10, y), c.lineTo(x - 16, y), c.lineTo(x - 16, y - 24), c.quadraticCurveTo(x - 40, y - 26, x - 60, y - 34), c.fill();
+				(c.strokeStyle = "rgba(80,220,210,0.35)"), (c.lineWidth = 1.2), c.beginPath(), c.ellipse(x + 42, y - 60, 7, 2.5, -0.2, 0, TAU), c.stroke();
+			},
+		};
+		function k2col(dx) {
+			return dx < 0 ? "#2ab4a8" : "#5a9a3a";
+		}
+
+		yield;
+		yield* echoes();
+		goldCode();
+		yield;
+		// the placement: era by era, each sign where its lore lives in time
+		// far, far past
+		G.stars();
+		G.dot(U(0.03), V(0.9));
+		G.core(U(0.09), V(0.38));
+		G.riddle(U(0.11), V(0.6));
+		G.page(U(0.19), V(0.76));
+		G.theropod(U(0.13), HZ(U(0.13)) + 2);
+		// far past
+		G.plug(U(0.31), V(0.53));
+		G.seed(U(0.297), V(0.31), 0.8);
+		// the making
+		G.synth(U(0.4), V(0.55));
+		G.synth(U(0.345), V(0.66), 1.5);
+		G.synth(U(0.445), V(0.46), 1.1);
+		[[0.33, 0.74, 22], [0.37, 0.58, 16], [0.43, 0.68, 26], [0.31, 0.5, 12]].forEach(([u, v, r], k) => (hexagon(U(u), V(v), r, ["#3fa8a0", "#c8d0cc", "#2a6a74", "#7acfc8"][k], 0.55), line([[U(u) - r, V(v) + r * 1.4], [U(u) + r * 2, V(v) + r * 1.4]], "rgba(220,240,240,0.5)", 1), line([[U(u) - r, V(v) + r * 1.4 + 4], [U(u) + r * 2, V(v) + r * 1.4 + 4]], "rgba(220,240,240,0.5)", 1)));
+		// the Ancients' ground: shapes rising half out of the dark and sinking back (an arc, a slab, a ring, a step)
+		[[0.04, 0.3, "arc"], [0.16, 0.52, "slab"], [0.07, 0.66, "ring"], [0.19, 0.24, "step"], [0.12, 0.08, "arc"]].forEach(([u, v, k]) => {
+			const x = U(u), y = V(v);
+			c.save(), (c.globalAlpha = 0.16), (c.strokeStyle = "#8a7a9a"), (c.fillStyle = "#2a2230"), (c.lineWidth = 2);
+			k === "arc" ? (c.beginPath(), c.arc(x, y + 40, 50, Math.PI, TAU), c.stroke()) : k === "slab" ? c.fillRect(x - 12, y - 50, 24, 90) : k === "ring" ? (c.beginPath(), c.ellipse(x, y, 40, 12, 0, 0, TAU), c.stroke()) : [0, 1, 2].forEach((j) => c.fillRect(x + j * 20, y - j * 14, 22, 14 + j * 14));
+			c.restore();
+		});
+		G.shard(U(0.385), V(0.52), 1, -0.4);
+		G.organic(U(0.47), V(0.52));
+		G.cubeJar(U(0.42), V(0.71));
+		G.ages();
+		yield;
+		// the present: the park and the town
+		G.roads(U(0.58), HZ(U(0.58)) - 4);
+		{
+			const fr = ["bank", "barber", "tower", "greenhouse", "bolt", "courthouse", "marquee", "tvs", "shake", "cone", "avarice", "lineage", "vane", "church"];
+			fr.forEach((k, i) => {
+				const x = U(0.46 + (i / (fr.length - 1)) * 0.28) + rr(-6, 6);
+				G[k](x, HZ(x) + 2);
+			});
+			G.seal(U(0.525), HZ(U(0.525)) - 54, 1);
+			for (let k = 0; k < 240; k++) {
+				const x = rr(U(0.45), U(0.76)), y = HZ(x) - rr(0, 54);
+				brush(x, y, 30, 8, rr(-0.1, 0.1), "rgba(236,230,212,1)", 0.12);
+			}
+		}
+		G.fence(U(0.44), V(0.7), 30);
+		G.gazebo(U(0.505), V(0.66));
+		G.booth(U(0.475), V(0.74));
+		G.garden(U(0.555), V(0.64));
+		// the meadow and the strata cut away below it come later (they lie over the frieze's foot); the signs of the present
+		G.water(U(0.605) + 62, V(0.7) - 250);
+		G.paisley(U(0.585), V(0.29), 0.9);
+		G.butterflies(U(0.5), V(0.2));
+		G.splatPair(U(0.6), V(0.55));
+		G.juice(U(0.8), V(0.66));
+		ghost(() => (c.save(), c.translate(U(0.47), V(0.42)), c.rotate(-0.55), G.burger(0, 0), c.restore()), 0.72, U(0.47) - 60, V(0.42) - 60, 120, 120);
+		G.pond(U(0.69), V(0.82));
+		G.mail(U(0.8), V(0.395));
+		G.curios(U(0.455), V(0.25));
+		G.voynich(U(0.8), V(0.77));
+		G.bulb(U(0.39), V(0.36));
+		G.glue(U(0.37), V(0.38));
+		G.shard(U(0.64), V(0.5), 0.9, 0.9);
+		G.seeds(U(0.5), V(0.72));
+		G.flint(U(0.47), V(0.76));
+		G.paws(U(0.47), V(0.9));
+		[[0.48, 0.42], [0.58, 0.52], [0.67, 0.47], [0.63, 0.84], [0.705, 0.66], [0.52, 0.86], [0.73, 0.88]].forEach(([u, v], k) => G.blossom(U(u), V(v), k === 3 ? 1.3 : 0.8));
+		G.visitor(U(0.51), V(0.93));
+		// the creatures' signs: their nodes, where the threads between them will meet
+		const CRE = {
+			SPARKAKUS: [0.43, 0.6, "sparkakus", 0.9], MAMA: [0.64, 0.62, "mama", 1], GOOWARD: [0.72, 0.25, "gooward", 1], GEMTOE: [0.47, 0.8, "gemtoe", 1],
+			MONT: [0.53, 0.82, "mont", 0.9], ETCHER: [0.58, 0.9, "etcher", 0.9], GLYPH: [0.49, 0.6, "glyph", 1], KING: [0.66, 0.86, "king", 0.9],
+			FORTIZMO: [0.575, 0.47, "fortizmo", 1], SOMLET: [0.785, 0.3, "somlet", 0.9], ZOLLOD: [0.74, 0.84, "zollod", 0.9], NEXTESSA: [0.84, 0.56, "nextessa", 1],
+		};
+		for (const k in CRE) {
+			const [u, v, g, s] = CRE[k];
+			(NODE[k] = [U(u), V(v)]), G[g](U(u), V(v), s);
+		}
+		NODE.ANOMALEE = [U(0.29), V(0.55)];
+		G.glitch(U(0.27), V(0.55));
+		NODE.HENNRICK = [U(0.42), V(0.71)];
+		NODE.MUSHROOM = [U(0.86), V(0.12)];
+		NODE.ANCIENT = [U(0.94), V(0.78)];
+		NODE.MAMA_W = [U(0.555), V(0.32)];
+		// the future
+		G.portal(U(0.785), V(0.62));
+		G.dish(U(0.83), V(0.64));
+		G.scorch(U(0.87), V(0.94));
+		G.pennant(U(0.905), V(0.44));
+		G.wanted(U(0.86), V(0.33));
+		G.ufo(U(0.93), V(0.23));
+		G.mushroom(U(0.86), V(0.06), 1);
+		field(U(0.86) - 140, 0, U(0.86) + 140, V(0.16), 120, 50, 10, () => rr(-0.9, -0.5), () => jit("#3a4258", 20), 0.32);
+		G.mayor(U(0.86) - 130, V(0.06) + 36);
+		ghost(() => G.mise(U(0.885), V(0.86)), 0.7, U(0.885) - 40, V(0.86) - 18, 80, 36);
+
+		extras();
+		yield;
+
+		// ==== IV. THE THREADS: the creatures' ties, invented as lines that join their signs ================================
+		// (each thread a fine line in a blend of the two creatures' colours; where two meet, a small knot; along them, the
+		// messengers they send each other)
+		{
+			const COL = { SPARKAKUS: "#3a5ad8", MAMA: "#ff9a7a", GOOWARD: "#4ad8f0", GEMTOE: "#c8202a", MONT: "#2ab4a8", ETCHER: "#8a3ab8", GLYPH: "#3a6ac8", KING: "#ffd23a", FORTIZMO: "#5aa85a", SOMLET: "#d8c8ff", ZOLLOD: "#8ab858", NEXTESSA: "#e8783a", ANOMALEE: "#ff3ad0", HENNRICK: "#e8f0ee", MUSHROOM: "#c8302a", ANCIENT: "#2a2a3a", MAMA_W: "#ff9a7a" };
+			const TIES = [
+				["MAMA", "GOOWARD", "knot"], ["MAMA", "MONT"], ["GOOWARD", "MONT"], ["GOOWARD", "ZOLLOD"], ["GLYPH", "ETCHER", "groove"], ["GEMTOE", "GLYPH"],
+				["KING", "FORTIZMO"], ["KING", "MONT"], ["SPARKAKUS", "HENNRICK"], ["SPARKAKUS", "ANCIENT"], ["SOMLET", "ANCIENT"], ["ANOMALEE", "MAMA"],
+				["ANOMALEE", "GLYPH"], ["ETCHER", "HENNRICK"], ["ZOLLOD", "FORTIZMO"], ["NEXTESSA", "MUSHROOM"], ["HENNRICK", "MUSHROOM"], ["SPARKAKUS", "GEMTOE"],
+				["MAMA", "MAMA_W"], ["FORTIZMO", "SOMLET"], ["MONT", "MUSHROOM"],
+			];
+			TIES.forEach(([a, b, kind]) => {
+				const A = NODE[a], B = NODE[b];
+				if (!A || !B) return;
+				const mx = (A[0] + B[0]) / 2 + rr(-40, 40), my = (A[1] + B[1]) / 2 - rr(20, 70);
+				const g = c.createLinearGradient(A[0], A[1], B[0], B[1]);
+				g.addColorStop(0, COL[a]), g.addColorStop(1, COL[b]);
+				(c.strokeStyle = g), (c.lineWidth = kind ? 1.8 : 1), (c.globalAlpha = 0.45), c.beginPath(), c.moveTo(A[0], A[1]), c.quadraticCurveTo(mx, my, B[0], B[1]), c.stroke(), (c.globalAlpha = 1);
+				const qx = 0.25 * A[0] + 0.5 * mx + 0.25 * B[0], qy = 0.25 * A[1] + 0.5 * my + 0.25 * B[1];
+				if (kind === "knot") {
+					// the marriage knot, and the splat they met over
+					for (let k = 0; k < 2; k++) (c.strokeStyle = k ? "#4ad8f0" : "#ff9a7a"), (c.lineWidth = 1.6), c.beginPath(), c.ellipse(qx + (k ? 4 : -4), qy, 7, 4, k ? 0.6 : -0.6, 0, TAU), c.stroke();
+					splat(qx, qy + 16, 6, "#ff8ac8");
+				} else if (kind === "groove") for (let k = 1; k < 4; k++) (c.strokeStyle = "rgba(150,240,230,0.5)"), (c.lineWidth = 0.6), c.beginPath(), c.moveTo(A[0], A[1] + k * 3), c.quadraticCurveTo(mx, my + k * 3, B[0], B[1] + k * 3), c.stroke();
+				else ell(qx, qy, 2, 2, 0, mix(hex2(COL[a]), hex2(COL[b]), 0.5), 0.8);
+			});
+			// the Consortium's watch: sight-lines from its lens down to what it watches
+			const L = [U(0.86) + 34, V(0.06) + 56];
+			["SPARKAKUS", "GEMTOE", "GOOWARD", "GLYPH", "KING", "SOMLET", "MONT", "ANOMALEE", "ZOLLOD"].forEach((k) => {
+				const P = NODE[k];
+				c.setLineDash([3, 6]), (c.strokeStyle = "rgba(160,210,255,0.22)"), (c.lineWidth = 0.8), c.beginPath(), c.moveTo(L[0], L[1]), c.lineTo(P[0], P[1]), c.stroke(), c.setLineDash([]);
+			});
+			// the messengers on their way along the threads
+			["cube", "spore", "pixel", "crown", "goo", "sprout", "letter", "note", "card", "gem", "tile", "coin"].forEach((t, k) => token(U(0.47 + k * 0.022), V(0.33) + Math.sin(k * 0.9) * 22 + (k % 3) * 8, t));
+		}
+
+		ribbon();
+		beat();
+		yield;
+		veils();
+		yield;
+
+		// ==== V. THE GROUND OF THE PRESENT: the cut-away strata (the eons, the many biomes) and the five flowers =========
+		{
+			const cx = U(0.6), top = V(0.76), w = U(0.14);
+			const edge = (t) => top + Math.sin(t * Math.PI) * 6 + (fbm(t * 6, 9.3) - 0.5) * 26;
+			clip(() => {
+				c.moveTo(cx - w, edge(0));
+				for (let t = 0; t <= 1.001; t += 0.02) c.lineTo(cx - w + 2 * w * t, edge(t));
+				for (let k = 1; k < 8; k++) c.lineTo(cx + w + (fbm(k * 0.7, 4.4) - 0.5) * 40 - k * 3, edge(1) + ((H - 6 - edge(1)) * k) / 8);
+				for (let t = 1; t >= -0.001; t -= 0.02) c.lineTo(cx - w + 2 * w * t, H - 6 - Math.sin(t * Math.PI) * 26 + (fbm(t * 5, 2.2) - 0.5) * 18);
+				for (let k = 7; k > 0; k--) c.lineTo(cx - w + (fbm(k * 0.7, 8.8) - 0.5) * 40 + k * 3, edge(0) + ((H - 6 - edge(0)) * k) / 8);
+				c.closePath();
+			}, () => {
+				const cols = ["#b8925a", "#b4c0bc", "#3f5e36", "#2c5a6a", "#4a3e30", "#8a4a30", "#a8905e", "#5a4a3a", "#2a2420"];
+				let y = top - 10;
+				cols.forEach((col, k) => {
+					const h = [22, 8, 20, 18, 6, 16, 12, 10, 9][k];
+					c.fillStyle = col, c.beginPath(), c.moveTo(cx - w - 10, y);
+					for (let x = cx - w - 10; x <= cx + w + 10; x += 12) c.lineTo(x, y + Math.sin(x * 0.01 + k * 1.3) * 7 + (x - cx) * 0.04 * (k - 3));
+					c.lineTo(cx + w + 10, H), c.lineTo(cx - w - 10, H), c.fill();
+					y += h;
+				});
+				field(cx - w, top - 10, cx + w, H, 420, 22, 4, () => rr(-0.1, 0.1), () => jit("#7a6a5a", 50), 0.25);
+				for (let k = 0; k < 60; k++) ell(rr(cx - w, cx + w), rr(top + 10, H), rr(1.5, 4), rr(1, 3), rnd() * 3, jit("#a89878", 40), 0.7);
+				for (let k = 0; k < 10; k++) curve([[rr(cx - w, cx + w), top], [rr(cx - w, cx + w), top + 30], [rr(cx - w, cx + w), top + 60]], "rgba(90,60,30,0.6)", 1);
+				// the jaw in a deep stratum, real bone, the gold ring over its crown
+				fossilJaw(cx + w * 0.35, top + 128);
+			});
+			curve(Array.from({ length: 51 }, (_, i) => [cx - w + (2 * w * i) / 50, edge(i / 50)]), "rgba(250,240,200,0.45)", 2);
+		}
+		{
+			const fl = [[0.515, 0.67, "thistle"], [0.535, 0.7, "mayweed"], [0.565, 0.71, "chicory"], [0.59, 0.69, "milkweed"], [0.605, 0.665, "mallow"]];
+			fl.forEach(([u, v, kind]) => flower(U(u), V(v), kind, 1));
+			fl.forEach(([u, v, kind]) => flower(U(u) + 16, V(v) + 22, kind, 0));
+		}
+
+		yield;
+		// ==== VI. THE FIGURES: beings painted as real as the brush allows =================================================
+		sphinx2(U(0.0), V(0.64));
+		chisel(U(0.5) + 6, V(0.48) + 12);
+		yield;
+		traveler(U(0.296), V(0.36));
+		yield;
+		backpacka2(U(0.605), V(0.7));
+		yield;
+		{
+			const x = U(0.555), y = V(0.33);
+			ell(x, y + 6, 70, 40, 0, "rgba(255,255,245,0.55)");
+			(c.strokeStyle = "rgba(255,252,236,0.8)"), (c.lineWidth = 1.2), c.beginPath(), c.ellipse(x, y + 6, 74, 44, 0, 0, TAU), c.stroke();
+			for (let k = 0; k < 40; k++) ell(x + rr(-56, 56), y + rr(18, 34), 1.6, 1.6, 0, ["#ffd23a", "#ff7ab8", "#ffffff", "#9a7ae8", "#7ac83a"][k % 5], 0.9);
+			field(x - 60, y + 14, x + 60, y + 36, 60, 8, 2, () => -1.4, () => jit("#6aa84a", 30), 0.6);
+			robedFigure(x - 12, y + 20, 46);
+			vol(x + 24, y + 4, 15, 16, 0, "#fff0e2", "#c8805e"), ell(x + 29, y - 4, 4, 2.6, -0.5, "rgba(255,255,255,0.75)"), ell(x + 22, y + 21, 13, 2.4, 0, "rgba(120,150,90,0.35)");
+		}
+		ghost(() => olag2(U(0.955), V(0.66)), 0.85, U(0.955) - 40, V(0.66) - 110, 80, 130);
+		{
+			vol(U(0.83), V(0.82), 34, 26, 0, "#5aa850", "#0e3a12", 0.7);
+			for (let k = 0; k < 5; k++) drip(U(0.81) + k * 9, V(0.82) + 10, rr(10, 22), 3, "#4a9a3e", 0.65);
+			ell(U(0.838), V(0.795), 9, 4, -0.3, "rgba(230,255,220,0.35)");
+			poly([[U(0.88) - 22, V(0.52)], [U(0.88) + 22, V(0.52)], [U(0.88), V(0.47)]], "#1a1e3a");
+			[[-8, 0.2], [6, -0.15]].forEach(([dx, rot]) => vol(U(0.88) + dx, V(0.43), 4, 20, rot, "#c89a6a", "#5a3a1e"));
+			ell(U(0.875), V(0.52), 2, 2, 0, "#d82a2a");
+			[[-7, 0.5], [7, -0.5]].forEach(([dx, rot]) => ell(U(0.92) + dx, V(0.82), 7, 4, rot, "#060606", 0.9));
+			// the stranger, cropped: shaggy pale-blond hair with darker roots, a brown leather jacket
+			const x = U(0.885), y = V(0.985);
+			poly([[x - 9, y - 34], [x + 9, y - 34], [x + 12, y], [x - 12, y]], "#6a4428"), line([[x - 4, y - 34], [x - 2, y - 26]], "#e8dcc0", 2);
+			vol(x, y - 42, 7, 8, 0, "#e8c8a8", "#a88060"), [0, 1, 2].forEach((k) => curve([[x - 6 + k * 4, y - 50], [x - 4 + k * 4, y - 46], [x - 6 + k * 5, y - 40]], k ? "#e8d890" : "#8a7040", 2.2));
+		}
+		yield;
+		ancient4();
+		yield;
+		human(U(0.55), V(0.97));
+		curve([[W, V(0.07)], [U(0.975), V(0.085)], [U(0.955), V(0.08)], [U(0.94), V(0.1)]], "#2a1a12", 3);
+		bird(U(0.97), V(0.075), "#c8202a", "#8a1018", "cardinal"), bird(U(0.948), V(0.082), "#7a6a5a", "#e8702a", "robin");
+		// the painter himself, low in the bottom-right corner, nearly invisible, beside his name
+		ghost(() => G.gooward(U(0.925), V(0.9), 0.55), 0.55, U(0.925) - 30, V(0.9) - 30, 60, 50);
+
+		// THE PAINT: the whole canvas repainted as brush strokes, coarse to fine. Each stroke takes the colour under it and
+		// lies along the flow; on an edge it lies along the edge, so forms keep their shape. The fine strokes go only
+		// where there is detail, so the large forms stay broad and the figures stay sharp.
+		{
+			const src = c.getImageData(0, 0, CW, CH).data,
+				at = px,
+				lum = (i) => src[i] * 0.3 + src[i + 1] * 0.59 + src[i + 2] * 0.11;
+			// [stroke radius, count, length / radius, the least detail it lies on, the most, opacity]
+			for (const [r, n, el, minEdge, maxEdge, al] of [[12, 9000, 1.5, 0, 14, 0.5], [6, 16000, 1.5, 0, 40, 0.62], [2.6, 30000, 1.6, 8, 999, 0.8]]) {
+				for (let k = 0; k < n; k++) {
+					if (k % 1500 === 0) yield;
+					const x = rnd() * W, y = rnd() * H, i = at(x, y);
+					const gx = lum(at(x + 3, y)) - lum(at(x - 3, y)), gy = lum(at(x, y + 3)) - lum(at(x, y - 3)), g = Math.hypot(gx, gy);
+					if (g < minEdge || g > maxEdge) continue;
+					const a = g > 18 ? Math.atan2(gx, -gy) : flow(x, y),
+						len = r * el * (g > 18 ? 0.8 : rr(0.8, 1.3)),
+						w = r * rr(0.75, 1.05);
+					c.save(), c.translate(x, y), c.rotate(a), (c.globalAlpha = al * rr(0.7, 1));
+					c.fillStyle = "rgb(" + src[i] + "," + src[i + 1] + "," + src[i + 2] + ")";
+					c.beginPath(), c.moveTo(-len, 0), c.quadraticCurveTo(0, -w, len, 0), c.quadraticCurveTo(0, w, -len, 0), c.fill();
+					// a faint light edge on the stroke's lit side (the ridge of the paint), on the broad strokes only
+					r > 5 && ((c.globalAlpha = al * 0.06), (c.fillStyle = "#ffffff"), c.beginPath(), c.ellipse(0, -w * 0.5, len * 0.6, w * 0.15, 0, 0, TAU), c.fill());
+					c.restore();
+				}
+			}
+			c.globalAlpha = 1;
+		}
+		// the painter's hand: goo flung at the top edge in five throws, each a splat with its runs, and three spatters lower
+		// down, so the goo crosses every era
+		{
+			const GC = ["#3ae8ff", "#ff3ac8", "#9a5ae8", "#a8e830"];
+			[[0.07, 4], [0.33, 3], [0.52, 5], [0.81, 4], [0.95, 2]].forEach(([u, n], g) => {
+				const x0 = U(u) + rr(-20, 20);
+				splat(x0, rr(2, 10), rr(10, 16), GC[g % 4]);
+				for (let k = 0; k < n; k++) drip(x0 + rr(-30, 30), rr(4, 16), rr(40, 170) * (k ? 0.55 : 1), rr(2.2, 5), GC[(g + k) % 4], rr(0.6, 0.88));
+			});
+			[[0.23, 0.56], [0.66, 0.2], [0.9, 0.5]].forEach(([u, v], g) => (splat(U(u), V(v), rr(6, 9), GC[(g + 1) % 4]), drip(U(u) + 2, V(v) + 4, rr(30, 70), 2.4, GC[(g + 1) % 4], 0.8)));
+		}
+		signature(W - 150, H - 30);
+		yield;
+		for (let k = 0; k < 14000; k++) ell(rnd() * W, rnd() * H, 0.7, 0.7, 0, rnd() < 0.5 ? "#ffffff" : "#000000", 0.05);
+		c.fillStyle = rgrad(W / 2, H / 2, H * 0.3, W * 0.65, [[0, "rgba(0,0,0,0)"], [1, "rgba(20,12,4,0.35)"]]), c.fillRect(0, 0, W, H);
+
+		// ---- pass 5 ------------------------------------------------------------------------------------------------------
+		// ECHOES: the creatures' signs again, vast, turned and faint, glazed in under everything, so that no sign is seen
+		// only once and each one reads first as a shape in the ground
+		function* echoes() {
+			const main = c, off = mk(1, 1), q = 4;
+			(off.width = W / q), (off.height = H / q);
+			const o = off.getContext("2d");
+			for (const [g, u, v, s, rot, a] of [
+				["sparkakus", 0.36, 0.2, 4.2, 0.3, 0.13], ["king", 0.7, 0.8, 3.6, -0.2, 0.1], ["fortizmo", 0.53, 0.16, 4.6, 0.5, 0.12],
+				["glyph", 0.27, 0.82, 4, 0.2, 0.12], ["etcher", 0.1, 0.9, 3.4, -0.15, 0.14], ["mont", 0.88, 0.72, 3.6, 0.25, 0.1],
+				["gemtoe", 0.2, 0.44, 3.4, -0.4, 0.12], ["zollod", 0.64, 0.26, 3.6, 0.1, 0.09], ["somlet", 0.93, 0.36, 2.6, -0.2, 0.1],
+				["nextessa", 0.97, 0.6, 5, 0, 0.09], ["mama", 0.46, 0.4, 4, 0.2, 0.09], ["seed", 0.5, 0.52, 8, 0, 0.1],
+				["core", 0.9, 0.16, 1.6, 0.6, 0.08], ["king", 0.08, 0.16, 2.6, 0.9, 0.07], ["glyph", 0.82, 0.2, 3, -0.6, 0.08],
+			]) {
+				yield;
+				o.setTransform(1, 0, 0, 1, 0, 0), o.clearRect(0, 0, W, H);
+				o.setTransform((s * Math.cos(rot)) / q, (s * Math.sin(rot)) / q, (-s * Math.sin(rot)) / q, (s * Math.cos(rot)) / q, U(u) / q, V(v) / q);
+				c = o, G[g](0, 0, 1), (c = main);
+				c.save(), (c.globalAlpha = a * 0.75), c.drawImage(off, 0, 0, W, H), c.restore();
+			}
+		}
+		// THE GOLD CODE: roots of raw gold out of the first dot, straightening into circuit traces that carry rows of short
+		// and long ticks (on and off, never a letter), run under the whole lower canvas, turn back into roots in the
+		// Organic half, and go on through the Portal into the future; one thread climbs to the Originator's seed
+		function goldCode() {
+			const g = "#d8b04a", O = [U(0.03), V(0.9)];
+			const root = (x, y, a, len, d) => {
+				if (d > 4 || len < 8) return;
+				const pts = [[x, y]];
+				let px = x, py = y, aa = a;
+				for (let k = 0; k < 6; k++) (aa += rr(-0.3, 0.3)), (px += (Math.cos(aa) * len) / 6), (py += (Math.sin(aa) * len) / 6), pts.push([px, py]);
+				curve(pts, g, Math.max(0.6, 2.4 - d * 0.45), 0.55);
+				root(px, py, aa + rr(0.2, 0.6), len * 0.7, d + 1), rnd() < 0.7 && root(px, py, aa - rr(0.2, 0.6), len * 0.65, d + 1);
+			};
+			root(O[0], O[1], -0.2, 120, 0), root(O[0], O[1], 0.15, 100, 1), root(O[0], O[1], -0.7, 90, 1);
+			for (let r = 0; r < 7; r++) {
+				let x = U(0.11) + r * 14, y = V(0.7 + r * 0.035);
+				const pts = [[x, y]];
+				while (x < U(0.99)) {
+					x += rr(40, 140), pts.push([x, y]);
+					if (rnd() < 0.5) {
+						const dy = (rnd() < 0.5 ? -1 : 1) * rr(8, 24);
+						(x += Math.abs(dy)), (y = Math.max(V(0.6), Math.min(V(0.97), y + dy))), pts.push([x, y]);
+					}
+				}
+				// fine steps, so the organic stretch can wander like a root
+				const P = [];
+				for (let k = 0; k < pts.length - 1; k++) {
+					const [x0, y0] = pts[k], [x1, y1] = pts[k + 1], n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 10));
+					for (let j = 0; j < n; j++) {
+						const px = x0 + ((x1 - x0) * j) / n, py = y0 + ((y1 - y0) * j) / n, org = px > U(0.46) && px < U(0.73) ? Math.sin(((px - U(0.46)) / U(0.27)) * Math.PI) : 0;
+						P.push([px, py + org * (Math.sin(px / 23 + r * 2) * 6 + (fbm(px / 60, r) - 0.5) * 14)]);
+					}
+				}
+				line(P, g, 1.1, 0.4);
+				for (let k = 0; k < pts.length - 1; k++) {
+					const [x0, y0] = pts[k], [x1, y1] = pts[k + 1];
+					if (y0 !== y1 || (x0 > U(0.44) && x0 < U(0.74))) continue;
+					for (let tx = x0 + 6; tx < x1 - 4; tx += 6) rnd() < 0.55 && line([[tx, y0 - 2], [tx, y0 - (rnd() < 0.3 ? 8 : 4)]], g, 1, 0.34);
+				}
+				pts.forEach(([px, py], i) => i && i % 3 === 0 && (px < U(0.44) || px > U(0.74)) && ell(px, py, 2.2, 2.2, 0, g, 0.55));
+			}
+			curve([O, [U(0.12), V(0.62)], [U(0.2), V(0.5)], [U(0.26), V(0.4)], [U(0.297), V(0.31)]], g, 1.3, 0.45);
+		}
+		// MONTGUMMERY's tape: pulled out of his reels, wandering across the present in one long loop through the Portal and
+		// winding back into the reels (time rewound); a real tape, twisting, catching the light where it turns
+		function ribbon() {
+			const [mx, my] = NODE.MONT, s = 0.9;
+			const pts = [[mx - 12 * s, my + 34 * s], [U(0.5), V(0.74)], [U(0.56), V(0.62)], [U(0.62), V(0.5)], [U(0.72), V(0.45)], [U(0.785), V(0.55)], [U(0.84), V(0.47)], [U(0.88), V(0.58)], [U(0.84), V(0.7)], [U(0.76), V(0.74)], [U(0.68), V(0.78)], [U(0.62), V(0.93)], [U(0.56), V(0.95)], [mx + 12 * s, my + 34 * s]];
+			const P = [];
+			for (let i = 0; i < pts.length - 1; i++) {
+				const a = pts[Math.max(0, i - 1)], b = pts[i], cc = pts[i + 1], d = pts[Math.min(pts.length - 1, i + 2)];
+				for (let t = 0; t < 1; t += 0.05) {
+					const t2 = t * t, t3 = t2 * t;
+					P.push([0, 1].map((j) => 0.5 * (2 * b[j] + (-a[j] + cc[j]) * t + (2 * a[j] - 5 * b[j] + 4 * cc[j] - d[j]) * t2 + (-a[j] + 3 * b[j] - 3 * cc[j] + d[j]) * t3)));
+				}
+			}
+			for (let k = 0; k < P.length - 1; k++) {
+				const tw = Math.abs(Math.cos(k * 0.21)), inP = Math.abs(P[k][0] - U(0.785)) < 30 && Math.abs(P[k][1] - V(0.55)) < 50;
+				line([P[k], P[k + 1]], "#4a2e18", 0.8 + tw * 2.6, inP ? 0.3 : 0.8);
+				tw > 0.9 && line([P[k], P[k + 1]], "rgba(255,230,190,0.6)", 0.8, inP ? 0.3 : 0.8);
+			}
+		}
+		// KING DINO's jazz along the bottom edge: short upright strokes at a strict even beat, a gold cymbal riding them
+		function beat() {
+			for (let k = 0, x = U(0.44); x < U(0.8); k++, x += 13) line([[x, H - 4], [x + 1, H - 4 - (k % 4 ? 8 : 15)]], "rgba(255,226,150,0.6)", 2.2);
+			const x = U(0.645), y = H - 30;
+			c.save(), c.translate(x, y), c.rotate(-0.12);
+			c.fillStyle = rgrad(8, -2, 1, 26, [[0, "#fff2b0"], [0.5, "#d8a840"], [1, "#6a4a14"]]), c.beginPath(), c.ellipse(0, 0, 26, 5, 0, 0, TAU), c.fill();
+			for (let k = 1; k < 5; k++) (c.strokeStyle = "rgba(255,240,180,0.35)"), (c.lineWidth = 0.6), c.beginPath(), c.ellipse(0, 0, k * 5.5, k * 1.05, 0, 0, TAU), c.stroke();
+			ell(0, -1, 3, 1.4, 0, "#5a4014"), c.restore();
+			line([[x, y + 2], [x - 1, H]], "#8a8a90", 1.4);
+		}
+		// THE GREAT SPHINX: a recumbent lion of weathered limestone, cropped by the left edge and the dark: haunch, back,
+		// the headdress's pleated flaps, the face worn smooth and its nose gone, one eye socket empty; the forelegs laid
+		// out along the ground; its courses of stone, its pits; lit from the right, its shadow thrown left
+		function sphinx2(bx, by) {
+			const path = () => {
+				c.moveTo(bx - 10, by + 6), c.lineTo(bx - 10, by - 64), c.quadraticCurveTo(bx + 40, by - 112, bx + 130, by - 98);
+				c.quadraticCurveTo(bx + 190, by - 86, bx + 240, by - 94), c.lineTo(bx + 246, by - 140), c.quadraticCurveTo(bx + 262, by - 184, bx + 300, by - 178);
+				c.quadraticCurveTo(bx + 322, by - 174, bx + 324, by - 154), c.lineTo(bx + 333, by - 138), c.lineTo(bx + 326, by - 131), c.lineTo(bx + 328, by - 121);
+				c.quadraticCurveTo(bx + 326, by - 108, bx + 316, by - 106), c.lineTo(bx + 318, by - 86), c.quadraticCurveTo(bx + 342, by - 62, bx + 338, by - 36);
+				c.quadraticCurveTo(bx + 340, by - 10, bx + 330, by + 5), c.closePath();
+			};
+			ell(bx + 200, by + 8, 300, 16, 0, "rgba(0,0,0,0.45)");
+			// the forelegs laid out along the ground (under the chest), the far one a step behind and in shadow: the elbow's
+			// swell, the wrist, the great paw with its toes; worn stone
+			[[-20, 0.5], [-6, 1]].forEach(([dy, lt]) => {
+				const y0 = by + dy, leg = () => {
+					c.moveTo(bx + 290, y0 - 20), c.quadraticCurveTo(bx + 330, y0 - 24, bx + 360, y0 - 13), c.lineTo(bx + 438, y0 - 10);
+					c.quadraticCurveTo(bx + 452, y0 - 17, bx + 470, y0 - 15), c.quadraticCurveTo(bx + 494, y0 - 13, bx + 496, y0 + 2), c.quadraticCurveTo(bx + 497, y0 + 13, bx + 470, y0 + 13);
+					c.lineTo(bx + 290, y0 + 13), c.closePath();
+				};
+				c.fillStyle = grad(0, y0 - 22, 0, y0 + 13, [[0, mix("#3a2c1e", "#dcb886", lt)], [0.45, mix("#2a1e14", "#a8865a", lt)], [1, mix("#120c08", "#4a3622", lt)]]), c.beginPath(), leg(), c.fill();
+				clip(leg, () => {
+					c.fillStyle = rgrad(bx + 330, y0 - 14, 2, 40, [[0, "rgba(255,230,180," + 0.25 * lt + ")"], [1, "rgba(255,230,180,0)"]]), c.fillRect(bx + 280, y0 - 30, 230, 50);
+					for (let k = 0; k < 40; k++) ell(rr(bx + 300, bx + 494), rr(y0 - 14, y0 + 12), rr(1, 2.5), rr(0.6, 1.6), rnd(), "rgba(20,12,8,0.35)");
+					for (let k = 0; k < 3; k++) curve([[bx + 468, y0 - 9 + k * 7.5], [bx + 484, y0 - 10 + k * 7.5], [bx + 496, y0 - 7 + k * 7.5]], "rgba(30,20,12,0.5)", 1.1);
+					curve([[bx + 438, y0 - 9], [bx + 446, y0], [bx + 440, y0 + 12]], "rgba(30,20,12,0.35)", 1.2);
+				});
+			});
+			c.fillStyle = grad(bx - 10, 0, bx + 490, 0, [[0, "#1c140e"], [0.35, "#5a4430"], [0.7, "#9a7a52"], [1, "#c8a472"]]), c.beginPath(), path(), c.fill();
+			clip(path, () => {
+				// the haunch's roundness and the light falling from the upper right
+				c.fillStyle = rgrad(bx + 150, by - 90, 4, 120, [[0, "rgba(230,200,150,0.35)"], [1, "rgba(230,200,150,0)"]]), c.fillRect(bx, by - 200, 500, 210);
+				c.fillStyle = grad(0, by - 190, 0, by + 6, [[0, "rgba(255,230,180,0.18)"], [0.6, "rgba(0,0,0,0)"], [1, "rgba(10,6,4,0.55)"]]), c.fillRect(bx - 10, by - 190, 500, 200);
+				// the courses of stone, wavering
+				for (let k = 0; k < 14; k++) {
+					const y = by - 170 + k * 12, pts = [];
+					for (let x = bx - 10; x < bx + 490; x += 16) pts.push([x, y + Math.sin(x / 40 + k) * 2 + (fbm(x / 50, k) - 0.5) * 4]);
+					line(pts, "rgba(30,20,12,0.28)", 1.2), line(pts.map(([x, y]) => [x, y + 2]), "rgba(255,230,180,0.12)", 1);
+				}
+				field(bx - 10, by - 190, bx + 490, by + 6, 300, 14, 4, () => rr(-0.25, 0.25), (x) => jit(x > bx + 250 ? "#b08a5a" : "#5a4430", 34), 0.42);
+				// the headdress: pleats fanning down from the crown to the flap on the shoulder
+				for (let k = 0; k < 9; k++) line([[bx + 262 + k * 5, by - 176 + k * 0.5], [bx + 248 + k * 5.5, by - 92]], "rgba(30,20,12,0.35)", 1.6);
+				line([[bx + 304, by - 172], [bx + 300, by - 100]], "rgba(30,20,12,0.4)", 2.2);
+				// the face worn smooth, the brow, the empty socket (a deep teal-black hollow)
+				ell(bx + 314, by - 140, 12, 22, 0.1, "rgba(230,200,150,0.3)"), line([[bx + 306, by - 156], [bx + 322, by - 155]], "rgba(30,20,12,0.4)", 1.6);
+				ell(bx + 313, by - 148, 5.5, 3.6, 0.1, "#06100f"), ell(bx + 312, by - 149, 3, 1.8, 0.1, "rgba(60,200,190,0.3)");
+				line([[bx + 318, by - 126], [bx + 326, by - 125]], "rgba(30,20,12,0.45)", 1.2);
+				// the chest's shadow and the belly line
+				ell(bx + 330, by - 40, 18, 30, 0, "rgba(20,12,8,0.3)"), line([[bx + 120, by - 4], [bx + 330, by - 6]], "rgba(20,12,8,0.4)", 2);
+				// erosion: pits and cracks
+				for (let k = 0; k < 40; k++) ell(rr(bx, bx + 480), rr(by - 170, by), rr(1, 3), rr(0.8, 2), rnd(), "rgba(20,12,8,0.35)");
+				for (let k = 0; k < 10; k++) {
+					const x0 = rr(bx, bx + 460), y0 = rr(by - 150, by - 10);
+					line([[x0, y0], [x0 + rr(-8, 8), y0 + rr(6, 14)], [x0 + rr(-12, 12), y0 + rr(16, 26)]], "rgba(20,12,8,0.45)", 1);
+				}
+				// the dark it rises from, glazed over its hind part
+				c.fillStyle = grad(bx - 10, 0, bx + 280, 0, [[0, "rgba(8,5,6,0.75)"], [1, "rgba(8,5,6,0)"]]), c.fillRect(bx - 10, by - 200, 300, 210);
+			});
+			// the first wedge of the Gem, drifting above the empty socket
+			G.shard(bx + 300, by - 196, 1, 0.2);
+		}
+		// BACKPACKA: a real sauropod, the line of the back and the long neck rising into the spray where the head is lost;
+		// tan hide scaled and crackled, glassy patches set in it like scutes, a green stripe, veined teal leaf wings
+		function backpacka2(x, y) {
+			const spine = [[x + 262, y - 14], [x + 264, y - 80], [x + 246, y - 138], [x + 208, y - 190], [x + 152, y - 230], [x + 96, y - 250], [x + 50, y - 254]];
+			const P = [];
+			for (let i = 0; i < spine.length - 1; i++) for (let t = 0; t < 1; t += 0.1) P.push([spine[i][0] + (spine[i + 1][0] - spine[i][0]) * t, spine[i][1] + (spine[i + 1][1] - spine[i][1]) * t, i + t]);
+			const wd = (u) => 80 - u * 10 + Math.max(0, 1 - u) * 10, N = (i) => {
+				const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+				return [-dy / l, dx / l];
+			};
+			const side = (i, o) => [P[i][0] + N(i)[0] * wd(P[i][2]) * 0.5 * o, P[i][1] + N(i)[1] * wd(P[i][2]) * 0.5 * o];
+			const neck = () => {
+				P.forEach((_, i) => (i ? c.lineTo(...side(i, 1)) : c.moveTo(...side(i, 1))));
+				for (let i = P.length - 1; i >= 0; i--) c.lineTo(...side(i, -1));
+				c.closePath();
+			};
+			const back = () => {
+				c.moveTo(x + 30, y + 48), c.lineTo(x + 30, y + 40), c.quadraticCurveTo(x + 110, y - 26, x + 220, y - 44), c.quadraticCurveTo(x + 310, y - 56, x + 334, y + 20), c.lineTo(x + 334, y + 48), c.closePath();
+			};
+			const hxy = [x + 62, y - 250];
+			ell(x + 170, y + 46, 150, 10, 0, "rgba(0,0,0,0.3)");
+			c.fillStyle = grad(x, y - 240, x + 200, y + 40, [[0, "#e8c890"], [0.5, "#c8985e"], [1, "#7a5430"]]);
+			c.beginPath(), back(), c.fill(), c.beginPath(), neck(), c.fill();
+			const both = () => (back(), c.moveTo(...side(0, 1)), neck());
+			clip(both, () => {
+				// the shadow side (away from the sun) and the lit side of the neck
+				// the back's bulk: lit along its top, falling into shadow toward the grass
+				c.fillStyle = grad(0, y - 50, 0, y + 48, [[0, "rgba(255,236,196,0.3)"], [0.5, "rgba(0,0,0,0)"], [1, "rgba(50,30,12,0.6)"]]), c.fillRect(x + 30, y - 60, 290, 110);
+				c.fillStyle = rgrad(x + 250, y - 44, 4, 90, [[0, "rgba(255,240,205,0.3)"], [1, "rgba(255,240,205,0)"]]), c.fillRect(x + 30, y - 60, 290, 110);
+				// the neck's roundness: bands along it from the shadow side to the lit side (the sun is to the right)
+				for (let b = -1; b <= 1.001; b += 0.14) {
+					const lit = Math.max(0, Math.cos((b - 0.5) * 1.5)), col = mix("#5a3a1e", "#f2d8a6", lit);
+					for (let i = 0; i < P.length - 1; i++) line([side(i, b), side(i + 1, b)], col, wd(P[i][2]) * 0.1 + 1, 0.85);
+				}
+				// the hide: scales and a crackle of fine dark lines
+				for (let k = 0; k < 420; k++) {
+					const px = rr(x - 30, x + 320), py = rr(y - 250, y + 44), r = rr(2, 4.5);
+					(c.strokeStyle = "rgba(80,52,26,0.32)"), (c.lineWidth = 0.6), c.beginPath();
+					for (let j = 0; j < 6; j++) c.lineTo(px + Math.cos(j * 1.05) * r * rr(0.8, 1.2), py + Math.sin(j * 1.05) * r * 0.8);
+					c.closePath(), c.stroke();
+				}
+				curve(P.map((_, i) => side(i, 0.15)), "#6aa83a", 2.6, 0.8);
+				// the underside of the neck in shadow, and soft folds of skin on the inside of its bend only
+				curve(P.map((_, i) => side(i, -0.82)), "rgba(60,36,16,0.45)", 10);
+				for (let i = 14; i < P.length - 16; i += 3) curve([side(i, -1), side(i + 1, -0.55), side(i + 2, -0.2)], "rgba(80,50,24,0.3)", 1);
+				// the hide's mottling: soft darker patches, larger on the body, smaller up the neck
+				for (let k = 0; k < 40; k++) {
+					const i = Math.floor(rnd() * P.length), o = rr(-0.6, 0.7), [px, py] = side(i, o), r = wd(P[i][2]) * rr(0.08, 0.16);
+					ell(px, py, r * 1.6, r, rr(0, 3), "rgba(110,70,34,0.28)");
+				}
+				for (let k = 0; k < 24; k++) ell(rr(x + 60, x + 320), rr(y - 30, y + 30), rr(8, 16), rr(5, 9), rr(-0.3, 0.3), "rgba(110,70,34,0.25)");
+				// the muscle along the neck's top catching the sun
+				curve(P.slice(4, P.length - 10).map((_, i) => side(i + 4, 0.55)), "rgba(255,240,205,0.35)", 5);
+			});
+			// the crest of green spines along the top of the neck (as the schoolhouse mural paints him), and small glassy
+			// scutes up the neck
+			for (let i = 3; i < P.length - 16; i += 2) {
+				const [a0, a1] = [side(i - 1, 1), side(i + 1, 1)], [nx, ny] = N(i), h = 5 + wd(P[i][2]) * 0.08;
+				poly([a0, a1, [(a0[0] + a1[0]) / 2 + nx * h, (a0[1] + a1[1]) / 2 + ny * h]], i % 4 ? "#4a8a3a" : "#5aa848", 0.9);
+			}
+			[[6, "#3ae8d0"], [12, "#ff7ab8"], [18, "#ffd23a"], [24, "#7ab4ff"], [30, "#a87ae8"]].forEach(([i, col]) => {
+				const [px, py] = side(i, 0.55);
+				ell(px, py, 5, 3.4, 0.6, "#f6ecd8"), ell(px, py, 3.8, 2.4, 0.6, col, 0.85), ell(px + 1, py - 1, 1.2, 0.7, 0.6, "rgba(255,255,255,0.85)");
+			});
+			// the glassy patches along the back like scutes, each catching the sun
+			[[x + 70, y - 8, "#7ab4ff"], [x + 104, y - 22, "#3ae8d0"], [x + 140, y - 33, "#ff7ab8"], [x + 176, y - 40, "#ffd23a"], [x + 212, y - 44, "#a87ae8"]].forEach(([px, py, col]) => (ell(px, py, 10, 6, 0.1, "#f6ecd8"), ell(px, py, 8, 4.5, 0.1, col, 0.85), ell(px + 2, py - 2, 2.2, 1.2, 0.1, "rgba(255,255,255,0.85)")));
+			// the wings: veined teal leaves spread up from the back
+			[[x + 150, y - 36, -0.75, 1], [x + 186, y - 42, -0.3, 0.85]].forEach(([wx, wy, a, s]) => {
+				c.save(), c.translate(wx, wy), c.rotate(a), c.scale(s, s);
+				const leaf = () => (c.moveTo(0, 0), c.bezierCurveTo(-34, -40, -26, -110, 0, -150), c.bezierCurveTo(26, -110, 34, -40, 0, 0));
+				c.beginPath(), leaf(), (c.fillStyle = grad(-30, 0, 30, 0, [[0, "rgba(40,150,140,0.55)"], [0.6, "rgba(110,230,210,0.45)"], [1, "rgba(60,180,170,0.5)"]])), c.fill();
+				line([[0, 0], [0, -148]], "rgba(30,110,100,0.8)", 1.4);
+				for (let k = 1; k < 10; k++) [-1, 1].forEach((sd) => curve([[0, -k * 14], [sd * 10, -k * 14 - 8], [sd * (22 - Math.abs(k - 4) * 2), -k * 14 - 22]], "rgba(30,110,100,0.55)", 0.7));
+				c.restore();
+			});
+			// the neck's last length lost in the spray
+			c.fillStyle = rgrad(hxy[0] + 10, hxy[1], 4, 160, [[0, "rgba(255,255,255,0.95)"], [0.25, "rgba(252,253,255,0.75)"], [0.6, "rgba(250,252,255,0.25)"], [1, "rgba(250,252,255,0)"]]), c.beginPath(), c.arc(hxy[0] + 10, hxy[1], 160, 0, TAU), c.fill();
+			// the shoulder where the neck rises from the back
+			c.fillStyle = rgrad(x + 280, y - 20, 4, 60, [[0, "rgba(240,210,160,0.45)"], [1, "rgba(240,210,160,0)"]]), c.beginPath(), c.arc(x + 280, y - 20, 60, 0, TAU), c.fill();
+			c.fillStyle = grad(x + 262, 0, x + 318, 0, [[0, "#5a3a1e"], [0.6, "#b8885a"], [1, "#7a5430"]]), c.beginPath(), c.moveTo(x + 262, y + 10), c.quadraticCurveTo(x + 258, y + 30, x + 266, y + 52), c.lineTo(x + 312, y + 52), c.quadraticCurveTo(x + 318, y + 28, x + 314, y + 4), c.fill();
+			// the hump settled in the meadow: grass laid over its foot
+			field(x + 20, y + 18, x + 330, y + 52, 220, 12, 3, () => rr(-1.8, -1.3), () => jit("#5a8a3a", 30), 0.75);
+			// the spray where the head is lost, and pond water running from where the chin would be
+			const hx = x + 58, hy = y - 250;
+			for (let k = 0; k < 120; k++) ell(hx + rr(-44, 44), hy + rr(-40, 30), rr(1, 3), rr(1, 3), 0, "rgba(255,255,255,0.6)");
+			ell(hx + 4, hy + 4, 40, 32, 0, "rgba(255,255,255,0.6)"), ell(hx, hy, 64, 48, 0, "rgba(255,255,255,0.22)");
+			for (let k = 0; k < 4; k++) drip(hx - 12 + k * 6, hy + 16, rr(14, 30), 1.6, "rgba(180,230,255,0.9)", 0.7);
+		}
+		// THE ANCIENT as a real slug, seen from the side, low in the bottom-left: its tail at the gold dot's trail, the
+		// keel along its tail, the skin's tubercles and grooves, the wet light along its back, the mantle with its fine
+		// whorls and breathing pore, the pale fringe of its foot, two long eye-stalks and two short feelers; and at the
+		// right edge its head rising again out of the bottom, the stalks leaning back toward the dot
+		function ancient4() {
+			const x0 = U(0.055), L = 470, yb = V(0.935), h = 64;
+			const prof = (t) => (t < 0.78 ? Math.pow(Math.sin((Math.PI / 2) * (t / 0.78)), 0.9) : 0.85 * Math.sqrt(Math.max(0, 1 - ((t - 0.78) / 0.22) ** 2)) + 0.15 * (1 - (t - 0.78) / 0.22));
+			const mant = (t) => (t > 0.56 && t < 0.92 ? Math.sin(((t - 0.56) / 0.36) * Math.PI) * 7 : 0);
+			const top = (t) => yb - 6 - h * prof(t) * (t < 0.04 ? t / 0.04 : 1) - mant(t);
+			const X = (t) => x0 + L * t;
+			const body = () => {
+				c.moveTo(X(0), yb - 4);
+				for (let t = 0; t <= 1.0001; t += 0.01) c.lineTo(X(t), top(t));
+				c.lineTo(X(1) + 4, yb - 2), c.lineTo(X(0), yb), c.closePath();
+			};
+			// the trail it has left back to the dot, wet and catching the light
+			curve([[U(0.03), V(0.9)], [U(0.04), yb + 2], [X(0), yb + 1]], "rgba(200,215,240,0.35)", 3);
+			ell(X(0.5), yb + 4, L * 0.55, 6, 0, "rgba(0,0,0,0.5)");
+			clip(body, () => {
+				for (let t = 0; t <= 1.0001; t += 0.004) {
+					const y = top(t);
+					c.fillStyle = grad(0, y, 0, yb, [[0, "#5a4e46"], [0.12, "#2e2620"], [0.55, "#120e0c"], [1, "#050404"]]), c.fillRect(X(t), y - 2, L * 0.006, yb - y + 4);
+				}
+				// tubercles: long low swellings with dark grooves round them, smaller toward the foot
+				for (let k = 0; k < 900; k++) {
+					const t = rnd(), y0 = top(t), d = rnd(), y = y0 + (yb - y0) * d * 0.9;
+					if (t > 0.6 && t < 0.88 && d < 0.55) continue;
+					const r = 5 - d * 3, a = Math.atan2(top(Math.min(1, t + 0.01)) - y0, L * 0.01) * (1 - d);
+					ell(X(t), y, r * 1.6, r * 0.7, a, "rgba(10,8,7,0.55)"), ell(X(t), y - 0.5, r * 1.3, r * 0.5, a, d < 0.3 ? "rgba(120,110,104,0.3)" : "rgba(70,62,56,0.3)");
+				}
+				// the mantle: a smooth saddle with fine concentric whorls and its rim
+				for (let k = 1; k < 9; k++) curve([[X(0.6), top(0.6) + 10 + k * 1.5], [X(0.66 + k * 0.006), top(0.66) + 3 + k * 2.2], [X(0.76), top(0.76) + 2 + k * 2.3], [X(0.86 - k * 0.004), top(0.86) + 4 + k * 2.2], [X(0.9), top(0.9) + 12 + k * 1.2]], "rgba(150,140,130," + (0.08 + k * 0.012) + ")", 0.8);
+				curve([[X(0.57), top(0.57) + 4], [X(0.6), top(0.6) + 26], [X(0.75), top(0.75) + 30], [X(0.9), top(0.9) + 28], [X(0.92), top(0.92) + 6]], "rgba(0,0,0,0.6)", 1.6);
+				// the keel along the tail
+				curve([[X(0.04), top(0.04) + 1], [X(0.2), top(0.2) + 1], [X(0.4), top(0.4) + 1], [X(0.56), top(0.56) + 1]], "rgba(200,190,180,0.25)", 1.2);
+				// the wet light along its back, broken
+				for (let k = 0; k < 18; k++) {
+					const t0 = rr(0.06, 0.9), n = rr(0.03, 0.09), pts = [];
+					for (let t = t0; t < t0 + n && t < 0.96; t += 0.01) pts.push([X(t), top(t) + 4 + Math.sin(t * 40) * 1.5]);
+					pts.length > 1 && curve(pts, "rgba(230,236,250,0.35)", rr(1.2, 2.6));
+					ell(X(t0 + n / 2), top(t0 + n / 2) + 4, 1.6, 1, 0, "rgba(255,255,255,0.8)");
+				}
+				// the foot's pale fringe, striped
+				c.fillStyle = "rgba(120,100,80,0.6)", c.fillRect(X(0), yb - 9, L, 7);
+				for (let x = X(0); x < X(1); x += 4) line([[x, yb - 9], [x + 1, yb - 2]], "rgba(30,22,16,0.5)", 1);
+				// the breathing pore on the mantle's flank
+				ell(X(0.84), top(0.84) + 34, 5, 3.5, 0.2, "#020202"), (c.strokeStyle = "rgba(190,180,170,0.4)"), (c.lineWidth = 1), c.beginPath(), c.ellipse(X(0.84), top(0.84) + 34, 8, 5.5, 0.2, 0, TAU), c.stroke();
+			});
+			// the eye-stalks and the feelers
+			const stalk = (bx, by, tx, ty, w) => {
+				curve([[bx, by], [(bx + tx) / 2 + 4, (by + ty) / 2], [tx, ty]], "#0e0c0b", w), curve([[bx + 1, by - 1], [(bx + tx) / 2 + 5, (by + ty) / 2 - 1], [tx, ty]], "rgba(220,226,240,0.3)", 1);
+				ell(tx, ty, w * 0.9, w * 0.9, 0, "#141210"), ell(tx - w * 0.3, ty - w * 0.3, w * 0.25, w * 0.25, 0, "rgba(255,255,255,0.7)");
+			};
+			stalk(X(0.95), top(0.95) + 4, X(0.95) + 34, top(0.95) - 64, 5), stalk(X(0.97), top(0.97) + 6, X(0.97) + 52, top(0.97) - 50, 5.5);
+			stalk(X(0.99), yb - 14, X(1) + 22, yb - 4, 3.5);
+			// its head rising at the right edge out of the bottom, rim-lit by the storm, the stalks leaning back to the dot
+			{
+				const hx = U(0.97), hy = V(0.8), head = () => {
+					c.moveTo(hx - 48, H), c.bezierCurveTo(hx - 46, hy + 60, hx - 30, hy + 8, hx - 14, hy - 4), c.quadraticCurveTo(hx + 2, hy - 16, hx + 18, hy - 6);
+					c.bezierCurveTo(hx + 30, hy + 8, hx + 34, hy + 50, hx + 50, H), c.closePath();
+				};
+				c.fillStyle = rgrad(hx + 16, hy + 6, 2, 150, [[0, "#6a5e56"], [0.25, "#2c2622"], [1, "#050404"]]), c.beginPath(), head(), c.fill();
+				clip(head, () => {
+					// the mantle across it with its whorls, tubercles below, fine wrinkles on the head
+					for (let k = 1; k < 8; k++) (c.strokeStyle = "rgba(160,150,140," + (0.06 + k * 0.014) + ")"), (c.lineWidth = 0.8), c.beginPath(), c.ellipse(hx + 6, hy + 62, k * 7, k * 3.2, -0.1, 0, TAU), c.stroke();
+					curve([[hx - 40, hy + 92], [hx, hy + 104], [hx + 40, hy + 90]], "rgba(0,0,0,0.55)", 1.6);
+					for (let k = 0; k < 140; k++) {
+						const py = rr(hy + 100, H), px = hx + rr(-46, 48);
+						ell(px, py, rr(2, 4), rr(1, 1.8), rr(-0.3, 0.3), "rgba(8,6,5,0.5)"), ell(px, py - 0.5, rr(1.5, 3), rr(0.6, 1.2), 0, "rgba(110,100,94,0.25)");
+					}
+					for (let k = 0; k < 8; k++) curve([[hx - 20 + k * 4, hy + 2 + k], [hx - 14 + k * 4, hy + 10 + k * 2], [hx - 18 + k * 5, hy + 26]], "rgba(150,140,130,0.16)", 0.7);
+					// wet light down its lit side
+					for (let k = 0; k < 6; k++) curve([[hx + 14 + k * 2, hy - 2 + k * 22], [hx + 24 + k * 2, hy + 10 + k * 22], [hx + 28 + k * 3, hy + 26 + k * 22]], "rgba(220,230,250,0.3)", rr(1.2, 2.2));
+				});
+				curve([[hx - 14, hy - 4], [hx + 2, hy - 15], [hx + 18, hy - 6], [hx + 32, hy + 30], [hx + 46, H]], "rgba(200,215,255,0.45)", 1.6);
+				// the two short feelers low at its front
+				stalk(hx - 22, hy + 8, hx - 44, hy + 24, 3.2), stalk(hx - 16, hy + 12, hx - 34, hy + 34, 3);
+				stalk(hx - 8, hy - 8, hx - 70, hy - 86, 5), stalk(hx + 6, hy - 10, hx - 42, hy - 98, 5.5);
+			}
+		}
+		// VEILS: soft scumbles of the paint beneath, dragged over the present so its small signs are partly lost and found
+		function veils() {
+			const off = mk(1, 1), m = mk(1, 1);
+			off.width = m.width = W, off.height = m.height = H;
+			const o = off.getContext("2d"), q = m.getContext("2d");
+			const sm = mk(1, 1);
+			(sm.width = W / 10), (sm.height = H / 10), sm.getContext("2d").drawImage(c.canvas, 0, 0, W / 10, H / 10), o.drawImage(sm, 0, 0, W, H);
+			for (let k = 0; k < 70; k++) {
+				const x = U(0.33 + rnd() * 0.47), y = V(0.14 + rnd() * 0.7), r = rr(30, 110);
+				q.setTransform(1, 0, 0, rr(0.25, 0.55), 0, 0), q.translate(x, y / q.getTransform().d), q.rotate(rr(-0.4, 0.4));
+				const g = q.createRadialGradient(0, 0, 0, 0, 0, r);
+				g.addColorStop(0, "rgba(255,255,255,0.8)"), g.addColorStop(1, "rgba(255,255,255,0)"), (q.fillStyle = g), q.fillRect(-r, -r, 2 * r, 2 * r);
+			}
+			(o.globalCompositeOperation = "destination-in"), o.drawImage(m, 0, 0);
+			c.save(), (c.globalAlpha = 0.7), c.drawImage(off, 0, 0), c.restore();
+		}
+		// SMALL THINGS OF THE TOWN: quiet marks of established lore, small and half lost among the larger signs
+		function extras() {
+			// "Even a single footprint is a symbol" (GLYPH): one three-toed print pressed into the ground
+			{
+				const x = U(0.455), y = V(0.85);
+				ell(x, y + 4, 5, 4, 0, "rgba(40,28,16,0.5)");
+				[[-0.55, 1], [0, 1.15], [0.55, 1]].forEach(([a, l]) => line([[x, y + 2], [x + Math.sin(a) * 14 * l, y + 2 - Math.cos(a) * 14 * l]], "rgba(40,28,16,0.5)", 3.2));
+			}
+			// OVERCOMING SHYNESS: one closed book, untitled, beside the edge ZOLLOD comes out from behind
+			{
+				const x = U(0.74) + 40, y = V(0.84) + 44;
+				poly([[x - 12, y - 4], [x + 10, y - 9], [x + 12, y - 2], [x - 10, y + 3]], "#f0e8d4"), poly([[x - 12, y - 7], [x + 10, y - 12], [x + 10, y - 9], [x - 12, y - 4]], "#3a6a4a");
+			}
+			// FORTIZMO's tip jar: a glass with a few coins in it, by her horn
+			{
+				const x = U(0.575) - 46, y = V(0.47) + 34;
+				ell(x, y, 8, 2.4, 0, "rgba(220,240,250,0.35)"), line([[x - 8, y - 16], [x - 8, y], [x + 8, y], [x + 8, y - 16]], "rgba(255,255,255,0.65)", 1);
+				[[-3, -2], [3, -3], [0, -6]].forEach(([dx, dy]) => ell(x + dx, y + dy, 3, 1.4, 0, "#d8a840"));
+			}
+			// ANOMALEE's dinner on its plate: a Blossom, a bite taken from it
+			{
+				const x = U(0.275), y = V(0.66);
+				ell(x, y, 16, 5, 0, "#e8e4dc", 0.85), ell(x, y, 11, 3.4, 0, "#d0ccc4", 0.85);
+				blossom(x - 2, y - 3, 0.35), ell(x + 5, y - 6, 3.5, 3.5, 0, "#d0ccc4");
+			}
+			// the carrot juice on the rocks, which is just a carrot and ice
+			{
+				const x = U(0.83) - 20, y = V(0.72);
+				poly([[x - 16, y - 3], [x + 14, y - 1], [x + 16, y + 1], [x - 16, y + 4]], "#ff8a2a"), line([[x - 6, y - 2], [x - 5, y + 3]], "rgba(150,70,10,0.5)", 0.8), line([[x + 4, y - 1], [x + 5, y + 2]], "rgba(150,70,10,0.5)", 0.8);
+				[[-1, 2.6], [1, 1.8], [-0.2, 3]].forEach(([d, a]) => line([[x - 16, y], [x - 16 - Math.cos(a) * 9, y + Math.sin(a) * 9 * d]], "#4a9a3a", 1.6));
+				[[22, -2], [30, 2], [26, 6]].forEach(([dx, dy]) => ((c.fillStyle = "rgba(230,250,255,0.55)"), c.fillRect(x + dx - 3, y + dy - 3, 6, 6)));
+			}
+			// the duck on the pond of the schoolhouse mural
+			{
+				const x = U(0.69) - 22, y = V(0.82) - 2;
+				vol(x, y, 7, 3.6, 0, "#8a7a5a", "#3a2e1e"), vol(x + 6, y - 5, 3, 3, 0, "#2a5a3a", "#0e2a1a"), poly([[x + 8.5, y - 5], [x + 12, y - 4.4], [x + 8.5, y - 3.6]], "#d8a83a");
+			}
+			// SOMLET's hammock, slung empty on her porch
+			curve([[U(0.785) - 52, V(0.3) + 70], [U(0.785) - 28, V(0.3) + 84], [U(0.785) - 4, V(0.3) + 70]], "#d8c8a8", 3, 0.8), [-52, -4].forEach((d) => line([[U(0.785) + d, V(0.3) + 70], [U(0.785) + d, V(0.3) + 58]], "#8a6a4a", 1.2));
+			// a goo burger coupon: a cream slip with a perforated edge
+			{
+				const x = U(0.47) + 52, y = V(0.42) + 20;
+				c.save(), c.translate(x, y), c.rotate(-0.3), (c.fillStyle = "rgba(250,240,210,0.85)"), c.fillRect(-10, -5, 20, 10), (c.fillStyle = "#2ab4a8"), c.fillRect(-10, -5, 4, 10);
+				for (let k = 0; k < 4; k++) ell(-6, -3.6 + k * 2.4, 0.5, 0.5, 0, "#ffffff");
+				c.restore();
+			}
+			// HENNRICK's surprise: a short run of white pickets by his jar
+			for (let k = 0; k < 7; k++) poly([[U(0.42) + 30 + k * 6, V(0.71) + 14], [U(0.42) + 30 + k * 6, V(0.71) + 2], [U(0.42) + 32 + k * 6, V(0.71) - 1], [U(0.42) + 34 + k * 6, V(0.71) + 2], [U(0.42) + 34 + k * 6, V(0.71) + 14]], "#f4f2ea", 0.85);
+			line([[U(0.42) + 28, V(0.71) + 7], [U(0.42) + 72, V(0.71) + 7]], "#f4f2ea", 1.2, 0.85);
+			// STAPLERS, the Library's very dry manual: one plain grey spine among SPARKAKUS's books
+			poly([[U(0.43) + 68, V(0.6) + 28], [U(0.43) + 74, V(0.6) + 28], [U(0.43) + 74, V(0.6) + 4], [U(0.43) + 68, V(0.6) + 4]], "#9a9a9c", 0.9);
+			// the Consortium's quiet work against the town: a navy thread let down from its lens, wound round the town seal
+			{
+				const sx = U(0.525), sy = HZ(U(0.525)) - 54, pts = [[U(0.86) + 34, V(0.06) + 56], [U(0.7), V(0.2)], [U(0.6), V(0.4)], [sx + 30, sy - 10]];
+				for (let k = 0; k <= 30; k++) pts.push([sx + Math.cos(k * 0.5) * (26 - k * 0.4), sy + Math.sin(k * 0.5) * (26 - k * 0.4) * 0.9]);
+				curve(pts, "rgba(26,42,90,0.45)", 1);
+			}
+		}
+		// ETCHER's mallet and chisel, at the end of the groove that is still being cut
+		function chisel(x, y) {
+			c.save(), c.translate(x, y), c.rotate(-0.7);
+			poly([[0, -1.5], [22, -2], [22, 2], [0, 1.5]], "#b8bcc4"), poly([[0, -1.5], [-2, 0], [0, 1.5]], "#e8ecf0"), (c.fillStyle = "#6a4a2a"), c.fillRect(22, -2.6, 12, 5.2);
+			c.restore();
+			c.save(), c.translate(x + 30, y - 34), c.rotate(0.5), (c.fillStyle = "#8a6a44"), c.fillRect(-2, 0, 4, 22), (c.fillStyle = grad(-10, 0, 10, 0, [[0, "#5a3a1e"], [0.5, "#a8804e"], [1, "#6a4a28"]])), c.fillRect(-10, -8, 20, 9), c.restore();
+		}
+		// a thing painted thinly: drawn apart, then glazed in at a given strength (and softness)
+		function ghost(fn, a, x0, y0, w, h) {
+			const main = c, off = mk(1, 1);
+			(off.width = Math.ceil(w * S)), (off.height = Math.ceil(h * S)), (c = off.getContext("2d")), c.setTransform(S, 0, 0, S, -x0 * S, -y0 * S), fn(), (c = main);
+			c.save(), (c.globalAlpha = a), c.drawImage(off, x0, y0, off.width / S, off.height / S), c.restore();
+		}
+		// OLAG, half seen in the storm: a long thin neck from a high collar, a wrinkled bald head under a heavy brow, the
+		// long ears swept up and out; the blue robe with pointed shoulder flaps and small gold diamonds, the white belt over
+		// the checked panel, the pale grey-green book held in both hands; painted as a body, lit from the right
+		function olag2(x, y) {
+			const robe = () => (c.moveTo(x - 8, y - 46), c.quadraticCurveTo(x - 20, y - 20, x - 24, y + 12), c.lineTo(x + 24, y + 12), c.quadraticCurveTo(x + 20, y - 20, x + 8, y - 46), c.closePath());
+			c.fillStyle = grad(x - 24, 0, x + 24, 0, [[0, "#14244a"], [0.55, "#2a4a9a"], [1, "#4a6ac8"]]), c.beginPath(), robe(), c.fill();
+			clip(robe, () => {
+				for (let k = 0; k < 5; k++) curve([[x - 6 + k * 3, y - 40], [x - 10 + k * 5, y - 10], [x - 16 + k * 8, y + 12]], "rgba(10,16,40,0.4)", 1.2);
+				for (let k = 0; k < 14; k++) {
+					const px = x + rr(-16, 16), py = y + rr(-40, 8);
+					poly([[px, py - 1.6], [px + 1.2, py], [px, py + 1.6], [px - 1.2, py]], "#d8b04a");
+				}
+				for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) (c.fillStyle = (i + j) % 2 ? "#d8b04a" : "#2a4a9a"), c.fillRect(x - 8 + i * 4, y - 14 + j * 4, 4, 4);
+				(c.fillStyle = "#e8e4da"), c.fillRect(x - 14, y - 18, 28, 3.4);
+			});
+			[-1, 1].forEach((sd) => poly([[x + sd * 6, y - 46], [x + sd * 24, y - 40], [x + sd * 12, y - 32]], sd > 0 ? "#3a5ab8" : "#1a3070"));
+			poly([[x - 6, y - 50], [x + 6, y - 50], [x + 8, y - 44], [x - 8, y - 44]], "#2a4a9a");
+			// the book in both hands
+			poly([[x - 11, y - 30], [x + 11, y - 30], [x + 12, y - 16], [x - 10, y - 16]], "#a8b8a0"), line([[x, y - 30], [x + 1, y - 16]], "rgba(60,70,60,0.5)", 0.8);
+			ell(x - 12, y - 22, 3, 4, 0, "#b89a6e"), ell(x + 13, y - 22, 3, 4, 0, "#c8aa7e");
+			// the neck and the head
+			c.fillStyle = grad(x - 3, 0, x + 3, 0, [[0, "#7a5a3a"], [1, "#c8a878"]]), c.fillRect(x - 2.6, y - 70, 5.2, 22);
+			vol(x, y - 76, 8, 9.5, 0, "#dcc094", "#6a4a2a");
+			line([[x - 5, y - 79], [x + 5, y - 79]], "rgba(60,40,20,0.65)", 1.6), ell(x - 2.6, y - 76.5, 1.6, 1, 0, "rgba(30,20,10,0.7)"), ell(x + 2.8, y - 76.5, 1.6, 1, 0, "rgba(30,20,10,0.7)");
+			for (let k = 0; k < 3; k++) curve([[x - 5, y - 83 - k * 2], [x, y - 84 - k * 2], [x + 5, y - 83 - k * 2]], "rgba(90,60,30,0.4)", 0.6);
+			[-1, 1].forEach((sd) => {
+				c.fillStyle = grad(x + sd * 6, 0, x + sd * 24, 0, [[0, sd > 0 ? "#c8a878" : "#8a6a44"], [1, sd > 0 ? "#e8cc9c" : "#a8885a"]]);
+				c.beginPath(), c.moveTo(x + sd * 6, y - 80), c.quadraticCurveTo(x + sd * 16, y - 86, x + sd * 24, y - 96), c.quadraticCurveTo(x + sd * 16, y - 80, x + sd * 7, y - 74), c.fill();
+			});
+		}
+		// ---- figures and symbols ------------------------------------------------------------------------------------
+		function hexagon(x, y, r, col, a = 1) {
+			const pts = [];
+			for (let k = 0; k < 6; k++) pts.push([x + Math.cos((k / 6) * TAU) * r, y + Math.sin((k / 6) * TAU) * r]);
+			poly(pts, col, a);
+		}
+		function cube(x, y, s, col) {
+			poly([[x, y - s], [x + s, y - s * 0.5], [x, y], [x - s, y - s * 0.5]], col);
+			poly([[x - s, y - s * 0.5], [x, y], [x, y + s], [x - s, y + s * 0.5]], mix(col, "#5a6a6a", 0.45));
+			poly([[x, y], [x + s, y - s * 0.5], [x + s, y + s * 0.5], [x, y + s]], mix(col, "#8a9a9a", 0.25));
+		}
+		function jar(x, y) {
+			c.fillStyle = "rgba(200,240,250,0.3)", c.fillRect(x - 6, y - 18, 12, 18);
+			line([[x - 6, y - 18], [x - 6, y], [x + 6, y], [x + 6, y - 18]], "rgba(255,255,255,0.7)", 1);
+			poly([[x - 7, y - 21], [x + 7, y - 21], [x + 7, y - 18], [x - 7, y - 18]], "#8a7a6a"), ell(x, y - 5, 2, 1.5, 0.3, "#5a3a1e");
+			line([[x - 4, y - 16], [x - 4, y - 3]], "rgba(255,255,255,0.6)", 1);
+		}
+		function crystal(x, y, h, rot) {
+			c.save(), c.translate(x, y), c.rotate(rot);
+			poly([[-3, 0], [-3, -h * 0.7], [0, -h], [3, -h * 0.7], [3, 0]], "#7a3ab8"), poly([[0, -h], [3, -h * 0.7], [3, 0], [0, 0]], "#b87ae8");
+			line([[-1, -h * 0.8], [-1, -2]], "rgba(255,255,255,0.5)", 0.8), c.restore();
+		}
+		function star(x, y, r, col) {
+			const pts = [];
+			for (let k = 0; k < 10; k++) pts.push([x + Math.cos(-Math.PI / 2 + (k * Math.PI) / 5) * (k % 2 ? r * 0.45 : r), y + Math.sin(-Math.PI / 2 + (k * Math.PI) / 5) * (k % 2 ? r * 0.45 : r)]);
+			poly(pts, col), poly(pts.map(([px, py]) => [x + (px - x) * 0.5 + 1, y + (py - y) * 0.5 - 1]), "rgba(255,255,220,0.6)");
+		}
+		function daffodil(x, y) {
+			line([[x, y + 16], [x + 1, y]], "#4a8a2a", 1.4);
+			for (let k = 0; k < 6; k++) ell(x + Math.cos((k / 6) * TAU) * 4, y + Math.sin((k / 6) * TAU) * 3, 3.5, 2, (k / 6) * TAU, "#ffe84a");
+			ell(x + 1, y, 2.6, 2.6, 0, "#ff9a1a"), ell(x + 2, y + 0.5, 1.4, 1.4, 0, "#c86a0a");
+		}
+		function blossom(x, y, s) {
+			line([[x, y + 14 * s], [x, y + 2 * s]], "#3f8a2a", 1.6 * s);
+			for (let k = 0; k < 5; k++) {
+				const a = -Math.PI / 2 + (k - 2) * 0.4;
+				poly([[x - 3 * s, y], [x + Math.cos(a) * 14 * s, y + Math.sin(a) * 14 * s], [x + 3 * s, y]], "#e8303a");
+			}
+			for (let k = 0; k < 3; k++) {
+				const a = -Math.PI / 2 + (k - 1) * 0.4;
+				poly([[x - 2 * s, y], [x + Math.cos(a) * 8 * s, y + Math.sin(a) * 8 * s], [x + 2 * s, y]], "#ff8a1a");
+			}
+			ell(x, y - 18 * s, 3 * s, 3 * s, 0, "#ffd23a"), ell(x, y - 18 * s, 7 * s, 7 * s, 0, "rgba(255,210,60,0.25)");
+		}
+		function splat(x, y, r, col) {
+			ell(x, y, r, r * 0.85, 0, col, 0.9);
+			for (let k = 0; k < 14; k++) {
+				const a = rnd() * TAU, d = r * rr(0.8, 1.6);
+				line([[x + Math.cos(a) * r * 0.6, y + Math.sin(a) * r * 0.5], [x + Math.cos(a) * d, y + Math.sin(a) * d * 0.85]], col, rr(1, 3), 0.9);
+				ell(x + Math.cos(a) * d * 1.3, y + Math.sin(a) * d * 1.1, rr(1, 2.5), rr(1, 2.5), 0, col, 0.9);
+			}
+			ell(x - r * 0.3, y - r * 0.3, r * 0.25, r * 0.18, -0.5, "rgba(255,255,255,0.6)");
+		}
+		function token(x, y, t) {
+			const s = 4;
+			({
+				cube: () => cube(x, y, s, "#e8f0ee"),
+				spore: () => [0, 1, 2].forEach((k) => ell(x + k * 3, y - k, 1.4, 1.4, 0, "#e8d8a8")),
+				pixel: () => ((c.fillStyle = "#ff2ad0"), c.fillRect(x - 3, y - 3, 6, 6)),
+				crown: () => poly([[x - 5, y + 3], [x - 5, y - 2], [x - 2, y + 1], [x, y - 4], [x + 2, y + 1], [x + 5, y - 2], [x + 5, y + 3]], "#3ad8c8"),
+				goo: () => ell(x, y, 4, 4, 0, "#ff3ac8"),
+				sprout: () => (line([[x, y + 4], [x, y - 2]], "#4a8a2a", 1.2), ell(x - 2, y - 3, 3, 1.5, -0.5, "#6ab43a"), ell(x + 2, y - 3, 3, 1.5, 0.5, "#6ab43a")),
+				letter: () => poly([[x - 5, y - 3], [x + 5, y - 3], [x + 5, y + 3], [x - 5, y + 3]], "#fffaf0"),
+				note: () => (ell(x - 1, y + 3, 2.5, 2, -0.4, "#141414"), line([[x + 1, y + 3], [x + 1, y - 5], [x + 4, y - 3]], "#141414", 1)),
+				card: () => poly([[x - 4, y - 5], [x + 4, y - 5], [x + 4, y + 5], [x - 4, y + 5]], "#f0e8d8"),
+				gem: () => poly([[x, y - 5], [x + 4, y], [x, y + 5], [x - 4, y]], "#b87ae8"),
+				tile: () => hexagon(x, y, 4, "#3a5aa8"),
+				coin: () => (ell(x, y, 4, 4, 0, "#d8b04a"), ell(x - 1, y - 1, 1.5, 1.5, 0, "#fff4c8")),
+			})[t]();
+		}
+		function flower(x, y, kind, full) {
+			const g = (col) => (full ? col : mix(col, "#8a8a8a", 0.85));
+			line([[x, y + 22], [x + 1, y]], g("#4a7a2a"), 1.4, full ? 1 : 0.6);
+			const a = full ? 1 : 0.55;
+			if ("thistle" === kind) ell(x, y, 5, 5, 0, g("#d88ac8"), a), ell(x, y + 5, 3.5, 3, 0, g("#6a3a6a"), a);
+			else if ("mayweed" === kind) {
+				for (let k = 0; k < 12; k++) ell(x + Math.cos((k / 12) * TAU) * 5, y + Math.sin((k / 12) * TAU) * 3, 3, 1.2, (k / 12) * TAU, g("#ffffff"), a);
+				ell(x, y, 2.6, 2.4, 0, g("#ffd23a"), a);
+			} else if ("chicory" === kind) {
+				for (let k = 0; k < 14; k++) ell(x + Math.cos((k / 14) * TAU) * 4.5, y + Math.sin((k / 14) * TAU) * 4.5, 3, 1.1, (k / 14) * TAU, g("#7ab4f0"), a);
+				ell(x, y, 1.6, 1.6, 0, g("#3a5ab8"), a);
+			} else if ("milkweed" === kind) for (let k = 0; k < 10; k++) ell(x + rr(-5, 5), y + rr(-4, 3), 1.8, 1.8, 0, g(k % 3 ? "#b87a9a" : "#f0d8e0"), a);
+			else {
+				for (let k = 0; k < 5; k++) ell(x + Math.cos((k / 5) * TAU) * 4, y + Math.sin((k / 5) * TAU) * 4, 4, 3, (k / 5) * TAU, g("#f0b8d0"), a);
+				for (let k = 0; k < 5; k++) line([[x, y], [x + Math.cos((k / 5) * TAU) * 6, y + Math.sin((k / 5) * TAU) * 6]], g("#6a1a4a"), 0.7, a);
+			}
+		}
+		function fossilJaw(x, y) {
+			const pts = [[x - 50, y - 6], [x - 20, y - 12], [x + 20, y - 10], [x + 46, y - 2], [x + 40, y + 6], [x, y + 4], [x - 46, y + 6]];
+			poly(pts, "#d8ccb0"), poly(pts.map(([px, py]) => [px, py + 3]), "rgba(120,100,70,0.35)");
+			for (let k = 0; k < 12; k++) poly([[x - 40 + k * 7, y - 9], [x - 37 + k * 7, y - 18 - (k % 3) * 2], [x - 34 + k * 7, y - 9]], "#f0e8d4");
+			c.strokeStyle = "#ffd23a", c.lineWidth = 1.2, c.beginPath(), c.ellipse(x - 10, y - 26, 16, 4, -0.05, 0, TAU), c.stroke();
+		}
+		function robedFigure(x, y, h) {
+			// a figure in a white robe with sandals, brown hair, the face a smooth oval of pale light; real folds, real weight
+			c.fillStyle = grad(x - h * 0.2, 0, x + h * 0.2, 0, [[0, "#c8c4bc"], [0.55, "#fffdf8"], [1, "#e8e4dc"]]);
+			c.beginPath(), c.moveTo(x - h * 0.08, y - h * 0.78), c.quadraticCurveTo(x - h * 0.18, y - h * 0.5, x - h * 0.2, y), c.lineTo(x + h * 0.2, y), c.quadraticCurveTo(x + h * 0.17, y - h * 0.5, x + h * 0.08, y - h * 0.78), c.fill();
+			for (let k = 0; k < 5; k++) curve([[x - h * 0.1 + k * h * 0.05, y - h * 0.6], [x - h * 0.12 + k * h * 0.055, y - h * 0.3], [x - h * 0.15 + k * h * 0.07, y]], "rgba(150,140,130,0.35)", 0.8);
+			ell(x - h * 0.06, y + 1, h * 0.05, h * 0.02, 0, "#8a6a4a"), ell(x + h * 0.06, y + 1, h * 0.05, h * 0.02, 0, "#8a6a4a");
+			ell(x, y - h * 0.86, h * 0.1, h * 0.12, 0, "#6a4a2a");
+			ell(x + h * 0.01, y - h * 0.86, h * 0.07, h * 0.09, 0, "#fffbe8");
+			ell(x + h * 0.01, y - h * 0.86, h * 0.12, h * 0.14, 0, "rgba(255,250,220,0.35)");
+		}
+		function traveler(x, y) {
+			// the halo: a ring of thin gold rays behind the head
+			const hx = x, hy = y - 66;
+			for (let k = 0; k < 28; k++) {
+				const a = (k / 28) * TAU;
+				line([[hx + Math.cos(a) * 16, hy + Math.sin(a) * 16], [hx + Math.cos(a) * (24 + (k % 2) * 6), hy + Math.sin(a) * (24 + (k % 2) * 6)]], "rgba(255,214,90,0.75)", 1.1);
+			}
+			c.strokeStyle = "rgba(255,220,110,0.9)", c.lineWidth = 1.6, c.beginPath(), c.ellipse(hx, hy, 15, 15, 0, 0, TAU), c.stroke();
+			// the wings, each a mass of real feathers: rows of scalloped coverts over the shoulder, the secondaries along the
+			// trailing edge, the long primaries fanning out to the tip; lit from the right, the under-feathers in shade
+			[-1, 1].forEach((sd) => {
+				const feather = (bx, by, a, len, w, col, sh) => {
+					c.save(), c.translate(bx, by), c.rotate(a);
+					c.fillStyle = grad(0, -w, 0, w, [[0, col], [1, sh]]);
+					c.beginPath(), c.moveTo(0, -w * 0.4), c.quadraticCurveTo(len * 0.55, -w, len, -w * 0.15), c.quadraticCurveTo(len * 1.02, w * 0.3, len * 0.92, w * 0.5), c.quadraticCurveTo(len * 0.5, w * 0.9, 0, w * 0.4), c.fill();
+					line([[2, 0], [len * 0.95, -w * 0.1]], "rgba(150,130,100,0.45)", 0.7), c.restore();
+				};
+				const lit = sd > 0, base = lit ? "#fbf6ea" : "#e6dcc6", shade = lit ? "#d8ccb0" : "#b8aa8c";
+				c.fillStyle = grad(x, y - 120, x + sd * 90, y - 20, [[0, lit ? "#f4ecda" : "#d8ccb2"], [1, lit ? "#d0c4a8" : "#a89a7c"]]);
+				c.beginPath(), c.moveTo(x + sd * 12, y - 48), c.quadraticCurveTo(x + sd * 40, y - 120, x + sd * 96, y - 128), c.quadraticCurveTo(x + sd * 92, y - 70, x + sd * 70, y - 26), c.quadraticCurveTo(x + sd * 40, y - 22, x + sd * 14, y - 30), c.fill();
+				for (let k = 0; k < 9; k++) {
+					const t = k / 8, bx = x + sd * (40 + t * 26), by = y - 96 - t * 18, a = sd > 0 ? -0.95 + t * 0.55 : Math.PI + 0.95 - t * 0.55;
+					feather(bx, by, a, 46 + t * 22, 7, base, shade);
+				}
+				for (let k = 0; k < 8; k++) {
+					const t = k / 7, bx = x + sd * (16 + t * 46), by = y - 44 - t * 34, a = sd > 0 ? 0.9 - t * 0.9 : Math.PI - 0.9 + t * 0.9;
+					feather(bx, by, a, 34 + t * 10, 6.5, base, shade);
+				}
+				for (let r = 0; r < 3; r++) for (let k = 0; k < 6 - r; k++) ell(x + sd * (18 + k * 9 + r * 6), y - 58 - k * 9 - r * 8, 6.5, 4.2, sd * 0.7, mix(base, shade, 0.25 + ((k + r) % 2) * 0.25), 0.9);
+			});
+			// the drape streaming back up the beam behind the figure
+			c.fillStyle = grad(x, y + 60, x - 50, y - 80, [[0, "rgba(250,246,236,0.75)"], [1, "rgba(250,246,236,0)"]]);
+			c.beginPath(), c.moveTo(x - 22, y + 46), c.quadraticCurveTo(x - 50, y - 10, x - 64, y - 90), c.quadraticCurveTo(x - 40, y - 20, x - 6, y + 20), c.fill();
+			// the robe with a gold sash, in real folds, from the shoulders down and streaming back into the beam
+			c.fillStyle = grad(x - 22, 0, x + 22, 0, [[0, "#b8b0a4"], [0.5, "#fcf8f0"], [1, "#d8d0c4"]]);
+			c.beginPath(), c.moveTo(x - 14, y - 52), c.quadraticCurveTo(x - 30, y - 10, x - 24, y + 50), c.quadraticCurveTo(x - 4, y + 70, x + 30, y + 60), c.quadraticCurveTo(x + 22, y, x + 14, y - 52), c.fill();
+			for (let k = 0; k < 6; k++) curve([[x - 10 + k * 4, y - 40], [x - 14 + k * 6, y + 10], [x - 20 + k * 9, y + 56]], "rgba(140,130,115,0.35)", 0.9);
+			curve([[x - 18, y - 16], [x, y - 12], [x + 18, y - 18]], "#d8a83a", 3.5), curve([[x + 6, y - 13], [x + 10, y + 10], [x + 8, y + 30]], "#d8a83a", 2.4);
+			// golden curls round a face that is only a smooth oval of pale light
+			for (let k = 0; k < 14; k++) {
+				const a = (k / 14) * TAU;
+				ell(hx + Math.cos(a) * 9, hy + Math.sin(a) * 10.5, 3.6, 3.2, a, k % 2 ? "#e8b84a" : "#c8902a");
+			}
+			ell(hx, hy + 1, 7.5, 9.5, 0, "#fffbe8"), ell(hx, hy + 1, 11, 13, 0, "rgba(255,252,230,0.4)");
+			// the old computer in its arms: bezel, screen, buttons, a little stand; on the screen the Originator's seed of light
+			const cx = x + 2, cy = y - 22;
+			poly([[cx - 16, cy - 12], [cx + 16, cy - 12], [cx + 16, cy + 12], [cx - 16, cy + 12]], "#c8c0a8");
+			c.fillStyle = rgrad(cx, cy - 1, 1, 12, [[0, "#f8ffff"], [0.4, "#7ae8e0"], [1, "#14303a"]]), c.fillRect(cx - 12, cy - 9, 24, 16);
+			for (let k = 1; k < 4; k++) (c.strokeStyle = "rgba(220,255,250,0.6)"), (c.lineWidth = 0.6), c.beginPath(), c.arc(cx, cy - 1, k * 2.5, 0, TAU), c.stroke();
+			[[-10, 10], [-6, 10], [-2, 10]].forEach(([dx, dy]) => ell(cx + dx, cy + dy, 1, 1, 0, "#5a5040"));
+			// its hands round the computer
+			ell(cx - 17, cy + 2, 4, 5, 0.3, "#f0d8c0"), ell(cx + 17, cy + 2, 4, 5, -0.3, "#f0d8c0");
+		}
+		function human(x, y) {
+			// a woman from behind, small and real: a yellow sun dress with a white flower print, copper hair in a low
+			// ponytail with a navy band, holding a Blossom low
+			const h = 92;
+			ell(x, y + 2, 18, 4, 0, "rgba(0,0,0,0.35)");
+			// legs
+			line([[x - 5, y - h * 0.34], [x - 6, y]], "#e8c4a4", 5), line([[x + 5, y - h * 0.34], [x + 6, y]], "#d8b090", 5);
+			// the dress
+			c.fillStyle = grad(x - 22, 0, x + 22, 0, [[0, "#c8a020"], [0.6, "#ffdc4a"], [1, "#e8c030"]]);
+			c.beginPath(), c.moveTo(x - 9, y - h * 0.72), c.quadraticCurveTo(x - 20, y - h * 0.45, x - 22, y - h * 0.3), c.lineTo(x + 22, y - h * 0.3), c.quadraticCurveTo(x + 20, y - h * 0.45, x + 9, y - h * 0.72), c.fill();
+			for (let k = 0; k < 18; k++) ell(x + rr(-18, 18), y - h * rr(0.32, 0.68), 1, 1, 0, "#ffffff", 0.8);
+			for (let k = 0; k < 4; k++) curve([[x - 6 + k * 4, y - h * 0.6], [x - 10 + k * 7, y - h * 0.31]], "rgba(150,110,20,0.35)", 0.8);
+			// arms, one holding the Blossom low at her side
+			line([[x - 10, y - h * 0.7], [x - 15, y - h * 0.5], [x - 16, y - h * 0.36]], "#e8c4a4", 4), line([[x + 10, y - h * 0.7], [x + 14, y - h * 0.5], [x + 18, y - h * 0.38]], "#d8b090", 4);
+			blossom(x + 20, y - h * 0.32, 0.45);
+			// the head from behind and the hair: copper, a low ponytail with a navy band
+			vol(x, y - h * 0.84, 10, 11, 0, "#d87a3a", "#8a3a14");
+			for (let k = 0; k < 8; k++) curve([[x - 8 + k * 2, y - h * 0.92], [x - 6 + k * 1.6, y - h * 0.8]], "rgba(255,170,100,0.4)", 0.8);
+			line([[x - 3, y - h * 0.74], [x + 3, y - h * 0.74]], "#1a2a5a", 2.4);
+			curve([[x, y - h * 0.74], [x + 1, y - h * 0.66], [x - 1, y - h * 0.58]], "#b85a24", 5);
+		}
+		function bird(x, y, body, breast, kind) {
+			vol(x, y - 8, 9, 7, -0.2, body, mix(body, "#000000", 0.5));
+			ell(x - 2, y - 6, 6, 5, -0.2, breast);
+			vol(x + 7, y - 15, 5, 5, 0, body, mix(body, "#000000", 0.5));
+			poly([[x + 11, y - 15], [x + 16, y - 14], [x + 11, y - 13]], kind === "cardinal" ? "#e8902a" : "#e8c84a");
+			kind === "cardinal" && (poly([[x + 4, y - 18], [x + 6, y - 25], [x + 9, y - 18]], body), ell(x + 10, y - 15, 2.5, 2, 0, "#140808"));
+			ell(x + 8.5, y - 16, 1, 1, 0, "#ffffff");
+			poly([[x - 8, y - 9], [x - 20, y - 4], [x - 18, y - 9]], mix(body, "#000000", 0.3));
+			line([[x, y - 2], [x, y + 2]], "#3a2a1a", 1), line([[x + 3, y - 2], [x + 3, y + 2]], "#3a2a1a", 1);
+		}
+		function signature(x, y) {
+			// "Gooward" in a loose right-leaning hand, deep violet, a round brush; one goo drip under it
+			// a lighter passage of paint where he signed
+			c.fillStyle = rgrad(x + 62, y - 8, 4, 96, [[0, "rgba(232,222,210,0.78)"], [0.6, "rgba(214,204,194,0.4)"], [1, "rgba(210,200,190,0)"]]), c.save(), c.translate(x + 62, y - 8), c.scale(1, 0.34), c.beginPath(), c.arc(0, 0, 96, 0, TAU), c.fill(), c.restore();
+			c.save(), c.translate(x, y), c.transform(1, 0, -0.25, 1, 0, 0);
+			const P = (pts) => curve(pts, "#4a1e72", 3.4, 0.95);
+			// G: a big loop
+			P([[22, -26], [8, -32], [-4, -18], [0, 0], [16, 2], [24, -10], [14, -10]]);
+			// o, o
+			P([[34, -10], [28, -2], [34, 2], [40, -4], [36, -10], [34, -10]]);
+			P([[48, -10], [42, -2], [48, 2], [54, -4], [50, -10], [48, -10]]);
+			// w
+			P([[58, -10], [62, 2], [67, -8], [72, 2], [77, -10]]);
+			// a
+			P([[90, -8], [84, -10], [80, -2], [86, 2], [91, -6], [91, 2], [94, 0]]);
+			// r
+			P([[98, 2], [98, -9], [102, -10], [106, -8]]);
+			// d
+			P([[118, -6], [112, -8], [108, -1], [113, 2], [119, -3], [121, -22], [121, 2], [125, 0]]);
+			// the underline, and the drip off it
+			curve([[-2, 8], [60, 10], [126, 6]], "#3a1a5a", 1.6, 0.8);
+			c.restore();
+			drip(x + 70, y + 9, 12, 2.4, "#3ae8ff", 0.85);
+		}
+
+	}
+	// GOOWARD's two small goo-ball splat paintings, side by side on one 512 x 192 texture (one cream ground, one deep
+	// violet-black): splats of cyan, magenta, violet and lime in a few sizes, each a burst with a dense centre, a ragged
+	// crown of spikes and flung droplets, some overlapping wet into wet, drips running down from the larger ones.
+	function paintSplats(c, W, H) {
+		let seed = 5309;
+		const rnd = () => ((seed = (seed * 16807) % 2147483647), (seed - 1) / 2147483646),
+			rr = (a, b) => a + (b - a) * rnd(),
+			TAU = Math.PI * 2,
+			GOO = ["#3ae8ff", "#ff3ac8", "#9a5ae8", "#a8e830"];
+		const ell = (x, y, rx, ry, rot, col, a = 1) => ((c.globalAlpha = a), (c.fillStyle = col), c.beginPath(), c.ellipse(x, y, rx, ry, rot, 0, TAU), c.fill(), (c.globalAlpha = 1));
+		const splat = (x, y, r, col, x0, x1) => {
+			// the crown of spikes
+			c.fillStyle = col, c.beginPath();
+			const n = 14 + ((r / 4) | 0);
+			for (let k = 0; k <= n; k++) {
+				const a = (k / n) * TAU, d = r * (k % 2 ? rr(0.75, 0.95) : rr(1.1, 1.7));
+				const px = x + Math.cos(a) * d, py = y + Math.sin(a) * d;
+				k ? c.lineTo(px, py) : c.moveTo(px, py);
+			}
+			c.fill();
+			ell(x, y, r * 0.9, r * 0.85, rr(0, TAU), col);
+			// flung droplets
+			for (let k = 0; k < 10 + r; k++) {
+				const a = rr(0, TAU), d = r * rr(1.5, 3);
+				ell(Math.min(x1 - 3, Math.max(x0 + 3, x + Math.cos(a) * d)), y + Math.sin(a) * d, rr(0.8, 2.6), rr(0.8, 2.6), 0, col);
+			}
+			// a drip from the larger ones
+			if (r > 9) {
+				const dx = x + rr(-r * 0.4, r * 0.4), len = rr(14, 40);
+				c.strokeStyle = col, c.lineWidth = rr(2, 4), c.lineCap = "round", c.beginPath(), c.moveTo(dx, y), c.lineTo(dx + rr(-2, 2), y + r + len), c.stroke();
+				ell(dx, y + r + len + 2, 3, 3.6, 0, col);
+			}
+			// a wet highlight
+			ell(x - r * 0.35, y - r * 0.35, r * 0.28, r * 0.18, -0.6, "rgba(255,255,255,0.55)");
+		};
+		[[0, "#f2ead8"], [W / 2, "#1e1426"]].forEach(([x0, ground], p) => {
+			const x1 = x0 + W / 2;
+			c.fillStyle = ground, c.fillRect(x0, 0, W / 2, H);
+			for (let k = 0; k < 900; k++) ell(rr(x0, x1), rr(0, H), 0.8, 0.8, 0, rnd() < 0.5 ? "#ffffff" : "#000000", 0.06);
+			c.save(), c.beginPath(), c.rect(x0, 0, W / 2, H), c.clip();
+			for (let k = 0; k < 16; k++) splat(rr(x0 + 24, x1 - 24), rr(20, H - 40), rr(5, 22), GOO[(k + p) % 4], x0, x1);
+			c.restore();
+		});
+	}
+	// Laying the painting in: it is painted at load off the main thread (in a worker, on a canvas of its own) and drawn
+	// into the texture once when done; where no worker can be made it is painted here, a few milliseconds at a time.
+	// Either way no frame waits on it. It is painted at 1.5 times its layout (3072 x 1158), sharp enough to walk up to
+	// in VR.
+	const ART = { w: 2048, h: 772, s: 1.5 },
+		mkCanvas = (w, h) => ("undefined" != typeof OffscreenCanvas ? new OffscreenCanvas(w, h) : Object.assign(document.createElement("canvas"), { width: w, height: h }));
+	function paintArt(tex) {
+		const cw = Math.round(ART.w * ART.s),
+			ch = Math.round(ART.h * ART.s),
+			done = (img) => (tex.image.getContext("2d").drawImage(img, 0, 0), (tex.needsUpdate = !0)),
+			here = () => {
+				const cv = mkCanvas(cw, ch),
+					gen = paintGallery(cv.getContext("2d", { willReadFrequently: !0 }), ART.w, ART.h, mkCanvas),
+					step = () => {
+						const t0 = performance.now();
+						for (; performance.now() - t0 < 6; ) if (gen.next().done) return done(cv);
+						setTimeout(step, 20);
+					};
+				step();
+			};
+		try {
+			const src = "const mk=" + mkCanvas + ",paint=" + paintGallery + ";onmessage=()=>{const c=new OffscreenCanvas(" + cw + "," + ch + "),g=paint(c.getContext('2d',{willReadFrequently:true})," + ART.w + "," + ART.h + ",mk);for(;!g.next().done;);const b=c.transferToImageBitmap();postMessage(b,[b])}",
+				url = URL.createObjectURL(new Blob([src], { type: "text/javascript" })),
+				w = new Worker(url),
+				end = () => (w.terminate(), URL.revokeObjectURL(url));
+			(w.onmessage = (e) => (end(), done(e.data))), (w.onerror = (e) => (e.preventDefault(), end(), here())), w.postMessage(0);
+		} catch (e) {
+			here();
+		}
+	}
 	// The ART GALLERY, opposite the Juice Bar across the park, between the duck pond and Garden Supplies: the
 	// shared kiosk frame with no desk, so its floor is open to walk in. Its back wall is plain (no battens) and
-	// carries one big empty canvas (to be filled later); two generic paintings stand on easels on the lawn in
-	// front, either side of its walk, turned a little toward whoever comes up it.
+	// carries GOOWARD's great painting (bible 1.18); two small goo-splat paintings of his stand on easels on the lawn
+	// in front, either side of its walk, turned a little toward whoever comes up it, and his paint cans lie about.
 	const GALLERY = {
 		// the frame's half width (4 m: 2 m wider than the other kiosks, for the wide canvas)
 		hw: 4,
@@ -12062,8 +13764,26 @@ const JGP = (() => {
 		const G = goods(),
 			wood = "#7a5232",
 			gold = "#b8902e";
-		// the big empty canvas, stretched and primed, 1 cm off the back wall's face: its edge shows the stretcher's wood
+		// the big canvas, stretched and primed, 1 cm off the back wall's face: its edge shows the stretcher's wood (the
+		// painting itself lies 1 cm proud of its face, below)
 		G.box("#f4f1e8", 0, 1.95, -2.33, GALLERY.cw, GALLERY.ch, 0.06), G.box("#c8a070", 0, 0.62, -2.31, GALLERY.cw - 0.1, 0.03, 0.09);
+		// his paint cans about the outside, out of the walk and clear of the easels: some standing with their lids off and
+		// their colour run down the side, some tipped over on the grass, each with a wire handle
+		const CAN = ["#3ae8ff", "#ff3ac8", "#9a5ae8", "#a8e830", "#ffd23a"];
+		[
+			[-3.75, 2.85, 0, 0], [-3.35, 3.7, 1, 1], [3.6, 2.9, 0, 2], [3.95, 3.55, 1, 3], [-4.55, 0.9, 0, 4], [4.6, -1.1, 0, 1], [4.45, -0.55, 1, 0],
+		].forEach(([cx, cz, tip, k], i) => {
+			const col = CAN[k],
+				ry = i * 1.7,
+				base = tip ? G.m(cx, 0.09, cz, 0, ry, Math.PI / 2) : G.m(cx, 0, cz, 0, ry, 0),
+				at = (geo, c, px, py, pz, rx, rz, sx = 1, sy = 1, sz = 1) => G.add(geo, c, base.clone().multiply(G.m(px, py, pz, rx, 0, rz, sx, sy, sz)));
+			// the tin, its rolled rims, the paint inside (or spilt from its mouth), a run of paint down its side
+			at(T.cyl(0.085, 0.085, 0.17, 14), "#b8bcc4", 0, 0.085, 0), at(T.cyl(0.089, 0.089, 0.012, 14), "#9a9ea6", 0, 0.172, 0), at(T.cyl(0.089, 0.089, 0.012, 14), "#9a9ea6", 0, 0.006, 0);
+			at(T.cyl(0.0855, 0.0855, 0.07, 14), col, 0, 0.1, 0);
+			at(T.cyl(0.078, 0.078, 0.004, 14), col, 0, tip ? 0.17 : 0.158, 0);
+			at(T.box(0.03, 0.09, 0.006), col, 0, 0.13, 0.087);
+			at(T.cyl(0.004, 0.004, 0.16, 6), "#5a5e66", 0, 0.19, 0, 0, Math.PI / 2);
+		});
 		// the easels: two splayed front legs, a raking back leg, a ledge and a top clamp, each holding a framed painting
 		// tilted back a little
 		const paint = [];
@@ -12078,39 +13798,9 @@ const JGP = (() => {
 			paint.push(base.clone().multiply(G.m(0, 1.2, 0.07, -0.1, 0, 0)).multiply(G.m(0, 0, 0.03)));
 		});
 		G.done(o);
-		// the two paintings, painted side by side on one texture and drawn as one mesh: a summer landscape (hills, a
-		// tree, a lake under a big sky) and a still life (a jug of flowers and fruit on a table)
-		const tex = b(512, 192, (c) => {
-			const rn = srand(57),
-				dab = (x0, y0, rx, ry, col, al = 1) => ((c.globalAlpha = al), (c.fillStyle = col), c.beginPath(), c.ellipse(x0, y0, rx, ry, rn() * 3, 0, l), c.fill(), (c.globalAlpha = 1));
-			// (the landscape)
-			let g = c.createLinearGradient(0, 0, 0, 120);
-			g.addColorStop(0, "#5a8fd0"), g.addColorStop(1, "#d8e8ee"), (c.fillStyle = g), c.fillRect(0, 0, 256, 192);
-			for (let k = 0; k < 40; k++) dab(30 + 200 * rn(), 20 + 40 * rn(), 8 + 10 * rn(), 4 + 4 * rn(), "#ffffff", 0.25);
-			(c.fillStyle = "#7a9a8a"), c.beginPath(), c.moveTo(0, 120), c.quadraticCurveTo(80, 84, 150, 112), c.quadraticCurveTo(210, 96, 256, 108), c.lineTo(256, 192), c.lineTo(0, 192), c.fill();
-			(c.fillStyle = "#5f9a3a"), c.beginPath(), c.moveTo(0, 140), c.quadraticCurveTo(120, 118, 256, 136), c.lineTo(256, 192), c.lineTo(0, 192), c.fill();
-			(c.fillStyle = "#4f86b8"), c.beginPath(), c.ellipse(170, 156, 60, 10, 0, 0, l), c.fill(), dab(160, 154, 30, 2, "#cfe6f4", 0.6);
-			for (let k = 0; k < 220; k++) dab(256 * rn(), 136 + 56 * rn(), 1.5 + 2 * rn(), 1 + rn(), rn() < 0.5 ? "#3f7a2a" : "#86b84a", 0.6);
-			(c.fillStyle = "#5a3a22"), c.fillRect(66, 100, 6, 44);
-			for (let k = 0; k < 60; k++) dab(69 + 26 * (rn() - 0.5), 92 + 22 * (rn() - 0.5), 6 + 5 * rn(), 5 + 4 * rn(), rn() < 0.5 ? "#2f6a2a" : "#4f8a3a", 0.85);
-			// (the still life)
-			g = c.createLinearGradient(256, 0, 512, 192);
-			g.addColorStop(0, "#5a3a2a"), g.addColorStop(1, "#2a1a14"), (c.fillStyle = g), c.fillRect(256, 0, 256, 192);
-			(c.fillStyle = "#8a5a32"), c.fillRect(256, 138, 256, 54), (c.fillStyle = "rgba(0,0,0,.25)"), c.fillRect(256, 138, 256, 4);
-			g = c.createRadialGradient(370, 112, 4, 384, 120, 40);
-			g.addColorStop(0, "#9ad0e0"), g.addColorStop(1, "#2a6a8a"), (c.fillStyle = g), c.beginPath(), c.moveTo(366, 140), c.quadraticCurveTo(350, 108, 372, 88), c.lineTo(396, 88), c.quadraticCurveTo(418, 108, 402, 140), c.closePath(), c.fill();
-			for (let k = 0; k < 9; k++) {
-				const fx = 384 + 46 * (rn() - 0.5),
-					fy = 52 + 34 * rn(),
-					col = ["#e8409e", "#ffd23a", "#e8301e", "#f6f0dc", "#9a52e0"][k % 5];
-				(c.strokeStyle = "#3f7a2a"), (c.lineWidth = 2), c.beginPath(), c.moveTo(384, 92), c.lineTo(fx, fy), c.stroke();
-				for (let j = 0; j < 6; j++) dab(fx + 6 * Math.cos(j), fy + 6 * Math.sin(j), 4, 3, col, 0.9);
-				dab(fx, fy, 2.5, 2.5, "#3a2a10");
-			}
-			[[306, 146, "#e8301e"], [326, 150, "#ffb030"], [452, 148, "#7ac83a"], [470, 152, "#e8301e"]].forEach(([fx, fy, col]) => (dab(fx, fy, 12, 10, col), dab(fx - 4, fy - 4, 3, 2, "#ffffff", 0.6)));
-			// (the grain of the canvas over both)
-			for (let k = 0; k < 1500; k++) dab(512 * rn(), 192 * rn(), 0.8, 0.8, rn() < 0.5 ? "#ffffff" : "#000000", 0.06);
-		}, { smooth: !0 });
+		// the two paintings, painted side by side on one texture and drawn as one mesh: GOOWARD's goo-ball splats, one on
+		// cream, one on deep violet-black
+		const tex = b(512, 192, (c) => paintSplats(c, 512, 192), { smooth: !0 });
 		const pos = [],
 			uv = [],
 			v3 = new THREE.Vector3();
@@ -12121,6 +13811,11 @@ const JGP = (() => {
 		const pg = new THREE.BufferGeometry();
 		pg.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)), pg.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)), pg.computeVertexNormals();
 		R(pg, x.world(16777215, { map: tex }), o);
+		// the great painting, on a plane 1 cm proud of the canvas's face (so the two never fight): primed cream until it
+		// is painted (paintArt, off the main thread). It shows its own colours, as if lit for the gallery: unshaded (the
+		// roof's shade and the lawn's green light would mute it), a touch under full white so it sits in the scene
+		const art = b(Math.round(ART.w * ART.s), Math.round(ART.h * ART.s), (c, w, h) => ((c.fillStyle = "#f4f1e8"), c.fillRect(0, 0, w, h)), { smooth: !0 });
+		R(T.plane(GALLERY.cw, GALLERY.ch), x.basic(15263976, { map: art }), o, [0, 1.95, -2.29]), paintArt(art);
 	}
 	function buildGardenSupplies(o) {
 		kioskFrame(o, { sign: "GARDEN SUPPLIES", ink: "#2f5a2a", wall: "#6f8f5a", wall2: "#5a7a48", tin: [168, 92, 58] });
