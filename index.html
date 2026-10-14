@@ -7356,7 +7356,7 @@ const JGP = (() => {
 		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!", "Gooward, that wild cat painted my billboard!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
 		// (asleep through it all: her eyes open only for her thanks, and she sleeps on at home through the Event)
 		m_somlet: { lines: ["Zzz", "Zzz", "Zzz", "* A letter peeks out from under her cap *|Zzz"], gift: "Thank you", campfire: "Zzz" },
-		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
+		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!", "Goomp! Goomp! Goomp!", "Goomp?"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
 		// (with the Ancient Gem in hand, Talk is her trade instead: gemTrade)
 		p_gemtoe: {
 			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?", "I seek the rarest gems.", "My tails never let go of my crystals.|Not even while I sleep."],
@@ -10927,7 +10927,11 @@ const JGP = (() => {
 		);
 	// (th.dh lifts the roof, and everything over the walls, by that much; th.desk is the height of the
 	// top of the desk at the front, 1.12 m unless set)
-	function kioskFrame(o, th) {
+	function kioskFrame(k0, th) {
+		// (the frame is built in a group of its own and baked at the end into one mesh per material: nothing in it
+		// ever moves, and part by part it cost the kiosk some forty draw calls)
+		const o = new THREE.Group();
+		k0.add(o);
 		// the frame's parts are closed boxes, drawn from the front only: drawn from both sides (every material's
 		// default here), a box's inside faces meet its outside ones along each edge, and the edge shimmers between
 		// the two (the counter top's rim did, seen from behind the counter)
@@ -10953,6 +10957,7 @@ const JGP = (() => {
 			}),
 			tin = new THREE.MeshPhongMaterial({ map: tinTex, shininess: 60, specular: 3355443, side: THREE.DoubleSide });
 		(tinTex.wrapS = tinTex.wrapT = THREE.RepeatWrapping), tinTex.repeat.set((5 * (2 * hw + 0.9)) / 6.9, 1);
+		const gable = Object.assign(wall.clone(), { side: THREE.DoubleSide });
 		// deck, back wall with battens, half side walls, posts and beam
 		R(T.box(2 * hw + 0.4, 0.2, 5.0), deck, o, [0, 0.1 - dl, -0.1]), R(T.box(2 * hw + 0.5, 0.08 - dl / 4, 0.12), white, o, [0, 0.2 - dl, 2.42]);
 		// the back wall stops inside the corner posts (flush end faces would flicker against them)
@@ -10965,7 +10970,7 @@ const JGP = (() => {
 			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4 + dh + dl, 0.24), white, o, [hw * sx, 1.9 + (dh - dl) / 2, pz]));
 			// gable ends under the roof
 			const tri = new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(2.6, 3.5 + dh), new THREE.Vector2(-2.45, 3.5 + dh), new THREE.Vector2(0.12, 4.62 + dh)])).rotateY(Math.PI / 2);
-			R(tri, Object.assign(wall.clone(), { side: THREE.DoubleSide }), o, [(hw + 0.08) * sx, 0, 0]);
+			R(tri, gable, o, [(hw + 0.08) * sx, 0, 0]);
 		});
 		R(T.box(2 * hw + 0.4, 0.28, 0.2), white, o, [0, 3.44 + dh, 2.15]);
 		// tin roof (optionally spotted like a toadstool) and the sign on the ridge
@@ -10986,7 +10991,7 @@ const JGP = (() => {
 		[-1.6, 1.6].forEach((px) => R(T.box(0.12, 0.7, 0.12), white, o, [px, 4.95 + dh, -0.12]));
 		R(T.box(4.3, 1.05, 0.1), white, o, [0, 5.55 + dh, -0.12]), R(T.plane(4.1, 1.02), x.world(16777215, { map: signTex }), o, [0, 5.55 + dh, -0.04]);
 		// the counter (the desk), crates on either side (none in the ART GALLERY: its floor is open)
-		if (th.noDesk) return;
+		if (th.noDesk) return void KIT.compact(o, new Set());
 		const ph = D - 0.22;
 		R(T.box(3.8, ph, 0.1), wall, o, [0, 0.2 + ph / 2, 1.07]), R(T.box(3.84, 0.08, 0.15), white, o, [0, 0.24, 1.075]);
 		// the foot trim stands 2 cm proud of the panel behind as well as in front (its back face lay in the panel's
@@ -10998,7 +11003,7 @@ const JGP = (() => {
 			R(T.box(0.7, 0.8, 1.6), crate, o, [1.42 * sx, 0.6, -0.38]);
 			[0.35, 0.6, 0.85].forEach((yy) => R(T.box(0.72, 0.03, 1.62), wall2, o, [1.42 * sx, yy, -0.38]));
 		});
-
+		KIT.compact(o, new Set());
 	}
 	// The Library: an open reading ground, with no walls, roof or raised floor. Rows of freestanding
 	// double-sided bookcases full of books stand spaced out round the librarian SPARKAKUS: two rows
@@ -13900,6 +13905,31 @@ const JGP = (() => {
 			at(T.cyl(0.0105, 0.004, 0.04, 8), "#3a2a1e", 0.25, 0.6), at(T.cyl(0.006, 0.003, 0.016, 8), col, 0.268, 0.6);
 			G.add(T.sphere(1, 12, 6), col, base.clone().multiply(G.m(0.33, -0.011, 0, 0, 0.4, 0, 0.045, 0.006, 0.03)));
 		});
+		// a house painter's roller and wide brush on the floor under the canvas: the roller's cover loaded with magenta,
+		// its wire frame bending back to a handle that rests on the floor; the brush flat and wide, cyan to its ferrule.
+		// Each lies along its own +x
+		{
+			const r = G.m(1.45, 0.02, -1.7, 0, 0.35, 0),
+				at = (geo, c, px, py, pz, rx, ry, rz, sx = 1, sy = 1, sz = 1) => G.add(geo, c, r.clone().multiply(G.m(px, py, pz, rx, ry, rz, sx, sy, sz)));
+			// the cover (its axis along z), its two end caps, a wet smear where it rests
+			at(T.cyl(0.036, 0.036, 0.23, 16), "#ff3ac8", 0, 0.036, 0, Math.PI / 2, 0, 0), [-1, 1].forEach((e) => at(T.cyl(0.03, 0.03, 0.012, 12), "#c8ccd4", 0, 0.036, e * 0.12, Math.PI / 2, 0, 0));
+			G.add(T.sphere(1, 12, 6), "#ff3ac8", r.clone().multiply(G.m(0.02, 0, 0, 0, 0, 0, 0.06, 0.006, 0.14)));
+			// the frame: out of the cover's near end along its axis, then bent back along -x down to the handle
+			at(T.cyl(0.004, 0.004, 0.04, 6), "#9a9ea6", 0, 0.036, 0.14, Math.PI / 2, 0, 0);
+			at(T.cyl(0.004, 0.004, 0.2, 6), "#9a9ea6", -0.1, 0.028, 0.16, 0, 0, Math.PI / 2 + 0.08);
+			at(T.cyl(0.004, 0.004, 0.05, 6), "#9a9ea6", -0.2, 0.02, 0.135, Math.PI / 2, 0, 0);
+			// the handle, red plastic, lying on the floor
+			at(T.cyl(0.016, 0.014, 0.14, 10), "#c8302a", -0.29, 0.016, 0.11, 0, 0, Math.PI / 2);
+		}
+		{
+			const r = G.m(-1.8, 0.02, -1.85, 0, -0.5, 0),
+				at = (geo, c, px, py, pz, sx, sy, sz) => G.add(geo, c, r.clone().multiply(G.m(px, py, pz, 0, 0, 0, sx, sy, sz)));
+			// the handle (a flat wooden paddle with a rounded end), the steel ferrule, the bristles, their cyan tips
+			at(G.UBX, "#c89a5a", 0, 0.012, 0, 0.16, 0.022, 0.034), at(T.cyl(0.017, 0.017, 0.022, 10), "#c89a5a", -0.08, 0.012, 0, 1, 1, 1);
+			at(G.UBX, "#c8ccd4", 0.1, 0.014, 0, 0.04, 0.026, 0.1);
+			at(G.UBX, "#3a2a1e", 0.15, 0.012, 0, 0.06, 0.02, 0.098), at(G.UBX, "#3ae8ff", 0.19, 0.011, 0, 0.022, 0.018, 0.096);
+			G.add(T.sphere(1, 12, 6), "#3ae8ff", r.clone().multiply(G.m(0.25, 0, 0, 0, 0, 0, 0.05, 0.006, 0.07)));
+		}
 		// the easels: two splayed front legs, a raking back leg, a ledge and a top clamp, each holding a framed painting
 		// tilted back a little
 		const paint = [];
@@ -15616,6 +15646,8 @@ const JGP = (() => {
 	// Everything is a function of the time since he set off (pose(e)), so any moment can be shown.
 	// (BACKPACKA's model is final: keep it as it is.)
 	let PONDO = null;
+	// where the duck pond stands: midway between the Post Office (28.1, -19.8) and GOOWARD'S GALLERY (31, 14.5)
+	const POND_AT = [29.6, -2.6];
 	const BP = (() => {
 		// (his visit, slow and unhurried: 16 s flying in to the pond, 14 s drinking, 12 s to the garden,
 		// 15 s spraying, 14.5 s flying away)
@@ -15939,7 +15971,7 @@ const JGP = (() => {
 		}
 		// world positions for the drinking hover, worked out from the drinking pose itself
 		function drinkSpot(P) {
-			const pond = PONDO ? PONDO.getWorldPosition(V()) : V(24.6, 0, 0),
+			const pond = PONDO ? PONDO.getWorldPosition(V()) : V(POND_AT[0], 0, POND_AT[1]),
 				water = pond.y + 0.11,
 				toC = V(-pond.x, 0, -pond.z).normalize(),
 				face = Math.atan2(toC.x, toC.z);
@@ -16962,7 +16994,7 @@ const JGP = (() => {
 		const keepAt = [
 				[0, 0],
 				[-24.8, -24.8],
-				[24.6, 0],
+				POND_AT,
 				[-7.2, 23.9],
 				[ot.x, ot.z], // pizza portal
 			],
@@ -19517,6 +19549,8 @@ const JGP = (() => {
 			[-17, -34, 1.2, 1],
 			[12, 34.5 + ZS, 0.95, 0],
 			[-12, 34 + ZS, 1.0, 2],
+			// (a big one in the open corner between the church and the dance floor's south end)
+			[-16, 37, 1.3, 1],
 		].forEach(([X, Z, s, kind]) => (tree(X, Z, s, kind, 2), E.add(X, Z, 1.2 * s, "scenery")));
 		// THE CARDINAL: one bird in one tree of the park, built from the owner's two photos of a male northern cardinal
 		// (a plump bright red bird with a pointed crest swept up and back, a black mask round the base of an orange
@@ -21776,6 +21810,7 @@ const JGP = (() => {
 		// (for the tests: where the Library's shelf things and the Sheriff's posters are)
 		libLayout: LIB_LAYOUT,
 		buildPond,
+		pondAt: POND_AT,
 		blossomPickup,
 		backpacka: BP,
 		eventActor,
@@ -22215,12 +22250,13 @@ if (
 								},
 							});
 					})(-24.75, -24.75),
+					// (the duck pond: centred between the Post Office and GOOWARD'S GALLERY on the east side)
 					(function (t, e) {
 						const o = new THREE.Group();
-						o.position.set(t, 0, 0), C.add(o), F.add(t, 0, 2.9), E.add(t, 0, 4.2, "pool");
+						o.position.set(t, 0, e), C.add(o), F.add(t, e, 2.9), E.add(t, e, 4.2, "pool");
 						JGP.buildPond(o),
-							z.add({ id: "pool", x: t, z: 0, r: 4.2, solidR: 2.9, waypointR: 4.6, label: () => null });
-					})(24.6),
+							z.add({ id: "pool", x: t, z: e, r: 4.2, solidR: 2.9, waypointR: 4.6, label: () => null });
+					})(JGP.pondAt[0], JGP.pondAt[1]),
 					E.add(-10, -21, 3, "ring"),
 					k.push({ x: -10, z: -18.2, id: "ring" }),
 					(function () {

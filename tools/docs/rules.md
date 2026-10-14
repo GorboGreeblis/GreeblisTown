@@ -94,6 +94,11 @@ Rules for how changes are made, checked and recorded.
    - once the task is finished, delete its logs.
 
    This holds for this game and every future Greeblis game.
+10. **(every game)** A running list of the currently open tasks must be kept in the tools folder,
+    [tasks.md](tasks.md): every task the owner has asked for that is not yet finished, with its state and next step,
+    and every question waiting on the owner. It is updated whenever a task is added, started, paused or finished, and
+    committed with the work. A finished task is taken off the list (its record is the PR and the docs). It holds work,
+    never anything personal.
 
 ## Locks and approvals
 
@@ -120,6 +125,10 @@ Rules for what is finished and who may change it.
    keep its resolution (3072 × 1158), its detail, its colours, its brushwork and every symbol; a change that would cost
    any of these is put to the owner first. Each such change is checked by rendering the painting before and after and
    comparing them.
+7. Standing approval (owner): any model, the locked ones included, may be altered **to improve performance**: its
+   parts merged, rebuilt with fewer draws or triangles, or batched differently. The model must look the same: same
+   shape, proportions, palette and animation, checked by rendering it before and after from several sides. A change
+   that would visibly alter a model is still put to the owner first.
 
 ## Platforms (every game)
 
@@ -262,3 +271,4 @@ Descriptive material lives in the document that owns it.
 | [`creatures.md`](creatures.md) | Per-creature build and behaviour reference |
 | [`testing.md`](testing.md) | Test runners, probes, audits and the game globals they use |
 | [`release.md`](release.md) | The final pass: strip, minify, pack, check; the codec; trimming three.js; dead code |
+| [`tasks.md`](tasks.md) | The running list of open tasks: what is being worked on, what is queued, what waits on the owner |

@@ -129,7 +129,7 @@ iron fence (about 75 m east to west and 87 m north to south), crossed by walks, 
 | **The walks** | — | A ring walk round the garden, with a walk out to each place there is to go: the LIBRARY (north-west), the POST OFFICE and the SHERIFF'S (north-east, ending in a cross walk along both their fronts), GARDEN SUPPLIES (south-east), GOOWARD'S GALLERY (east) and the church (south). Every walk ends at the front of what it leads to. |
 | **The lawn** | — | Short tufts, clover and dandelions, mowed in stripes. |
 | **The garden** | Centre, radius 15 m | Tilled rows in raised rings, four stepping-stone paths from its edge to its centre, a border of stones, seed sacks and stakes round its edge. The Summoning Stone stands at its centre (1.3). After the first Garden Event it holds that Event's flowers for good (1.14). |
-| **The duck pond** | East, (24.6, 0) | A grassy bank, limestone rocks, cattails, lily pads (every third one in flower) and a little wooden dock on the garden side. The water only breathes in colour: no ripples, nothing rising out of it, and no ducks. BACKPACKA drinks from it (1.14). |
+| **The duck pond** | East, (29.6, −2.6): centred between the Post Office and GOOWARD'S GALLERY | A grassy bank, limestone rocks, cattails, lily pads (every third one in flower) and a little wooden dock on the garden side. The water only breathes in colour: no ripples, nothing rising out of it, and no ducks. BACKPACKA drinks from it (1.14). |
 | **The Portal** | North-west of the garden, about (−9.4, −29.6) | The gateway between places and times (1.3). HENNRICK strolls round it. |
 | **The gazebo** | North, (5, −31) | White and octagonal on a low board deck, eight posts, railings, a green shingle roof, a small cupola and a gold ball on top. |
 | **The Juice Bar and dance floor** | West side | FORTIZMO's open-air bar, its purple dance floor and KING DINO's drum kit (1.5). |
@@ -142,6 +142,9 @@ iron fence (about 75 m east to west and 87 m north to south), crossed by walks, 
 - A hydrant and a blue mailbox by the south walk.
 - SOMLET's mail cart at the kerb opposite the Post Office, its sack slumped, two letters dropped beside it.
 - SPARKAKUS's paw prints set in the north sidewalk by the Library's corner: a lope heading east.
+
+**The trees.** Big park trees stand by the fence corners and the south walk; one more fills the open corner between
+the church and the dance floor's south end, so that side of the park never looks empty.
 
 **The birds.** A male northern cardinal on a low bough of the maple by the north-east corner, and an American robin on
 a low bough of the oak by the north fence's west half. Both are about twice life size. One bird to a tree; they
@@ -213,7 +216,7 @@ GOOWARD keeps the Gallery from the lawn outside.
 | **POST OFFICE** (north-east) | SOMLET | Navy walls and a pink roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, faceted heaps of paper under loose envelopes, tied bundles and parcels stuck in its slopes, tall stacks leaning on its sides and an avalanche of letters fanned out round its foot. Five buried parcels carry readable labels (1.15). SOMLET sleeps in front of it. |
 | **SHERIFF'S** (north-east, beside the Post Office) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts, and **the Consortium's flag** flying from a pole behind the sign (1.10). A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the plain back wall over the wanted posters (1.10). Its roof stands 1 m higher than the others' and its desk is raised (top 1.5 m up), so the Sheriff, standing on it, looks down on his visitors. |
 | **GARDEN SUPPLIES** (south-east) | ZOLLOD | Sage walls and a terracotta roof, with plants everywhere: potted shrubs, flowers, ferns, succulents and little trees, seedling trays, a sunflower tray, hanging baskets, bags of soil and compost, a wheelbarrow of flowers out front, a rake and a shovel against the side wall. Among them grow **strange curiosities** after the plates of the Voynich manuscript, in faded inks (pale blue, olive, red-brown, ochre, parchment): bare bulbous roots as big as the plant, striped cup blooms, an "eye of a flower" (a ringed blue eye on legs of forked roots), trumpet clusters on a knot of roots, a scaled bud on a hand of fat roots, a striped lantern bloom on an onion with a beard of roots. A parchment card on the counter is written in the manuscript's unread script. The town's one shop (1.13); ZOLLOD is too shy to keep it until OVERCOMING SHYNESS frees him (1.13). |
-| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big canvas (6.9 m wide and 2.6 m tall), stretched on the back wall, carries **GOOWARD's painting** of the whole of Greeblis (1.18). On the lawn in front, either side of the walk up to it, two framed paintings of his stand on wooden easels, turned a little toward whoever comes up the walk: two goo-ball splat paintings, one on cream and one on deep violet-black (1.18); a third, on deep teal, stands on its easel outside the left wall, turned a little out toward the park. His paint cans lie about the lawn outside and on the Gallery's own floor (in the back corners under the canvas and along the side walls, the middle left clear; three of those are big buckets), some standing open with their colour run down the side, some tipped over; his brushes lie dropped among them, each with a blob of wet paint by its tip. GOOWARD painted every painting in it himself. GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
+| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big canvas (6.9 m wide and 2.6 m tall), stretched on the back wall, carries **GOOWARD's painting** of the whole of Greeblis (1.18). On the lawn in front, either side of the walk up to it, two framed paintings of his stand on wooden easels, turned a little toward whoever comes up the walk: two goo-ball splat paintings, one on cream and one on deep violet-black (1.18); a third, on deep teal, stands on its easel outside the left wall, turned a little out toward the park. His paint cans lie about the lawn outside and on the Gallery's own floor (in the back corners under the canvas and along the side walls, the middle left clear; three of those are big buckets), some standing open with their colour run down the side, some tipped over; his brushes lie dropped among them, each with a blob of wet paint by its tip, and under the canvas a house painter's roller (its cover loaded with magenta) and a wide house-painting brush (cyan to its ferrule). GOOWARD painted every painting in it himself. GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
 
 ### 1.5 The Juice Bar, the dance floor and the phone booth
 
@@ -828,7 +831,7 @@ This section lists the world's recurring jokes; each must keep its form when reu
 
 This section is the record of the painting on the big canvas in GOOWARD'S GALLERY (1.4), as it is painted in the game:
 the lore it draws on and the symbol that carries each piece, where each symbol lies, its composition and palette, and
-exactly how it is constructed, layer by layer; then the two small paintings on the easels in front. The painting's
+exactly how it is constructed, layer by layer; then the three small paintings on the easels. The painting's
 code (`paintGallery`, `paintSplats`; construction.md, kiosks) follows this section, and this section follows the code:
 a change to either is made to both.
 
@@ -1255,9 +1258,9 @@ each creature's entry gives a one-line look and the design section to read.
 
 - **Kind:** an Organic of the present era.
 - **Role and job:** runs the town's Art Gallery, **GOOWARD'S GALLERY**, the open-floored kiosk on the east side of the
-  park between the duck pond and Garden Supplies, opposite the Juice Bar (his great painting on its back wall, two
-  goo-splat paintings on easels on the lawn in front, 1.18).
-- **His work in town:** he painted every painting in his Gallery himself (the big canvas and the two on the easels,
+  park between the duck pond and Garden Supplies, opposite the Juice Bar (his great painting on its back wall, three
+  goo-splat paintings on easels on the lawn, his paint cans and brushes about its floor and lawn, 1.18).
+- **His work in town:** he painted every painting in his Gallery himself (the big canvas and the three on the easels,
   1.18), KING DINO's billboard ("Gooward, that wild cat painted my billboard!" (KING DINO)) and the schoolhouse
   mural (1.7).
 - **Post:** wanders round his gallery, 6.6 to 10 m from its middle, in front of it or to either side, never inside or
@@ -1281,6 +1284,8 @@ each creature's entry gives a one-line look and the design section to read.
     2. "Goooooomp!"
     3. "Gomp?"
     4. "\* His crystal wings flutter \* / Gomp Gomp!" (*flavour*)
+    5. "Goomp! Goomp! Goomp!"
+    6. "Goomp?"
   - Blossom: "GOOMP"
   - Event: "\* Happy planting sounds \*"
   - Vignettes: the GOOWARD rows of the pair register ([2.20.4](#2204-the-pair-register)) and its row in THE
@@ -7011,7 +7016,7 @@ per kiosk: no battens (`noBattens`), white roof spots (`spots`), a raised desk (
 | POST OFFICE | `#22325a` | navy `#33508f` / `#26407a` | pink `#e276a0` | Tidy in front (bundled letters, stuffed sorting cubbies, kraft parcels with twine, a blue collection box); behind it, the joke: a slumped mountain of envelopes over 3 m high with an avalanche round its foot |
 | SHERIFF'S | `#6a3a1a` | mushroom brown `#8a5a3a` / `#6e4628`, no battens | toadstool red `#b82822` with white spots | Toadstools everywhere; a gold six-point star on the back wall; a lantern; wanted posters; MUSHROOM's raised desk; the Consortium's flag on a pole behind the sign |
 | GARDEN SUPPLIES | `#2f5a2a` | sage `#6f8f5a` / `#5a7a48` | terracotta `#a85c3a` | Plants everywhere: terracotta pots of shrubs, a cactus, little trees; seedling trays, soil bags, a teal wheelbarrow of blooms, a rake and a shovel; the botanical curiosities (Vegetation, below) |
-| GOOWARD'S GALLERY | `#3a2a5a` | cream `#e8e0cc` / `#d8cfb8`, no battens | violet `#584284` | No desk and no crates: the floor is open. One big canvas (6.9 x 2.6 m, primed `#f4f1e8`, stretcher edge `#c8a070`) on the back wall, carrying GOOWARD's painting (1.18). Two easels of wood `#7a5232` on the lawn either side of its walk, turned toward it, and a third outside the left wall, each holding a gold-framed `#b8902e` goo-splat painting (1.18). Fifteen paint cans (tin `#b8bcc4`, rims `#9a9ea6`, wire handle `#5a5e66`), seven on the lawn outside and eight on the floor inside (three of them big buckets, 2 to 2.5 times the size), each banded and run with one goo colour (cyan, magenta, violet, lime or yellow), some standing open, some tipped over. Six brushes on the floor inside: handles of red `#c8302a`, black `#2a2a2e` or bare wood `#c89a5a`, steel ferrules `#c8ccd4`, dark bristles `#3a2a1e` tipped with a goo colour, and a blob of that paint beside each |
+| GOOWARD'S GALLERY | `#3a2a5a` | cream `#e8e0cc` / `#d8cfb8`, no battens | violet `#584284` | No desk and no crates: the floor is open. One big canvas (6.9 x 2.6 m, primed `#f4f1e8`, stretcher edge `#c8a070`) on the back wall, carrying GOOWARD's painting (1.18). Two easels of wood `#7a5232` on the lawn either side of its walk, turned toward it, and a third outside the left wall, each holding a gold-framed `#b8902e` goo-splat painting (1.18). Fifteen paint cans (tin `#b8bcc4`, rims `#9a9ea6`, wire handle `#5a5e66`), seven on the lawn outside and eight on the floor inside (three of them big buckets, 2 to 2.5 times the size), each banded and run with one goo colour (cyan, magenta, violet, lime or yellow), some standing open, some tipped over. Six brushes on the floor inside: handles of red `#c8302a`, black `#2a2a2e` or bare wood `#c89a5a`, steel ferrules `#c8ccd4`, dark bristles `#3a2a1e` tipped with a goo colour, and a blob of that paint beside each. Under the canvas, a paint roller (cover `#ff3ac8` with steel end caps `#c8ccd4`, a wire frame `#9a9ea6`, a red handle `#c8302a`) and a wide house-painting brush (a flat wooden handle `#c89a5a`, a steel ferrule, dark bristles tipped cyan `#3ae8ff`), each by a smear of its paint |
 
 | Park detail | Style |
 | --- | --- |
