@@ -13,7 +13,7 @@ This section maps each path in `tools/` to its contents.
 | Path | Contents |
 | --- | --- |
 | `index.html` | The readable copy of the game, never compressed: byte-identical to the root `index.html` until the final pass packs the root, and the only readable page after it. Every change is copied here before a push (`test/copycheck.sh` checks). |
-| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](docs/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md). |
+| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](docs/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md), [open tasks](docs/tasks.md). |
 | [`test/`](test) | The runners and their shared modules, the probes, and the render, coverage and pixel-compare tools. |
 | [`audit/`](audit) | Scene audits: stale bounds, the scene's mesh and triangle budget, dead builders, collisions, creatures off home, interface text, state dumps. |
 | [`lint/`](lint) | ESLint over the game script, and the unread-property finder. |
