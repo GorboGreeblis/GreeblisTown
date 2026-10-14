@@ -12441,7 +12441,7 @@ const JGP = (() => {
 				}
 			},
 			// the torn cable: two short prongs at the end of a hanging line, over a crater's glow
-			plug: (x, y) => (curve([[x, y], [x - 6, y + 40], [x + 4, y + 80], [x - 2, y + 106]], "#141010", 3), poly([[x - 7, y + 106], [x + 5, y + 106], [x + 5, y + 118], [x - 7, y + 118]], "#2a2420"), line([[x - 4, y + 118], [x - 4, y + 126]], "#a89878", 2), line([[x + 2, y + 118], [x + 2, y + 126]], "#a89878", 2), ell(x + 4, y + 150, 40, 8, 0, "#120806"), ell(x + 4, y + 148, 34, 5, 0, "rgba(255,110,40,0.5)")),
+			plug: (x, y) => (curve([[x, y], [x - 6, y + 40], [x + 4, y + 80], [x - 2, y + 106]], "#141010", 3), [-0.5, 0.1, 0.6].forEach((a) => line([[x - 2, y + 106], [x - 2 + Math.sin(a) * 9, y + 106 + Math.cos(a) * 11]], "#2a2420", 1.2)), ell(x + 4, y + 150, 40, 8, 0, "#120806"), ell(x + 4, y + 148, 34, 5, 0, "rgba(255,110,40,0.5)")),
 			// the Synthetics: hexagon plates, square pixels, grooves (flat colour, crisp edges: the only flat paint)
 			synth: (x, y, s = 1) => {
 				for (let k = 0; k < 7; k++) hexagon(x + rr(-50, 50) * s, y + rr(-24, 24) * s, rr(7, 15) * s, ["#3fa8a0", "#7acfc8", "#c8d0cc", "#2a6a74"][k % 4], 0.8);
@@ -12471,8 +12471,8 @@ const JGP = (() => {
 				for (let k = 0; k < 8; k++) (c.fillStyle = k % 2 ? "#ff3ad0" : "#8a2aa8"), (c.globalAlpha = 0.6 - k * 0.06), c.fillRect(x + 16 + k * 8, y + 22 + Math.sin(k) * 3, 4, 4), (c.globalAlpha = 1);
 				poly([[x + 6, y + 18], [x + 10, y + 18], [x + 9, y + 54], [x + 6, y + 54]], "#7a5a3a", 0.85);
 			},
-			// a cube (HENNRICK's mark), and his collection jar holding one seed
-			cubeJar: (x, y) => (cube(x, y, 9, "#e8f0ee"), jar(x + 16, y)),
+			// a cube (HENNRICK's mark), and beside it one seed held in a ring of glassy light (his collection jar)
+			cubeJar: (x, y) => (cube(x, y, 9, "#e8f0ee"), ell(x + 16, y - 9, 10, 10, 0, "rgba(200,240,250,0.22)"), (c.strokeStyle = "rgba(235,250,255,0.6)"), (c.lineWidth = 1), c.beginPath(), c.arc(x + 16, y - 9, 9, 0.3, TAU - 0.3), c.stroke(), ell(x + 16, y - 8, 2, 1.5, 0.3, "#5a3a1e")),
 			// SPARKAKUS: a gold star in a royal blue disc, the orange coin at its rim, alebrije vines looping out, a daffodil's trumpet
 			sparkakus: (x, y, s = 1) => {
 				ell(x, y, 26 * s, 26 * s, 0, "#2a4ab8", 0.85), star(x, y, 15 * s, "#ffd23a"), ell(x + 22 * s, y + 14 * s, 5 * s, 5 * s, 0, "#f08a1e"), ell(x + 22 * s, y + 14 * s, 3 * s, 3 * s, 0, "#ffd23a");
@@ -12568,7 +12568,7 @@ const JGP = (() => {
 				}
 				line([[x - 34 * s, y + 20 * s], [x - 26 * s, y + 6 * s]], "#ff8a1a", 3);
 			},
-			// SOMLET: a cream cloud of sleep, a plum lid closed in one downward curve, soft waves of dream, letters drifting down,
+			// SOMLET: a cream cloud of sleep, a plum lid closed in one downward curve, soft waves of dream, pale leaves of mail drifting down,
 			// and behind, a heap of white planes (the mail)
 			somlet: (x, y, s = 1) => {
 				for (let k = 0; k < 9; k++) poly([[x - 50 * s + k * 10 * s, y], [x - 40 * s + k * 10 * s, y - (20 + rnd() * 18) * s], [x - 26 * s + k * 10 * s, y]], jit("#eeeae0", 16), 0.65);
@@ -12581,7 +12581,7 @@ const JGP = (() => {
 				}
 				for (let k = 0; k < 4; k++) {
 					const lx = x + (30 + k * 12) * s, ly = y + (26 + k * 9) * s;
-					poly([[lx, ly], [lx + 10, ly + 3], [lx + 7, ly + 10], [lx - 3, ly + 7]], "#fffaf0", 0.9), line([[lx, ly], [lx + 4, ly + 6], [lx + 10, ly + 3]], "rgba(120,110,100,0.6)", 0.7);
+					poly([[lx, ly], [lx + 10, ly + 3], [lx + 7, ly + 10], [lx - 3, ly + 7]], "#fffaf0", 0.9);
 				}
 			},
 			// MUSHROOM and the Consortium: a red dome with white warts looming from above, a lens in it that watches, a gold
@@ -12607,12 +12607,18 @@ const JGP = (() => {
 				poly([[x + 60 * s, y - 24 * s], [x + 63 * s, y - 24 * s], [x + 63 * s, y + 4 * s], [x + 60 * s, y + 4 * s]], "#5a7a48"), vol(x + 58 * s, y - 6 * s, 5 * s, 7 * s, 0, "#8ab858", "#3a5a28");
 				[0, 1, 2].forEach((k) => ell(x - 10 * s + k * 10 * s, y - 24 * s, 3, 3, 0, ["#ff7ab8", "#ffd23a", "#ffffff"][k]));
 			},
-			// NEXTESSA: a warm disc in wedges, its rim scorched, coming through the far side of the swirl
+			// NEXTESSA: a warm disc come apart into its eight wedges, each turned a little and drifting from the middle, red
+			// rounds loose among them, scorched arcs of rim and a broken red ring (slices of time, through the far side of the swirl)
 			nextessa: (x, y, s = 1) => {
-				ell(x, y, 22 * s, 22 * s, 0, "#3a1a0a"), ell(x, y, 19 * s, 19 * s, 0, "#f6c85a");
-				for (let k = 0; k < 8; k++) line([[x, y], [x + Math.cos(k * 0.785) * 19 * s, y + Math.sin(k * 0.785) * 19 * s]], "#a85a1a", 1);
-				[[4, -6], [-7, 4], [6, 7], [-3, -10]].forEach(([dx, dy]) => ell(x + dx * s, y + dy * s, 3 * s, 3 * s, 0, "#c8302a"));
-				c.strokeStyle = "#c8302a", (c.lineWidth = 1.4), c.beginPath(), c.arc(x, y, 26 * s, 0, TAU), c.stroke();
+				for (let k = 0; k < 8; k++) {
+					const a0 = k * 0.785, a1 = a0 + 0.785, m = a0 + 0.39, o = (3 + (k % 3) * 2) * s;
+					c.save(), c.translate(x + Math.cos(m) * o, y + Math.sin(m) * o), c.rotate((k % 2 ? 1 : -1) * 0.12);
+					poly([[0, 0], [Math.cos(a0) * 19 * s, Math.sin(a0) * 19 * s], [Math.cos(m) * 20 * s, Math.sin(m) * 20 * s], [Math.cos(a1) * 19 * s, Math.sin(a1) * 19 * s]], "#f6c85a", 0.95);
+					(c.strokeStyle = "#3a1a0a"), (c.lineWidth = 2.4 * s), c.beginPath(), c.arc(0, 0, 20 * s, a0 + 0.08, a1 - 0.08), c.stroke(), c.restore();
+				}
+				[[6, -8], [-10, 5], [9, 10], [-4, -14], [16, -2]].forEach(([dx, dy]) => ell(x + dx * s, y + dy * s, 2.6 * s, 2.6 * s, 0, "#c8302a"));
+				c.strokeStyle = "#c8302a", (c.lineWidth = 1.4);
+				for (let k = 0; k < 5; k++) c.beginPath(), c.arc(x, y, 28 * s, (k / 5) * TAU, (k / 5) * TAU + 0.9), c.stroke();
 			},
 			// the Portal: a trilithon of grey stone, the blue swirl inside pulling things through, a dark bar across it (locked),
 			// a Blossom laid on the bar (the bribe)
@@ -12702,7 +12708,7 @@ const JGP = (() => {
 			},
 			// the town on the horizon: emblems of its trades, small and hazed
 			bank: (x, y) => (poly([[x - 16, y - 22], [x + 16, y - 22], [x, y - 32]], "#d8d0b8"), [-12, -4, 4, 12].forEach((d) => line([[x + d, y - 22], [x + d, y]], "#e8e0c8", 3)), ell(x, y - 26, 3, 2, 0, "#2a2a30")),
-			barber: (x, y) => { (c.fillStyle = "#f0f0f0"), c.fillRect(x - 3, y - 28, 6, 28); for (let k = 0; k < 6; k++) line([[x - 3, y - 2 - k * 5], [x + 3, y - 6 - k * 5]], k % 2 ? "#2a4aa8" : "#c8202a", 1.6); },
+			barber: (x, y) => { for (let k = 0; k < 6; k++) line([[x - 3, y - 2 - k * 5], [x + 3, y - 6 - k * 5]], ["#c8202a", "#f0f0f0", "#2a4aa8"][k % 3], 1.8); },
 			tower: (x, y) => (line([[x - 7, y], [x - 4, y - 18]], "#6a6a6a", 1), line([[x + 7, y], [x + 4, y - 18]], "#6a6a6a", 1), vol(x, y - 26, 11, 9, 0, "#ffd8c0", "#c88a6a"), curve([[x - 11, y - 24], [x, y - 20], [x + 11, y - 26]], "#a8e830", 1.6), drip(x - 4, y - 30, 8, 1.4, "#3ae8ff", 0.7)),
 			greenhouse: (x, y) => (poly([[x - 14, y], [x - 14, y - 14], [x, y - 22], [x + 14, y - 14], [x + 14, y]], "rgba(200,240,240,0.45)"), line([[x + 4, y - 12], [x + 6, y - 34]], "#4a8a2a", 1.4), [0, 1, 2, 3, 4].forEach((k) => ell(x + 6 + Math.cos(k * 1.26) * 4, y - 36 + Math.sin(k * 1.26) * 4, 3.6, 2, k * 1.26, "#e83ab8")), ell(x + 6, y - 36, 2, 2, 0, "#ffd23a")),
 			bolt: (x, y) => ((c.fillStyle = "#2ab4a8"), c.fillRect(x - 3, y - 30, 6, 30), poly([[x + 1, y - 28], [x - 4, y - 18], [x, y - 18], [x - 2, y - 10], [x + 4, y - 21], [x, y - 21]], "#ffe84a")),
@@ -12712,12 +12718,12 @@ const JGP = (() => {
 			shake: (x, y) => (poly([[x - 6, y - 22], [x + 6, y - 22], [x + 4, y], [x - 4, y]], "#f0f0f0"), vol(x, y - 24, 7, 5, 0, "#ff8ad8", "#c83aa8"), line([[x + 2, y - 26], [x + 5, y - 36]], "#e83a3a", 1.6), drip(x - 4, y - 22, 9, 1.6, "#ff8ad8", 0.8)),
 			cone: (x, y) => (poly([[x - 6, y - 14], [x + 6, y - 14], [x, y]], "#d8a058"), ["#3ae8ff", "#ff3ac8", "#a8e830"].forEach((col, k) => vol(x + (k - 1) * 4, y - 17 - (k === 1 ? 6 : 0), 5, 5, 0, col, mix(col, "#000000", 0.4))), [-1, 1].forEach((sd) => poly([[x + sd * 6, y - 18], [x + sd * 18, y - 28], [x + sd * 14, y - 16]], "rgba(220,250,255,0.75)"))),
 			vane: (x, y) => (line([[x, y], [x, y - 30]], "#4a8a7a", 1), line([[x - 10, y - 30], [x + 10, y - 30]], "#4a8a7a", 1), poly([[x + 10, y - 32], [x + 14, y - 30], [x + 10, y - 28]], "#4a8a7a"), poly([[x - 6, y - 32], [x + 4, y - 32], [x + 8, y - 42], [x + 6, y - 32]], "#5a9a8a"), poly([[x - 2, y - 33], [x - 8, y - 42], [x + 1, y - 34]], "#5a9a8a")),
-			church: (x, y) => ((c.fillStyle = "#8a8680"), c.fillRect(x - 6, y - 40, 12, 40), poly([[x - 7, y - 40], [x + 7, y - 40], [x, y - 52]], "#4a4a50"), line([[x, y - 52], [x, y - 60]], "#e8c84a", 1.2), line([[x - 2.5, y - 57], [x + 2.5, y - 57]], "#e8c84a", 1.2), ell(x, y - 30, 2.4, 4, 0, "#2a2a2a")),
-			// the park: the iron fence (pickets between brick pillars), the octagon of the gazebo with its gold ball, the lit
-			// glass box of the phone booth
+			church: (x, y) => ((c.fillStyle = "#8a8680"), c.fillRect(x - 6, y - 40, 12, 40), poly([[x - 7, y - 40], [x + 7, y - 40], [x, y - 52]], "#4a4a50"), ell(x, y - 56, 1.8, 1.8, 0, "#e8c84a"), ell(x, y - 56, 5, 5, 0, "rgba(255,220,120,0.25)"), ell(x, y - 30, 2.4, 4, 0, "#2a2a2a")),
+			// the park: the iron fence (pickets between brick pillars), the gazebo as an octagon of white line under a gold
+			// point, the phone booth as an upright of pale light
 			fence: (x, y, n) => { for (let k = 0; k < n; k++) k % 6 ? line([[x + k * 5, y], [x + k * 5, y - 12]], "#141414", 1.2) : ((c.fillStyle = "#8a3a2a"), c.fillRect(x + k * 5 - 2, y - 15, 4, 15)); line([[x, y - 10], [x + n * 5, y - 10]], "#141414", 0.8); },
-			gazebo: (x, y) => { const o = []; for (let k = 0; k < 8; k++) o.push([x + Math.cos(k * 0.785) * 14, y + Math.sin(k * 0.785) * 5]); poly(o, "#f0ece0", 0.8); for (let k = 0; k < 5; k++) line([[x - 12 + k * 6, y], [x - 12 + k * 6, y - 14]], "#f6f2e8", 1); poly([[x - 16, y - 14], [x + 16, y - 14], [x, y - 24]], "#4a8a5a"); ell(x, y - 26, 2, 2, 0, "#ffd23a"); },
-			booth: (x, y) => (poly([[x - 7, y], [x + 7, y], [x + 7, y - 30], [x - 7, y - 30]], "rgba(220,240,255,0.35)"), line([[x - 7, y], [x - 7, y - 30], [x + 7, y - 30], [x + 7, y]], "#c8ccd4", 1.4), ell(x, y - 33, 9, 3, 0, "rgba(255,250,200,0.8)"), ell(x, y - 33, 14, 6, 0, "rgba(255,250,200,0.2)")),
+			gazebo: (x, y) => { const o = []; for (let k = 0; k <= 8; k++) o.push([x + Math.cos(k * 0.785) * 14, y - 8 + Math.sin(k * 0.785) * 5]); line(o, "#f6f2e8", 1.2, 0.85); ell(x, y - 26, 2, 2, 0, "#ffd23a"); line([[x, y - 23], [x, y - 13]], "rgba(255,214,60,0.5)", 0.8); },
+			booth: (x, y) => ((c.fillStyle = grad(x, y, x, y - 32, [[0, "rgba(220,240,255,0.15)"], [1, "rgba(240,250,255,0.55)"]])), c.fillRect(x - 5, y - 30, 10, 30), ell(x, y - 33, 9, 3, 0, "rgba(255,250,200,0.6)"), ell(x, y - 33, 14, 6, 0, "rgba(255,250,200,0.2)")),
 			// the Library's rug: two paisleys curled round each other (a great medallion), red, gold sprigs
 			paisley: (x, y, s = 1) => [0, 1].forEach((k) => {
 				c.save(), c.translate(x, y), c.rotate(k * Math.PI);
@@ -12729,9 +12735,10 @@ const JGP = (() => {
 				for (let k = 0; k < 18; k++) poly([[x + rr(-30, 30), y - rr(0, 34)], [x + rr(-30, 30), y - rr(0, 34)], [x + rr(-30, 30), y]], jit("#f0ece4", 20), 0.7);
 				poly([[x - 34, y], [x + 34, y], [x + 34, y + 6], [x - 34, y + 6]], "#1a2a5a");
 			},
-			// the light bulb of the long speech, and the glue that mends the relic (a white run, its bottle's orange tip)
-			bulb: (x, y) => (ell(x, y, 20, 20, 0, "rgba(255,230,150,0.25)"), vol(x, y, 7, 8, 0, "#fffbe0", "#e8c870"), poly([[x - 4, y + 7], [x + 4, y + 7], [x + 3, y + 13], [x - 3, y + 13]], "#a8a8b0")),
-			glue: (x, y) => (poly([[x - 5, y], [x + 5, y], [x + 5, y - 16], [x - 5, y - 16]], "#f6f6f0"), poly([[x - 5, y - 10], [x + 5, y - 10], [x + 5, y - 5], [x - 5, y - 5]], "#d8302a"), poly([[x - 2, y - 16], [x + 2, y - 16], [x, y - 22]], "#ff8a1a"), curve([[x, y + 2], [x + 3, y + 30], [x + 2, y + 60], [x + 6, y + 84]], "rgba(255,255,255,0.75)", 2.4)),
+			// the light bulb of the long speech as a glow round a coil of gold, and the glue that mends the relic: a bead of
+			// white under an orange point, its ropy run, and three white stitches across it
+			bulb: (x, y) => { ell(x, y, 20, 20, 0, "rgba(255,230,150,0.25)"), ell(x, y, 8, 9, 0, "rgba(255,250,224,0.55)"); const p = []; for (let k = 0; k <= 12; k++) p.push([x - 5 + k * (10 / 12), y + 2 + (k % 2 ? -3 : 0) - Math.sin((k / 12) * Math.PI) * 3]); line(p, "#ffcf5a", 1); line([[x - 5, y + 2], [x - 3, y + 11]], "rgba(255,207,90,0.5)", 0.8), line([[x + 5, y + 2], [x + 3, y + 11]], "rgba(255,207,90,0.5)", 0.8); },
+			glue: (x, y) => (ell(x, y - 19, 2.2, 2.2, 0, "#ff8a1a"), ell(x, y - 9, 4.5, 7, 0, "#f6f6f0"), ell(x - 1.5, y - 12, 1.2, 2.2, 0, "#ffffff"), curve([[x, y - 2], [x + 3, y + 30], [x + 2, y + 60], [x + 6, y + 84]], "rgba(255,255,255,0.75)", 2.4), [20, 42, 64].forEach((d) => line([[x - 4, y + d], [x + 8, y + d - 3]], "rgba(255,255,255,0.6)", 1.2))),
 			// the Seeds sold as a bagel seasoning packet: a speckled paper packet
 			seeds: (x, y) => { poly([[x - 8, y - 11], [x + 8, y - 11], [x + 8, y + 9], [x - 8, y + 9]], "#e8d8b0"); for (let k = 0; k < 22; k++) ell(x + rr(-6, 6), y + rr(-8, 7), 0.9, 0.6, rnd() * 3, k % 3 ? "#f8f0d8" : "#1a1a1a"); },
 			// the unexplained curiosities: a crystal on a stem, lightning petals round a pale core, an acorn tipped on its side
@@ -12759,28 +12766,31 @@ const JGP = (() => {
 				for (let k = 0; k < 9; k++) { const px = x + rr(-44, 44), py = y + rr(-8, 8); ell(px, py, 5, 2.4, 0, "#4a8a3a"), k % 3 === 0 && ell(px, py - 1.5, 1.8, 1.4, 0, "#ffd8e8"); }
 				for (let k = 0; k < 12; k++) line([[x + 50 + k * 2, y + 6], [x + 52 + k * 2, y - 14 - (k % 3) * 4]], "#5a6a2a", 1.1), k % 3 || ell(x + 52 + k * 2, y - 16 - (k % 3) * 4, 1.2, 3, 0, "#6a3a1a");
 			},
-			// the field office: a listening dish on a lattice mast turned up to the sky; the find, a scorched ring taped off
-			// between orange posts under two floodlights; the flag as a pennant
+			// the field office: listening as three nested arcs turned up to the sky over a thin upright; the find, a scorched
+			// ring crossed by a dashed orange line, two wedges of hard white light falling on it; the flag as a pennant
 			dish: (x, y) => {
-				line([[x, y], [x, y - 40]], "#6a6a70", 1.4);
-				for (let k = 0; k < 6; k++) line([[x - 3, y - k * 7], [x + 3, y - k * 7 - 7]], "#6a6a70", 0.6);
-				c.save(), c.translate(x, y - 44), c.rotate(-0.6), ell(0, 0, 12, 4, 0, "#c8ccd4"), ell(0, -1, 9, 2.4, 0, "#8a8e98"), c.restore();
+				line([[x, y], [x, y - 36]], "rgba(106,106,112,0.7)", 1);
+				c.save(), c.translate(x, y - 44), c.rotate(-0.6), (c.strokeStyle = "#c8ccd4");
+				[12, 8, 4].forEach((r, k) => ((c.lineWidth = 1.6 - k * 0.4), c.beginPath(), c.ellipse(0, k * 3, r, r * 0.45, 0, 0, Math.PI), c.stroke()));
+				ell(0, -6, 1.4, 1.4, 0, "#ffffff"), c.restore();
 			},
 			scorch: (x, y) => {
+				[-44, 44].forEach((d) => ((c.fillStyle = grad(x + d, y - 40, x, y, [[0, "rgba(255,255,230,0.4)"], [1, "rgba(255,255,230,0)"]])), c.beginPath(), c.moveTo(x + d, y - 40), c.lineTo(x + d * 0.2, y + 2), c.lineTo(x + d * 0.6, y + 6), c.fill()));
 				ell(x, y, 30, 7, 0, "#120c08"), (c.strokeStyle = "rgba(255,120,40,0.5)"), (c.lineWidth = 1), c.beginPath(), c.ellipse(x, y, 26, 5.5, 0, 0, TAU), c.stroke();
-				[-36, -12, 12, 36].forEach((d) => line([[x + d, y + 6], [x + d, y - 6]], "#ff8a1a", 1.6)), line([[x - 36, y - 4], [x + 36, y - 4]], "rgba(255,200,40,0.8)", 1);
-				[-44, 44].forEach((d) => (line([[x + d, y + 6], [x + d, y - 26]], "#5a5a60", 1), (c.fillStyle = grad(x + d, y - 26, x, y, [[0, "rgba(255,255,230,0.4)"], [1, "rgba(255,255,230,0)"]])), c.beginPath(), c.moveTo(x + d, y - 26), c.lineTo(x + d * 0.2, y + 2), c.lineTo(x + d * 0.6, y + 6), c.fill()));
+				for (let k = 0; k < 12; k++) line([[x - 40 + k * 7, y - 3 + k * 0.2], [x - 36 + k * 7, y - 3 + k * 0.2]], k % 2 ? "rgba(255,200,40,0.8)" : "#ff8a1a", 1.4);
 			},
 			pennant: (x, y) => (line([[x, y], [x, y - 40]], "#8a8a90", 1.2), poly([[x, y - 40], [x + 30, y - 36], [x + 26, y - 30], [x + 30, y - 24], [x, y - 22]], "#1a2a5a"), line([[x + 26, y - 30], [x + 30, y - 36]], "#d8b04a", 1.2), ell(x + 12, y - 33, 5, 3, 0, "#c8302a"), line([[x + 12, y - 31], [x + 12, y - 26]], "#f0e8d0", 2)),
 			// the wanted wall's ghost: eight blank parchment sheets pinned, no two overlapping
 			wanted: (x, y) => { for (let k = 0; k < 8; k++) { const px = x + (k % 4) * 22, py = y + Math.floor(k / 4) * 28; poly([[px - 8, py - 11], [px + 8, py - 11], [px + 8, py + 11], [px - 8, py + 11]], "#d8c8a0", 0.35), ell(px, py - 10, 1, 1, 0, "#8a6a4a", 0.5); } },
 			// Mayor Mont to come: a teal square crowned with a thin gold line, pressed to the dome; a crackle where they touch
 			mayor: (x, y) => { poly([[x - 14, y - 14], [x + 14, y - 14], [x + 14, y + 14], [x - 14, y + 14]], "#2ab4a8"), line([[x - 14, y - 17], [x + 14, y - 17]], "#ffd23a", 1.6); for (let k = 0; k < 6; k++) line([[x + 16, y - 4 + k * 2], [x + 22 + rr(0, 6), y - 6 + k * 2 + rr(-3, 3)]], "rgba(255,255,255,0.8)", 0.8); },
-			// the UFO the Consortium hunts: a chrome ellipse with a ring of coloured lights, a cone of light below
+			// the UFO the Consortium hunts: a broken ring of chrome and coloured points, a cone of light below
 			ufo: (x, y) => {
 				c.fillStyle = grad(x, y, x, y + 140, [[0, "rgba(200,255,220,0.25)"], [1, "rgba(200,255,220,0)"]]), c.beginPath(), c.moveTo(x - 6, y), c.lineTo(x + 6, y), c.lineTo(x + 40, y + 140), c.lineTo(x - 40, y + 140), c.fill();
-				vol(x, y, 34, 8, 0, "#f0f4f8", "#6a7078", 0.7), vol(x, y - 6, 12, 7, 0, "#d8f0ff", "#5a8aa8", 0.6);
+				c.strokeStyle = "rgba(232,238,244,0.75)";
+				for (let k = 0; k < 6; k++) (c.lineWidth = 1.6), c.beginPath(), c.ellipse(x, y, 32, 6, 0, (k / 6) * TAU + 0.12, ((k + 1) / 6) * TAU - 0.12), c.stroke();
 				for (let k = 0; k < 12; k++) ell(x + Math.cos((k / 12) * TAU) * 30, y + 1 + Math.sin((k / 12) * TAU) * 5, 1.4, 1.4, 0, ["#ff4a5a", "#ffd23a", "#4ae8ff"][k % 3], 0.85);
+				ell(x, y - 2, 6, 3, 0, "rgba(216,240,255,0.4)");
 			},
 			// a painting within the painting: a tiny framed canvas holding this one's dark, light and storm, and a tinier frame
 			mise: (x, y) => {
@@ -12806,12 +12816,13 @@ const JGP = (() => {
 				}
 				for (let k = 0; k < 200; k++) ell(rr(0, U(0.3)), rr(0, V(0.42)), 0.8, 0.8, 0, "#e8ecff", rr(0.2, 0.7));
 			},
-			// a theropod far off on the waste, mouth open, a faint ring of a crown on its skull (in the family since the Cretaceous)
+			// the Cretaceous far off on the waste: one long low dark stroke rising to an open angle of jaw, a row of small teeth
+			// in it, a faint ring of a crown above (KING DINO's family)
 			theropod: (x, y) => {
-				c.fillStyle = "rgba(30,20,18,0.55)", c.beginPath();
-				c.moveTo(x - 60, y - 34), c.quadraticCurveTo(x - 20, y - 50, x + 10, y - 44), c.quadraticCurveTo(x + 30, y - 56, x + 44, y - 58), c.lineTo(x + 58, y - 54), c.lineTo(x + 46, y - 49), c.lineTo(x + 56, y - 46), c.lineTo(x + 36, y - 44);
-				c.quadraticCurveTo(x + 26, y - 36, x + 20, y - 26), c.lineTo(x + 14, y), c.lineTo(x + 8, y), c.lineTo(x + 6, y - 20), c.lineTo(x - 6, y - 22), c.lineTo(x - 10, y), c.lineTo(x - 16, y), c.lineTo(x - 16, y - 24), c.quadraticCurveTo(x - 40, y - 26, x - 60, y - 34), c.fill();
-				(c.strokeStyle = "rgba(80,220,210,0.35)"), (c.lineWidth = 1.2), c.beginPath(), c.ellipse(x + 42, y - 60, 7, 2.5, -0.2, 0, TAU), c.stroke();
+				curve([[x - 60, y - 30], [x - 20, y - 40], [x + 10, y - 42], [x + 36, y - 48]], "rgba(30,20,18,0.6)", 5);
+				line([[x + 36, y - 48], [x + 60, y - 58]], "rgba(30,20,18,0.6)", 3), line([[x + 36, y - 48], [x + 60, y - 44]], "rgba(30,20,18,0.6)", 3);
+				for (let k = 0; k < 5; k++) poly([[x + 40 + k * 4, y - 49 - k * 1.6], [x + 42 + k * 4, y - 53 - k * 1.6], [x + 44 + k * 4, y - 50 - k * 1.6]], "rgba(236,228,206,0.5)");
+				(c.strokeStyle = "rgba(80,220,210,0.35)"), (c.lineWidth = 1.2), c.beginPath(), c.ellipse(x + 42, y - 62, 7, 2.5, -0.2, 0, TAU), c.stroke();
 			},
 		};
 		function k2col(dx) {
@@ -13442,10 +13453,10 @@ const JGP = (() => {
 				const x = U(0.74) + 40, y = V(0.84) + 44;
 				poly([[x - 12, y - 4], [x + 10, y - 9], [x + 12, y - 2], [x - 10, y + 3]], "#f0e8d4"), poly([[x - 12, y - 7], [x + 10, y - 12], [x + 10, y - 9], [x - 12, y - 4]], "#3a6a4a");
 			}
-			// FORTIZMO's tip jar: a glass with a few coins in it, by her horn
+			// FORTIZMO's tip jar: a few coins held in a faint round of glassy light, by her horn
 			{
 				const x = U(0.575) - 46, y = V(0.47) + 34;
-				ell(x, y, 8, 2.4, 0, "rgba(220,240,250,0.35)"), line([[x - 8, y - 16], [x - 8, y], [x + 8, y], [x + 8, y - 16]], "rgba(255,255,255,0.65)", 1);
+				ell(x, y - 6, 10, 9, 0, "rgba(220,240,250,0.18)"), ell(x, y, 8, 2.4, 0, "rgba(220,240,250,0.35)");
 				[[-3, -2], [3, -3], [0, -6]].forEach(([dx, dy]) => ell(x + dx, y + dy, 3, 1.4, 0, "#d8a840"));
 			}
 			// ANOMALEE's dinner on its plate: a Blossom, a bite taken from it
@@ -13454,20 +13465,21 @@ const JGP = (() => {
 				ell(x, y, 16, 5, 0, "#e8e4dc", 0.85), ell(x, y, 11, 3.4, 0, "#d0ccc4", 0.85);
 				blossom(x - 2, y - 3, 0.35), ell(x + 5, y - 6, 3.5, 3.5, 0, "#d0ccc4");
 			}
-			// the carrot juice on the rocks, which is just a carrot and ice
+			// the carrot juice on the rocks, which is just a carrot and ice: one tapering stroke of carrot orange, a touch of
+			// green at its head, three clear cubes
 			{
 				const x = U(0.83) - 20, y = V(0.72);
-				poly([[x - 16, y - 3], [x + 14, y - 1], [x + 16, y + 1], [x - 16, y + 4]], "#ff8a2a"), line([[x - 6, y - 2], [x - 5, y + 3]], "rgba(150,70,10,0.5)", 0.8), line([[x + 4, y - 1], [x + 5, y + 2]], "rgba(150,70,10,0.5)", 0.8);
-				[[-1, 2.6], [1, 1.8], [-0.2, 3]].forEach(([d, a]) => line([[x - 16, y], [x - 16 - Math.cos(a) * 9, y + Math.sin(a) * 9 * d]], "#4a9a3a", 1.6));
+				poly([[x - 16, y - 3], [x + 14, y - 1], [x + 16, y + 1], [x - 16, y + 4]], "#ff8a2a"), ell(x - 17, y, 2, 2.4, 0, "#4a9a3a");
 				[[22, -2], [30, 2], [26, 6]].forEach(([dx, dy]) => ((c.fillStyle = "rgba(230,250,255,0.55)"), c.fillRect(x + dx - 3, y + dy - 3, 6, 6)));
 			}
-			// the duck on the pond of the schoolhouse mural
+			// the duck on the pond of the schoolhouse mural: a dot of its green and a point of its gold, rings spreading out
 			{
 				const x = U(0.69) - 22, y = V(0.82) - 2;
-				vol(x, y, 7, 3.6, 0, "#8a7a5a", "#3a2e1e"), vol(x + 6, y - 5, 3, 3, 0, "#2a5a3a", "#0e2a1a"), poly([[x + 8.5, y - 5], [x + 12, y - 4.4], [x + 8.5, y - 3.6]], "#d8a83a");
+				ell(x, y, 3, 2.4, 0, "#2a5a3a"), ell(x + 3.5, y - 0.5, 1.2, 1, 0, "#d8a83a");
+				[7, 12, 17].forEach((r, k) => ((c.strokeStyle = "rgba(220,240,255," + (0.5 - k * 0.14) + ")"), (c.lineWidth = 0.8), c.beginPath(), c.ellipse(x, y + 1, r, r * 0.28, 0, 0, TAU), c.stroke()));
 			}
-			// SOMLET's hammock, slung empty on her porch
-			curve([[U(0.785) - 52, V(0.3) + 70], [U(0.785) - 28, V(0.3) + 84], [U(0.785) - 4, V(0.3) + 70]], "#d8c8a8", 3, 0.8), [-52, -4].forEach((d) => line([[U(0.785) + d, V(0.3) + 70], [U(0.785) + d, V(0.3) + 58]], "#8a6a4a", 1.2));
+			// SOMLET's hammock, slung empty on her porch: only its sag, one soft curve of cream
+			curve([[U(0.785) - 52, V(0.3) + 70], [U(0.785) - 28, V(0.3) + 84], [U(0.785) - 4, V(0.3) + 70]], "#d8c8a8", 3, 0.8);
 			// a goo burger coupon: a cream slip with a perforated edge
 			{
 				const x = U(0.47) + 52, y = V(0.42) + 20;
@@ -13475,8 +13487,8 @@ const JGP = (() => {
 				for (let k = 0; k < 4; k++) ell(-6, -3.6 + k * 2.4, 0.5, 0.5, 0, "#ffffff");
 				c.restore();
 			}
-			// HENNRICK's surprise: a short run of white pickets by his jar
-			for (let k = 0; k < 7; k++) poly([[U(0.42) + 30 + k * 6, V(0.71) + 14], [U(0.42) + 30 + k * 6, V(0.71) + 2], [U(0.42) + 32 + k * 6, V(0.71) - 1], [U(0.42) + 34 + k * 6, V(0.71) + 2], [U(0.42) + 34 + k * 6, V(0.71) + 14]], "#f4f2ea", 0.85);
+			// HENNRICK's surprise: a short run of white pickets by his jar, as a rhythm of white ticks
+			for (let k = 0; k < 7; k++) line([[U(0.42) + 32 + k * 6, V(0.71) + 14], [U(0.42) + 32 + k * 6, V(0.71) + (k % 2 ? 2 : -1)]], "#f4f2ea", 2.2, 0.85);
 			line([[U(0.42) + 28, V(0.71) + 7], [U(0.42) + 72, V(0.71) + 7]], "#f4f2ea", 1.2, 0.85);
 			// STAPLERS, the Library's very dry manual: one plain grey spine among SPARKAKUS's books
 			poly([[U(0.43) + 68, V(0.6) + 28], [U(0.43) + 74, V(0.6) + 28], [U(0.43) + 74, V(0.6) + 4], [U(0.43) + 68, V(0.6) + 4]], "#9a9a9c", 0.9);
@@ -13487,12 +13499,13 @@ const JGP = (() => {
 				curve(pts, "rgba(26,42,90,0.45)", 1);
 			}
 		}
-		// ETCHER's mallet and chisel, at the end of the groove that is still being cut
+		// ETCHER's mallet and chisel, at the end of the groove that is still being cut: a bright steel wedge driven in, the
+		// blow as short marks of light round its head
 		function chisel(x, y) {
 			c.save(), c.translate(x, y), c.rotate(-0.7);
-			poly([[0, -1.5], [22, -2], [22, 2], [0, 1.5]], "#b8bcc4"), poly([[0, -1.5], [-2, 0], [0, 1.5]], "#e8ecf0"), (c.fillStyle = "#6a4a2a"), c.fillRect(22, -2.6, 12, 5.2);
+			poly([[-2, 0], [24, -3], [24, 3]], "#b8bcc4"), line([[-2, 0], [24, -1]], "#e8ecf0", 0.8);
+			[-0.9, -0.3, 0.3, 0.9].forEach((a) => line([[28 + Math.cos(a) * 4, Math.sin(a) * 4], [28 + Math.cos(a) * 10, Math.sin(a) * 10]], "rgba(255,245,220,0.7)", 1));
 			c.restore();
-			c.save(), c.translate(x + 30, y - 34), c.rotate(0.5), (c.fillStyle = "#8a6a44"), c.fillRect(-2, 0, 4, 22), (c.fillStyle = grad(-10, 0, 10, 0, [[0, "#5a3a1e"], [0.5, "#a8804e"], [1, "#6a4a28"]])), c.fillRect(-10, -8, 20, 9), c.restore();
 		}
 		// a thing painted thinly: drawn apart, then glazed in at a given strength (and softness)
 		function ghost(fn, a, x0, y0, w, h) {
@@ -13540,12 +13553,6 @@ const JGP = (() => {
 			poly([[x, y - s], [x + s, y - s * 0.5], [x, y], [x - s, y - s * 0.5]], col);
 			poly([[x - s, y - s * 0.5], [x, y], [x, y + s], [x - s, y + s * 0.5]], mix(col, "#5a6a6a", 0.45));
 			poly([[x, y], [x + s, y - s * 0.5], [x + s, y + s * 0.5], [x, y + s]], mix(col, "#8a9a9a", 0.25));
-		}
-		function jar(x, y) {
-			c.fillStyle = "rgba(200,240,250,0.3)", c.fillRect(x - 6, y - 18, 12, 18);
-			line([[x - 6, y - 18], [x - 6, y], [x + 6, y], [x + 6, y - 18]], "rgba(255,255,255,0.7)", 1);
-			poly([[x - 7, y - 21], [x + 7, y - 21], [x + 7, y - 18], [x - 7, y - 18]], "#8a7a6a"), ell(x, y - 5, 2, 1.5, 0.3, "#5a3a1e");
-			line([[x - 4, y - 16], [x - 4, y - 3]], "rgba(255,255,255,0.6)", 1);
 		}
 		function crystal(x, y, h, rot) {
 			c.save(), c.translate(x, y), c.rotate(rot);
