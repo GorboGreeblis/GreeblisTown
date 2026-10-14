@@ -27,6 +27,7 @@ const { launch, isMobile, contextOptions } = require('./browser.js');
     console.log('done', m, ((Date.now() - t0) / 1000).toFixed(0) + 's', 'errors', await p.evaluate(() => Re.errors).catch(() => '?'));
   }
   const { result } = await cdp.send('Profiler.takePreciseCoverage');
+  await cdp.send('Profiler.stopPreciseCoverage'); await cdp.detach();
   fs.writeFileSync(out, JSON.stringify(result.filter((r) => /index\.html/.test(r.url))));
   console.log('console errors:', logs.slice(0, 20).join('\n'));
   await b.close();
