@@ -593,22 +593,22 @@ share one atlas. The town is about 101.6k triangles in 24 meshes; `test/t_townvi
   GORBO's goo shake on the roof); GLYPH's sign shop (porcelain blue, gold filigree on its band, his red trident on a
   gold shield over the door, hexagon plates along the frieze, his A-board on the walk); SPARKAKUS's genealogical society
   (a family tree in a gold oval over the door, daffodil beds, his gold star on the crest).
-- **Main Street, west side:** the bank with a flint nugget carved over its doors; the grocer's (crates of fruit in the
+- **Main Street, west side:** the bank with a flint nugget carved over its doors; the grocer's, which ZOLLOD runs (his five pots from seed to flower on its band, crates of fruit in the
   Juice Bar's colours with Blossom stencils, a giant carrot on the crest); the ice cream parlour (three scoops of goo
   flavour on a cone, GOOWARD's winged goo cone on its band); ETCHER's archive (blue-teal stone, his etched data in
   painted tiles, his green gem on the crest, his purple tails draped down the piers, a half-etched slab with mallet and
   chisel); the curiosity shop (a stone Great Sphinx out front, one eye socket empty: the missing Eye is the Ancient Gem);
-  the florist's (a giant Blossom over its false front, ZOLLOD's five pots from seed to flower on its band); ANOMALEE's
+  the florist's (a giant Blossom over its false front); ANOMALEE's
   television repair (moulded plastic grey, a rabbit-ear aerial, old sets by the door with her glow in their screens, her
   workbench and pizza on its band).
 - **North:** the Town Hall with the town's seal (a wreath round the garden's five flowers) and the clock, the seal's
   five flowers in beds at its steps and BACKPACKA as a topiary past the east bed; the fire station with its right bay
   open and the engine's nose in it, a BACKPACKA weathervane over the siren (`vane`, a cut-out on the sign atlas); the hotel
-  (balconies, a canopy, a brass luggage cart, a tank on the roof); MONTGUMMERY's video store (his teal, his face on a TV
+  (balconies, a canopy, a brass luggage cart, a tank on the roof); the video store MONTGUMMERY runs (his teal, his face on a TV
   on the roof beside a giant blank cassette, his pots by the door, a tape-return bin and two chewed cassettes, a band of
   cassettes with the last one bitten); the filling station of the far future (charging posts with glowing ports, the
   canopy in his teal, a lightning bolt on the pylon); the schoolhouse beside the courthouse (below).
-- **Mistergummery's:** MONTGUMMERY's teal (`#55b8c6`) wherever a burger chain would have its yellow (the building,
+- **Mistergummery's** (a franchise founded by MONTGUMMERY's father; MAMA GORBO and GOOWARD run the town's branch): MONTGUMMERY's teal (`#55b8c6`) wherever a burger chain would have its yellow (the building,
   trim, lot and menu); the pylon is just the big teal M on a beam, about as tall as the Main Street rooftops, beside the
   restaurant's front corner, meant to show over the rooftops from the square.
 - **The south street, the homes:** SPARKAKUS (royal blue, his vines painted between the floors, daffodils, his star
