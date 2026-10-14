@@ -125,6 +125,10 @@ Rules for what is finished and who may change it.
    keep its resolution (3072 × 1158), its detail, its colours, its brushwork and every symbol; a change that would cost
    any of these is put to the owner first. Each such change is checked by rendering the painting before and after and
    comparing them.
+7. Standing approval (owner): any model, the locked ones included, may be altered **to improve performance**: its
+   parts merged, rebuilt with fewer draws or triangles, or batched differently. The model must look the same: same
+   shape, proportions, palette and animation, checked by rendering it before and after from several sides. A change
+   that would visibly alter a model is still put to the owner first.
 
 ## Platforms (every game)
 
