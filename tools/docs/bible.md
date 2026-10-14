@@ -210,10 +210,10 @@ GOOWARD keeps the Gallery from the lawn outside.
 | Kiosk | Keeper | What it shows |
 | --- | --- | --- |
 | **LIBRARY** (north-west, (−24.8, −24.8)) | SPARKAKUS | An open reading ground with no walls, roof or raised floor. Eight freestanding double-sided bookcases of big books stand round the librarian (two rows behind him, a row down each side); the **LIBRARY** banner stands on two posts behind them, high enough to show over them. A rug lies over the ground: a deep red field printed with paisley teardrops, small red flowers and gold fern sprigs; a striped border (a navy band of red flowers and white dots, a teal band of red flowers); a great medallion of two paisleys curled round each other; cream lace round the field and a cream fringe at each end. Face-out on nine shelves stand six titled hardbacks (1.15) and three curiosities (1.13). |
-| **POST OFFICE** (north-east) | SOMLET | Navy walls and a red roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, faceted heaps of paper under loose envelopes, tied bundles and parcels stuck in its slopes, tall stacks leaning on its sides and an avalanche of letters fanned out round its foot. Five buried parcels carry readable labels (1.15). SOMLET sleeps in front of it. |
+| **POST OFFICE** (north-east) | SOMLET | Navy walls and a pink roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, faceted heaps of paper under loose envelopes, tied bundles and parcels stuck in its slopes, tall stacks leaning on its sides and an avalanche of letters fanned out round its foot. Five buried parcels carry readable labels (1.15). SOMLET sleeps in front of it. |
 | **SHERIFF'S** (north-east, beside the Post Office) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts, and **the Consortium's flag** flying from a pole behind the sign (1.10). A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the plain back wall over the wanted posters (1.10). Its roof stands 1 m higher than the others' and its desk is raised (top 1.5 m up), so the Sheriff, standing on it, looks down on his visitors. |
 | **GARDEN SUPPLIES** (south-east) | ZOLLOD | Sage walls and a terracotta roof, with plants everywhere: potted shrubs, flowers, ferns, succulents and little trees, seedling trays, a sunflower tray, hanging baskets, bags of soil and compost, a wheelbarrow of flowers out front, a rake and a shovel against the side wall. Among them grow **strange curiosities** after the plates of the Voynich manuscript, in faded inks (pale blue, olive, red-brown, ochre, parchment): bare bulbous roots as big as the plant, striped cup blooms, an "eye of a flower" (a ringed blue eye on legs of forked roots), trumpet clusters on a knot of roots, a scaled bud on a hand of fat roots, a striped lantern bloom on an onion with a beard of roots. A parchment card on the counter is written in the manuscript's unread script. The town's one shop (1.13); ZOLLOD is too shy to keep it until OVERCOMING SHYNESS frees him (1.13). |
-| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big canvas (6.9 m wide and 2.6 m tall), stretched on the back wall, carries **GOOWARD's painting** of the whole of Greeblis (1.18). On the lawn in front, either side of the walk up to it, two framed paintings of his stand on wooden easels, turned a little toward whoever comes up the walk: two goo-ball splat paintings, one on cream and one on deep violet-black (1.18). His paint cans lie about the lawn outside, some standing open with their colour run down the side, some tipped over. GOOWARD painted every painting in it himself. GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
+| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big canvas (6.9 m wide and 2.6 m tall), stretched on the back wall, carries **GOOWARD's painting** of the whole of Greeblis (1.18). On the lawn in front, either side of the walk up to it, two framed paintings of his stand on wooden easels, turned a little toward whoever comes up the walk: two goo-ball splat paintings, one on cream and one on deep violet-black (1.18); a third, on deep teal, stands on its easel outside the left wall, turned a little out toward the park. His paint cans lie about the lawn outside and on the Gallery's own floor (in the back corners under the canvas and along the side walls, the middle left clear; three of those are big buckets), some standing open with their colour run down the side, some tipped over; his brushes lie dropped among them, each with a blob of wet paint by its tip. GOOWARD painted every painting in it himself. GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
 
 ### 1.5 The Juice Bar, the dance floor and the phone booth
 
@@ -568,7 +568,7 @@ This section lists the recurring ideas of the world and where each shows.
 
 | Motif | Canon |
 | --- | --- |
-| **Blossoms** | The flame-petalled flower that grows round town: a green stem and leaves, red flame-shaped petals with orange ones within, and an ember glowing and bobbing over its heart. Always called **Blossoms**, never Fire Blossoms. Giving one is the town's great gesture: it bribes the Sheriff into opening the Portal, starts a Dance battle, brings a goo shower from the Gorbos, sends SPARKAKUS on a lap of the Library, opens SOMLET's eyes. It is the Juice Bar's only currency ("Blossoms only, sugar. Tip jar's on your left."). No Blossom is offered or taken at the Garden Event. In town: the giant Blossom over the florist's, the beds of little ones, the Blossom stencilled on the grocer's crates; on the player: the Flower Hat (1.13). Mechanics: 5.4. |
+| **Blossoms** | The flame-petalled flower that grows round town: a green stem and leaves, red flame-shaped petals with orange ones within, and an ember glowing and bobbing over its heart. Always called **Blossoms**, never Fire Blossoms. Giving one is the town's great gesture: it bribes the Sheriff into opening the Portal, starts a Dance battle, brings a goo shower from GOOWARD, sends SPARKAKUS on a lap of the Library, opens SOMLET's eyes. It is the Juice Bar's only currency ("Blossoms only, sugar. Tip jar's on your left."). No Blossom is offered or taken at the Garden Event. In town: the giant Blossom over the florist's, the beds of little ones, the Blossom stencilled on the grocer's crates; on the player: the Flower Hat (1.13). Mechanics: 5.4. |
 | **Flint** | The main currency of this time period: a dark faceted stone with a glint, picked up round the park, the glints pulsing stone by stone; it regrows like the Blossoms. The bank keeps it (a flint nugget over its doors); the shop prices in it; GEMTOE's gems are "worth countless flint". Flint knapping never appears in the game; MONTGUMMERY's tape "‘Flint Knapping for Beginners’" is a joke only. |
 | **Other money** | KING DINO's coins, which he stamps himself ("not legal tender"); GEMTOE's gems ("not for sale"); goo ("Goo is not currency, sweetie. Nice try."); MAMA GORBO's goo burger coupons; FORTIZMO's tip jar; HENNRICK's collection jar. ZOLLOD's mint nearly converts FORTIZMO: "Mint like that, I'd almost take flint for it." |
 | **Goo** | The Gorbo family's substance, joyful and messy: goo burgers, goo shakes, goo-flavour ice cream, drips, splats and puddles in cyan, magenta, violet and lime. The Gorbos shower the player with it for a Blossom, and lob goo balls to each other when they meet in the park, a heart over each as it lands. "GOO... is also a kind of CODE." (ANOMALEE); "Yes, Gooward. A little goo is good for the soil." (ZOLLOD); "Yes, I etched your goo too. It's archived." (ETCHER) |
@@ -831,6 +831,8 @@ the lore it draws on and the symbol that carries each piece, where each symbol l
 exactly how it is constructed, layer by layer; then the two small paintings on the easels in front. The painting's
 code (`paintGallery`, `paintSplats`; construction.md, kiosks) follows this section, and this section follows the code:
 a change to either is made to both.
+
+**Status.** The design is final, approved by the owner: keep it as it is.
 
 **What it is.** One very abstract painting of the whole of Greeblis: its far, far past and its far, far future, its
 origin, its faith, its kinds of being, its creatures and the town round them. It fills the canvas on the Gallery's
@@ -1108,12 +1110,15 @@ Gallery's ink), painted with a round brush, the G large and looped, underscored 
 the underline. It is laid on a lighter passage of warm paint so it reads against the storm. It is the only word on the
 canvas.
 
-**The two small paintings on the easels.** Two small goo splat paintings, GOOWARD's everyday work: abstract and
-colourful, made of goo balls thrown at the canvas. Each has a different ground (one cream, one deep violet-black); on
+**The three small paintings on the easels.** Three small goo splat paintings, GOOWARD's everyday work: abstract and
+colourful, made of goo balls thrown at the canvas. Each has a different ground (one cream, one deep violet-black, one
+deep teal `#24464c`); on
 it, splats of cyan, magenta, violet and lime in a few sizes, each a burst with a dense centre, a ragged crown of
 spikes and flung droplets, some overlapping wet into wet, with drips running down from the larger ones. No figures and
 no symbols: they are the joke's other half, what everyone expects GOOWARD to paint. They are painted side by side on
-one 512 × 192 px texture (seed 5309).
+one 768 × 192 px texture, three 256 px panels (seed 5309; the teal panel is painted last, so the first two are as they
+were). The cream and violet-black ones stand either side of the walk up to the Gallery; the teal one outside its left
+wall.
 
 **In the game**
 
@@ -1230,7 +1235,7 @@ each creature's entry gives a one-line look and the design section to read.
   her "Mother of goo".
 - **Quests and Event:** her fourth Talk line is the hint for the SEEDS quest's shyness sub-quest (the book that frees
   ZOLLOD). At the Event she plants with a **pat** and dances **jelly**.
-- **Blossom:** shoots her colourful goo at the player.
+- **Blossom:** thanks the player warmly; no goo (only GOOWARD showers the player with goo).
 - **Lines:**
   - Talk:
     1. "Hello dear! I’m so excited to start gardening."
@@ -1241,7 +1246,7 @@ each creature's entry gives a one-line look and the design section to read.
     5. "The hubby and I met over a spilled goo shake. / Love at first splat!" (*flavour*)
     6. "My hubby is quite the artist." (*flavour*)
     7. "My noble goo can heal many inflictions." (*flavour*)
-  - Blossom: "Gooooooom!"
+  - Blossom: "Thank you, dear."
   - Event: "Pretty flowers come to life!"
   - Vignettes: the MAMA GORBO rows of the pair register ([2.20.4](#2204-the-pair-register)) and its row in THE
     ANCIENT's register ([2.20.5](#2205-the-ancients-register)).
@@ -2593,8 +2598,8 @@ Body skin: `blobBody`, `C` (0.02, 1.6, 0.02), k 0.30 (goo-soft), uvLen 1.6.
 | Planting | pat (1.3, 1.2) | roll 0.168·sin 1.3t; press 0.18·(0.5 + 0.5·sin 2.6t); bob 0.03·abs(sin 2.6t) |
 | Dance | jelly (5.45, 1) | sy 1 + 0.12·sin; sx, sz 1 − 0.06·sin; roll 0.06·sin(0.5wt) |
 
-- **Blossom:** eight volleys at 0.25, 0.6, 0.95, 1.3, 1.65, 2.0, 2.35 and 2.7 s, each 3–4 goo balls arcing from her
-  middle to the player's view in her goo colours with "blorp", splatting on the view after 0.95 s.
+- **Blossom:** no effect: she says "Thank you, dear." Her goo colours are used only in her goo-ball exchanges with
+  GOOWARD.
 - **Meeting GOOWARD:** every 20–40 s; four throws in turn (two each way), each a volley of three goo balls, a pink `♥`
   over each catcher (5.13).
 - **Vignettes:** gesture bow, token goo `#e8409e`, emote `♥`.
@@ -2757,7 +2762,9 @@ Positions are local to the body group (y 0.55) unless marked.
 | Planting | pat (1.6, 1.1) | roll 0.154·sin 1.6t; press 0.165·(0.5 + 0.5·sin 3.2t); bob 0.03·abs(sin 3.2t) |
 | Dance | bounce (5.45, 1.1) | hop 0.132·abs(sin); sy 1 + 0.055·cos(2wt); roll 0.055·sin(0.5wt) |
 
-- **Blossom:** the same eight-volley goo shower at the player as MAMA GORBO's, in his goo colours.
+- **Blossom:** eight volleys at 0.25, 0.6, 0.95, 1.3, 1.65, 2.0, 2.35 and 2.7 s, each 3–4 goo balls arcing from his
+  middle to the player's view in his goo colours with "blorp", splatting on the view after 0.95 s. He is the only
+  creature who showers the player with goo.
 - **Meeting MAMA GORBO:** four throws in turn (two each way), each a volley of three goo balls, a pink `♥` over each
   catcher (5.13).
 - **Voice:** only "Gomp" variants.
@@ -6427,7 +6434,7 @@ heart sound and always gets an answer. Answers are graded: **keys** change the g
 | MUSHROOM | "A bribe? …Portal is now open to your use." | The phone can reach the Portal for the rest of the session (5.8) | Key |
 | MONTGUMMERY, ETCHER, GLYPH | "Let’s dance!" | A Dance battle starts when the line closes (5.11). MONTGUMMERY's screen shows his robot face. | Key |
 | GOOWARD | "GOOMP" | Goo shower: eight volleys 0.35 s apart, each of three or four goo balls arcing at the player's head, landing as coloured splats on the view that slide down and fade within about 4 s | Spectacle |
-| MAMA GORBO | "Gooooooom!" | The same goo shower, in her goo colours | Spectacle |
+| MAMA GORBO | "Thank you, dear." | None | Character |
 | SPARKAKUS (at home) | "…sorry I don’t know what got into me." | Drops to all fours, gallops one lap of his Library floor at 4.2 m/s, returns, stands, then apologises | Spectacle |
 | SPARKAKUS (away from home) | "A Blossom! …I must resist the urge to run.\|Not out here, in front of everyone." | No lap: the lap belongs to the Library | Character |
 | SOMLET | "Thank you" | Her eyes open while the line is up, the only time they ever do | Spectacle |
@@ -7001,10 +7008,10 @@ per kiosk: no battens (`noBattens`), white roof spots (`spots`), a raised desk (
 
 | Kiosk | Sign ink | Walls / lower walls | Tin roof | Character |
 | --- | --- | --- | --- | --- |
-| POST OFFICE | `#22325a` | navy `#33508f` / `#26407a` | red `#962a26` | Tidy in front (bundled letters, stuffed sorting cubbies, kraft parcels with twine, a blue collection box); behind it, the joke: a slumped mountain of envelopes over 3 m high with an avalanche round its foot |
+| POST OFFICE | `#22325a` | navy `#33508f` / `#26407a` | pink `#e276a0` | Tidy in front (bundled letters, stuffed sorting cubbies, kraft parcels with twine, a blue collection box); behind it, the joke: a slumped mountain of envelopes over 3 m high with an avalanche round its foot |
 | SHERIFF'S | `#6a3a1a` | mushroom brown `#8a5a3a` / `#6e4628`, no battens | toadstool red `#b82822` with white spots | Toadstools everywhere; a gold six-point star on the back wall; a lantern; wanted posters; MUSHROOM's raised desk; the Consortium's flag on a pole behind the sign |
 | GARDEN SUPPLIES | `#2f5a2a` | sage `#6f8f5a` / `#5a7a48` | terracotta `#a85c3a` | Plants everywhere: terracotta pots of shrubs, a cactus, little trees; seedling trays, soil bags, a teal wheelbarrow of blooms, a rake and a shovel; the botanical curiosities (Vegetation, below) |
-| GOOWARD'S GALLERY | `#3a2a5a` | cream `#e8e0cc` / `#d8cfb8`, no battens | violet `#584284` | No desk and no crates: the floor is open. One big canvas (6.9 x 2.6 m, primed `#f4f1e8`, stretcher edge `#c8a070`) on the back wall, carrying GOOWARD's painting (1.18). Two easels of wood `#7a5232` on the lawn either side of its walk, turned toward it, each holding a gold-framed `#b8902e` goo-splat painting (1.18). Seven paint cans (tin `#b8bcc4`, rims `#9a9ea6`, wire handle `#5a5e66`) on the lawn outside, each banded and run with one goo colour (cyan, magenta, violet, lime or yellow), some standing open, some tipped over |
+| GOOWARD'S GALLERY | `#3a2a5a` | cream `#e8e0cc` / `#d8cfb8`, no battens | violet `#584284` | No desk and no crates: the floor is open. One big canvas (6.9 x 2.6 m, primed `#f4f1e8`, stretcher edge `#c8a070`) on the back wall, carrying GOOWARD's painting (1.18). Two easels of wood `#7a5232` on the lawn either side of its walk, turned toward it, and a third outside the left wall, each holding a gold-framed `#b8902e` goo-splat painting (1.18). Fifteen paint cans (tin `#b8bcc4`, rims `#9a9ea6`, wire handle `#5a5e66`), seven on the lawn outside and eight on the floor inside (three of them big buckets, 2 to 2.5 times the size), each banded and run with one goo colour (cyan, magenta, violet, lime or yellow), some standing open, some tipped over. Six brushes on the floor inside: handles of red `#c8302a`, black `#2a2a2e` or bare wood `#c89a5a`, steel ferrules `#c8ccd4`, dark bristles `#3a2a1e` tipped with a goo colour, and a blob of that paint beside each |
 
 | Park detail | Style |
 | --- | --- |

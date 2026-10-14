@@ -3396,7 +3396,7 @@ function te(t, e) {
 	// (a Blossom is given only from one in hand: so a Dance battle, which only a Blossom starts, always costs one)
 	if (e && Kt.blossoms < 1) return;
 	// (gifting: this dialogue is the creature's Blossom line, not its Talk line)
-	if ((Kt.met.add(a), (xe.lastTarget = t), (t.gifting = !!e), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), ("gorbo" === a || "p_mamagorbo" === a) && Ie(t), "drifter" === a && (Kt.phone = !0);
+	if ((Kt.met.add(a), (xe.lastTarget = t), (t.gifting = !!e), e)) Kt.blossoms--, G.heart(), (n = o.gift), (t.giftAt = performance.now()), "gorbo" === a && Ie(t), "drifter" === a && (Kt.phone = !0);
 	else if ("p_gemtoe" === a && Kt.gem)
 		// GEMTOE trades the Summoning Stone for the Ancient Gem
 		return (
@@ -7258,8 +7258,8 @@ const JGP = (() => {
 			list: [
 				// (these are still being worked on; GEMTOE starts here and wanders the whole park: see the roamers)
 				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 3]],
-				// MAMA GORBO (rebuilt from her artwork, with GORBO's ports and drips); given a Blossom she
-				// shoots her colourful goo at the player, as GOOWARD does
+				// MAMA GORBO (rebuilt from her artwork, with GORBO's ports and drips); given a Blossom she thanks the
+				// player (only GOOWARD shoots goo at the player); her goo colours are for her goo-ball exchanges with him
 				["p_mamagorbo", "MAMA GORBO", "born_mamagorbo", {"color": "#ff9f5c", "bodyR": 1.1, "talkR": 3.8, "goo": ["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]}, [34, 28.40]],
 			],
 		},
@@ -7365,7 +7365,7 @@ const JGP = (() => {
 		},
 		p_mamagorbo: {
 			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for my famous goo burger.|I run the local fast food joint, and the hubby runs the Art Gallery now.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!", "My hubby is quite the artist.", "My noble goo can heal many inflictions."],
-			gift: "Gooooooom!",
+			gift: "Thank you, dear.",
 			campfire: "Pretty flowers come to life!",
 		},
 		// (his screen shows a robot for his Blossom line and a shovel for his Event line)
@@ -7812,10 +7812,12 @@ const JGP = (() => {
 				out = new THREE.Mesh(geo, m0.material);
 			return (out.renderOrder = m0.renderOrder), (out.castShadow = m0.castShadow), out;
 		}
+		// (a transparent part is left alone, since each is sorted against the others by distance, unless it is marked
+		// mergeTr: small scattered pieces that never overlap one another, such as jelly bubbles, look the same as one mesh)
 		const mergeable = (m) => {
 			const mt = m.material,
 				g = m.geometry;
-			return !(Array.isArray(mt) || mt.transparent || !g.attributes.normal || !g.attributes.position || (g.morphAttributes && g.morphAttributes.position));
+			return !(Array.isArray(mt) || (mt.transparent && !m.userData.mergeTr) || !g.attributes.normal || !g.attributes.position || (g.morphAttributes && g.morphAttributes.position));
 		};
 		function compact(root, moving) {
 			const still = (o) => !moving.has(o) && !o.userData.keep && o.visible,
@@ -8164,7 +8166,7 @@ const JGP = (() => {
 				y = 0.35 + 1.7 * rb(),
 				rr0 = Math.max(0.3, 1.12 * Math.sin(Math.min(Math.PI, ((y + 0.1) / 2.35) * Math.PI)));
 			if (Math.abs(Math.sin(a)) > 0.75 && y > 0.9 && y < 1.9 && Math.cos(a) > 0) continue;
-			R(T.sphere(1, 10, 8), bub, body, [rr0 * Math.cos(a), y, rr0 * Math.sin(a)], null, 0.035 + 0.05 * rb());
+			R(T.sphere(1, 10, 8), bub, body, [rr0 * Math.cos(a), y, rr0 * Math.sin(a)], null, 0.035 + 0.05 * rb()).userData.mergeTr = !0;
 		}
 		[
 			[-0.95, 0.42, 0.18, 0.16],
@@ -8262,7 +8264,8 @@ const JGP = (() => {
 		[-1, 1].forEach((sx) => {
 			const w = new THREE.Group();
 			w.position.set(0.5 * sx, 1.55, -0.85), root.add(w), wings.push(w);
-			[[0.55, 1.0], [0.85, 0.82], [1.15, 0.62]].forEach(([a, len], k) => R(T.cone(0.12 - 0.02 * k, len, 5), crystal, w, [sx * len * 0.42 * Math.sin(a), len * 0.42 * Math.cos(a), -0.1], [0, 0, -sx * a]));
+			// (the three crystals of a wing are drawn as one: KIT.compact merges them, mergeTr)
+			[[0.55, 1.0], [0.85, 0.82], [1.15, 0.62]].forEach(([a, len], k) => (R(T.cone(0.12 - 0.02 * k, len, 5), crystal, w, [sx * len * 0.42 * Math.sin(a), len * 0.42 * Math.cos(a), -0.1], [0, 0, -sx * a]).userData.mergeTr = !0));
 		});
 		// the float ring GORBO and MAMA both sit in, with GORBO's AP tag
 		const ring = new THREE.Group();
@@ -11630,7 +11633,7 @@ const JGP = (() => {
 	// of sight of the square behind the kiosk itself, is the joke: a mountain of undelivered mail
 	// nearly as tall as the roof, with parcels half buried in it and letters sliding off.
 	function buildPostOffice(o) {
-		kioskFrame(o, { sign: "POST OFFICE", ink: "#22325a", wall: "#33508f", wall2: "#26407a", tin: [150, 42, 38] });
+		kioskFrame(o, { sign: "POST OFFICE", ink: "#22325a", wall: "#33508f", wall2: "#26407a", tin: [226, 118, 160] });
 		const G = goods(),
 			rs = srand(707),
 			ENV = ["#fbf8f0", "#f4ecd8", "#e8dcc0", "#d8c49a", "#ffffff", "#e6eef6", "#f6e6ea"],
@@ -12077,6 +12080,7 @@ const JGP = (() => {
 	// Garden Supplies: sage walls, terracotta roof, and plants everywhere: potted shrubs, flowers,
 	// ferns, succulents and little trees, seedling trays, hanging baskets, bags of soil, a
 	// wheelbarrow of flowers and tools leaning on the wall.
+	// (The painting's design is final, approved by the owner: keep it as it is.)
 	// GOOWARD's painting (bible 1.18), drawn into a 2D canvas laid out as W x H (2048 x 772) at any resolution: the
 	// canvas's own width over W is the scale. Time runs left to right: the far, far past at the left edge, the far, far
 	// future at the right. Seeded: the same painting every time. A generator: it yields between steps, so it can be
@@ -13745,9 +13749,10 @@ const JGP = (() => {
 		}
 
 	}
-	// GOOWARD's two small goo-ball splat paintings, side by side on one 512 x 192 texture (one cream ground, one deep
-	// violet-black): splats of cyan, magenta, violet and lime in a few sizes, each a burst with a dense centre, a ragged
-	// crown of spikes and flung droplets, some overlapping wet into wet, drips running down from the larger ones.
+	// GOOWARD's three small goo-ball splat paintings, side by side on one texture, each panel H * 4 / 3 wide (one cream
+	// ground, one deep violet-black, one deep teal): splats of cyan, magenta, violet and lime in a few sizes, each a burst
+	// with a dense centre, a ragged crown of spikes and flung droplets, some overlapping wet into wet, drips running down
+	// from the larger ones.
 	function paintSplats(c, W, H) {
 		let seed = 5309;
 		const rnd = () => ((seed = (seed * 16807) % 2147483647), (seed - 1) / 2147483646),
@@ -13780,11 +13785,12 @@ const JGP = (() => {
 			// a wet highlight
 			ell(x - r * 0.35, y - r * 0.35, r * 0.28, r * 0.18, -0.6, "rgba(255,255,255,0.55)");
 		};
-		[[0, "#f2ead8"], [W / 2, "#1e1426"]].forEach(([x0, ground], p) => {
-			const x1 = x0 + W / 2;
-			c.fillStyle = ground, c.fillRect(x0, 0, W / 2, H);
+		const PW = (H * 4) / 3;
+		[[0, "#f2ead8"], [PW, "#1e1426"], [2 * PW, "#24464c"]].forEach(([x0, ground], p) => {
+			const x1 = x0 + PW;
+			c.fillStyle = ground, c.fillRect(x0, 0, PW, H);
 			for (let k = 0; k < 900; k++) ell(rr(x0, x1), rr(0, H), 0.8, 0.8, 0, rnd() < 0.5 ? "#ffffff" : "#000000", 0.06);
-			c.save(), c.beginPath(), c.rect(x0, 0, W / 2, H), c.clip();
+			c.save(), c.beginPath(), c.rect(x0, 0, PW, H), c.clip();
 			for (let k = 0; k < 16; k++) splat(rr(x0 + 24, x1 - 24), rr(20, H - 40), rr(5, 22), GOO[(k + p) % 4], x0, x1);
 			c.restore();
 		});
@@ -13795,10 +13801,19 @@ const JGP = (() => {
 	// in VR.
 	const ART = { w: 2048, h: 772, s: 1.5 },
 		mkCanvas = (w, h) => ("undefined" != typeof OffscreenCanvas ? new OffscreenCanvas(w, h) : Object.assign(document.createElement("canvas"), { width: w, height: h }));
-	function paintArt(tex) {
+	function paintArt(mat) {
 		const cw = Math.round(ART.w * ART.s),
 			ch = Math.round(ART.h * ART.s),
-			done = (img) => (tex.image.getContext("2d").drawImage(img, 0, 0), (tex.needsUpdate = !0)),
+			// (the painted canvas or bitmap becomes the texture's own image, in a new texture of the same settings; the
+			// little primed placeholder is let go. A bitmap is uploaded as is, so it is not flipped: its rows are read
+			// bottom up instead)
+			done = (img) => {
+				const old = mat.map,
+					t = new THREE.CanvasTexture(img);
+				(t.colorSpace = old.colorSpace), (t.anisotropy = old.anisotropy), (t.needsUpdate = !0), O.capabilities.isWebGL2 || ((t.generateMipmaps = !1), (t.minFilter = THREE.LinearFilter));
+				"undefined" != typeof ImageBitmap && img instanceof ImageBitmap && ((t.flipY = !1), t.repeat.set(1, -1), t.offset.set(0, 1));
+				(mat.map = t), old.dispose();
+			},
 			here = () => {
 				// (each slice ends by reading one pixel back, so the canvas draws that slice's strokes within it rather than
 				// saving them all up for one long stall)
@@ -13839,6 +13854,8 @@ const JGP = (() => {
 		easels: [
 			[-2.6, 3.45, 0.3],
 			[2.6, 3.45, -0.3],
+			// (the third, the deep teal one, outside the left wall, turned a little out toward the park)
+			[-5.4, 0.2, -0.45],
 		],
 	};
 	function buildGallery(o) {
@@ -13849,15 +13866,19 @@ const JGP = (() => {
 		// the big canvas, stretched and primed, 1 cm off the back wall's face: its edge shows the stretcher's wood (the
 		// painting itself lies 1 cm proud of its face, below)
 		G.box("#f4f1e8", 0, 1.95, -2.33, GALLERY.cw, GALLERY.ch, 0.06), G.box("#c8a070", 0, 0.62, -2.31, GALLERY.cw - 0.1, 0.03, 0.09);
-		// his paint cans about the outside, out of the walk and clear of the easels: some standing with their lids off and
-		// their colour run down the side, some tipped over on the grass, each with a wire handle
+		// his paint cans about the outside, out of the walk and clear of the easels, and more inside on the floor (2 cm up)
+		// in the back corners under the canvas and along the side walls, the middle left clear: some standing with their
+		// lids off and their colour run down the side, some tipped over, each with a wire handle
 		const CAN = ["#3ae8ff", "#ff3ac8", "#9a5ae8", "#a8e830", "#ffd23a"];
 		[
 			[-3.75, 2.85, 0, 0], [-3.35, 3.7, 1, 1], [3.6, 2.9, 0, 2], [3.95, 3.55, 1, 3], [-4.55, 0.9, 0, 4], [4.6, -1.1, 0, 1], [4.45, -0.55, 1, 0],
-		].forEach(([cx, cz, tip, k], i) => {
+			[-3.45, -1.95, 0, 1, 0.02], [-3.05, -1.7, 1, 0, 0.02], [3.5, -1.9, 0, 3, 0.02], [3.55, 1.5, 0, 4, 0.02], [-3.6, 0.9, 1, 2, 0.02],
+			// (three big ones inside too, buckets of goo paint: the same can at 2 to 2.5 times the size)
+			[-3.35, -0.35, 0, 3, 0.02, 2.3], [2.9, -1.05, 0, 2, 0.02, 2.5], [3.4, 0.45, 0, 0, 0.02, 2],
+		].forEach(([cx, cz, tip, k, y0 = 0, sc = 1], i) => {
 			const col = CAN[k],
 				ry = i * 1.7,
-				base = tip ? G.m(cx, 0.09, cz, 0, ry, Math.PI / 2) : G.m(cx, 0, cz, 0, ry, 0),
+				base = (tip ? G.m(cx, 0.09 * sc + y0, cz, 0, ry, Math.PI / 2) : G.m(cx, y0, cz, 0, ry, 0)).multiply(G.m(0, 0, 0, 0, 0, 0, sc, sc, sc)),
 				at = (geo, c, px, py, pz, rx, rz, sx = 1, sy = 1, sz = 1) => G.add(geo, c, base.clone().multiply(G.m(px, py, pz, rx, 0, rz, sx, sy, sz)));
 			// the tin, its rolled rims, the paint inside (or spilt from its mouth), a run of paint down its side
 			at(T.cyl(0.085, 0.085, 0.17, 14), "#b8bcc4", 0, 0.085, 0), at(T.cyl(0.089, 0.089, 0.012, 14), "#9a9ea6", 0, 0.172, 0), at(T.cyl(0.089, 0.089, 0.012, 14), "#9a9ea6", 0, 0.006, 0);
@@ -13865,6 +13886,19 @@ const JGP = (() => {
 			at(T.cyl(0.078, 0.078, 0.004, 14), col, 0, tip ? 0.17 : 0.158, 0);
 			at(T.box(0.03, 0.09, 0.006), col, 0, 0.13, 0.087);
 			at(T.cyl(0.004, 0.004, 0.16, 6), "#5a5e66", 0, 0.19, 0, 0, Math.PI / 2);
+		});
+		// his brushes, dropped on the Gallery's floor near the cans and under the canvas: a lacquered handle tapering to
+		// its end, a steel ferrule, flat bristles loaded with one goo colour, and a blob of that paint on the floor by the tip
+		[
+			[-2.95, -1.6, 0.6, 0, "#c8302a"], [-3.3, -1.25, 2.1, 1, "#2a2a2e"], [3.0, -1.65, -0.4, 2, "#c89a5a"],
+			[3.2, 1.2, 1.2, 3, "#c8302a"], [-0.6, -1.95, 0.1, 4, "#c89a5a"], [0.9, -2.0, -2.8, 1, "#2a2a2e"],
+		].forEach(([bx, bz, ry, k, lac]) => {
+			const col = CAN[k],
+				base = G.m(bx, 0.031, bz, 0, ry, 0),
+				at = (geo, c, px, sz = 1) => G.add(geo, c, base.clone().multiply(G.m(px, 0, 0, 0, 0, Math.PI / 2, 1, 1, sz)));
+			at(T.cyl(0.006, 0.009, 0.2, 8), lac, 0.1), at(T.cyl(0.011, 0.01, 0.03, 10), "#c8ccd4", 0.215);
+			at(T.cyl(0.0105, 0.004, 0.04, 8), "#3a2a1e", 0.25, 0.6), at(T.cyl(0.006, 0.003, 0.016, 8), col, 0.268, 0.6);
+			G.add(T.sphere(1, 12, 6), col, base.clone().multiply(G.m(0.33, -0.011, 0, 0, 0.4, 0, 0.045, 0.006, 0.03)));
 		});
 		// the easels: two splayed front legs, a raking back leg, a ledge and a top clamp, each holding a framed painting
 		// tilted back a little
@@ -13882,12 +13916,14 @@ const JGP = (() => {
 		G.done(o);
 		// the two paintings, painted side by side on one texture and drawn as one mesh: GOOWARD's goo-ball splats, one on
 		// cream, one on deep violet-black
-		const tex = b(512, 192, (c) => paintSplats(c, 512, 192), { smooth: !0 });
+		const tex = b(768, 192, (c) => paintSplats(c, 768, 192), { smooth: !0 });
 		const pos = [],
 			uv = [],
 			v3 = new THREE.Vector3();
 		paint.forEach((M, k) => {
-			const quad = [[-0.36, -0.27, k * 0.5, 0], [0.36, -0.27, k * 0.5 + 0.5, 0], [0.36, 0.27, k * 0.5 + 0.5, 1], [-0.36, -0.27, k * 0.5, 0], [0.36, 0.27, k * 0.5 + 0.5, 1], [-0.36, 0.27, k * 0.5, 1]];
+			const u0 = k / 3,
+				u1 = (k + 1) / 3,
+				quad = [[-0.36, -0.27, u0, 0], [0.36, -0.27, u1, 0], [0.36, 0.27, u1, 1], [-0.36, -0.27, u0, 0], [0.36, 0.27, u1, 1], [-0.36, 0.27, u0, 1]];
 			quad.forEach(([qx, qy, u, w]) => (v3.set(qx, qy, 0).applyMatrix4(M), pos.push(v3.x, v3.y, v3.z), uv.push(u, w)));
 		});
 		const pg = new THREE.BufferGeometry();
@@ -13896,8 +13932,10 @@ const JGP = (() => {
 		// the great painting, on a plane 1 cm proud of the canvas's face (so the two never fight): primed cream until it
 		// is painted (paintArt, off the main thread). It shows its own colours, as if lit for the gallery: unshaded (the
 		// roof's shade and the lawn's green light would mute it), a touch under full white so it sits in the scene
-		const art = b(Math.round(ART.w * ART.s), Math.round(ART.h * ART.s), (c, w, h) => ((c.fillStyle = "#f4f1e8"), c.fillRect(0, 0, w, h)), { smooth: !0 });
-		R(T.plane(GALLERY.cw, GALLERY.ch), x.basic(15263976, { map: art }), o, [0, 1.95, -2.29]), paintArt(art);
+		// (primed with a tiny texture of its own, unique, as the painting replaces its map when done: no full-size blank canvas
+		// is made and uploaded first)
+		const art = x.basic(15263976, { map: b(4, 2, (c, w, h) => ((c.fillStyle = "#f4f1e8"), c.fillRect(0, 0, w, h))), unique: !0 });
+		R(T.plane(GALLERY.cw, GALLERY.ch), art, o, [0, 1.95, -2.29]), paintArt(art);
 	}
 	function buildGardenSupplies(o) {
 		kioskFrame(o, { sign: "GARDEN SUPPLIES", ink: "#2f5a2a", wall: "#6f8f5a", wall2: "#5a7a48", tin: [168, 92, 58] });
