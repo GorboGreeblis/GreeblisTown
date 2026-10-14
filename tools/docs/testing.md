@@ -230,7 +230,8 @@ This section states the rules for new probes.
 - Print one line per check, ending in an error count (`logErrors`); print `FAIL` for anything that must not happen,
   so the runners' summary counts it. Print with `log` from `test/lib.js`: run with `LOG=<file>`, each line is also
   written to that file the moment it is printed, so a long run cut off by a time limit still leaves every step it
-  reached ([rules.md](rules.md#working-on-it), rule 9). Run long probes in the background with their output sent to a
+  reached ([rules.md](rules.md#working-on-it), rule 9). Keep the log in the scratch folder, never in the repo, and
+  delete it once the task it served is finished. Run long probes in the background with their output sent to a
   file, never through a pipe such as `| tail` that prints only at the end.
 - Open the file with the standard header: what it checks in one or two sentences, `Env:` (its settings), `Output:`
   (what it prints and writes), then its command line written from `tools/`.

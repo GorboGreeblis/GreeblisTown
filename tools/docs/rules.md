@@ -80,7 +80,9 @@ Rules for how changes are made, checked and recorded.
    test writes each step to a log file the moment it happens (`LOG=` for the probes, see
    [testing.md](testing.md#writing-a-probe)), long runs go in the background with their output in a file (never only
    through a pipe that prints at the end), big tasks are split into short steps that are each committed and pushed
-   when done, and a task's plan and state are written down where the next session can pick them up.
+   when done, and a task's plan and state are written down where the next session can pick them up. The logs are
+   working files, a tool for finishing the task: they stay in the scratch folder, are never committed, and are
+   deleted once the task is finished. This holds for this game and every future Greeblis game.
 
 ## Locks and approvals
 
