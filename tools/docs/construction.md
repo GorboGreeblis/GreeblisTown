@@ -76,7 +76,7 @@ The park is a fenced rectangle from x −37.6 to 37.6 and z −37.6 to 49.6 (`t.
 | Garden Supplies | South-east corner (`KIOSK_AT.K.garden`). |
 | GOOWARD'S GALLERY | East side at (31, 14.5), between the duck pond and Garden Supplies, facing the garden, opposite the Juice Bar (`KIOSK_AT.K.gallery`). |
 | Juice Bar and dance floor | West side; the floor lies in front of the bar. KING DINO's drum kit stands on the grass behind the floor's south half; his spot is (−36.35, 19.2). |
-| Duck pond | (24.6, 0). |
+| Duck pond | (29.6, −2.6), `POND_AT` (exported as `JGP.pondAt`): midway between the Post Office and GOOWARD'S GALLERY. BACKPACKA's flight, hover and drink are worked out from the pond's live position (`drinkSpot`), so they follow it. |
 | Phone booth | (−7.2, 23.9). |
 | Portal | In the park (`ot`), with HENNRICK's roaming ground round it. |
 | Church | End of the south walk, back 1 m inside the south fence (`CHURCH_AT`; nave 18 m). |

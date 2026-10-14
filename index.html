@@ -15616,6 +15616,8 @@ const JGP = (() => {
 	// Everything is a function of the time since he set off (pose(e)), so any moment can be shown.
 	// (BACKPACKA's model is final: keep it as it is.)
 	let PONDO = null;
+	// where the duck pond stands: midway between the Post Office (28.1, -19.8) and GOOWARD'S GALLERY (31, 14.5)
+	const POND_AT = [29.6, -2.6];
 	const BP = (() => {
 		// (his visit, slow and unhurried: 16 s flying in to the pond, 14 s drinking, 12 s to the garden,
 		// 15 s spraying, 14.5 s flying away)
@@ -15939,7 +15941,7 @@ const JGP = (() => {
 		}
 		// world positions for the drinking hover, worked out from the drinking pose itself
 		function drinkSpot(P) {
-			const pond = PONDO ? PONDO.getWorldPosition(V()) : V(24.6, 0, 0),
+			const pond = PONDO ? PONDO.getWorldPosition(V()) : V(POND_AT[0], 0, POND_AT[1]),
 				water = pond.y + 0.11,
 				toC = V(-pond.x, 0, -pond.z).normalize(),
 				face = Math.atan2(toC.x, toC.z);
@@ -16962,7 +16964,7 @@ const JGP = (() => {
 		const keepAt = [
 				[0, 0],
 				[-24.8, -24.8],
-				[24.6, 0],
+				POND_AT,
 				[-7.2, 23.9],
 				[ot.x, ot.z], // pizza portal
 			],
@@ -21776,6 +21778,7 @@ const JGP = (() => {
 		// (for the tests: where the Library's shelf things and the Sheriff's posters are)
 		libLayout: LIB_LAYOUT,
 		buildPond,
+		pondAt: POND_AT,
 		blossomPickup,
 		backpacka: BP,
 		eventActor,
@@ -22215,12 +22218,13 @@ if (
 								},
 							});
 					})(-24.75, -24.75),
+					// (the duck pond: centred between the Post Office and GOOWARD'S GALLERY on the east side)
 					(function (t, e) {
 						const o = new THREE.Group();
-						o.position.set(t, 0, 0), C.add(o), F.add(t, 0, 2.9), E.add(t, 0, 4.2, "pool");
+						o.position.set(t, 0, e), C.add(o), F.add(t, e, 2.9), E.add(t, e, 4.2, "pool");
 						JGP.buildPond(o),
-							z.add({ id: "pool", x: t, z: 0, r: 4.2, solidR: 2.9, waypointR: 4.6, label: () => null });
-					})(24.6),
+							z.add({ id: "pool", x: t, z: e, r: 4.2, solidR: 2.9, waypointR: 4.6, label: () => null });
+					})(JGP.pondAt[0], JGP.pondAt[1]),
 					E.add(-10, -21, 3, "ring"),
 					k.push({ x: -10, z: -18.2, id: "ring" }),
 					(function () {

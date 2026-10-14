@@ -129,7 +129,7 @@ iron fence (about 75 m east to west and 87 m north to south), crossed by walks, 
 | **The walks** | — | A ring walk round the garden, with a walk out to each place there is to go: the LIBRARY (north-west), the POST OFFICE and the SHERIFF'S (north-east, ending in a cross walk along both their fronts), GARDEN SUPPLIES (south-east), GOOWARD'S GALLERY (east) and the church (south). Every walk ends at the front of what it leads to. |
 | **The lawn** | — | Short tufts, clover and dandelions, mowed in stripes. |
 | **The garden** | Centre, radius 15 m | Tilled rows in raised rings, four stepping-stone paths from its edge to its centre, a border of stones, seed sacks and stakes round its edge. The Summoning Stone stands at its centre (1.3). After the first Garden Event it holds that Event's flowers for good (1.14). |
-| **The duck pond** | East, (24.6, 0) | A grassy bank, limestone rocks, cattails, lily pads (every third one in flower) and a little wooden dock on the garden side. The water only breathes in colour: no ripples, nothing rising out of it, and no ducks. BACKPACKA drinks from it (1.14). |
+| **The duck pond** | East, (29.6, −2.6): centred between the Post Office and GOOWARD'S GALLERY | A grassy bank, limestone rocks, cattails, lily pads (every third one in flower) and a little wooden dock on the garden side. The water only breathes in colour: no ripples, nothing rising out of it, and no ducks. BACKPACKA drinks from it (1.14). |
 | **The Portal** | North-west of the garden, about (−9.4, −29.6) | The gateway between places and times (1.3). HENNRICK strolls round it. |
 | **The gazebo** | North, (5, −31) | White and octagonal on a low board deck, eight posts, railings, a green shingle roof, a small cupola and a gold ball on top. |
 | **The Juice Bar and dance floor** | West side | FORTIZMO's open-air bar, its purple dance floor and KING DINO's drum kit (1.5). |
@@ -828,7 +828,7 @@ This section lists the world's recurring jokes; each must keep its form when reu
 
 This section is the record of the painting on the big canvas in GOOWARD'S GALLERY (1.4), as it is painted in the game:
 the lore it draws on and the symbol that carries each piece, where each symbol lies, its composition and palette, and
-exactly how it is constructed, layer by layer; then the two small paintings on the easels in front. The painting's
+exactly how it is constructed, layer by layer; then the three small paintings on the easels. The painting's
 code (`paintGallery`, `paintSplats`; construction.md, kiosks) follows this section, and this section follows the code:
 a change to either is made to both.
 
@@ -1255,9 +1255,9 @@ each creature's entry gives a one-line look and the design section to read.
 
 - **Kind:** an Organic of the present era.
 - **Role and job:** runs the town's Art Gallery, **GOOWARD'S GALLERY**, the open-floored kiosk on the east side of the
-  park between the duck pond and Garden Supplies, opposite the Juice Bar (his great painting on its back wall, two
-  goo-splat paintings on easels on the lawn in front, 1.18).
-- **His work in town:** he painted every painting in his Gallery himself (the big canvas and the two on the easels,
+  park between the duck pond and Garden Supplies, opposite the Juice Bar (his great painting on its back wall, three
+  goo-splat paintings on easels on the lawn, his paint cans and brushes about its floor and lawn, 1.18).
+- **His work in town:** he painted every painting in his Gallery himself (the big canvas and the three on the easels,
   1.18), KING DINO's billboard ("Gooward, that wild cat painted my billboard!" (KING DINO)) and the schoolhouse
   mural (1.7).
 - **Post:** wanders round his gallery, 6.6 to 10 m from its middle, in front of it or to either side, never inside or
