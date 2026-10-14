@@ -53,6 +53,10 @@ Rules for what the game is, where it lives and what its final file must meet.
     - In VR the player must land on a screen with the game's name and "Press A to enter VR".
     - The player's avatar is not a test-mode part and must never be cut: it appears in the Shop's mirror while the
       Shop menu is open (VR included), and it is maintained for the final game.
+11. Anything newly introduced (an element, a symbol, a line, a design) must always fit the established lore in
+    [bible.md](bible.md).
+12. Creative, improvised elements must never overpower the existing lore: they may only support and connect what is
+    established, kept smaller and quieter than it.
 
 ## Working on it
 
