@@ -846,8 +846,6 @@ const G = (() => {
 		}),
 	);
 	(w.renderOrder = -9), (w.frustumCulled = !1), m.add(w);
-	const S = R(T.sphere(3.2, 16, 12), x.basic(15921376, { fog: !1, transparent: !0, opacity: 0 }), null);
-	S.position.set(-60, 80, 55), (S.renderOrder = -9), m.add(S);
 	const P = {
 			bg: new THREE.Color(t.sky.horizon),
 			hemiS: new THREE.Color(15398655),
@@ -883,7 +881,6 @@ const G = (() => {
 				(f.material.opacity = 1 - t),
 				(d.visible = t < 0.5),
 				(w.material.opacity = t),
-				(S.material.opacity = t),
 				(I.nightK = t);
 		}
 	}),
@@ -7394,7 +7391,8 @@ const JGP = (() => {
 			gift: "A bribe? …Portal is now open to your use.",
 			campfire: "…",
 		},
-		// (HENNRICK is from the far past: to him, paradoxically, this small American town is the far future)
+		// (HENNRICK, a Synthetic, is from the far past, when his team was bringing the desolate world to life: to him,
+		// paradoxically, this small American town is the far future)
 		gratelet: {
 			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until the Consortium decides to reopen the Portal.", "In my era, the towers of Greeblis City reach the clouds.|I never imagined the far future would have… picket fences.", "I have catalogued every Blossom in this park.|They grow back faster than my notes can keep up."],
 			gift: "Adding to a collection jar.",
@@ -12676,7 +12674,7 @@ const JGP = (() => {
 	};
 	// THE GARDEN WINDOW (final), down each side of the church: a bright summer sky with a rayed sun and clouds over a meadow of
 	// flowers; a figure in a white robe (no face: a smooth oval of pale light under the hair) stands
-	// with MAMA GORBO beside them: her round cyan body with its highlights, her octagon port eyes, her
+	// with MAMA GORBO beside them: her round peach body with its highlights, her octagon port eyes, her
 	// lime goo tail, smoke wisps, her AP / IP / wifi tags and crackling sparks. swap puts the figure on
 	// the left and MAMA GORBO on the right (the copy on the church's left side).
 	const paintGardenWindow = (cx, swap) => {
@@ -12760,16 +12758,17 @@ const JGP = (() => {
 				cx.lineTo(...tl[tl.length - 1]), (cx.strokeStyle = c), (cx.lineWidth = w), (cx.lineCap = "round"), (cx.lineJoin = "round"), cx.stroke(), cx.restore();
 			});
 		}
-		// her body: a glossy cyan balloon with a rounded lower lobe, shaded and lit from the top left
+		// her body: a glossy balloon in her own peach (her model's #ff9f5c) with a rounded lower lobe, shaded and lit
+		// from the top left
 		{
 			const bg = cx.createRadialGradient(X(70), 670, 10, X(100), 712, 96);
-			bg.addColorStop(0, "#9af0ff"), bg.addColorStop(0.55, "#3ac8ee"), bg.addColorStop(1, "#1e98c8");
-			oval(X(128), 770, 38, 30, "#2fb4e0", 0, R0(-0.3));
+			bg.addColorStop(0, "#ffd8b8"), bg.addColorStop(0.55, "#ff9f5c"), bg.addColorStop(1, "#d8763a");
+			oval(X(128), 770, 38, 30, "#f08e4c", 0, R0(-0.3));
 			oval(X(100), 712, 84, 70, bg, 0, R0(-0.5));
 			(cx.strokeStyle = LEAD), (cx.lineWidth = 9), cx.beginPath(), cx.ellipse(X(128), 770, 38, 30, R0(-0.3), swap ? -0.05 * Math.PI : 0.1 * Math.PI, swap ? 0.9 * Math.PI : 1.05 * Math.PI), cx.stroke();
 			oval(X(100), 712, 84, 70, null, 9, R0(-0.5));
-			oval(X(58), 672, 16, 9, "#d4f8ff", 0, R0(-0.6)), oval(X(82), 654, 9, 5, "#ffffff", 0, R0(-0.6)), oval(X(40), 708, 6, 10, "#8ae6fa", 0, R0(-0.3));
-			(cx.strokeStyle = "#2a8ab8"), (cx.lineWidth = 3), cx.beginPath(), cx.arc(X(150), 700, 30, swap ? Math.PI - 1.3 : 0.4, swap ? Math.PI - 0.4 : 1.3), cx.stroke();
+			oval(X(58), 672, 16, 9, "#fff0e2", 0, R0(-0.6)), oval(X(82), 654, 9, 5, "#ffffff", 0, R0(-0.6)), oval(X(40), 708, 6, 10, "#ffc49a", 0, R0(-0.3));
+			(cx.strokeStyle = "#c06a30"), (cx.lineWidth = 3), cx.beginPath(), cx.arc(X(150), 700, 30, swap ? Math.PI - 1.3 : 0.4, swap ? Math.PI - 0.4 : 1.3), cx.stroke();
 		}
 		// her eyes: two octagon ports (magenta rim, purple lens, a glint)
 		const oct = (px, py, r, rot, fill, lead) => glass(Array.from({ length: 8 }, (_, k) => [px + r * Math.cos(rot + (k * Math.PI) / 4 + Math.PI / 8), py + r * Math.sin(rot + (k * Math.PI) / 4 + Math.PI / 8)]), fill, lead);
@@ -14373,14 +14372,14 @@ const JGP = (() => {
 			["HN", "ZL", 10, "In my era, this flora hasn't even evolved yet.", "Then you got here just in time to see it bloom."],
 			["HN", "SM", 2, "Subject remains asleep. Observation day 41.", "Zzz..."],
 			["HN", "FZ", 5, "I'm told the house currency is Blossoms?", "Blossoms only, sugar. Tip jar's on your left."],
-			["HN", "ET", 4, "You etch history and I jar it. Colleagues!", "Then I will etch you into the age of Organics."],
+			["HN", "ET", 4, "You etch history and I jar it. Colleagues!", "Then I will etch you into the age of Synthetics."],
 			["HN", "GT", 9, "That gem would suit my collection jar.", "Your jar can't afford it. Nobody can."],
 			["HN", "GL", 11, "Your symbols descend from my era's alphabet!", "Every era borrows from symbols... don't you think?"],
 			["MU", "AN", 7, "State your business at that window.", "The ORIGINATOR'S business. Not YOURS."],
 			["MU", "KD", 3, "Those coins of yours are not legal tender.", "Stamped by the King, baby. Legal enough."],
 			["MU", "GW", 6, "You are leaving goo on public property.", "Gomp? ...gomp."],
 			["MU", "ZL", 10, "Report any UFOs over your seedlings.", "Only bees up there. My seedlings are thriving."],
-			["MU", "SM", 2, "Have you seen anything suspicious tonight?", "Zzz... zzz..."],
+			["MU", "SM", 2, "Have you seen anything suspicious today?", "Zzz... zzz..."],
 			["MU", "FZ", 5, "The Consortium will be inspecting your bar.", "Inspect away. Blossoms up front, honey."],
 			["MU", "ET", 4, "Have you been etching the town records?", "I etch everything. Including your citations."],
 			["MU", "GT", 9, "And where did all those gems come from?", "Found them. Fairly. Mostly. Don't write that down."],
@@ -15937,7 +15936,7 @@ const JGP = (() => {
 			(cx.fillStyle = "#36d0e8"), cx.beginPath(), cx.arc(192, 38, 26, 0, l), cx.fill();
 			[["#e8409e", 180, 30, 8], ["#9a52e0", 202, 44, 7], ["#c8e040", 190, 50, 6]].forEach(([c, x, y, r]) => ((cx.fillStyle = c), cx.beginPath(), cx.arc(x, y, r, 0, l), cx.fill()));
 		});
-		// ZOLLOD's five pots on the florist's band, seed to flower
+		// ZOLLOD's five pots on the grocer's band, seed to flower
 		slot("sprout", 384, 96, (cx, w, h) => {
 			(cx.fillStyle = "#2a4a2a"), cx.fillRect(0, 0, w, h);
 			[40, 116, 192, 268, 344].forEach((x0, k) => {
@@ -16168,12 +16167,15 @@ const JGP = (() => {
 					const zf = o2.z || 0,
 						tr = o2.trim || "#f4f0e6";
 					B.box(o2.dark ? "glass" : "lit", o2.glass || "#3e4e5c", px, py + h / 2, zf - 0.02, w, h, 0.08);
-					B.box("plain", tr, px, py + h + 0.06, zf + 0.05, w + 0.24, 0.12, 0.12)
+					B.box("plain", tr, px, py + h + 0.06, zf + 0.05, w + 0.28, 0.12, 0.13)
 						.box("plain", tr, px, py - 0.07, zf + 0.09, w + 0.32, 0.12, 0.22)
 						// (no face of a trim lies in the wall's own plane: from inside a building, where both
 						// sides of the walls show, the two would flicker)
-						.box("plain", tr, px - w / 2 - 0.06, py + h / 2, zf + 0.05, 0.12, h, 0.12)
-						.box("plain", tr, px + w / 2 + 0.06, py + h / 2, zf + 0.05, 0.12, h, 0.12)
+						// (the side posts run 3 cm into the sill and the head, and the sill and the head stand out past them on
+						// every side, so no end or face of a post lies in the plane of a face of either; the head's front stays
+						// 1.5 cm behind a lintel's)
+						.box("plain", tr, px - w / 2 - 0.06, py + h / 2, zf + 0.045, 0.12, h + 0.06, 0.11)
+						.box("plain", tr, px + w / 2 + 0.06, py + h / 2, zf + 0.045, 0.12, h + 0.06, 0.11)
 						.box("plain", tr, px, py + 0.52 * h, zf + 0.03, w, 0.07, 0.08);
 					o2.lintel && B.box("stone", o2.lintel, px, py + h + 0.28, zf + 0.06, w + 0.5, 0.32, 0.14);
 					o2.shutter && [-1, 1].forEach((sx) => B.box("plain", o2.shutter, px + sx * (w / 2 + 0.38), py + h / 2, zf + 0.05, 0.48, h + 0.05, 0.06));
@@ -17151,7 +17153,8 @@ const JGP = (() => {
 			B.box("asphalt", "#5c5c60", 0, -0.04, 6, 12, 0.08, 9);
 			return B;
 		};
-		// Mistergummery's: Greeblis Town's own burger drive-in (a fast-food parody), trimmed in MONTGUMMERY's
+		// Mistergummery's: the town's branch of a fast-food franchise founded by MONTGUMMERY's father (MAMA GORBO and
+		// GOOWARD run it), trimmed in MONTGUMMERY's
 		// teal. Red and cream tiled walls under a red mansard roof, wraparound windows, big teal "M" arches on
 		// a pylon, a drive-thru lane with a menu board and speaker, umbrella tables, a little red slide, and a
 		// parking lot. Local +Z faces the street.
@@ -17781,8 +17784,9 @@ const JGP = (() => {
 		zc = -37;
 		[
 			[12, 9.5, (X, Z, w, h) => BANK(X, Z, Math.PI / 2, w, h)],
-			// the grocer's: fruit in crates on the walk (the Juice Bar's colours), a giant carrot on the crest
-			[12, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#c49a6a", awn: "aw_green", front: "#2a4a2a", crest: !0, extra: (B, w2, h2) => (produce(B, -2.6, 1.2), carrot(B, 0, h2 + 1.45, -0.15, 1.4, 0)) })],
+			// the grocer's, which ZOLLOD runs as well as Garden Supplies: his five pots from seed to flower on its band, fruit
+			// in crates on the walk (the Juice Bar's colours), a giant carrot on the crest
+			[12, 8.5, (X, Z, w, h) => STORE(X, Z, Math.PI / 2, w, h, { col: "#c49a6a", awn: "aw_green", front: "#2a4a2a", crest: !0, band: "sprout", extra: (B, w2, h2) => (produce(B, -2.6, 1.2), carrot(B, 0, h2 + 1.45, -0.15, 1.4, 0)) })],
 			// the ice cream parlour: three scoops of goo flavour on a cone over its false front
 			[9, 7.5, (X, Z, w, h) => FRONTIER(X, Z, Math.PI / 2, w, h, { col: "#f0dc9a", awn: "aw_pink", band: "wings", front: "#3a2a20", shutter: "#e87aa0", extra: (B, w2, h2) => iceCream(B, 0, h2 + 1.1, -0.2, 0.95) })],
 			// ETCHER's archive: blue-teal stone, his etched data in a row of panels over the door, his green gem on the
@@ -17836,7 +17840,6 @@ const JGP = (() => {
 						col: "#7aa86a",
 						trim: "#f4f0e6",
 						front: "#2a4a2a",
-						band: "sprout",
 						shutter: "#e8301e",
 						extra: (B, w2, h2) => {
 							giantBlossom(B, 0, h2 + 1.1, -0.2, 0.95), blossomBed(B, -w2 / 2 + 1.7, 1.15, 2.4), blossomBed(B, w2 / 2 - 1.7, 1.15, 2.4);
@@ -18138,7 +18141,7 @@ const JGP = (() => {
 			dish.geo("plain", usph(12, !0), "#e8eaee", 0, 0, 0, 6, 1.8, 6, -2.5, 0, 0).geo("plain", ucyl(5), steel, 0, 1.1, 0.6, 0.12, 2.6, 0.12, -0.6, 0, 0).geo("plain", usph(6), steel, 0, 2.2, 1.2, 0.4, 0.4, 0.4);
 			dish.box("plain", steel, 0, -0.3, 0, 1.6, 0.6, 1.6);
 		};
-		// the town's video store, on the corner lot north-east of the square (MONTGUMMERY's favourite shop: he
+		// the town's video store, on the corner lot north-east of the square (MONTGUMMERY runs it, and he
 		// eats the tapes), a giant VHS cassette on its roof
 		STORE(56, -60, 0, 10, 8, {
 			col: "#8a9ab0",

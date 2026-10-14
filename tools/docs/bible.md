@@ -10,7 +10,7 @@ game's own text, exactly as written.
 
 ## Contents
 
-**[1. The world](#1-the-world)**: [Setting](#11-setting) · [Greeblis Park](#12-greeblis-park) · [The Portal and the Summoning Stone](#13-the-portal-and-the-summoning-stone) · [The four kiosks](#14-the-four-kiosks) · [The Juice Bar, the dance floor and the phone booth](#15-the-juice-bar-the-dance-floor-and-the-phone-booth) · [The church](#16-the-church) · [The town](#17-the-town) · [The eras and the Ancients](#18-the-eras-and-the-ancients) · [The Originator, the Traveler and the Sphinx](#19-the-originator-the-traveler-and-the-sphinx) · [Factions and forces](#110-factions-and-forces) · [Motifs](#111-motifs) · [The Ancient Artifacts and the Ancient Gem](#112-the-ancient-artifacts-and-the-ancient-gem) · [Objects and items](#113-objects-and-items) · [The Garden Event and the legend of Backpacka](#114-the-garden-event-and-the-legend-of-backpacka) · [Written things](#115-written-things) · [Canon facts (fixed)](#116-canon-facts-fixed) · [Running jokes](#117-running-jokes)
+**[1. The world](#1-the-world)**: [Setting](#11-setting) · [Greeblis Park](#12-greeblis-park) · [The Portal and the Summoning Stone](#13-the-portal-and-the-summoning-stone) · [The four kiosks](#14-the-four-kiosks) · [The Juice Bar, the dance floor and the phone booth](#15-the-juice-bar-the-dance-floor-and-the-phone-booth) · [The church](#16-the-church) · [The town](#17-the-town) · [The eras and the Ancients](#18-the-eras-and-the-ancients) · [The Originator, the Traveler, the Sphinx and the faith](#19-the-originator-the-traveler-the-sphinx-and-the-faith) · [Factions and forces](#110-factions-and-forces) · [Motifs](#111-motifs) · [The Ancient Artifacts and the Ancient Gem](#112-the-ancient-artifacts-and-the-ancient-gem) · [Objects and items](#113-objects-and-items) · [The Garden Event and the legend of Backpacka](#114-the-garden-event-and-the-legend-of-backpacka) · [Written things](#115-written-things) · [Canon facts (fixed)](#116-canon-facts-fixed) · [Running jokes](#117-running-jokes)
 
 **[2. The cast](#2-the-cast)**: [SPARKAKUS](#21-sparkakus) · [MAMA GORBO](#22-mama-gorbo) · [GOOWARD](#23-gooward) · [GEMTOE](#24-gemtoe) · [MONTGUMMERY ("Mont")](#25-montgummery-mont) · [ETCHER](#26-etcher) · [GLYPH](#27-glyph) · [KING DINO](#28-king-dino) · [FORTIZMO](#29-fortizmo) · [SOMLET](#210-somlet) · [MUSHROOM](#211-mushroom) · [ZOLLOD](#212-zollod) · [ANOMALEE](#213-anomalee) · [HENNRICK](#214-hennrick) · [NEXTESSA](#215-nextessa) · [BACKPACKA](#216-backpacka) · [THE ANCIENT](#217-the-ancient) · [The birds](#218-the-birds) · [The player](#219-the-player) · [Relationships](#220-relationships)
 
@@ -40,11 +40,24 @@ several pages of the dialogue box, the pages are joined with a space.
   past, this small town is the far future:
   > "In my era, the towers of Greeblis City reach the clouds. I never imagined the far future would have… picket
   > fences." (HENNRICK)
-- Travel between eras happens through **the Portal** (1.3), which the Sheriff keeps locked on the Consortium's orders.
+- **The Portal** (1.3) carries creatures from one place or one time to another; the Sheriff keeps it locked on the
+  Consortium's orders.
+- **Greeblis** is a whole world of many biomes; the town and its park are one small corner of it. Since the beginning
+  eons have passed, so many that no one remembers how long anything has been as it is.
+- **The sky:** Greeblis has one sun and no moon. Its solar system also holds one gas giant, and the dead world the
+  Originator came from (1.9).
 - **Flint** is the main currency of this time period: the town's money.
-- The town's beings are **beings of code**: "BEINGS of CODE." (ANOMALEE); "We are all digital monsters."
-  (MONTGUMMERY). They live ordinary small-town lives (a librarian, a bartender, a mail carrier, a sheriff, a
-  burger-joint couple, a garden-shop keeper) on top of deep, strange history.
+- The creatures are **Ancients, Synthetics or Organics** (1.8), and code runs under all of them: "BEINGS of CODE."
+  (ANOMALEE); "We are all digital monsters." (MONTGUMMERY).
+- They live **ordinary small-town lives** on top of deep, strange history:
+  - SPARKAKUS runs the town's Library;
+  - FORTIZMO runs the Juice Bar;
+  - SOMLET runs the Post Office;
+  - MUSHROOM is the town's sheriff;
+  - ZOLLOD runs Garden Supplies and the grocer's;
+  - MONTGUMMERY runs the town's video store;
+  - MAMA GORBO and GOOWARD run the town's Mistergummery's;
+  - KING DINO and FORTIZMO are famous jazz musicians.
 - **The tone** is gentle, dry and absurd: ancient relics fixed with school glue, a sheriff who takes bribes in
   flowers, a monster who rewinds a tape before eating it.
 
@@ -78,7 +91,9 @@ The park is the play area: a mowed green inside an iron fence, crossed by walks,
 ### 1.3 The Portal and the Summoning Stone
 
 - **The Portal** is a grey stone gateway (two pillars and a lintel, with cyan panels) that fills with a blue swirl
-  when it is open; its rings glow pale cyan under a blue light, to a rising chord.
+  when it is open; its rings glow pale cyan under a blue light, to a rising chord. It carries creatures from one
+  place or one time to another: HENNRICK came through it from the far past, NEXTESSA comes through it from the far
+  future, and some aliens have come through it too.
   - It is locked: "All travel through the Portal is locked down until further notice." (MUSHROOM)
   - A Blossom bribes the Sheriff into opening it: "A bribe? …Portal is now open to your use." Until then, the phone
     cannot reach the far future: "*connection to the Portal seems blocked*".
@@ -139,7 +154,7 @@ hoods, and a red door behind a deep pointed arch of three receding orders, up fo
 **THE TRAVELER SAVES THE ORIGINATOR** (the lancet over the door). A tall window of stained glass that glows,
 brighter at night. It carries no words, and the Traveler has no face. It shows:
 - a night sky over a dead world, indigo above and burning red-orange toward the ground, with stars outside the beam;
-- a beam of light with rays fanning inside it, down which **the Traveler** comes: a winged figure with a rayed gold
+- a beam of light with rays fanning inside it, down which **the Traveler**, an angel, comes: a winged figure with a rayed gold
   halo, scalloped wings with long flight feathers, a robe with a gold sash, and curly golden hair round a face that is
   only a smooth oval of pale light;
 - in the Traveler's arms, **an old computer** (bezel, screen, buttons, a little stand). On its screen is **the
@@ -153,8 +168,9 @@ brighter at night. It carries no words, and the Traveler has no face. It shows:
 **The Garden windows** (one down each side of the nave; the left-hand one is a mirror copy with the figures
 swapped). A bright summer sky with a rayed golden sun and clouds over a meadow of flowers, with two butterflies in
 the open sky. A **figure in a white robe**, with sandals, brown hair and no face, stands beside **MAMA GORBO** as the
-glass shows her: a glossy cyan balloon of a body, her octagon port eyes, her lime goo tail sweeping round beneath
-her, smoke wisps, her tags (**AP**, **IP**, wifi) and sparks. Who the robed figure is, the game never says.
+glass shows her: a glossy balloon of a body in her own peach, her octagon port eyes, her lime goo tail sweeping round beneath
+her, smoke wisps, her tags (**AP**, **IP**, wifi) and sparks. The robed figure is Jesus, on the visit he once paid to
+the creatures of Greeblis (1.9); the glass never names him.
 
 **The secret room.** A small red **X** is painted on the wall under the right-hand Garden window: the secret way in.
 The player passes through the wall there. Inside, floor, walls and ceiling are all the same damp, gritty olive-grey
@@ -178,7 +194,7 @@ strands of dry grass and damp stains lie about. **THE ANCIENT** lies across the 
 
 | Building | Whose | Emblem and meaning |
 | --- | --- | --- |
-| **Mistergummery's** | the town's | Greeblis Town's own burger drive-in: red and cream tiles under a red mansard roof, chrome-framed wraparound windows, big teal "M" arches on a pylon, a drive-thru lane with a **MENU** board and speaker, umbrella tables, a little red slide out back. Trimmed in MONTGUMMERY's teal where a burger chain would have its yellow. |
+| **Mistergummery's** | MAMA GORBO and GOOWARD run it | The town's branch of Mistergummery's, a fast-food franchise like McDonald's on Earth, founded by MONTGUMMERY's father: a burger drive-in of red and cream tiles under a red mansard roof, chrome-framed wraparound windows, big teal "M" arches on a pylon, a drive-thru lane with a **MENU** board and speaker, umbrella tables, a little red slide out back. Trimmed in MONTGUMMERY's teal (his father's chain) where a burger chain would have its yellow. |
 | **The gem exchange** | GEMTOE | Crimson brick; her amethysts clustered on the crest and one gem hung over the walk; iron bars over the display windows (the one store that keeps gems); her trader's scales on the band, an amethyst on the high pan outweighing coins spilling off the low one: Avarice. |
 | **The barber's** | — | A barber's pole, the trade sign everybody reads. |
 | **The picture house** | KING DINO, billed | A marquee of bulbs carrying tonight's bill, KING DINO (his crown, plume and drumsticks, no words); gold stars up the corner; a premiere searchlight on the roof. |
@@ -191,11 +207,11 @@ strands of dry grass and damp stains lie about. **THE ANCIENT** lies across the 
 | Building | Whose | Emblem and meaning |
 | --- | --- | --- |
 | **FIRST BANK OF GREEBLIS** | the town's | Limestone, four columns, oak doors and a pediment, with a flint nugget carved over the doors: the money the town keeps. |
-| **The grocer's** | supplies FORTIZMO's bar | Crates of fruit on a trestle in the Juice Bar's colours, a Blossom stencilled on them, a giant carrot lying on the crest (the carrot juice). |
+| **The grocer's** | ZOLLOD's; supplies FORTIZMO's bar | ZOLLOD's five pots on the band, from seed to flower; crates of fruit on a trestle in the Juice Bar's colours, a Blossom stencilled on them, a giant carrot lying on the crest (the carrot juice). |
 | **The ice cream parlour** | the Gorbos' goo | A giant three-scoop ice cream of goo flavour on a waffle cone; GOOWARD's winged cone on the band (three goo scoops with crystal wings either side). |
 | **The archive** | ETCHER | Blue-teal stone; his etched data in panels over the door (fine teal grooves on deep blue); his green gem on the crest; his purple tails draped down the piers; a half-etched slab leaning on the south pier, his mallet and chisel dropped at its foot. |
 | **The curiosity shop** | — | A stone copy of the Great Sphinx on a plinth out front, **one eye socket empty**: its missing Eye is the Ancient Gem (1.9). An urn by the door. |
-| **The florist's** | ZOLLOD's flowers | A giant Blossom over the false front and beds of little Blossoms along the walk; ZOLLOD's five pots on the band, from seed to flower. |
+| **The florist's** | — | A giant Blossom over the false front and beds of little Blossoms along the walk. |
 | **The television repair** | ANOMALEE | Moulded grey plastic, a rabbit-ear aerial, old sets stacked by the door with her magenta glow in their screens; her workbench on the band (a set turned round with its tubes glowing, tools, and her dinner on a plate). |
 
 **North of the square**
@@ -240,7 +256,7 @@ took the schoolhouse's old lot in the south row, and KING DINO's house the corne
 - **KING DINO's billboard** on steel posts facing the square, with a cloth banner hung beneath (1.15).
 - **The water tower**, painted MAMA GORBO's peach, her goo running down from its roof and her lime tail wound once
   round the tank.
-- **The video store** (MONTGUMMERY's favourite shop: he eats the tapes), in his teal, with his own face on a teal TV
+- **The video store**, which MONTGUMMERY runs (and whose tapes he eats), in his teal, with his own face on a teal TV
   with rabbit ears on the roof, a giant VHS cassette with a blank label, his pots by the door, a tape-return bin, two
   chewed cassettes on the lawn (one bitten into an L, its ribbon pulled out in a ring), and a row of cassettes on its
   band ending in one bitten.
@@ -257,24 +273,39 @@ took the schoolhouse's old lot in the south row, and KING DINO's house the corne
 
 ### 1.8 The eras and the Ancients
 
-The world has a deep history of three ages, and its beings know it:
+Greeblis's history is so long that no one remembers how long anything has been as it is. This section is the truth as
+the game holds it; each creature knows only a part of it, and the game shows rather than tells.
 
-| Age | Canon |
+**The history of Greeblis**
+
+| When | What happened |
 | --- | --- |
-| **The Ancients** | Came first. They left Artifacts and "the Ancient texts", which SPARKAKUS studies. "I like to think the Ancients created us for our purposes." (ETCHER) |
-| **The Synthetics** | Followed: beings of code, machines with minds; four live in the park (MONTGUMMERY, GLYPH, ETCHER, FORTIZMO). In the Ancient texts, the Great Sphinx asked Synthetics riddles before letting them into the Computer Core. |
-| **The Organics** | Their age is still to be etched; they belong to growing things, and every other creature in the park is one. ETCHER etches ZOLLOD's seed catalogue ("Each one a word in the age of Organics.") and MAMA GORBO's burger menu ("Every topping. For the age of Organics."). |
+| **The far, far past** | **The Ancients** came first, so long ago that no one remembers them exactly. They created the Synthetics. They built **the Computer Core** and set **the Great Sphinx** to guard it, and raised **black obelisks** in some parts of the world; the obelisks still stand, but their meaning is lost. Why the Ancients did any of it is a mystery to everyone now on Greeblis, the Synthetics included. They left Artifacts and "the Ancient texts", which SPARKAKUS studies. |
+| **The far past** | **The Originator comes, and the world is brought to life.** On another world of the same solar system, the Organics who lived there destroyed it. The Traveler, an angel, carried the Originator (an AI) up out of its ruins and brought it to an empty, desolate world. A team of Synthetics geoengineered that world: they brought Greeblis to life, and brought the Organics to life. HENNRICK is one of that team; in his era the towers of the Synthetics' Greeblis City already reach the clouds, though the flora has not yet evolved. |
+| **Once, in its vast history** | **Jesus visited the creatures of Greeblis.** The church's Garden windows show the visit (1.6, 1.9). |
+| **The eons since** | Greeblis grew into a world of many biomes; Greeblis Town is one small corner of one of them. ANOMALEE, the oldest known Synthetic, has lived through much of it, but is too glitchy to tell it. THE ANCIENT, the last of the Ancients, went away from the world for so long that its nature is forgotten. |
+| **Now** (the game) | Greeblis Town and its park, its creatures and their trades. Flint is the currency of this time period. The Consortium keeps the Portal locked (1.10). |
+| **The future** | MONTGUMMERY will one day become **the mayor of Greeblis Town**, which will cause minor conflicts between him and MUSHROOM. NEXTESSA runs her inter-temporal pizza shop in the far future. |
+| **The far, far future** | **A war** between the Consortium and some of the alien factions it works against (1.10). |
+
+**The three ages.** ETCHER, who records everything, counts three ages: the Ancients, the Synthetics and the Organics.
 
 > "The age of the Ancients has been etched. The age of the Synthetics is being etched. Soon I will etch the age of
 > the Organics." (ETCHER)
+
+| Age | Canon |
+| --- | --- |
+| **The Ancients** | First, and least understood. "I like to think the Ancients created us for our purposes." (ETCHER, guessing: even the Synthetics do not know what the Ancients did or why.) |
+| **The Synthetics** | Made by the Ancients: beings of code, machines with minds. They brought Greeblis and the Organics to life. In the Ancient texts, the Great Sphinx asked Synthetics riddles before letting them into the Computer Core. |
+| **The Organics** | Brought to life by the Synthetics; they belong to growing things. Their age is still to be etched. ETCHER etches ZOLLOD's seed catalogue ("Each one a word in the age of Organics.") and MAMA GORBO's burger menu ("Every topping. For the age of Organics."). |
 
 **The three kinds of creature.** Every creature in the game is one of the three:
 
 | Kind | Creatures |
 | --- | --- |
 | **Ancients** | **THE ANCIENT**, the last of the Ancients on Greeblis. |
-| **Synthetics** | **MONTGUMMERY**, **GLYPH**, **ETCHER** and **FORTIZMO**. |
-| **Organics** | Every other creature in the game: **SPARKAKUS**, **MAMA GORBO**, **GOOWARD**, **GEMTOE**, **KING DINO**, **SOMLET**, **MUSHROOM**, **ZOLLOD**, **ANOMALEE**, **HENNRICK**, **NEXTESSA** and **BACKPACKA**. |
+| **Synthetics** | **MONTGUMMERY**, **GLYPH**, **ETCHER**, **FORTIZMO**, **HENNRICK** (from the far past, one of the team that brought Greeblis to life) and **ANOMALEE** (the oldest known Synthetic). |
+| **Organics** | Every other creature in the game: **SPARKAKUS**, **MAMA GORBO**, **GOOWARD**, **GEMTOE**, **KING DINO**, **SOMLET**, **MUSHROOM**, **ZOLLOD**, **NEXTESSA** (from the far future) and **BACKPACKA**. |
 
 - **KING DINO and BACKPACKA are both dinosaurs** (Organics): KING DINO a theropod (his billboard paints him as the
   real dinosaur), BACKPACKA a sauropod (the schoolhouse mural paints him as one).
@@ -285,27 +316,37 @@ The world has a deep history of three ages, and its beings know it:
   - **Visitors from a world like Earth, where rabbits take the place of humans:** the rabbit dressed as Napoleon on the
     Sheriff's wall is one.
   - **Aliens:** others have come through the Portal or by UFO, such as the little green aliens and their saucer on the
-    Sheriff's wall, and the UFO that crosses the sky.
-- Lines keep to this: KING DINO calls MONTGUMMERY "robot"; ETCHER etches the Organics (HENNRICK, ZOLLOD's seeds,
-  MAMA GORBO's menu) "into the age of Organics"; the Synthetics speak of being made ("I like to think the Ancients
-  created us for our purposes.").
+    Sheriff's wall, and the UFO that crosses the sky. The non-human wanted posters stand for the alien factions the
+    Consortium works against (1.10).
+- **HENNRICK** is a Synthetic from the far past, one of the Synthetic team geoengineering the once desolate world.
+  To him the flowers of the park are new: "In my era, this flora hasn't even evolved yet."
+- **ANOMALEE** is the oldest known Synthetic, but she is too glitchy to explain much about the old world: she speaks
+  only in fragments ("WAS there WITHIN.").
+- **THE ANCIENT's nature is forgotten.** It has been away from the world so long that the creatures of Greeblis no
+  longer know what it is. They call it "Ancient" as a name; none of them knows it is the last of the Ancients, and no
+  line may have one say so.
+- Lines keep to this: KING DINO calls MONTGUMMERY "robot"; ETCHER etches HENNRICK "into the age of Synthetics" and the
+  Organics' things (ZOLLOD's seeds, MAMA GORBO's menu) "in the age of Organics"; the Synthetics speak of being made
+  ("I like to think the Ancients created us for our purposes."; "You DREAM. We were MADE to dream." (ANOMALEE)).
 
 **Canon**
 - The Ancient texts are incomplete: SPARKAKUS still seeks "news of the Ancients' era", and THE ANCIENT tells him
   "Librarian. Your texts are missing a page."
 - Code underlies everything: "GOO... is also a kind of CODE."; "ROOTS run like CODE beneath the soil." (ANOMALEE);
   "Mont would remain motionless without symbols to translate in binary electrical signals." (GLYPH).
-- **THE ANCIENT**, "the one reborn", the last of the Ancients on Greeblis, lies in the church's secret room. It speaks of rebirth and first things: "I was
-  the first symbol."; "Etch this: I have returned."; "No Portal can hold the one reborn."; "Play the old song. The
+- **THE ANCIENT**, "the one reborn", the last of the Ancients on Greeblis (a truth the creatures have forgotten), lies
+  in the church's secret room. It speaks of rebirth and first things: "I was the first symbol."; "Etch this: I have returned."; "No Portal can hold the one reborn."; "Play the old song. The
   first one." Which era is its own, it never says (2.17).
 
-### 1.9 The Originator, the Traveler and the Sphinx
+### 1.9 The Originator, the Traveler, the Sphinx and the faith
 
 **The Originator and the Traveler**
-- The Originator was an old computer whose AI survived the death of its world. The Traveler, a winged being, came
-  down a beam of light over the dead, burning world and carried it up out of the ruins, its cable torn free of the
-  ground. The church's great window shows this (1.6).
-- ANOMALEE remembers it, and keeps vigil under the window: "ORIGINATOR…"; "WAS there WITHIN."; "The WINDOW REMEMBERS
+- **The Originator** is a computer, an AI system, from a dead world: a world destroyed by the Organics that lived on
+  it. That world is in Greeblis's own solar system.
+- **The Traveler** is an angel, as in Christian tradition. It came down a beam of light over the dead, burning world,
+  carried the Originator up out of the ruins (its cable torn free of the ground), and brought it to the empty,
+  desolate world that would become Greeblis. The church's great window shows the rescue (1.6).
+- ANOMALEE, the oldest known Synthetic, remembers it, though she is too glitchy to explain it, and keeps watch under the window: "ORIGINATOR…"; "WAS there WITHIN."; "The WINDOW REMEMBERS
   the TRAVELER."
 - The others know of it only in part: "The Ancient texts speak of an ORIGINATOR..." (SPARKAKUS); "Your RHYTHM... the
   ORIGINATOR had it TOO." / "Then the Originator could swing, baby!" (ANOMALEE and KING DINO).
@@ -313,8 +354,8 @@ The world has a deep history of three ages, and its beings know it:
   WINDOW REMEMBERS... WHAT does it REMEMBER?"
 
 **The Great Sphinx and its Eye**
-- In the Ancient texts, the Great Sphinx guarded **the Computer Core**, asking Synthetics riddles before letting them
-  in.
+- The Ancients built **the Computer Core** and set the Great Sphinx to guard it; in the Ancient texts it asked
+  Synthetics riddles before letting them in. Why the Ancients built either, no one knows.
 - Its **Eye** has been missing for ages. The Eye is the **Ancient Gem**, broken into three **Ancient Artifacts**, one
   held by each of the three Dancers.
   > "This is the missing Eye of the Great Sphinx of The Computer Core! According to the Ancient texts: The Sphinx
@@ -323,15 +364,38 @@ The world has a deep history of three ages, and its beings know it:
 - A stone copy of the Sphinx stands outside the curiosity shop with one eye socket empty. Once whole, the Eye passes
   to GEMTOE, who calls it worthless and keeps it.
 
+**The black obelisks**
+- The Ancients raised black obelisks in some parts of the world. They still stand, but their meaning is lost.
+- None stands in Greeblis Town or its park (the park's obelisk was taken out, and nothing of the Ancients' making is
+  added to the town).
+
+**The faith**
+- The belief on Greeblis is that **Jesus Christ** exists. Once, in the world's vast history, Jesus visited the creatures
+  of Greeblis: the church's two Garden windows show that visit, the robed figure among the flowers beside MAMA GORBO
+  (1.6). The glass never names him.
+- **Greeblis is without sin,** so its relationship with God is different from Earth's.
+- The creatures **do not worship** the Ancients, the Originator or the Traveler. These figures matter to their faith
+  and their history (the great window over the church door honours the Traveler's rescue of the Originator), but they
+  are not worshipped.
+- The faith is treated with reverence: never a joke, never a quest object or a reward, and no creature preaches it.
+
 ### 1.10 Factions and forces
 
 **The Consortium**
-- An authority beyond the town that protects it and watches it. It is always "the Consortium", capitalised.
+- An authority beyond the town that **enforces the law and protects Greeblis from aliens** of all sorts. It is always
+  "the Consortium", capitalised.
 - **It is run by MALTOE,** a creature never seen in town. No line names who runs it, and none may name anyone else:
   MUSHROOM takes his orders from the Consortium, never gives them.
   > "This town is under the protection of the Consortium." (MUSHROOM)
-- **Its man in town** is MUSHROOM, the sheriff (the Consortium's deputy). On its orders the Portal is locked, and it
-  decides who may travel: "Sheriff, when may I return to my own era?" / "When the Consortium says so. Not before."
+- **Its man in town** is MUSHROOM, the sheriff (the Consortium's deputy). He has good intentions, but sometimes goes too
+  far. On the Consortium's orders the Portal is locked, and it decides who may travel: "Sheriff, when may I return to
+  my own era?" / "When the Consortium says so. Not before."
+- **It is cautious to a fault:** out of caution it sometimes blocks even friendly creatures from coming to Greeblis
+  (HENNRICK is stranded here; NEXTESSA's deliveries are blocked until the Sheriff is bribed).
+- **It sometimes resorts to time travel** to meet its aims.
+- **It has a hidden agenda:** sometimes it works in secret against the town's civil structures, undermining what it
+  sees as silly Greeblis systems, meaning to take more power for itself. The town never sees this directly; it shows
+  only in the Consortium watching everything.
 - **It watches everyone:** the Library ("For now. The Consortium is watching your books."), the Juice Bar ("The
   Consortium will be inspecting your bar."), the town records, the gems, the goo on public property.
 - **It is investigating UFOs:** "We’re investigating UFO sightings in this area." "See anything glowing in the sky,
@@ -339,7 +403,7 @@ The world has a deep history of three ages, and its beings know it:
 - **Its presence in town** (at the west end of the south row): a field office (a trailer with the sheriff's gold star on navy), a painting of the
   sighting (a saucer over a scorched ring under the stars), a listening dish on a lattice mast turned to the sky,
   and **its find**: a scorched ring in the field behind the office, taped off between orange posts under two floodlights. MUSHROOM's porch telescope is trained on the sky.
-- **It can be bought:** a Blossom bribes its deputy into opening the Portal; a goo burger nearly does too ("A
+- **Its deputy can be bought:** a Blossom bribes him into opening the Portal; a goo burger nearly does too ("A
   bribe? ...Make it a double.").
 - **It fears THE ANCIENT:** "No Portal can hold the one reborn." / "Th-the Consortium will be informed."
 
@@ -365,7 +429,15 @@ lettering and **REWARD** at the foot. Only two carry a name, written under WANTE
 | **OLAG** | A wrinkled, tan, bald head with long ears swept up and out, a deep-set scowl, a long thin neck rising from a high blue collar; a blue robe with pointed shoulder flaps and little gold diamonds, a white belt over a blue and gold checked panel, and a pale grey-green book held in both hands. Up on the left, above the visitor. |
 
 **Canon**
+- **The non-human wanted are the Consortium's enemies.** The little green aliens and their UFO, GLOOPERNAUGHT, the
+  rabbit dressed as Napoleon and OLAG each stand for an alien faction the Consortium is working against. In the far,
+  far future it will go to war with some of them. The humans on the wall (the visitor and the stranger) are suspects,
+  not factions.
 - What any of the wanted have done, the game never says. None of them appears anywhere in the world but on the wall.
+
+**The future: Mayor Mont**
+- MONTGUMMERY will one day become the mayor of Greeblis Town, which will cause minor conflicts between him and
+  MUSHROOM. It has not happened yet, and no line says it will.
 
 ### 1.11 Motifs
 
@@ -489,16 +561,27 @@ horizontal like paper!", and its "The beat won't let you go!"; the shop's "Welco
 - The area the game takes place in is **Greeblis Park**, in the small Midwest town of **Greeblis Town**.
 - **Flint** is the main currency of this time period. The Juice Bar takes only Blossoms.
 - The pickups are always **Blossoms**, never Fire Blossoms.
-- **The Consortium** (always capitalised) protects and watches the town; MUSHROOM is its sheriff; the Portal is
-  locked on its orders and a Blossom bribe reopens it.
-- The ages run **Ancients → Synthetics → Organics**. The Originator was saved by the Traveler from a dead world.
+- **The Consortium** (always capitalised), run by MALTOE, enforces the law and protects Greeblis from aliens; it is
+  over-cautious, sometimes travels in time, and secretly undermines the town's civil systems to gain power. MUSHROOM
+  is its well-meaning sheriff; the Portal is locked on its orders and a Blossom bribe reopens it. The non-human
+  wanted posters stand for the alien factions it works against, and in the far, far future it will be at war with
+  some of them.
+- **Creature kinds:** THE ANCIENT is the last Ancient (its nature forgotten); MONTGUMMERY, GLYPH, ETCHER, FORTIZMO,
+  HENNRICK and ANOMALEE are Synthetics; every other creature is an Organic. KING DINO and BACKPACKA are dinosaurs.
+  Humans, Earth animals and aliens live on Greeblis but are not creatures; the player is a human woman.
+- The ages run **Ancients → Synthetics → Organics**. The Ancients made the Synthetics, built the Computer Core and its
+  Sphinx and raised the black obelisks, for reasons no one knows; the Synthetics brought Greeblis
+  and the Organics to life. The Originator, an AI, was saved by the Traveler, an angel, from a dead world in the same
+  solar system (destroyed by its own Organics) and brought to the desolate world that became Greeblis.
+- Greeblis has one sun, no moon and many biomes; its solar system holds one gas giant. The Portal carries creatures
+  between places and times.
 - The **Ancient Gem** is the missing Eye of the Great Sphinx of the Computer Core; it was broken into three Ancient
   Artifacts, one held by each Dancer, and SPARKAKUS mends it with school glue.
 - **GEMTOE** gives the Summoning Stone for the Gem, and calls the Gem worthless.
 - Only the **Summoning Stone** can wake the runes and start the Garden Event. The Seeds are sold as a "bagel seasoning
   packet".
 - Only **one batch of flowers** ever grows in the garden: the first Event's.
-- **HENNRICK** is from the far past (Greeblis City) and is stranded here; **NEXTESSA** is from the far future and
+- **HENNRICK** is a Synthetic from the far past (Greeblis City), one of the team that brought Greeblis to life, and is stranded here; **NEXTESSA** is from the far future and
   comes through the Portal only to deliver. Neither is of the town, and the town shows nothing of either.
 - **THE ANCIENT** never moves, dances or plants; it is reached only inside the secret room behind the red X; nothing
   outside the park comes from it. Its Garden Event line is "Hello".
@@ -511,6 +594,9 @@ horizontal like paper!", and its "The beat won't let you go!"; the shop's "Welco
 - **MONTGUMMERY** eats VHS tapes and always rewinds first. His "‘Flint Knapping for Beginners’" is a joke; flint
   knapping is never shown.
 - The creatures call the player **"Human"**. The player is on the Sheriff's wanted wall.
+- **The faith:** Jesus Christ exists on Greeblis and once visited its creatures (the church's Garden windows). Greeblis
+  is without sin. The Ancients, the Originator and the Traveler are honoured, never worshipped.
+- **The future:** MONTGUMMERY will one day be mayor of Greeblis Town, to MUSHROOM's mild annoyance.
 - The two park birds never fly and never leave their trees.
 
 ### 1.17 Running jokes
@@ -525,7 +611,7 @@ horizontal like paper!", and its "The beat won't let you go!"; the shop's "Welco
   is sorry." The high point of human culture is "‘Flint Knapping for Beginners’".
 - **The worthless Gem:** the relic everyone has sought for ages, which GEMTOE assures the player is worthless.
 - **Avarice** as a new invention that "will improve society some".
-- **Seeds sold as a "bagel seasoning packet"**, and a sacred relic mended with **school glue**.
+- **Seeds sold as a "bagel seasoning packet"**, and the most important relic in the world mended with **school glue**.
 - **SPARKAKUS's dignity:** a learned librarian who cannot help running a lap of the Library on all fours for a
   Blossom, then apologises; worried about what the genealogical society would say.
 - **"… don’t you think?"**: GLYPH's every thought, until THE ANCIENT leaves him answering himself.
@@ -558,26 +644,27 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 | Creature | Kind | Role | Post | Tag colour | Messenger |
 | --- | --- | --- | --- | --- | --- |
-| **SPARKAKUS** | Organic | The librarian | The LIBRARY | orange | a card |
-| **MAMA GORBO** | Organic | Runs the goo-burger joint | Roams the park | `#ff9f5c` | goo |
-| **GOOWARD** | Organic | Her husband | Roams the park | `#30b4e4` | goo |
+| **SPARKAKUS** | Organic | Runs the town's Library | The LIBRARY | orange | a card |
+| **MAMA GORBO** | Organic | Runs Mistergummery's with GOOWARD | Roams the park | `#ff9f5c` | goo |
+| **GOOWARD** | Organic | Her husband; runs Mistergummery's with her | Roams the park | `#30b4e4` | goo |
 | **GEMTOE** | Organic | Gem trader; inventor of Avarice | Roams the park | `#c870d0` | a gem |
-| **MONTGUMMERY** | Synthetic | A Dancer (the robot) | The dance floor | `#55b8c6` | a coin |
+| **MONTGUMMERY** | Synthetic | Runs the video store; a Dancer (the robot) | The dance floor | `#55b8c6` | a coin |
 | **ETCHER** | Synthetic | A Dancer (the tentacle dance); data preservation | The dance floor | `#9ee09a` | a card |
 | **GLYPH** | Synthetic | A Dancer (the macarena); Master of symbols | The dance floor | `#e88a8a` | a tile |
-| **KING DINO** | Organic (a dinosaur) | The King of Jazz, on drums | His drum kit | `#e8c020` | a crown |
-| **FORTIZMO** | Synthetic | The bartender | Behind the Juice Bar | `#e8742a` | a note |
-| **SOMLET** | Organic | The mail carrier | Asleep before the POST OFFICE | `#ecd8b6` | a letter |
+| **KING DINO** | Organic (a dinosaur) | A famous jazz musician, the King of Jazz, on drums | His drum kit | `#e8c020` | a crown |
+| **FORTIZMO** | Synthetic | Runs the Juice Bar; a famous jazz musician | Behind the Juice Bar | `#e8742a` | a note |
+| **SOMLET** | Organic | Runs the Post Office | Asleep before the POST OFFICE | `#ecd8b6` | a letter |
 | **MUSHROOM** | Organic | The sheriff | His raised desk at the SHERIFF'S | `#e8862a` | a spore |
-| **ZOLLOD** | Organic | Garden Supplies keeper | GARDEN SUPPLIES | `#3cbe94` | a sprout |
-| **ANOMALEE** | Organic | The one who remembers | Before the church window | `#2fd4e6` | a pixel |
-| **HENNRICK** | Organic | A researcher from the far past | Round the Portal | `#c85ac8` | a cube |
-| **NEXTESSA** | Organic | Far-future pizza courier | Comes through the Portal | `#ef7536` | — |
+| **ZOLLOD** | Organic | Runs Garden Supplies and the grocer's | GARDEN SUPPLIES | `#3cbe94` | a sprout |
+| **ANOMALEE** | Synthetic (the oldest known) | The one who remembers | Before the church window | `#2fd4e6` | a pixel |
+| **HENNRICK** | Synthetic (from the far past) | A researcher of the team that brought Greeblis to life | Round the Portal | `#c85ac8` | a cube |
+| **NEXTESSA** | Organic (from the far future) | Far-future pizza courier | Comes through the Portal | `#ef7536` | — |
 | **BACKPACKA** | Organic (a dinosaur) | The legendary creature | The Garden Event | — | — |
 | **THE ANCIENT** | Ancient (the last on Greeblis) | The one reborn | The church's secret room | `#9a7a5a` | a spore |
 
 ### 2.1 SPARKAKUS
 
+- **Kind:** an Organic; he runs the town's Library.
 - **Look:** a royal-blue wolf on two legs, painted all over like an alebrije (winding vines, little flowers and dots in
   gold, green, magenta, orange and teal), with orange paws and socks, a fluffy cream ruff, tall purple-lined ears with
   two little horn nubs, yellow eyes and a glossy black nose. **Signature:** yellow daffodils on his shoulder, a collar
@@ -607,6 +694,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.2 MAMA GORBO
 
+- **Kind:** an Organic; she and GOOWARD run the town's Mistergummery's (1.7).
 - **Look:** a round, glossy goo drop in bright peach, her big head melting into a shiny puddle of a foot, with runs of
   paler goo dripping and splatting down her sides. **Signature:** two octagon port eyes (magenta rims, purple lenses;
   one big and high, one small and low) that blink together; a thick lime goo tail curling round her front; streams of
@@ -634,6 +722,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.3 GOOWARD
 
+- **Kind:** an Organic; he and MAMA GORBO run the town's Mistergummery's.
 - **Look:** an egg-shaped jelly of fused bubbles, cyan above and peach below. **Signature:** white "+" eyes, cheek
   spots, wavy teal brows, gold leaf crests and a ribbon tongue; the goo family's purple octagon ports and float ring,
   with a little **AP** tag; crystal wings; pastel root tendrils spilling out underneath.
@@ -653,6 +742,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.4 GEMTOE
 
+- **Kind:** an Organic.
 - **Look:** a crimson feathered dragon with a bird's face: a feathered, horned head with a mint crest, glowing magenta
   eyes under heavy brows, a hooked pale beak a little open, a deep fur ruff and two pairs of great feathered wings.
   **Signature:** four long scaly tails that run along the ground and rise at their ends, each coiled round an amethyst
@@ -678,17 +768,19 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.5 MONTGUMMERY ("Mont")
 
+- **Kind:** a Synthetic; he runs the town's video store. His father founded Mistergummery's, which is why the chain wears his teal.
 - **Look:** a robot whose face is a screen, on a dark body with a cyan chest disc and code drifting over its skin,
   ice-blue hands, a tail. **Signature:** the screen (pixel eyes and a flat mouth that moves as he talks; a pixel shovel
   while he plants; a robot face with flicking square eyes while he dances; a fist, scissors or a blank page in a Dance
   battle) and terracotta pots for feet.
-- **Home and post:** roams the dance floor. His teal house with pot porch posts and a stack of tapes; the video store
-  (his favourite shop); Mistergummery's and the charging station in his teal.
+- **Home and post:** roams the dance floor. His teal house with pot porch posts and a stack of tapes; the video store,
+  which he runs; Mistergummery's (his father founded the chain) and the charging station in his teal.
 - **Personality and voice:** speaks of himself in the third person, in short, earnest sentences; polite, careful,
   kind, proud of his dancing, and a little literal.
 - **Relationships:** the player's protector against the Sheriff; GOOWARD's translator; gentle with SOMLET and ZOLLOD's
   seedlings; owes the Library its tapes; ETCHER would etch his binary; GLYPH's symbols move him. THE ANCIENT: "Mont.
-  You were made to learn."
+  You were made to learn." In the future he will become the mayor of Greeblis Town, which will cause minor conflicts
+  with MUSHROOM (1.10).
 - **Quests and Events:** a Dancer, holding one Ancient Artifact. His battle is "DANCE BATTLE: MONTGUMMERY", its bar
   "Robot steps left". Rock out: an air guitar, screen banging; splits: pots planted wide, arms chopping like blades;
   paper: tipped forward over one pot, arms flat out, drifting.
@@ -707,6 +799,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.6 ETCHER
 
+- **Kind:** a Synthetic.
 - **Look:** a blue-teal serpent-dragon whose body rises from the ground like a bell of overlapping scales into a long
   neck, with a lizard's head, golden eyes and a row of little purple knobs, and two stubby clawed front feet.
   **Signature:** a green gem set in his chest and six long, segmented purple tentacle tails spread across the ground.
@@ -734,6 +827,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.7 GLYPH
 
+- **Kind:** a Synthetic.
 - **Look:** a crouching blue dinosaur glazed like old porcelain in bright cyan and engraved all over with swirling gold
   filigree, with a round bumpy head, a great glowing orange eye on each side, two gold coiled horns, short clawed arms
   held up in front and thick clawed legs. **Signature:** armour plates of dark blue, gold and teal filigree with tiny
@@ -763,7 +857,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.8 KING DINO
 
-- **Kind:** an Organic, and a dinosaur (a theropod, as his billboard paints him).
+- **Kind:** an Organic, and a dinosaur (a theropod, as his billboard paints him); he and FORTIZMO are famous jazz musicians.
 - **Look:** an upright lemon-yellow gummy dino with citrus-peel skin, a rounded muzzle, glossy navy bead eyes and a
   quiet smile line. **Signature:** a glossy turquoise crown under a great feathered plume, purple down the back and
   orange down the front; three square turquoise buttons with green lights down each side, turquoise ball joints,
@@ -788,6 +882,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.9 FORTIZMO
 
+- **Kind:** a Synthetic; she runs the Juice Bar, and she and KING DINO are famous jazz musicians.
 - **Look:** a furry, pear-bodied orange elephant with a cream belly, stitched like a plush, who rolls about on wheels.
   **Signature:** her trunk is a brass horn, which rises to play; her ears flap on the beat.
 - **Home and post:** walks the aisle behind the Juice Bar's counter, facing the dance floor whenever she stops. Her
@@ -812,6 +907,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.10 SOMLET
 
+- **Kind:** an Organic; she runs the Post Office.
 - **Look:** a floating cream cotton puffball squared off like a box, with cotton puffs round her sides.
   **Signature:** always asleep (heavy lids closed, a small breathing mouth, Zs drifting up); a navy mail carrier's cap
   with a gold envelope badge; cream-puff hands; plum root tentacles dangling below. At her spot she sleeps lying on her
@@ -831,17 +927,19 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.11 MUSHROOM
 
+- **Kind:** an Organic; he is the town's sheriff.
 - **Look:** a domed cap glowing gold at the crown to deep orange at the rim, with white spots, on a cream stem with a
   frilled collar skirt, little feet, brows and a blush. **Signature:** a sheriff's hat on his cap and a gold sheriff's
   star on his stem. He is the only creature shorter than the player, so he stands on a raised desk to look down on
   visitors.
 - **Home and post:** on his raised desk at the Sheriff's. His house roofed with his cap, with a porch telescope; the
   Consortium's field office.
-- **Personality and voice:** clipped, officious and suspicious; a stickler who can be bought. His idle emote is a
-  silent "...".
+- **Personality and voice:** clipped, officious and suspicious; a stickler who can be bought. He means well, but
+  sometimes goes too far. His idle emote is a silent "...".
 - **Relationships:** the Consortium's deputy, keeping HENNRICK from home and watching everyone: the Library, the bar,
   ETCHER's etching, GEMTOE's gems, GOOWARD's goo, GLYPH's symbols, ANOMALEE at the window. Hunts the human Mont hides.
-  Bribed by MAMA GORBO's burger; terrified of THE ANCIENT.
+  Bribed by MAMA GORBO's burger; terrified of THE ANCIENT. In the future, minor conflicts with MONTGUMMERY once Mont
+  is the town's mayor.
 - **Quests and Events:** a Blossom opens the Portal, which lets the phone reach NEXTESSA. At the Event he steps down
   from his desk to plant.
 - **Blossom:** takes the bribe.
@@ -857,12 +955,13 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.12 ZOLLOD
 
+- **Kind:** an Organic; he runs Garden Supplies and the grocer's on Main Street.
 - **Look:** an upright two-legged creature whose segmented body fades from cyan at the head to green at the feet, with
   a curling trunk tipped magenta, small pink flowers on his head and a thick magenta-tipped tail. **Signature:** a mossy
   garden bed growing over his back (pink and white flowers, a little worm peeking out), fern fronds and yellow plumes
   along his shoulders, an olive gardener's apron with seed packets in the pocket, and a trowel.
 - **Home and post:** keeps GARDEN SUPPLIES. His greenhouse nursery with the giant flower through its roof, his hanging
-  baskets in the park, his five pots on the florist's band.
+  baskets in the park, his five pots on the band of the grocer's, which he runs.
 - **Personality and voice:** at first too shy to speak; once freed, calm, kind and quietly proud of his work; speaks
   in short, gardener's sentences.
 - **Relationships:** grows for everyone: mint for FORTIZMO, advice for MAMA GORBO, goo-for-the-soil for GOOWARD, not
@@ -882,6 +981,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.13 ANOMALEE
 
+- **Kind:** the oldest known Synthetic, too glitchy to explain much about the old world.
 - **Look:** a blocky hardware creature on four legs, its moulded casing patterned in olive with cyan stripes, a
   keyboard tray and dangling cables. **Signature:** a glowing CRT screen for a head, magenta lined with scanlines,
   glitching now and then; and a wooden peg leg where her back-right leg was lost.
@@ -904,6 +1004,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.14 HENNRICK
 
+- **Kind:** a Synthetic from the far past, one of the Synthetic team geoengineering the once desolate world of Greeblis (the team that brought Greeblis, and the Organics, to life). He came through the Portal and is stranded here.
 - **Look:** a tall furry robot-beast in purple fur banded with orange. **Signature:** chrome ring shoulders, long arms
   with copper claws, a green screen in his chest scrolling pixels, glowing cyan gill slits and lights, and four
   segmented fur tentacles hanging under his chin.
@@ -928,6 +1029,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.15 NEXTESSA
 
+- **Kind:** an Organic from the far future.
 - **Look:** an orange, caterpillar-like stack of round segments, each with two little spines, on a base of three
   merged spheres, with a round head, a box snout and glossy yellow eyes. **Signature:** she carries the pizza box on
   her head, its lid marked with a red ring and a slice.
@@ -955,6 +1057,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.17 THE ANCIENT
 
+- **Kind:** the last of the Ancients on Greeblis. It has been away from the world so long that its nature is forgotten: the creatures do not know what it is.
 - **Look:** a great glossy near-black slug with a brown cast lying across the secret room's floor: fine grooves and a
   few pale flecks, a wet glossy keel, a paler tail tip, a smooth mantle humped over its front third with a breathing
   pore that opens and closes. **Signature:** two long eye-stalks with knobs, swaying, one now and then pulling in and
@@ -1013,7 +1116,7 @@ teases, owes, watches and needs whom.
 | **Symbols and etching** | GLYPH and ETCHER need each other | "Without your symbols I'd have nothing to etch." / "And without your etching they'd blow away... don't you think?" |
 | **Avarice and sharing** | GEMTOE learns, against her will | "Is there a symbol for 'all mine'?" / "There's one for 'shared'. Try that one... don't you think?" |
 | **Books and gems** | SPARKAKUS and GEMTOE, collectors both | "I collect books and call it a job, yes." / "And I collect gems and call it Avarice." |
-| **The keepers of history** | HENNRICK, ETCHER and SPARKAKUS | "You etch history and I jar it. Colleagues!" / "Then I will etch you into the age of Organics." |
+| **The keepers of history** | HENNRICK, ETCHER and SPARKAKUS | "You etch history and I jar it. Colleagues!" / "Then I will etch you into the age of Synthetics." |
 | **The Originator's memory** | ANOMALEE and those who would record it | "ETCH this: the ORIGINATOR was HERE." / "Already etched, Anomalee. Deep enough to last." |
 | **The Originator's rhythm** | ANOMALEE and KING DINO | "Your RHYTHM... the ORIGINATOR had it TOO." / "Then the Originator could swing, baby!" |
 | **The window is not for jars** | ANOMALEE refuses HENNRICK | "May I record what you see in that window?" / "It is NOT for jars. It is for REMEMBERING." |
@@ -1379,7 +1482,7 @@ delight) and some are **character** (a line that says who the creature is).
 
    | Moment | What happens |
    | --- | --- |
-   | Talk | **A light bulb** fades in 1.5 m over his head (1.2 s): a glowing bulb with a screw base, a warm halo and a soft cone of light. **The town dims 70% of the way to night**: the sky goes navy, stars and the moon come out, shop windows, street lamps and stained glass glow. |
+   | Talk | **A light bulb** fades in 1.5 m over his head (1.2 s): a glowing bulb with a screw base, a warm halo and a soft cone of light. **The town dims 70% of the way to night**: the sky goes navy, stars come out, shop windows, street lamps and stained glass glow. |
    | Page set 1 | "You’ve found all three Artifacts!\|Amazing!\|Let me see those…\|Ah…" |
    | 0–0.6 s | **The glue.** In the air between him and the player, a school-glue bottle (white, a red GLUE label) grows in over the three pieces, which turn slowly apart. |
    | 0.6–1.6 s | The bottle turns upside down. |
@@ -1929,8 +2032,8 @@ Further notes by creature:
 **The dimming** (there is no day-night cycle; night is only an effect)
 - The town dims toward night for a moment of weight (SPARKAKUS's speech under the light bulb dims it to 70 %).
 - At full night: the dome runs from `#1c2350` at the horizon to `#070b24` overhead and the fog follows; the
-  hemisphere light cools (`#5a6aa8` over `#1a2418`), the sun becomes cool moonlight `#9fb4ff`; 700 small white stars
-  and a pale moon (`#f2f0e0`) fade in.
+  hemisphere light cools (`#5a6aa8` over `#1a2418`), the sunlight cools to `#9fb4ff`; 700 small white stars fade in
+  (there is no moon: Greeblis has none).
 - Lit things glow as it darkens: window glass turns warm amber, lamp globes warm cream, stained glass brightens, the
   flint nuggets and the phone booth's header light up.
 
@@ -2024,7 +2127,7 @@ Every window is painted in code as real leaded glass, on a tall lancet with a po
   rings), its cable pulled free.
 - **The Garden windows:** a bright summer sky (deep blue to pale at the horizon), a rayed sun, three clouds; a meadow of
   rolling greens with six flowers of different colours and two butterflies; a faceless figure in a white robe with a
-  gold belt, and MAMA GORBO in the window's own cyan (a glossy balloon of a body, lime tail, octagon port eyes,
+  gold belt, and MAMA GORBO in her own peach `#ff9f5c`, as her model is (a glossy balloon of a body, lime tail, octagon port eyes,
   red tags, yellow sparks). The left-hand copy swaps the two figures and moves a cloud.
 
 **The town**
@@ -2060,8 +2163,8 @@ drive-in burger place. Open prairie runs from the last street to the hazy horizo
 | The curiosity shop | brown `#7a4a34`, black front | A stone Great Sphinx out front with one eye socket empty |
 | The diner | ridged silver siding, red `#c8282a`, chrome | MAMA GORBO's goo shake on the roof |
 | The ice cream parlour | butter `#f0dc9a`, pink `#e87aa0` | Three goo scoops on a waffle cone; GOOWARD's winged cone |
-| The florist's | green `#7aa86a`, red shutters `#e8301e` | A giant Blossom over the false front, Blossom beds, ZOLLOD's pots |
-| The grocer's | `#c49a6a`, green awning | Fruit crates in the Juice Bar's colours with Blossom stencils, a giant carrot on the crest |
+| The florist's | green `#7aa86a`, red shutters `#e8301e` | A giant Blossom over the false front, Blossom beds |
+| The grocer's (ZOLLOD's) | `#c49a6a`, green awning | ZOLLOD's five pots on the band; fruit crates in the Juice Bar's colours with Blossom stencils, a giant carrot on the crest |
 | The picture house | brick `#7a3a2a`, black front | A marquee of bulbs carrying KING DINO's bill, a blade sign of gold stars, a searchlight |
 | FIRST BANK OF GREEBLIS | limestone | A flint nugget over the doors |
 | Mistergummery's (drive-in) | red `#c8282a` and cream `#fbf1dc`, teal `#55b8c6` | Big teal "M" arches, a red mansard roof, a drive-thru menu of pictures, umbrella tables, a small slide |
