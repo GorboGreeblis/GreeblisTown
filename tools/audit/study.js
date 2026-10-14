@@ -10,7 +10,7 @@ const { savePng, outName } = require('../test/lib.js');
 module.exports = async (p, out) => {
   const specs = JSON.parse(fs.readFileSync(process.env.SPECS, 'utf8'));
   const res = await p.evaluate((specs) => {
-    const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 500), out = []; cam.layers.enableAll(); O.setSize(480, 480, false);
+    const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 500), out = []; cam.layers.mask = 0xffffffff; O.setSize(480, 480, false);
     try { At.visible = false; gcEB.ready = false; } catch (e) {}
     const hidden = []; C.children.forEach((ch) => { if (ch.visible && !ch.isLight) { hidden.push(ch); ch.visible = false; } });
     for (const [label, b, def, opts] of specs) {
