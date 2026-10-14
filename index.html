@@ -808,8 +808,9 @@ const G = (() => {
 	m.add(p),
 		m.add(f),
 		m.add(d),
-		f.position.set(50, 90, -70),
-		d.position.set(50, 90, -70),
+		// (the sun's glow and disc sit in the sky the way the sunlight comes from, along the key light's (24, 48, 18))
+		f.position.set(52.6, 105.2, 39.4),
+		d.position.set(52.6, 105.2, 39.4),
 		C.add(m),
 		// (the dome sits well inside the camera's far plane: any part of it past the far plane is cut away,
 		// and the bare background then shows as a pale disc in the sky that follows the view)
@@ -9779,7 +9780,7 @@ const JGP = (() => {
 	};
 
 	// GEMTOE, after the Gemtoe artwork, in red: a crimson feathered dragon with a bird's face. A feathered horned
-	// head with a mint crest, glowing magenta eyes under heavy brows and a hooked pale beak, a little
+	// head with an amber-orange crest, glowing amber eyes under heavy brows and a hooked pale beak, a little
 	// open, with feather tufts at the cheeks; a deep fur ruff over
 	// the chest; two pairs of great feathered wings; four long scaly tails that run out along the
 	// ground and rise at their ends to hold up her amethyst crystals, coiled round them.
@@ -9885,7 +9886,7 @@ const JGP = (() => {
 		R(T.sphere(1, 14, 8), x.clay("#4a1020", { shininess: 20 }), head, [0, -0.07, 0.37], null, [0.07, 0.03, 0.09]);
 		R(T.sphere(1, 16, 10), x.clay("#5a2a20", { shininess: 40 }), head, [0, 0.045, 0.34], [0.2, 0, 0], [0.085, 0.045, 0.07]);
 		[-1, 1].forEach((sx) => R(T.sphere(0.012, 6, 4), x.clay("#2a0a08"), head, [0.035 * sx, 0.04, 0.42]));
-		// glowing magenta eyes with slit pupils under heavy scaled brows
+		// glowing amber eyes with slit pupils under heavy scaled brows
 		const lids = [];
 		[-1, 1].forEach((sx) => {
 			const e = new THREE.Group();
@@ -9897,7 +9898,7 @@ const JGP = (() => {
 			e.add(lid), R(new THREE.SphereGeometry(0.066, 16, 8, 0, l, 0, Math.PI / 2), hs, lid);
 			(lid.userData.open = -0.5), (lid.rotation.x = -0.5), lids.push(lid);
 			R(T.sphere(1, 14, 10), hs2, head, [0.17 * sx, 0.14, 0.24], [0.3, 0.5 * sx, -0.35 * sx], [0.1, 0.035, 0.07]);
-			// swept-back horns and a row of little frill spikes along the cheek
+			// swept-back horns
 			R(ao([[0.14 * sx, 0.18, -0.06], [0.17 * sx, 0.3, -0.12], [0.19 * sx, 0.36, -0.24], [0.17 * sx, 0.36, -0.36]], 0.05, 0.01, 14, 8), hs2, head);
 			// a tuft of cheek feathers sweeping back
 			const tuft = [];
@@ -9905,7 +9906,7 @@ const JGP = (() => {
 				tuft.push({ p: new c0(0.24 * sx, -0.06 + 0.02 * k - 0.004 * k * k, 0.02 - 0.02 * k), Z: new c0(sx * 0.7, 0.05 * (k - 4), -1).normalize(), N: new c0(sx, 0.2, 0).normalize(), L: 0.2 + 0.03 * (4 - Math.abs(k - 4)), W: 0.06, col: new THREE.Color(k % 2 ? "#d03a30" : "#b02828") });
 			keepR(cardGeo(tuft, "fur"), featherM, head);
 		});
-		// the mint crest over the top of the head
+		// the amber-orange crest over the top of the head
 		{
 			const cards = [];
 			for (let k = 0; k < 34; k++) {
@@ -17936,7 +17937,7 @@ const JGP = (() => {
 					},
 				},
 			],
-			// FORTIZMO's: green, a lily pond in the front yard, her brass horn resting on the porch
+			// FORTIZMO's: green, a lily pond in the front yard, a gold horn resting on the porch
 			[
 				-16,
 				{
