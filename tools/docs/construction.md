@@ -862,6 +862,9 @@ draw), then triangles, then per-frame JavaScript. Measure with `test/t_perf.js`.
 ### Draw calls and triangles
 
 - **Merge per material:** kiosk goods, plants, town bins, born creatures (`KIT.compact`).
+- **Kiosk frames:** `kioskFrame` builds the deck, walls, posts, roof, trim, counter and crates in a group of their own
+  and bakes it with `KIT.compact` at the end (the two gable ends share one material). The four kiosks went from 261
+  meshes to 129, triangles unchanged; `pxcmp.js` shows 0 differing pixels in all ten views.
 - **Creature batcher** (`gcEB`, updated by `Qe`): skips parts whose matrix, colour and visibility are unchanged,
   recomputes a batch's bounds only when something in it changed, and uploads only that batch's part uniforms.
 - **Transparent parts** are left out of both the batcher and `KIT.compact` (each is sorted against the others by
