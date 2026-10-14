@@ -12644,7 +12644,7 @@ const JGP = (() => {
 			tower: (x, y) => (line([[x - 7, y], [x - 4, y - 18]], "#6a6a6a", 1), line([[x + 7, y], [x + 4, y - 18]], "#6a6a6a", 1), vol(x, y - 26, 11, 9, 0, "#ffd8c0", "#c88a6a"), curve([[x - 11, y - 24], [x, y - 20], [x + 11, y - 26]], "#a8e830", 1.6), drip(x - 4, y - 30, 8, 1.4, "#3ae8ff", 0.7)),
 			greenhouse: (x, y) => (poly([[x - 14, y], [x - 14, y - 14], [x, y - 22], [x + 14, y - 14], [x + 14, y]], "rgba(200,240,240,0.45)"), line([[x + 4, y - 12], [x + 6, y - 34]], "#4a8a2a", 1.4), [0, 1, 2, 3, 4].forEach((k) => ell(x + 6 + Math.cos(k * 1.26) * 4, y - 36 + Math.sin(k * 1.26) * 4, 3.6, 2, k * 1.26, "#e83ab8")), ell(x + 6, y - 36, 2, 2, 0, "#ffd23a")),
 			bolt: (x, y) => ((c.fillStyle = "#2ab4a8"), c.fillRect(x - 3, y - 30, 6, 30), poly([[x + 1, y - 28], [x - 4, y - 18], [x, y - 18], [x - 2, y - 10], [x + 4, y - 21], [x, y - 21]], "#ffe84a")),
-			clock: (x, y) => ((c.fillStyle = "#9a4a3a"), c.fillRect(x - 6, y - 36, 12, 36), ell(x, y - 30, 4, 4, 0, "#f6f0e0"), line([[x, y - 30], [x + 2, y - 32]], "#2a2a2a", 0.8), poly([[x - 7, y - 36], [x + 7, y - 36], [x, y - 46]], "#5a9a8a"), ell(x, y - 47, 1.5, 1.5, 0, "#ffd23a")),
+			courthouse: (x, y) => ((c.fillStyle = "#9a4a3a"), c.fillRect(x - 9, y - 22, 18, 22), [-6, -2, 2, 6].forEach((d) => line([[x + d, y - 22], [x + d, y - 4]], "#f6f2e8", 1.6)), poly([[x - 10, y - 22], [x + 10, y - 22], [x, y - 29]], "#f6f2e8"), ell(x, y - 25, 1.6, 1.6, 0, "#d8b04a")),
 			marquee: (x, y) => { poly([[x - 14, y - 16], [x + 14, y - 16], [x + 14, y - 8], [x - 14, y - 8]], "#3a1a1a"); for (let k = 0; k < 9; k++) ell(x - 12 + k * 3, y - 17, 1, 1, 0, "#ffe8a0"); c.fillStyle = grad(x, y - 18, x + 30, y - 120, [[0, "rgba(255,250,220,0.25)"], [1, "rgba(255,250,220,0)"]]); c.beginPath(), c.moveTo(x - 2, y - 18), c.lineTo(x + 2, y - 18), c.lineTo(x + 40, y - 130), c.lineTo(x + 20, y - 130), c.fill(); },
 			tvs: (x, y) => { [[0, 0], [12, 0], [6, -11]].forEach(([dx, dy]) => (poly([[x + dx - 6, y + dy], [x + dx + 6, y + dy], [x + dx + 6, y + dy - 10], [x + dx - 6, y + dy - 10]], "#8a8a8e"), poly([[x + dx - 4, y + dy - 2], [x + dx + 3, y + dy - 2], [x + dx + 3, y + dy - 8], [x + dx - 4, y + dy - 8]], "#ff3ad0", 0.75))); line([[x + 6, y - 21], [x + 2, y - 30]], "#3a3a3a", 0.8), line([[x + 6, y - 21], [x + 11, y - 29]], "#3a3a3a", 0.8); },
 			shake: (x, y) => (poly([[x - 6, y - 22], [x + 6, y - 22], [x + 4, y], [x - 4, y]], "#f0f0f0"), vol(x, y - 24, 7, 5, 0, "#ff8ad8", "#c83aa8"), line([[x + 2, y - 26], [x + 5, y - 36]], "#e83a3a", 1.6), drip(x - 4, y - 22, 9, 1.6, "#ff8ad8", 0.8)),
@@ -12791,7 +12791,7 @@ const JGP = (() => {
 		// the present: the park and the town
 		G.roads(U(0.58), HZ(U(0.58)) - 4);
 		{
-			const fr = ["bank", "barber", "tower", "greenhouse", "bolt", "clock", "marquee", "tvs", "shake", "cone", "avarice", "lineage", "vane", "church"];
+			const fr = ["bank", "barber", "tower", "greenhouse", "bolt", "courthouse", "marquee", "tvs", "shake", "cone", "avarice", "lineage", "vane", "church"];
 			fr.forEach((k, i) => {
 				const x = U(0.46 + (i / (fr.length - 1)) * 0.28) + rr(-6, 6);
 				G[k](x, HZ(x) + 2);
