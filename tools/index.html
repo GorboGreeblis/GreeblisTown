@@ -2423,12 +2423,18 @@ function Gt(e, o) {
 		}
 	);
 }
+// THE EVENT'S TALK is on only while the Garden Event runs with the Seeds: then everyone comes to the garden and
+// says its Event line. Without them nobody comes and nothing is planted, so everyone says its everyday lines (and,
+// as at any Event, takes no Blossom).
+function evTalk() {
+	return me.active && !!bt.seeds;
+}
 function Vt(t) {
 	// nothing to choose for FORTIZMO while she plays during the Gardening Event
 	// (SPARKAKUS has no def of his own: at the Event his Talk, from his station or from `xo` in the garden, is
 	// his Event line, so neither is ever silenced here)
 	if (t === xo || (t && "stump" === t.id)) return !1;
-	return !!t && ((me.active && "frog" === t.id) || (me.active && !(t.def && t.def.campfire)));
+	return !!t && ((evTalk() && "frog" === t.id) || (evTalk() && !(t.def && t.def.campfire)));
 }
 function Bt(t, e) {
 	if (!t || "object" != typeof t) return 0;
@@ -2448,9 +2454,11 @@ function Dt(t) {
 function Xt(t) {
 	return t.def && "cutebex" === t.def.__type ? t.def.__type : t.id;
 }
-// (a creature held by the player: its dialogue open, or ZOLLOD's shop opened from him)
+// (a creature held by the player: its dialogue open, or ZOLLOD's shop opened from him; or in the middle of a
+// scripted scene of its own (e.scene(): SPARKAKUS's Gem speech, all of it, the gaps between its pages included).
+// Held, nothing takes it away: a visit waits where it stands, and no walk home, wander, meeting or vignette starts.)
 function heldBy(e) {
-	return !!e && xe.lastTarget === e && ("dialogue" === jt.top || ("panel" === jt.top && "shop" === _t.kind));
+	return !!e && (!!(e.scene && e.scene()) || (xe.lastTarget === e && ("dialogue" === jt.top || ("panel" === jt.top && "shop" === _t.kind))));
 }
 const CFG = t;
 const st = { join() {}, leave() {}, romp(d) { d && d(); }, romping: () => !1, atHome: () => !1, held: () => !1, away: () => !1, pos: () => ({ x: 0, z: 0 }), talking: !1, dancing: 0 };
@@ -4454,7 +4462,8 @@ const le = (() => {
 						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = !via || inside ? 0 : via.length), (t.vbk = -1), clearTimeout(t.bdT), (t.battleDance = !1), (t.goHome = t.gcNavHome = !1), (t.gcNav = null);
 					});
 				const o = Gt(s.concat([null]), gcSinger.angle);
-				bt.seeds && st.join(o.larry),
+				// (SPARKAKUS comes at the cast's pace, 2.4 m/s, so he is in the garden with them)
+				bt.seeds && st.join(o.larry, void 0, void 0, 2.4),
 					s.forEach((t) => {
 						(t.finaleSlot = o.get(t)), (t.ph = Math.random() * l);
 					}),
@@ -4904,7 +4913,7 @@ const xe = (() => {
 			if (e && Vt(e)) return o;
 			// ZOLLOD keeps Garden Supplies: outside the Event talking to him opens the shop (at the Event he says his line)
 			// (until you bring him OVERCOMING SHYNESS from the Library he is too shy for it: one Talk, no Blossom, no shop)
-			if (e && e.kind && "cutebex" === Xt(e) && !me.active)
+			if (e && e.kind && "cutebex" === Xt(e) && !evTalk())
 				return (
 					o.push(
 						Kt.shyFree
@@ -4921,7 +4930,7 @@ const xe = (() => {
 					),
 					o
 				);
-			if (e && e.kind && me.active)
+			if (e && e.kind && evTalk())
 				return (
 					o.push({
 						verb: "interact",
@@ -4939,6 +4948,7 @@ const xe = (() => {
 				const a = e.def.name;
 				o.push({ verb: "interact", label: "Talk to " + a, run: () => te(e) }),
 					Kt.blossoms > 0 &&
+					!me.active &&
 						o.push({ verb: "give", label: "Give a blossom", run: () => te(e, !0) });
 			} else e && (o.push({ verb: "interact", label: e.label(), run: e.run }), e.gift && Kt.blossoms > 0 && !me.active && o.push({ verb: "give", label: "Give a blossom", run: e.gift }));
 			return o;
@@ -5202,26 +5212,6 @@ const xe = (() => {
 					P(t, [[x - 17, y - 12], [x + 17, y - 12], [x, y + 20]], "#f6d36a", "#c88a3a");
 					S(t, x - 19, y - 18, 38, 8, 4, "#d8963c", "#a86a2a", 1.5);
 					[[-7, -4], [6, -3], [0, 7]].forEach(([dx, dy]) => O(t, x + dx, y + dy, 3.6, 3.6, "#c8302a"));
-				},
-				// the Flower Hat: a big Blossom of flame petals in a cup of green leaves
-				hat(t, x, y) {
-					O(t, x, y + 8, 21, 7, "#3f9a32"), O(t, x, y + 6, 14, 6, "#2f7a2a");
-					for (let k = 0; k < 7; k++) petal(t, x, y + 6, -1.3 + 0.43 * k, 20, 6, ["#e8303a", "#ff8a1a", "#ffd23a"][k % 3]);
-				},
-				// the Sun Dress: sky blue, golden suns, a gold band at the hem
-				dress(t, x, y) {
-					P(t, [[x - 6, y - 20], [x + 6, y - 20], [x + 8, y - 8], [x + 17, y + 18], [x - 17, y + 18], [x - 8, y - 8]], "#8fd0f2", "#3a7aa8");
-					(t.fillStyle = "#e8c43a"), t.fillRect(x - 16, y + 13, 32, 4);
-					[[-4, -10], [5, -2], [-7, 6], [6, 9]].forEach(([dx, dy]) => O(t, x + dx, y + dy, 2.8, 2.8, "#ffc93a"));
-				},
-				// the Frog Shoes: a little green frog over each foot, golden eyes bulging on top
-				shoes(t, x, y) {
-					for (const sx of [-1, 1]) {
-						const cx = x + 10 * sx;
-						O(t, cx, y + 8, 9, 11, "#3f9a32"), O(t, cx, y + 14, 9, 5, "#1f4a1c");
-						O(t, cx - 4, y - 2, 3.4, 3.4, "#ffd65a"), O(t, cx + 4, y - 2, 3.4, 3.4, "#ffd65a");
-						O(t, cx - 4, y - 2, 1.2, 1.6, "#1a1a1a"), O(t, cx + 4, y - 2, 1.2, 1.6, "#1a1a1a");
-					}
 				},
 			};
 		})();
@@ -6372,7 +6362,8 @@ const xe = (() => {
 							// the items in hand, in this order, each with its icon; an item the player doesn't have shows
 							// nothing at all. Blossoms, Flint and the Ancient Artifacts carry their count ("x3"); a
 							// quest item shows while it is held (the Artifacts until they are glued into the Gem, the
-							// Gem until it is traded, the book until ZOLLOD has it), and the clothes once bought.
+							// Gem until it is traded, the book until ZOLLOD has it). Clothes never show here: the Shop's mirror
+							// shows them (a rule of the game).
 							inv = [
 								Kt.blossoms > 0 && ["blossom", Kt.blossoms],
 								Kt.acorns > 0 && ["flint", Kt.acorns],
@@ -6382,9 +6373,6 @@ const xe = (() => {
 								Kt.shyBook && !Kt.shyFree && ["book"],
 								n.seeds && ["seeds"],
 								n.snacks && ["pizza"],
-								Kt.owned.has("flowerhat") && ["hat"],
-								Kt.owned.has("sundress") && ["dress"],
-								Kt.owned.has("frogshoes") && ["shoes"],
 							].filter(Boolean),
 							r = [n.seeds, n.stone, n.snacks, inv.join(";")].join("|");
 						r !== o.sig &&
@@ -13712,7 +13700,7 @@ const JGP = (() => {
 			(ent.finaleSlot = spots[k]), (ent.watching = !1);
 		});
 		const q = sp && spots[list.length];
-		q && st.join({ x: q.x, z: q.z }, Math.atan2(-q.x, -q.z));
+		q && st.join({ x: q.x, z: q.z }, Math.atan2(-q.x, -q.z), void 0, 2.4);
 	}
 	// FORTIZMO doesn't plant: she walks to the garden's edge to play. The librarian SPARKAKUS (who leaves
 	// the Library for it) plants with everyone, at a spot of his own inside the garden, and grows a flower
@@ -13731,13 +13719,17 @@ const JGP = (() => {
 				fz = fin.find(noPlant),
 				aF = fz && fz.finaleSlot ? Math.atan2(fz.finaleSlot.z, fz.finaleSlot.x) : null,
 				gap = null == aF ? 0 : 0.45,
-				rest = fin.filter((en) => !noPlant(en)),
-				ang = (en) => Math.atan2(en.group.position.z, en.group.position.x),
+				// (SPARKAKUS, planting in the garden with them, steps out with them too: `st` stands for him in the order)
+				rest = fin.filter((en) => !noPlant(en)).concat(bt.seeds && st.away() ? [st] : []),
+				pos = (en) => (en === st ? st.pos() : en.group.position),
+				ang = (en) => Math.atan2(pos(en).z, pos(en).x),
 				a0 = null == aF ? (rest.length ? ang(rest[0]) : 0) : aF,
 				rel = (en) => (((ang(en) - a0) % l) + l) % l;
 			rest.sort((p, q) => rel(p) - rel(q)).forEach((en, k) => {
-				const a = a0 + gap + ((k + (gap ? 0.5 : 0)) / rest.length) * (l - 2 * gap);
-				(en.watching = !0), (en.finaleSlot = { x: R0 * Math.cos(a), z: R0 * Math.sin(a) });
+				const a = a0 + gap + ((k + (gap ? 0.5 : 0)) / rest.length) * (l - 2 * gap),
+					x = R0 * Math.cos(a),
+					z = R0 * Math.sin(a);
+				en === st ? st.join({ x, z }, Math.atan2(-x, -z), void 0, 2.4) : ((en.watching = !0), (en.finaleSlot = { x, z }));
 			});
 		},
 		eventActor = (ent) => !!ent && AT_POST.includes(ent.id);
@@ -13769,7 +13761,9 @@ const JGP = (() => {
 	{
 		let spRound = 0, spWait = 0;
 		L.push((tt) => {
-			if (!bt.live || !me.active || !st.away() || !st.there() || spRound === garden.round || garden.round < 1) return void (st.away() || (spWait = 0));
+			// (only at his spot inside the garden: arrived at his place on the ring for the dance, he plants nothing)
+			const sp0 = st.away() && st.pos();
+			if (!bt.live || !me.active || !st.away() || !st.there() || Math.hypot(sp0.x, sp0.z) > GARDEN_R || spRound === garden.round || garden.round < 1) return void (st.away() || (spWait = 0));
 			if (!spWait) return void (spWait = tt + 1.5);
 			if (tt < spWait) return;
 			(spRound = garden.round), (spWait = 0);
@@ -14361,7 +14355,8 @@ const JGP = (() => {
 				const fin = It.all.filter((en) => "finale" === en.busy),
 					fz = fin.find(noPlant);
 				// (the 20 s start when the last planter reaches the garden, or 30 s in whatever happens)
-				!inAt && (fin.every((en) => en === fz || there(en)) || tt - plantedAt > 30) && (inAt = tt);
+				// (SPARKAKUS, out planting with them, counts too)
+				!inAt && ((fin.every((en) => en === fz || there(en)) && (!(bt.seeds && st.away()) || st.there())) || tt - plantedAt > 30) && (inAt = tt);
 				// (and FORTIZMO has to be at her spot to play: she is given 15 s more at most)
 				if (inAt && tt - inAt > 20 && (!fz || there(fz) || tt - inAt > 35)) {
 					(phase = 2), (ringAt = tt), toRing(fin);
@@ -14856,8 +14851,8 @@ const JGP = (() => {
 		});
 		const // a creature can take part only standing at its own spot (not busy, nor on its way home)
 			// (and not in a visit: a visit plays its own pair's, see VIGS.play)
-			atSpot = (en) => !en.visiting && !en.hosting && !en.busy && !en.meeting && !en.battleDance && !en.goHome && !en.gcNavHome && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4,
-			talkedTo = (en) => "dialogue" === jt.top && xe.lastTarget === en;
+			atSpot = (en) => !en.visiting && !en.hosting && !en.busy && !en.meeting && !en.battleDance && !en.goHome && !en.gcNavHome && !heldBy(en) && Math.hypot(en.group.position.x - en.home.x, en.group.position.z - en.home.z) < 0.4,
+			talkedTo = (en) => heldBy(en);
 		// A VISIT'S EXCHANGE: two creatures play their pair's vignette, its two lines always shown (the visits).
 		// Whether one is playing (a visit waits for it to end).
 		VIGS.playing = () => !!cur;
@@ -16907,7 +16902,7 @@ const JGP = (() => {
 						// (at the Event it says only "Hello")
 						// (pointed at anywhere on its body, head to tail)
 						pickObj: [slug, head],
-						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", me.active ? "Hello" : "I am the one reborn.")),
+						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", evTalk() ? "Hello" : "I am the one reborn.")),
 						gift: () => Kt.blossoms > 0 && (Kt.blossoms--, G.heart(), (talking = 1), qt.open("ANCIENT", "#9a7a5a", "...")),
 					});
 					// (a visit's exchange with it: it talks, lifting its head, for so long, see JGP.slug.chat)
@@ -18470,7 +18465,7 @@ const JGP = (() => {
 				L.push((t2) => {
 					const f = It.byId.frog;
 					// (she stays put to serve a player at the bar, and while being talked to)
-					if (!f || f.busy || f.vig || f.visiting || f.hosting || me.active || f.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === f)) return void (waitTo = -1);
+					if (!f || f.busy || f.vig || f.visiting || f.hosting || me.active || f.nearPlayer || heldBy(f)) return void (waitTo = -1);
 					const p = f.group.position,
 						[ax] = JGP.barSpot(0);
 					// (still on the way to the last spot, or away from the aisle: wait till she is back)
@@ -18528,7 +18523,7 @@ const JGP = (() => {
 						const h = It.byId[id];
 						// (taken away for something else, its own walk is over: the way back is the engine's)
 						if (!h || h.busy || h.vig || h.meeting || h.visiting || h.hosting || h.battleDance || me.active) return void ((waitTo = -1), (giveUp = 0));
-						if (h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h)) return void ((waitTo = -1), (pt = t2));
+						if (h.nearPlayer || heldBy(h)) return void ((waitTo = -1), (pt = t2));
 						const p = h.group.position;
 						if (Math.hypot(p.x - h.home.x, p.z - h.home.z) > 0.1) {
 							// (no headway for 2.5 s, another creature in the way, or not there in good time: it settles,
@@ -18569,7 +18564,7 @@ const JGP = (() => {
 						if (t2 < tick) return;
 						if (((tick = t2 + 0.5), me.active)) return void away.clear();
 						for (const h of It.all) {
-							if (!h.def || !h.def.at || !h.group.visible || h.busy || h.vig || h.visiting || h.hosting || h.meeting || h.battleDance || h.nearPlayer || ("dialogue" === jt.top && xe.lastTarget === h) || JGP.homeGround(h)) {
+							if (!h.def || !h.def.at || !h.group.visible || h.busy || h.vig || h.visiting || h.hosting || h.meeting || h.battleDance || h.nearPlayer || heldBy(h) || JGP.homeGround(h)) {
 								away.delete(h);
 								continue;
 							}
@@ -18595,7 +18590,7 @@ const JGP = (() => {
 					let tryAt = 0,
 						farAt = 0;
 					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
-						free = (h) => h && !h.busy && !h.vig && !h.visiting && !h.hosting && !h.battleDance && !h.nearPlayer && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h),
+						free = (h) => h && !h.busy && !h.vig && !h.visiting && !h.hosting && !h.battleDance && !h.nearPlayer && !h.goHome && !h.gcNavHome && !heldBy(h),
 						off = (t2, wait) => {
 							for (const h of pair()) h && ((h.seek = null), h.meeting && ((h.meeting = !1), h.home.set(h.group.position.x, h.home.y, h.group.position.z)));
 							(st = 0), (next = t2 + wait);
@@ -18704,7 +18699,7 @@ const JGP = (() => {
 							if (h.def && "cutebex" === h.def.__type && !Kt.shyFree) return !1;
 							if ("slug" === h.id) return !0;
 							if (isSP(h)) return st.ent.sync(), !st.away() && !st.romping() && !Bulb.hold && !(st.talking && qt.isOpen);
-							return !h.busy && !h.meeting && !h.battleDance && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h) && (!out || (!h.nearPlayer && at(h, [h.home.x, h.home.z])));
+							return !h.busy && !h.meeting && !h.battleDance && !h.goHome && !h.gcNavHome && !heldBy(h) && (!out || (!h.nearPlayer && at(h, [h.home.x, h.home.z])));
 						},
 						// where the visitor stands: beside the host, on its side toward the visitor if it can, on open
 						// ground it can stand on, clear of everyone
@@ -20208,6 +20203,8 @@ if (
 										return {
 											id: "keeper",
 											def: { name: i.name, stationary: !0 },
+											// (his scenes: the Gem speech from its first page to its last, and his Blossom lap)
+											scene: () => !!Bulb.hold || st.romping(),
 											group: mk,
 											height: 3.1,
 											vig: !1,
@@ -20253,7 +20250,9 @@ if (
 											n = H.via.length ? H.via[0] : H.target,
 											s = n.x - a.x,
 											i = n.z - a.z,
-											l = Math.hypot(s, i);
+											l = Math.hypot(s, i),
+											// (talking to the player, or in his Gem speech, he faces the player, wherever he is)
+											toP = (st.talking && qt.isOpen) || !!Bulb.hold;
 										if (H.via.length && l <= 0.3) H.via.shift();
 										else if (l > 0.3) {
 											// (talked to on the way — out on a visit, or walking home — he stands for it, and goes on after;
@@ -20261,7 +20260,7 @@ if (
 											const dP = Math.hypot(At.position.x - a.x, At.position.z - a.z);
 											dP > CFG.greetClear && (spNear = 0);
 											const near = dP < CFG.greetR && (spNear ? x - spNear < CFG.proximityFreezeS : ((spNear = x), !0));
-											(spHeld = near) && (e.rotation.y += m(e.rotation.y, Math.atan2(At.position.x - a.x, At.position.z - a.z)) * Math.min(1, 6 * c));
+											((spHeld = near) || toP) && (e.rotation.y += m(e.rotation.y, Math.atan2(At.position.x - a.x, At.position.z - a.z)) * Math.min(1, 6 * c));
 											if (!(st.talking && qt.isOpen) && !near) {
 												const o = Math.min(l, (H.sp || 2.2) * c);
 												(a.x += (s / l) * o),
@@ -20273,7 +20272,10 @@ if (
 										} else
 											H.back
 												? (t.attach(e), e.position.copy(f), e.rotation.set(0, 0, 0), e.scale.setScalar(g), (H = null))
-												: ((a.y = Math.max(0, JGP.groundAt(a.x, a.z, 0.3))), e.rotation.set(0, "number" == typeof H.face ? H.face : H.face ? Math.atan2(At.position.x - a.x, At.position.z - a.z) : Math.atan2(-a.x, -a.z), 0));
+												: ((a.y = Math.max(0, JGP.groundAt(a.x, a.z, 0.3))),
+													toP
+														? (e.rotation.y += m(e.rotation.y, Math.atan2(At.position.x - a.x, At.position.z - a.z)) * Math.min(1, 6 * c))
+														: e.rotation.set(0, "number" == typeof H.face ? H.face : H.face ? Math.atan2(At.position.x - a.x, At.position.z - a.z) : Math.atan2(-a.x, -a.z), 0));
 										if (((p.x = e.position.x), (p.z = e.position.z), H)) {
 											o.rotation.y = 0;
 											const t = !bt.live || H.back || r.moving ? 0 : 1;
@@ -20311,7 +20313,11 @@ if (
 														? go(f, 4.2) && ((RUN.k = 4), (RUN.t = 0))
 														: ((RUN.lean = Math.max(0, 1 - RUN.t / 0.6)), (e.rotation.y += m(e.rotation.y, 0) * Math.min(1, 6 * c)), RUN.t >= 0.6 && ((e.rotation.x = 0), (r.moving = !1), (RUN = (RUN.done && RUN.done(), null))));
 										RUN && ((e.rotation.x = 1.15 * Wt(RUN.lean)), 0 < RUN.k && RUN.k < 4 && (r.moving = !0));
-									} else if (e.parent === t && !me.active && !(st.talking && qt.isOpen) && !st.ent.vig && !st.ent.hosting) {
+									} else if (e.parent === t && !me.active && ((st.talking && qt.isOpen) || Bulb.hold)) {
+										// (talking, or in his Gem speech, gaps included, at home too: he turns to the player; his world heading
+										// is l + his own, as for his head's greeting turn below)
+										e.getWorldPosition(h), (e.rotation.y += m(e.rotation.y, Math.atan2(At.position.x - h.x, At.position.z - h.z) - l) * Math.min(1, 6 * c));
+									} else if (e.parent === t && !me.active && !st.ent.vig && !st.ent.hosting) {
 										const q = e.position;
 										if (wT) {
 											const dx = wT.x - q.x,
@@ -20375,11 +20381,11 @@ if (
 								},
 								// (out on a visit, or walking home from one, he still answers — his walk waits while his
 								// dialogue is open; only at the Event does `xo` speak for him instead)
-								// (at the Event his Talk is his Event line, wherever he is: planting in the garden, or at home
-								// in the Library when there were no Seeds)
+								// (at an Event with the Seeds his Talk is his Event line, wherever he is; at one without them he is
+								// at home in the Library and says his everyday lines, see evTalk)
 								label: () => (st.romping() || Bulb.hold ? null : "Talk to " + i.name),
 								run: () => {
-									st.romping() || Bulb.hold || (me.active ? LIB.say(i.event) : LIB.talk());
+									st.romping() || Bulb.hold || (evTalk() ? LIB.say(i.event) : LIB.talk());
 								},
 								// (a Blossom for him, before or after his quest: at his place in the Library off he runs on all fours,
 								// then says sorry; out on a visit, walking home or with a visitor he takes it with his `giftAway`
@@ -20546,7 +20552,11 @@ if (
 							});
 						}
 						// (SPARKAKUS dances and plants only when he is at the Event, not when he steps out of the Library to speak)
-						st.group && n.push({ key: "keeper", grp: st.group, ent: null, want: st.away() && me.active && bt.seeds ? (music ? "dance" : o ? "plant" : null) : null });
+						// (as the cast: only standing at his spot, never on the way; he plants only at his spot in the garden, and
+						// dances at his place on the ring with everyone)
+						const spAt = st.away() && me.active && bt.seeds && st.there(),
+							spIn = spAt && Math.hypot(st.pos().x, st.pos().z) < JGP.GARDEN_R;
+						st.group && n.push({ key: "keeper", grp: st.group, ent: null, want: spAt && !("dialogue" === jt.top && st.talking) ? (music ? "dance" : o && spIn ? "plant" : null) : null });
 						for (const o of n) {
 							let n = bt.tg.get(o.grp);
 							// (each creature's idle footprint sample is offset by its place in the list, so the samples, every 0.25 s, never all

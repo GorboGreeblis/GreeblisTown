@@ -649,8 +649,10 @@ This section gives the Event's lore and sequence; its design and timing are in 5
   motions at the same spots and grow nothing; the garden stays as the first Event left it. "All that grows, grows
   again." / "Then my work is never done. Good."
 - **Without the Seeds**, nobody comes to plant and FORTIZMO does not play; BACKPACKA still comes and sprays, but
-  nothing grows and no rainbow comes out.
-- **The Event lines** (each creature's words when talked to during it) are listed with the cast (2.1 to 2.17).
+  nothing grows and no rainbow comes out. Talked to, everyone says its everyday lines, never its Event line, and no
+  Blossom is taken.
+- **The Event lines** (each creature's words when talked to during it) are listed with the cast (2.1 to 2.17). They
+  are said only at an Event with the Seeds.
 
 ### 1.15 Written things
 
@@ -5966,8 +5968,8 @@ This section specifies the player's body, controls, pointer, comfort measures, h
 - A 0.15 m card on the left controller's grip, tilted toward the eye; hidden when there is no left controller.
 - Content, top to bottom: the three quests with ☐ or ☑ (SEEDS, SUMMONING STONE, SNACKS); then the items in hand, four
   to a row, in this order: Blossoms and Flint with counts, the Ancient Artifacts with their count (until glued), the
-  Ancient Gem (until traded), the Summoning Stone, OVERCOMING SHYNESS (until ZOLLOD has it), the Seeds, the pizza, and
-  the Flower Hat, Sun Dress and Frog Shoes once bought. An item not held has no tile. The card grows downward; the
+  Ancient Gem (until traded), the Summoning Stone, OVERCOMING SHYNESS (until ZOLLOD has it), the Seeds and the pizza.
+  An item not held has no tile. Clothes never have a tile: the Shop's mirror shows them. The card grows downward; the
   quests never move.
 - The same card is the HUD in every mode (on the wrist in VR, in a screen corner in the test modes).
 
@@ -6327,7 +6329,8 @@ Its lore is in 1.14.
 - **The Seeds decide the Event** (`bt.seeds`, fixed for the whole Event as it starts):
   - **With Seeds:** everyone comes, plants and dances, FORTIZMO plays, and flowers grow.
   - **Without Seeds:** nobody leaves home, no horn, no music. BACKPACKA still comes about 20 s in and sprays the
-    garden, but nothing grows and no rainbow shows.
+    garden, but nothing grows and no rainbow shows. No Event lines: a creature talked to says its everyday lines
+    (Blossoms stay off, as at every Event).
 - The Event can be replayed any number of times.
 
 **Who comes:** the whole park cast except KING DINO (at his drums), SOMLET (asleep at the Post Office), NEXTESSA
@@ -7039,7 +7042,7 @@ This section specifies the interface's type, palette, surfaces, VR placement and
   `#5ab4ff`, **SNACKS** in orange `#ff9a3a`.
 - Under a faint rule, the items in hand on 52 px tiles, four to a row, each painted in code in the item's own colours:
   a red flame Blossom, a dark faceted Flint, the teal Artifacts and Gem, the grey rune stone, the pink book, a paper
-  seed packet, a pizza slice, the three clothes. Counts ("x3") in white bold with an ink outline. No item, no tile.
+  seed packet, a pizza slice (never clothes). Counts ("x3") in white bold with an ink outline. No item, no tile.
 
 #### The start screen and notices
 

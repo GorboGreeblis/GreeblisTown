@@ -301,6 +301,10 @@ two on their way out or meeting at once. Every pair's two vignettes play within 
   restored at once; a visitor inside the church leaves by the X first).
 - **Always talkable:** a creature being talked to stops where it stands (ZOLLOD also while his shop is open:
   `heldBy`); the visit's clocks wait; the walk resumes when the dialogue closes.
+- **Scenes hold too:** a creature in a scripted scene of its own (`e.scene()`; SPARKAKUS's Gem speech from its first
+  page to its last, the assembly between pages included, and his Blossom lap) is `heldBy` for all of it: its visit
+  waits where it stands, and no walk home, wander, meeting or vignette starts. Talking, or in his speech, SPARKAKUS
+  turns to face the player wherever he is.
 - **Proximity freeze:** any walking creature stops for an approaching player, turned to them, for
   `t.proximityFreezeS` (12 s) or until the player leaves. The freeze sets `held`; the visit holds its clocks while
   either party is held or a panel is open, and a planned route home keeps its budget.
@@ -368,7 +372,7 @@ building hull. Pickups are instanced ([Performance](#12-performance)).
 - The HUD lists three quests: SEEDS, SUMMONING STONE and SNACKS.
 - Below them it shows held items (`INV_ICON`, one painter per item; the list is rebuilt from `Kt` each frame and the
   card redrawn only on change): Blossoms, Flint, the Artifacts with counts, the Gem, the Summoning Stone, the shyness
-  book, the Seeds, the pizza and purchased clothes. Items not held are omitted. The canvas extends below the quests
+  book, the Seeds and the pizza. Items not held are omitted, and clothes never show (a rule). The canvas extends below the quests
   and its plane is offset down, so the quests keep their position on the wrist and in the test modes' screen corner.
 
 | Quest | Completion |
@@ -457,7 +461,9 @@ The Backpacka block runs for `t.finale.durationS` (180 s).
 ### Seeds, planting and growth
 
 - **`bt.seeds`** is fixed for the whole Event. Without Seeds nobody attends, there is no music, and Backpacka sprays
-  a garden that does not grow.
+  a garden that does not grow. `evTalk()` (`me.active && bt.seeds`) gates every Event line (the `campfire` lines,
+  SPARKAKUS's Event line, THE ANCIENT's "Hello", ZOLLOD's line in place of his shop): without Seeds everyone says
+  its everyday lines. Blossoms are off at every Event.
 - **Spots** (`beginPlanting`): planters stand on rings of radius 3.5 m (up to 4), 7.5 m (up to 6) and 11.5 m (the
   rest), so the soil 0.9 m in front of each falls on the rows at 2.6, 6.6 and 10.6 m, turned until the soil is at
   least 0.75 m clear of the stepping-stone paths.

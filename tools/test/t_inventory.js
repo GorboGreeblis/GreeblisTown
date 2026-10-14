@@ -1,7 +1,8 @@
 // The items on the HUD in the desktop test mode: the player given nothing, then some items (Blossoms, Flint, two
 // Artifacts, the shyness book), then every item there is, then the Artifacts glued, the Gem traded and the book given
 // to ZOLLOD (the Artifacts, the Gem and the book gone, the Summoning Stone kept). The HUD's corner is screenshot each
-// time, for inspection: no tile for an item not held; counts on Blossoms, Flint and the Artifacts.
+// time, for inspection: no tile for an item not held; counts on Blossoms, Flint and the Artifacts; and no tile for
+// the clothes, though all three are owned in `all` (clothes never show in the Game UI).
 // Env: none.
 // Output: `inventory err <n>`; <out>_none.png, <out>_some.png, <out>_all.png and <out>_after.png (420×420 px).
 //   NOSHOT=1 node test/shot.js <url> x_inv.png test/t_inventory.js

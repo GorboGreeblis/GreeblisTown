@@ -76,6 +76,20 @@ Rules for how changes are made, checked and recorded.
    Nothing may be left only in a scratch folder, and nothing may stay in `tools/` that the game no longer needs.
 8. How the game is built must be written down in [construction.md](construction.md) and, for the creatures,
    [creatures.md](creatures.md).
+9. Long work must save its progress as it goes, so a run that fails or is cut off never has to start over: a long
+   test writes each step to a log file the moment it happens (`LOG=` for the probes, see
+   [testing.md](testing.md#writing-a-probe)), long runs go in the background with their output in a file (never only
+   through a pipe that prints at the end), big tasks are split into short steps that are each committed and pushed
+   when done, and a task's plan and state are written down where the next session can pick them up. The logs are
+   working files, a tool for finishing the task: they stay in the scratch folder, are never committed, and are
+   deleted once the task is finished. The method, step by step:
+   - start the long run in the background, its log file named for the task in the scratch folder;
+   - while it runs, read the log to follow its progress; if the run fails or is cut off, read the log, fix the
+     cause, and resume from the last step it reached instead of starting over;
+   - when the run ends, read the whole log and act on what it shows (report the results, fix what failed);
+   - once the task is finished, delete its logs.
+
+   This holds for this game and every future Greeblis game.
 
 ## Locks and approvals
 
@@ -183,6 +197,17 @@ Rules for how creatures act towards the player and the park. The systems are in
    inside (see [bible.md](bible.md#14-the-five-kiosks)).
 7. Only one batch of flowers ever grows at the Garden Event: the first Event's. Every planting creature (SPARKAKUS
    included) must grow a flower at its spot then; a repeated Event must never add more.
+8. A creature speaking to the player must face the player, wherever it is (at home, out on a visit, on its way
+   home) and for every page of what it says, including the moments of a speech or scene between pages. The only
+   exceptions are ones the owner has set: ANOMALEE keeps gazing up at the church window through her Talk lines, and
+   the church's Ancient never turns. This holds in every Greeblis game.
+9. While a creature's scripted scene plays (its effects, animations and dialogue: SPARKAKUS's Gem speech, for one),
+   nothing takes it away: no visit goes on or ends, no walk home, wander, meeting or vignette starts, until the scene
+   is over.
+10. A creature says its Garden Event line only at an Event with the Seeds, when everyone comes to the garden. Without
+    the Seeds nobody comes, and everyone says its everyday lines.
+11. Clothes and outfit items never appear in the Game UI (the HUD's items); the Shop's mirror is where the player sees
+    them.
 
 ## Names and text
 

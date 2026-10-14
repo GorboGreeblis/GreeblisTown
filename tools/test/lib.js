@@ -1,11 +1,12 @@
 // The helpers the probes share: the start click, waits on game time, closing dialogues, renders to PNG, starting the
 // Garden Event, the closing error count, and the check that the church's ANCIENT never plants or dances.
-// Env: none.
+// Env: LOG (a file: log() also appends each line to it the moment it is printed, so a long run that is cut off still
+//   leaves every step it reached).
 // Output: none of its own; render() and savePng() write the file they are given, logErrors() prints `err <n>`.
 //   const { log, start, waitGame, closeDialogs, render, startEvent, logErrors } = require('./lib.js');
 const fs = require('fs');
 
-const log = (...a) => console.log(...a);
+const log = (...a) => (console.log(...a), process.env.LOG && fs.appendFileSync(process.env.LOG, a.join(' ') + '\n'));
 
 // The click that starts the game, at the centre of the view, then a wait (ms). A click near the top edge can land on
 // the menu bar, and the world's frame callbacks stand still while a menu is open.
