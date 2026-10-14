@@ -76,6 +76,11 @@ Rules for how changes are made, checked and recorded.
    Nothing may be left only in a scratch folder, and nothing may stay in `tools/` that the game no longer needs.
 8. How the game is built must be written down in [construction.md](construction.md) and, for the creatures,
    [creatures.md](creatures.md).
+9. Long work must save its progress as it goes, so a run that fails or is cut off never has to start over: a long
+   test writes each step to a log file the moment it happens (`LOG=` for the probes, see
+   [testing.md](testing.md#writing-a-probe)), long runs go in the background with their output in a file (never only
+   through a pipe that prints at the end), big tasks are split into short steps that are each committed and pushed
+   when done, and a task's plan and state are written down where the next session can pick them up.
 
 ## Locks and approvals
 
