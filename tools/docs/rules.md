@@ -1,182 +1,227 @@
 # Greeblis Town: Standing Rules
 
-These are the owner's standing rules for Greeblis Town. Rules marked **(every game)** apply to every game made
-after it as well. Read them before changing anything; when a rule and a request conflict, ask the owner.
+The owner's standing rules for Greeblis Town. Every rule binds every change to the game; a rule marked
+**(every game)** also binds every game made after it. These rules must be read before any change, and any conflict
+between a rule and a request must be put to the owner.
 
 Contents: [The game](#the-game) · [Working on it](#working-on-it) · [Locks and approvals](#locks-and-approvals) ·
-[Platforms](#platforms-every-game) · [Privacy](#privacy-every-game) · [Creatures and art](#creatures-and-art) ·
-[The world](#the-world) · [Where things are](#where-things-are)
+[Platforms](#platforms-every-game) · [Privacy and conduct](#privacy-and-conduct) ·
+[Creatures and models](#creatures-and-models) · [Visual quality](#visual-quality) ·
+[Creature behaviour](#creature-behaviour) · [Names and text](#names-and-text) · [The world](#the-world) ·
+[Related documents](#related-documents)
 
 ## The game
 
-1. **The game is called Greeblis Town.**
-2. **It is fully playable as a Bitcoin ordinal, in its final form (every game).** It must work on ordinals.com
-   and the other ordinal sites. That means:
-   - one self-contained `index.html`, with no external URLs, network requests, storage APIs, `eval` or
-     `new Function`;
-   - it boots under ord's Content-Security-Policy, both opened directly (`/content/<id>`) and inside a sandboxed
-     `allow-scripts` iframe (how ordinals.com and the explorers show it);
-   - it stays under about 400 KB packed, so the inscription fits a standard Bitcoin transaction.
+Rules for what the game is, where it lives and what its final file must meet.
 
-   `tools/test/ordtest.js` (desktop and `MOBILE=1`) runs before every push, and on the packed final file.
-3. **The game is `index.html` at the repo root. Everything else lives in `tools/`:** tools, guides and notes go
+1. The game is called Greeblis Town.
+2. **(every game)** The game must be fully playable as a Bitcoin ordinal in its final form, on ordinals.com and the
+   other ordinal sites. The final file must:
+   - be one self-contained `index.html`, with no external URLs, network requests, storage APIs, `eval` or
+     `new Function`;
+   - boot under ord's Content-Security-Policy, both opened directly (`/content/<id>`) and inside a sandboxed
+     `allow-scripts` iframe (as ordinals.com and the explorers show it);
+   - stay under about 400 KB packed, so the inscription fits a standard Bitcoin transaction.
+
+   The full requirements for the packed page are in [release.md](release.md#the-packed-page).
+3. The game is `index.html` at the repo root. Everything else (tools, guides, notes) must live in `tools/` and
    nowhere else.
-4. **A readable copy of the game, `tools/index.html`, is kept at all times and never compressed (every game).**
-   Every change to `index.html` is copied there before the push (`cp index.html tools/index.html`;
-   `tools/test/copycheck.sh` checks). Once the final pass packs the root `index.html`, the copy is the only readable
-   page, and every later change starts from it.
-5. **Never cut content to save size or time.** Size and speed come from minifying, packing and smarter code.
-   Performance is always optimised, but never at the expense of quality (every game).
-6. **The smallest file wins (every game).** In compression, file size always matters more than load time. The
-   final game file is made as small as it can be without losing any content or quality, and still works as an
-   ordinal.
-7. **The final pre-compression build is stripped of all labels and comments (every game).** Every comment, section
-   banner, object name and test-only label or hook goes. Only the code the game needs to run is then minified and
-   packed (see [release.md](release.md)). Until that final pass, `index.html` stays readable, comments and all.
-8. **The Meta Quest decides performance (every game).** The game is fully playable in the Meta Quest Browser, in
-   VR and flat, holding the headset's frame rate. The Quest's draw-call, triangle and CPU budgets are the ones
-   that decide. Test at Android phone and Quest screen sizes and frame rates along the way.
-9. **Greeblis Town is the bible.** Its lore, designs and style ([bible.md](bible.md)) are canonical for every
-   future Greeblis game. The lore points established here do not change. The earlier Greeblis games will never be
-   worked on again; one may some day be remade as an experiment, and a remake follows the bible like any new game.
-10. **Desktop and Mobile are test modes, removed from the final build.** For now they stay in, so the owner can see
-    how they look as possible versions of the game. Their code is fenced off between `TEST-MODE-BEGIN` and
-    `TEST-MODE-END` markers so it can be cut cleanly when the time comes (see [release.md](release.md)). Anything
-    new written only for them goes inside a fence. Once they are cut, and only then:
-    - desktop and phone browsers show the game's name and that it is a VR game to open in the Meta Quest Browser;
-    - in VR the player lands on a screen with the game's name and "Press A to enter VR".
+4. **(every game)** A readable copy of the game, `tools/index.html`, must exist at all times and must never be
+   compressed. Every change to `index.html` must be copied there before the push (`cp index.html tools/index.html`).
+   Once the final pass packs the root `index.html`, the copy is the only readable page and every later change must
+   start from it.
+5. **(every game)** Content must never be cut to save size or time; size and speed come from minifying, packing and
+   smarter code. Performance must always be optimised, but never at the expense of quality.
+6. **(every game)** The smallest file wins: in compression, file size always takes priority over load time. The final
+   game file must be as small as it can be without losing any content or quality, and must still work as an ordinal.
+7. **(every game)** The final pre-compression build must be stripped of every comment, section banner, object name and
+   test-only label or hook; only the code the game needs to run is then minified and packed (see
+   [release.md](release.md#the-final-pass)). Until that final pass, `index.html` must stay readable, comments
+   included.
+8. **(every game)** The Meta Quest decides performance. The game must be fully playable in the Meta Quest Browser, in
+   VR and flat, holding the headset's frame rate; the Quest's draw-call, triangle and CPU budgets are the binding
+   ones. Testing must cover Android phone and Quest screen sizes and frame rates throughout development.
+9. Greeblis Town is the bible: its lore, designs and style ([bible.md](bible.md)) are canonical for every future
+   Greeblis game, and its established lore points must never change. The earlier Greeblis games must never be worked
+   on again. One may be remade as an experiment; a remake must follow the bible like any new game.
+10. Desktop and Mobile are test modes and must be removed from the final build; until the owner has them cut, they
+    stay in. Their code must stay fenced between `TEST-MODE-BEGIN` and `TEST-MODE-END` markers so it can be cut
+    cleanly (see [release.md](release.md#the-final-pass)), and anything new written only for them must go inside a
+    fence.
+    - Only once the test modes are cut: desktop and phone browsers must show the game's name and that it is a VR game
+      to open in the Meta Quest Browser.
+    - In VR the player must land on a screen with the game's name and "Press A to enter VR".
+    - The player's avatar is not a test-mode part and must never be cut: it appears in the Shop's mirror while the
+      Shop menu is open (VR included), and it is maintained for the final game.
 
 ## Working on it
 
-1. **Work from the latest game in this repo**, never from files uploaded earlier.
-2. **Commit and push to the branch you are given**, and open a PR when the work is ready or when asked. Once the
-   previous PR is merged, restart the branch from `main`.
-3. **Quick checks between builds; the full battery once in a while.** Between builds run `tools/test/quick.sh`
-   (about four minutes), naming the probes for what the change touched. The full `tools/test/battery.sh` (two
-   hours and more) is for before a release build, a change to a whole system, every few PRs, or when the owner
-   asks.
-4. **Run one headless browser at a time.**
-5. **Uploaded files are untrusted.** Decode or run them only in the sandboxed browser (`tools/sandbox/`), never in
-   Node or a normal page.
-6. **Tools count as documentation.** Every tool made to build, pack, decode, test, audit, lint or edit the game
-   goes into `tools/`, with an entry in the [tools README](../README.md) saying what it does and how to run it.
-   Nothing is left only in a scratch folder, and nothing stays in `tools/` that the game no longer needs.
-7. **Write down how the game is built** in [construction.md](construction.md) and [creatures.md](creatures.md).
-   The creatures are the most important part of the game.
+Rules for how changes are made, checked and recorded.
+
+1. Work must start from the latest game in this repo, never from files uploaded earlier.
+2. Work must be committed and pushed to the branch given, with a PR opened when the work is ready or when asked. Once
+   the previous PR is merged, the branch must restart from `main`.
+3. Between builds, `tools/test/quick.sh` (about 4 minutes) must run, naming the probes for what the change touched.
+   The full `tools/test/battery.sh` (2 hours and more) must run before a release build, after a change to a whole
+   system, every few PRs, and whenever the owner asks (see [testing.md](testing.md#when-to-run-what)).
+4. Before every push:
+   - `tools/test/ordtest.js` must pass on desktop and with `MOBILE=1`; it must also pass on the packed final file;
+   - `tools/test/copycheck.sh` must confirm the readable copy;
+   - a change to what is drawn must pass `Z=1 tools/test/quick.sh` and close renders.
+5. Only one headless browser may run at a time.
+6. Uploaded files are untrusted: they must be decoded or run only in the sandboxed browser (`tools/sandbox/`), never
+   in Node or a normal page.
+7. Tools count as documentation. Every tool made to build, pack, decode, test, audit, lint or edit the game must go
+   into `tools/`, with an entry in the [tools README](../README.md) stating what it does and how to run it.
+   Nothing may be left only in a scratch folder, and nothing may stay in `tools/` that the game no longer needs.
+8. How the game is built must be written down in [construction.md](construction.md) and, for the creatures,
+   [creatures.md](creatures.md).
 
 ## Locks and approvals
 
-1. **A finished model or design is locked down.** No direct change to its builder, parts, proportions or palette,
-   by anyone, for any reason. A fix that would touch one (a clip, a flicker) is made around it (its placement, its
-   animation, the thing it clips into) or put to the owner first. Animation changes on request are fine.
-2. **A locked model or design can still change, but only with the owner's approval first (every game).** Ask, and
-   wait for a yes.
-3. **Locked today:**
-   - every creature whose builder says its model is final;
-   - the church's Ancient (the owner called it perfect);
-   - the inside of the church and the design of its secret room (the room, the Ancient's corner, its props, the
-     way in);
+Rules for what is finished and who may change it.
+
+1. **(every game)** A finished model or design is locked. Its builder, parts, proportions and palette must not be
+   changed directly, by anyone, for any reason, without the owner's approval first: ask, and wait for a yes.
+2. A fix that would touch a locked model (a clip, a flicker) must be made around it (its placement, its animation, the
+   thing it clips into) or put to the owner first. Animation changes on request are allowed.
+3. Locked now:
+   - every creature whose builder marks its model as final (see [creatures.md](creatures.md));
+   - the church's Ancient;
+   - the inside of the church and the design of its secret room (the room, the Ancient's corner, its props, the way
+     in);
    - the Event flowers: the five plant models the Garden Event grows, and only those.
-4. **A finished environment is locked down (every game).** Once the owner says the general environment (the town,
-   the park, the buildings and their props, the scenery) is done, it is locked as finished models are, and any
-   change to it needs the owner's approval first. Greeblis Town's environment is not marked done yet; the church's
-   inside and its secret room already are.
-5. **A creature carried into another game keeps its model exactly.**
+
+   BACKPACKA, the two park birds and the player's avatar are final and locked as well.
+4. **(every game)** Once the owner declares the general environment (the town, the park, the buildings and their
+   props, the scenery) done, it is locked as finished models are, and any change to it needs the owner's approval
+   first. Greeblis Town's environment is not yet declared done; the church's inside and its secret room are.
+5. A creature carried into another game must keep its model exactly.
 
 ## Platforms (every game)
 
-- **Chrome is the only browser ever supported,** on desktop and on a phone.
-- **On a phone the game is only ever playable on Android.** No iPhone, and no other kind of phone.
-- **Mac computers are never supported,** not even Chrome on a Mac.
-- **In VR, only the Meta Quest line and the Meta Quest Browser are supported.**
-- **Only ever optimise for the supported platforms:** Chrome on a Windows or Linux desktop, Chrome on an Android
-  phone, and the Meta Quest Browser. No performance, size, compatibility or layout work for anything else, and
-  nothing is measured on anything else.
-- Anything else is shown a plain notice on the start screen instead of the game, and the game is not booted. The
-  notice names where the game does play. Test tools emulate only supported devices.
+Rules for where the game runs. The gate that enforces them is described in
+[construction.md](construction.md#10-platforms-and-modes).
 
-## Privacy (every game)
+1. Chrome is the only browser ever supported, on desktop and on a phone.
+2. On a phone, the game must only ever be playable on Android: no iPhone, and no other kind of phone.
+3. Mac computers are never supported, Chrome on a Mac included.
+4. In VR, only the Meta Quest line and the Meta Quest Browser are supported.
+5. Optimisation must target only the supported platforms: Chrome on a Windows or Linux desktop, Chrome on an Android
+   phone, and the Meta Quest Browser. No performance, size, compatibility or layout work is done for anything else,
+   and nothing is measured on anything else.
+6. Any other browser or device must be shown a plain notice on the start screen instead of the game, naming where the
+   game does play, and the game must not boot.
+7. Test tools must emulate only supported devices.
 
-- **Never include any personal or identifying information about the game's creator in the tools folder.** The
-  creator's name, workplace and location are never in it.
-- **Nothing pushed carries the owner's name, email, workplace, job or location:** not code, game text, docs,
-  tools, comments, commit messages or PR descriptions. Refer to them only as "the owner".
-- **The owner chose two exceptions:**
-  - **The parcel labels.** The readable labels on the Post Office's mail heap are part of the game, so they also
-    appear in the readable copy, `tools/index.html`. They are never repeated anywhere else in the tools folder.
-  - **"Walter Bigsby",** the author's name on the Library's STAPLERS cover. It may appear anywhere, the bible
-    included.
-- Keep machine paths, session links and upload file names out of everything pushed.
+## Privacy and conduct
 
-## Creatures and art
+Rules for what pushed content may contain.
 
-**Building**
-- Creature models, behaviour and interactions matter most. Take the time to do them well.
-- Plant and flower models matter just as much. Build each from the images the owner gave for it, and only from
-  those (shape, colours, leaves, buds, how it branches; nothing the photos don't show). Render it from several
-  angles beside the photos and refine until it matches. The same goes for anything else the owner asks to be
-  built from an image.
-- A creature rebuilt from artwork takes the artwork's shape and features. Keep its current colour and size when
-  asked, and ask before guessing what an ambiguous shape is.
-- A merge is a new, cohesive creature that blends its parents' silhouettes, palettes and signature features,
-  never parts glued together.
-- No bones anywhere: no skeletal rigs and no bone props.
-- No cartoony smiles. Faces are expressive but understated; ask before giving any creature a smile.
+1. **(every game)** No personal or identifying information about the game's creator (name, email, workplace, job,
+   location) may appear in the tools folder or in anything pushed: not code, game text, docs, tools, comments, commit
+   messages or PR descriptions.
+2. **(every game)** The game's creator must be referred to only as "the owner".
+3. **(every game)** The owner has approved exactly two exceptions to rule 1:
+   - the parcel labels on the Post Office's mail heap ("To Clipston", "To Ormstown", "To Montreal", "To Cobourg",
+     "To Bangkok"), which may be quoted anywhere, in the game, its readable copy and the documentation;
+   - "Walter Bigsby", the author's name on the Library's STAPLERS cover, which may appear anywhere, the bible
+     included.
+4. **(every game)** Machine paths, session links and upload file names must be kept out of everything pushed.
+5. No AI model names or identifiers may appear in anything pushed.
 
-**Quality**
-- **Nothing clips** into the body, the ground or another part, from any angle, including from inside buildings in
-  VR.
-- **No flickering and no z-fighting, ever.** No two faces share a plane where both can show: keep a clear gap of
-  1 cm or more (2 cm where one surface lies on another over a wide area), or move them apart. Design for a 16-bit
-  depth buffer (see [construction.md](construction.md#11-no-clipping-no-flicker)). No thin, high-contrast lines that
-  shimmer as the head moves. VR renders at the headset's full resolution unless the frame rate needs a step down.
-  Check with `Z=1 tools/test/quick.sh` and close renders before every push that changes what is drawn.
-- **In-world text is big.** Any words in the world (book titles, parcel labels, sign names, the billboard's banner)
-  read comfortably in VR from where a player naturally stands. When in doubt, bigger.
+## Creatures and models
 
-**Behaviour**
-- **Every creature stops a while for the player coming near, on any walk it is on, and turns to them.** Nothing
-  stops it resuming what it was doing once the player has gone: its clocks wait with it, a planned way home is
-  kept, and no creature is ever left away from its own ground.
-- **Anyone can always be talked to,** mid-visit or on the way home.
-- **Every creature has at least three animations: talking, planting and dancing.** The church's Ancient is the
-  exception: it never dances or plants, and never will.
-- **Planting and dancing are animations, never menu options.** A creature's menu holds only Talk, plus "Give a
-  blossom" while the player holds one. ZOLLOD's opens the shop.
-- **Menus never have an X in the top right.** They close by their own button (LEAVE, DONE, No), and in the test
-  modes a tap off them closes them too.
-- Only one batch of flowers ever grows at the Garden Event: the first Event's. Every planting creature grows a
-  flower at its spot then (SPARKAKUS included); a repeated Event never adds more.
+Rules for how creatures, plants and other modelled things are built. The methods are in
+[construction.md](construction.md#3-building-creatures).
 
-**Words**
-- The pickups are called Blossoms, never Fire Blossoms.
-- Dialogue follows the owner's script. Shop and quest menus are written in full; keep menu text short.
-- No words on windows. Signs may carry names.
+1. Creatures are the most important part of the game: their models, behaviour and interactions must be given the
+   time to be done well.
+2. Plant and flower models matter just as much. Each must be built from the images the owner gave for it, and only
+   from those (shape, colours, leaves, buds, branching; nothing the photos do not show), rendered from several angles
+   beside the photos and refined until it matches. The same applies to anything else the owner asks to be built from
+   an image.
+3. A creature rebuilt from artwork must take the artwork's shape and features, and keep its current colour and size
+   when asked. An ambiguous shape must be put to the owner, never guessed.
+4. A merge must be a new, cohesive creature that blends its parents' silhouettes, palettes and signature features,
+   never parts glued together.
+5. No bones anywhere: no skeletal rigs and no bone props.
+6. No cartoony smiles. Faces are expressive but understated, and no creature may be given a smile without asking the
+   owner first.
+
+## Visual quality
+
+Rules for what the renderer must never show. The techniques are in
+[construction.md](construction.md#11-no-clipping-no-flicker).
+
+1. Parts must not clip into the body, the ground or another part, from any angle, including from inside buildings in
+   VR. A little clipping is acceptable; z-fighting is not.
+2. No flickering and no z-fighting, ever. Faces that can both show may sit as close as the current in-game designs
+   do (decals and lines a few millimetres proud are the standard); any spacing is acceptable as long as it causes no
+   z-fighting or other graphical issue. Geometry must be designed for a 16-bit depth buffer.
+3. No thin, high-contrast lines that shimmer as the head moves.
+4. VR must render at the headset's full resolution unless the frame rate needs a step down.
+5. In-world text (book titles, parcel labels, sign names, the billboard's banner) must read comfortably in VR from
+   where a player naturally stands. When in doubt, bigger.
+
+## Creature behaviour
+
+Rules for how creatures act towards the player and the park. The systems are in
+[construction.md](construction.md#4-how-creatures-behave).
+
+1. Every creature must stop a while for the player coming near, on any walk it is on, and turn to them. Nothing may
+   stop it resuming what it was doing once the player has gone: its clocks wait with it, a planned way home is kept,
+   and no creature is ever left away from its own ground.
+2. Every creature must always be available to talk to, mid-visit or on the way home.
+3. Every creature must have at least three animations: talking, planting and dancing. The church's Ancient is the
+   exception: it never dances or plants, and never will.
+4. Planting and dancing are animations, never menu options. A creature's menu holds only Talk, plus "Give a blossom"
+   while the player holds one; ZOLLOD's also opens the shop.
+5. Menus must never have an X in the top right. They close by their own button (LEAVE, DONE, No), and in the test
+   modes a tap off them closes them too.
+6. Every kiosk must keep creatures out: no creature may walk into a kiosk or get stuck in one; only its keeper stands
+   inside (see [bible.md](bible.md#14-the-five-kiosks)).
+7. Only one batch of flowers ever grows at the Garden Event: the first Event's. Every planting creature (SPARKAKUS
+   included) must grow a flower at its spot then; a repeated Event must never add more.
+
+## Names and text
+
+Rules for names, currency and written content.
+
+1. The currency is Flint.
+2. The pickups are called Blossoms, never Fire Blossoms.
+3. Dialogue must follow the owner's script. Shop and quest menus are written in full; menu text must be kept short.
+4. No words on windows. Signs may carry names.
 
 ## The world
 
-- **The town outside the park gets time and care.** Make it as interesting as possible, drawn from the park's lore,
-  style and design: its creatures, the Consortium, the Portal and Greeblis City, goo and VHS. Build it into the
-  town's merged meshes and sign atlas. Small, measured increases in the background's complexity are allowed, as
-  long as they stay merged.
-- **No US flag,** and no other national flag, anywhere in the game (the owner had it taken down). The Consortium's
-  flag (a red toadstool on navy) is the only flag, and it flies over the Sheriff's kiosk, never at the courthouse.
-- **Never flint knapping** in the game's elements (no knapping shown, built or played), and nothing outside the park
-  comes from the church's Ancient. A joke in a line is fine: MONTGUMMERY's tape "Flint Knapping for Beginners".
-- **Show, don't tell (every game).** In the background outside the park, lore comes through visual elements, never
-  through text; words on signs don't count as visual. Keep words and signs to a minimum. The one exception is the
-  billboard the owner asked for, with the words they gave it.
-- **Only creatures of the town give the town its design.** HENNRICK (from the far past) and NEXTESSA (from the far
-  future, which is why she comes through the Portal) are not from here, and the town takes nothing from either.
+Rules for the park's surroundings and the world's design. The town's build is in
+[construction.md](construction.md#9-the-town); its lore is in [bible.md](bible.md#17-the-town).
 
-## Where things are
+1. The town outside the park must be given time and care, made as interesting as possible and drawn from the park's
+   lore, style and design: its creatures, the Consortium, the Portal and Greeblis City, goo and VHS. It must be built
+   into the town's merged meshes and sign atlas. Small, measured increases in the background's complexity are allowed,
+   as long as they stay merged.
+2. No national flag, the US flag included, may appear anywhere in the game. The Consortium's flag (a red toadstool on
+   navy) is the only flag; it flies over the Sheriff's kiosk, never at the courthouse.
+3. Flint knapping must never appear in the game's elements (not shown, built or played), and nothing outside the park
+   may come from the church's Ancient. A joke in a line is allowed: MONTGUMMERY's tape "Flint Knapping for Beginners".
+4. **(every game)** Show, don't tell. In the background outside the park, lore must come through visual elements,
+   never through text; words on signs do not count as visual. Words and signs must be kept to a minimum. The one
+   exception is the owner's billboard, with the words the owner gave it.
+5. Only the creatures of the town may give the town its design. HENNRICK (from the far past) and NEXTESSA (from the
+   far future, which is why she comes through the Portal) are not from here, and the town takes nothing from either.
 
-| Path | What it holds |
+## Related documents
+
+Descriptive material lives in the document that owns it.
+
+| Path | Holds |
 | --- | --- |
 | `index.html` (repo root) | The game |
-| [`tools/README.md`](../README.md) | Setup, the tools, and how to check, measure and release the game |
-| [`bible.md`](bible.md) | The lore, design and style for making another Greeblis game |
-| [`construction.md`](construction.md) | How the game is built and behaves: systems, the park, the town, rendering |
-| [`creatures.md`](creatures.md) | Every creature: look, role, behaviour, lines |
-| [`testing.md`](testing.md) | The test runners and probes, and the game globals they use |
-| [`release.md`](release.md) | The final pass: strip, minify, pack, check; trimming three.js; the codec |
+| [`tools/README.md`](../README.md) | The tools folder's layout, setup and everyday commands |
+| [`bible.md`](bible.md) | Lore, design and style: the canonical world reference |
+| [`construction.md`](construction.md) | How the game is built: systems, code structure, methods, rendering, performance |
+| [`creatures.md`](creatures.md) | Per-creature build and behaviour reference |
+| [`testing.md`](testing.md) | Test runners, probes, audits and the game globals they use |
+| [`release.md`](release.md) | The final pass: strip, minify, pack, check; the codec; trimming three.js; dead code |
