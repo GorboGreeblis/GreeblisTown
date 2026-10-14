@@ -99,6 +99,9 @@ Rules for how changes are made, checked and recorded.
     and every question waiting on the owner. It is updated whenever a task is added, started, paused or finished, and
     committed with the work. A finished task is taken off the list (its record is the PR and the docs). It holds work,
     never anything personal.
+11. PRs must be opened often: each finished batch of work goes up as its own PR as soon as it passes its checks,
+    rather than waiting for a large set. Opening a PR is never a stopping point: work goes on with the next open task
+    in [tasks.md](tasks.md) for as long as tasks remain, the branch restarting from `main` once the PR is merged.
 
 ## Locks and approvals
 
