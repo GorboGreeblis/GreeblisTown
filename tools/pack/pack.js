@@ -5,7 +5,10 @@
 // decoder: the model code is run with the known input bits, and the arithmetic decoder's lines are swapped for the
 // matching encoder's. Same model, same probabilities, bit for bit, so the page's decoder unpacks it exactly; the
 // round trip is checked on every pack. cmz.js is the same codec as readable source.
-//   node pack/pack.js <page.html> <out index.html> "<Title>"   (from tools/)
+// Env: none.
+// Output: `packed <bytes> bytes; <out.html> is <bytes> bytes`; the packed page to <out.html>. Also a module:
+//   { encode, decode, page }.
+//   node pack/pack.js page.html ../index.html "Greeblis Town"
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -27,7 +30,7 @@ enc = swap(
   "at=S<=lt?1:0;for(at?P=lt:O=lt+1>>>0;!(4278190080&(O^P));)S=(S<<8|(T<t.length?t[T++]:255))>>>0,O=O<<8>>>0,P=(P<<8|255)>>>0;",
   "at=BYTE>>7-c&1;for(at?P=lt:O=lt+1>>>0;!(4278190080&(O^P));)OUT.push(P>>>24),O=O<<8>>>0,P=(P<<8|255)>>>0;",
 );
-enc = swap(enc, "return F}", "return OUT.push(O>>>24,255,255,255),OUT}"); // the coder flushedes
+enc = swap(enc, "return F}", "return OUT.push(O>>>24,255,255,255),OUT}"); // the coder flushes
 const encodeFn = new Function("return " + enc)();
 // the decoder exactly as the page runs it (for the round-trip check)
 const decodeFn = new Function("return " + MODEL)();
@@ -91,7 +94,6 @@ function page(raw, title) {
 
 module.exports = { encode, decode, page };
 
-// node pack.js <page.html> <out index.html> "<Title>"
 if (require.main === module) {
   const [, , inp, out, title] = process.argv;
   const r = page(fs.readFileSync(inp), title);

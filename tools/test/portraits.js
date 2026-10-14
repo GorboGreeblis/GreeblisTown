@@ -1,7 +1,14 @@
-// Render isolated portraits: clone each entity's def/builder at an empty spot of open lawn (SPAWN=x,z;
-// keep it clear of buildings, whose raised floors would hide a model's lower part), 2 angles, then remove it.
+// Isolated portraits: each creature's builder spawned alone on open lawn, rendered at 360×360 px from two angles, then
+// removed. Besides entity ids, IDS takes `keeper` (SPARKAKUS), `courier` (NEXTESSA) and the ids of the extra
+// definitions. SPAWN must be open lawn: a building's raised floor would hide a model's lower part.
+// Env: IDS (comma list); SPAWN (x,z, default -18,24); ANGS (JSON list of camera angles, rad, default [0.55,-2.2]);
+//   ELEV (camera height, in model sizes, default 0.8); DIST (camera distance, in model sizes, default 2.1).
+// Output: `<id> null` or `<id> ERR …` for an id that cannot be built, then `{"err":<n>}`; <out>_<id>_<n>.png.
+//   IDS=p_gemtoe,keeper VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/portraits.js
+const { start, savePng, outName } = require('./lib.js');
+
 module.exports = async (p, out) => {
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1200);
+  await start(p, 1200);
   const ids = (process.env.IDS || '').split(',').filter(Boolean);
   const res = await p.evaluate(([ids, ANGS, ELEV, DIST, SP]) => {
     const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 500), out = []; O.setSize(360, 360, false); At.visible = false; At.position.set(0, 0, 0);
@@ -22,7 +29,6 @@ module.exports = async (p, out) => {
     }
     O.setSize(innerWidth, innerHeight); return out;
   }, [ids, process.env.ANGS || '[0.55,-2.2]', +(process.env.ELEV || 0.8), +(process.env.DIST || 2.1), (process.env.SPAWN || '-18,24').split(',').map(Number)]);
-  const fs = require('fs');
-  res.forEach((r, i) => { if (!Array.isArray(r)) { console.log(ids[i], r); return; } r.forEach((d, j) => fs.writeFileSync(out.replace('.png', '_' + ids[i] + '_' + j + '.png'), Buffer.from(d.split(',')[1], 'base64'))); });
+  res.forEach((r, i) => { if (!Array.isArray(r)) { console.log(ids[i], r); return; } r.forEach((d, j) => savePng(outName(out, ids[i] + '_' + j), d)); });
   console.log(await p.evaluate(() => JSON.stringify({ err: Re.errors })));
 };

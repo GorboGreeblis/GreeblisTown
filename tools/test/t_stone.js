@@ -1,10 +1,14 @@
 // The GARDEN EVENT menu at the Summoning Stone (Summoning Stone, Seeds and Snacks with their boxes, "Start gardening
 // event?", Yes / No) and its rule: without the Summoning Stone quest, Yes only says the runes stay dark and nothing
 // starts; with it, Yes starts the Event.
-//   NOSHOT=1 node shot.js <url> x.png ./t_stone.js
+// Env: none.
+// Output: `without the Stone: {…}` and `with the Stone: {…}`, each ending in `ok` or `FAIL`, then `err <n>`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_stone.js
+const { log, start, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(640, 60); await W(1500);
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const look = (has) => p.evaluate((has) => {
     Kt.rewards.stone = has; At.position.set(0, 0, 2.6); xe.scan();
     const s = z.list.find((q) => q.id === 'campfire'), label = xe.current === s ? xe.actions.map((a) => a.label).join('/') : 'not the target';
@@ -21,5 +25,5 @@ module.exports = async (p) => {
   await W(500);
   const b = await look(true);
   log('with the Stone:', JSON.stringify(b), b.started && /Summoning Stone ☑/.test(b.text) ? 'ok' : 'FAIL');
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

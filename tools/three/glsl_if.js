@@ -1,4 +1,9 @@
-// Drop GLSL #if blocks whose condition can never hold for this game's materials/renderer settings.
+// Drops the GLSL #if blocks in three.js whose condition can never hold for the game's materials and renderer settings:
+// a block goes only when its condition is false for every setting of the macros the game never defines (NEVER,
+// NEVER_NUM), each unknown macro tried both ways. An #if that spans several JS strings is skipped and listed.
+// Env: none.
+// Output: `glsl literals <n> saved bytes <n>`, then `skipped <n>` with each skipped literal; the result to <out.js>.
+//   node three/glsl_if.js three_p1.js three_p2.js
 const acorn = require('acorn'); const fs = require('fs');
 const src = fs.readFileSync(process.argv[2], 'utf8'); const ast = acorn.parse(src, { ecmaVersion: 2022 });
 const NEVER = new Set(['USE_ENVMAP', 'ENVMAP_TYPE_CUBE', 'ENVMAP_TYPE_CUBE_UV', 'ENVMAP_MODE_REFRACTION', 'ENVMAP_BLENDING_MULTIPLY', 'ENVMAP_BLENDING_MIX', 'ENVMAP_BLENDING_ADD',
@@ -54,7 +59,6 @@ function prune(text) {
   return out.join('\n');
 }
 const lits = []; (function w(n) { if (!n || typeof n.type !== 'string') return; if (n.type === 'Literal' && typeof n.value === 'string' && /#\s*(if|ifdef|ifndef)\b/.test(n.value)) lits.push(n); for (const k in n) { const v = n[k]; if (Array.isArray(v)) v.forEach(w); else if (v && typeof v.type === 'string') w(v); } })(ast);
-// safety: no NEVER macro may be #define'd inside shader text unconditionally
 let s = src; let saved = 0; const skipped = [];
 for (const n of lits.sort((a, b) => b.start - a.start)) { let t; try { t = prune(n.value); } catch (x) { skipped.push(x.message + ': ' + n.value.slice(0, 60).replace(/\n/g, ' ')); continue; } if (t !== n.value) { const lit = JSON.stringify(t); saved += n.end - n.start - lit.length; s = s.slice(0, n.start) + lit + s.slice(n.end); } }
-fs.writeFileSync(process.argv[3], s); console.log('glsl literals', lits.length, 'saved bytes', saved); console.log('skipped:\n' + skipped.join('\n'));
+fs.writeFileSync(process.argv[3], s); console.log('glsl literals', lits.length, 'saved bytes', saved); console.log('skipped', skipped.length + (skipped.length ? ':\n' + skipped.join('\n') : ''));

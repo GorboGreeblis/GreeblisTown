@@ -1,7 +1,13 @@
-// The Ancient Gem: SPARKAKUS gives it after the Artifacts; GEMTOE trades it for the Summoning Stone, then talks
-// normally. Prints the state at each step and the dialogue lines.
-// Run: NOSHOT=1 node shot.js <url> x.png ./t_gem.js
-module.exports = async (p) => { await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
+// The Ancient Gem: SPARKAKUS gives it after the Artifacts; GEMTOE trades the Summoning Stone for it, does her happy
+// spin (a full turn of her model's wrapper with a hop, 1.4 s), then talks normally.
+// Env: none.
+// Output: the state at each step with the dialogue lines (`   > …`), the spin's turn and hop, then
+//   `gemtoe again (normal talk), stone <bool> errors <n>`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_gem.js
+const { start } = require('./lib.js');
+
+module.exports = async (p) => {
+  await start(p);
   const W = (ms) => p.waitForTimeout(ms), log = [];
   const adv = async (n) => { for (let i = 0; i < n; i++) { const t = await p.evaluate(() => { if (!qt.isOpen) return null; const x = (document.getElementById('dlgText') || {}).textContent || ''; qt.advance(); return x.slice(0, 120); }); if (t) log.push('   > ' + t); await W(700); } };
   log.push('start ' + (await p.evaluate(() => JSON.stringify({ stone: Kt.rewards.stone, gem: Kt.gem }))));
@@ -11,8 +17,8 @@ module.exports = async (p) => { await p.mouse.click(p.viewportSize().width / 2, 
   // (his lines, the glue bottle putting the Gem together, his speech and the Gem collected)
   for (let i = 0; i < 90 && !(await p.evaluate(() => Kt.gem && !qt.isOpen)); i++) await adv(1);
   log.push('after sparkakus ' + (await p.evaluate(() => JSON.stringify({ arts: Kt.rewards.artifacts, gem: Kt.gem, stone: Kt.rewards.stone }))));
-  // (her happy spin once the trade is done: the model's wrapper turns a full turn with a hop, 1.4 s)
-  // (sampled on animation frames, not through L: its callbacks wait while her words are open, the spin doesn't)
+  // (the spin is sampled on animation frames, not through L: its callbacks wait while her words are open, the spin
+  // does not)
   await p.evaluate(() => { window.__sp = { ry: 0, hop: 0, n: 0 }; const tick = () => { const h = It.byId.p_gemtoe, w = h.group.userData.tkW; h.spinAt && w && performance.now() - h.spinAt < 1500 && (__sp.n++, (__sp.ry = Math.max(__sp.ry, w.rotation.y)), (__sp.hop = Math.max(__sp.hop, w.position.y))); requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
   await p.evaluate(() => te(It.byId.p_gemtoe));
   await adv(4);

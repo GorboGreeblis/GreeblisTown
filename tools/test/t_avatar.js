@@ -1,13 +1,16 @@
-// The avatar in the test modes: her walk and idle (feet above the ground, hands clear of the skirt), and her
-// outfits from the Garden Supplies shop, alone and together, with the fit numbers and the Sheriff's poster of her.
-//   VW=320 VH=240 node shot.js <url> x.png ./t_avatar.js   (PART=walk,outfits runs only those)
+// The avatar in the test modes: her walk and idle (feet above the ground, hands clear of the skirt), and her outfits
+// from the Garden Supplies shop, alone and together, with the fit numbers and the Sheriff's poster of her.
+// Env: PART=walk,outfits (only those parts).
+// Output: `== part: <name>` and each part's lines (below); the renders named there.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_avatar.js
+const { log, start, render, outName, logErrors } = require('./lib.js');
 
-// The player's avatar animation in the desktop / mobile test modes: walks (W held) and stands, rendering
-// her from the side mid-stride (<out>_walk1..4.png) and standing (<out>_idle.png), and checks the feet
-// never go below the ground and the hands keep clear of the skirt.
+// The avatar's walk (W held) and idle in the desktop and mobile test modes: rendered from the side mid-stride
+// (<out>_walk1..4.png) and standing (<out>_idle.png); the feet must never go below the ground and the hands must keep
+// clear of the skirt. Prints `avatar: {frames, lowestFoot, handInSkirtFrames, walkPhase}` and `err <n>`.
 const walk = async (p, out) => {
-  const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   await p.evaluate(() => {
     At.position.set(-2, 0, 30);
     window.__A = { lowFoot: 9, handIn: 0, frames: 0 };
@@ -23,11 +26,10 @@ const walk = async (p, out) => {
       });
     });
   });
-  const side = (name) => p.evaluate(() => {
-    const q = At.position, c = new THREE.PerspectiveCamera(40, 4 / 3, 0.1, 300), r = At.rotation.y;
-    c.position.set(q.x + 4.5 * Math.cos(r), 1.3, q.z - 4.5 * Math.sin(r)); c.lookAt(q.x, 1.1, q.z);
-    O.setSize(800, 600, !1); O.render(C, c); const d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); return d;
-  }).then((d) => fs.writeFileSync(out.replace('.png', '_' + name + '.png'), Buffer.from(d.split(',')[1], 'base64')));
+  const side = async (name) => {
+    const [x, z, r] = await p.evaluate(() => [At.position.x, At.position.z, At.rotation.y]);
+    await render(p, outName(out, name), [x + 4.5 * Math.cos(r), 1.3, z - 4.5 * Math.sin(r)], [x, 1.1, z], { fov: 40, near: 0.1 });
+  };
   await p.keyboard.down('KeyW');
   await W(1200);
   for (let k = 1; k <= 4; k++) { await side('walk' + k); await W(110); }
@@ -35,22 +37,21 @@ const walk = async (p, out) => {
   await W(2500);
   await side('idle');
   log('avatar:', await p.evaluate(() => JSON.stringify({ frames: __A.frames, lowestFoot: +__A.lowFoot.toFixed(3), handInSkirtFrames: __A.handIn, walkPhase: +(At.userData.legL.rotation.x).toFixed(3) })));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
-// The avatar's outfits: the default, then each Garden Supplies piece worn alone and all three together, each
-// rendered from the front, the side and the back (<out>_<set>_<view>.png) with the walk animation held at a
-// stride, and the Sheriff's Wanted poster of the avatar (<out>_poster.png). Checks per set: nothing of a worn piece
-// sits inside the body (hat over the hair, frogs over the shoes, hem at the skirt's bottom edge).
+// The avatar's outfits: the default, then each Garden Supplies piece worn alone and all three together, each rendered
+// from the front, the side, the back and at the head (<out>_<set>_<view>.png, 600×800 px), and the Sheriff's Wanted
+// poster of the avatar (<out>_poster.png). Per set it prints the fit: the hat's lowest point above the head's centre,
+// the frogs' lowest point and the hem's height (nothing of a worn piece may sit inside the body); then
+// `poster rendered` and `err <n>`.
 const outfits = async (p, out) => {
-  const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+  await start(p);
   await p.evaluate(() => { At.position.set(8, 0, 24); At.rotation.y = 0; });
-  const shot = (name, cam, look, fov = 32) => p.evaluate(([cam, look, fov]) => {
-    const q = At.position, c = new THREE.PerspectiveCamera(fov, 3 / 4, 0.05, 300);
-    c.position.set(q.x + cam[0], cam[1], q.z + cam[2]); c.lookAt(q.x + look[0], look[1], q.z + look[2]); c.updateMatrixWorld(); c.updateProjectionMatrix();
-    O.setSize(600, 800, !1); O.render(C, c); const d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); return d;
-  }, [cam, look, fov]).then((d) => fs.writeFileSync(out.replace('.png', '_' + name + '.png'), Buffer.from(d.split(',')[1], 'base64')));
+  const shot = async (name, cam, look, fov) => {
+    const [x, z] = await p.evaluate(() => [At.position.x, At.position.z]);
+    await render(p, outName(out, name), [x + cam[0], cam[1], z + cam[2]], [x + look[0], look[1], z + look[2]], { fov, w: 600, h: 800 });
+  };
   const SETS = [['default', []], ['hat', ['flowerhat']], ['dress', ['sundress']], ['shoes', ['frogshoes']], ['all', ['flowerhat', 'sundress', 'frogshoes']]];
   for (const [name, ids] of SETS) {
     const r = await p.evaluate((ids) => {
@@ -73,9 +74,9 @@ const outfits = async (p, out) => {
   await p.evaluate(() => { Kt.equip.hat = Kt.equip.shoes = Kt.equip.dress = null; Eo.apply(); });
   // the poster: the Sheriff's wall, the visitor poster
   const P = await p.evaluate(() => { const q = (JGP.libLayout.posters || []).find((o) => o.kind === 'visitor'); if (!q) return null; q.obj.updateMatrixWorld(!0); const v = new THREE.Vector3(...q.at); q.obj.localToWorld(v); const f = q.obj.rotation.y; return [v.x, v.y, v.z, f]; });
-  if (P) await p.evaluate(([x, y, z, f]) => { const c = new THREE.PerspectiveCamera(30, 3 / 4, 0.05, 300); c.position.set(x + 1.6 * Math.sin(f), y, z + 1.6 * Math.cos(f)); c.lookAt(x, y, z); O.setSize(600, 800, !1); O.render(C, c); window.__d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); }, P).then(() => p.evaluate(() => window.__d)).then((d) => fs.writeFileSync(out.replace('.png', '_poster.png'), Buffer.from(d.split(',')[1], 'base64')));
+  if (P) { const [x, y, z, f] = P; await render(p, outName(out, 'poster'), [x + 1.6 * Math.sin(f), y, z + 1.6 * Math.cos(f)], [x, y, z], { fov: 30, w: 600, h: 800 }); }
   log('poster', P ? 'rendered' : 'not found');
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
 module.exports = require('./parts.js')({ walk, outfits });

@@ -1,14 +1,17 @@
-// Walking soak: holds W towards ten spots across the town in turn (14 × 0.4 s each), three rounds, and logs a
-// snapshot at the start and end (game time, errors, renderer memory, draw calls, triangles, scene children, per-frame
-// callbacks). After each leg it prints an ISSUE line if there are errors, a creature at a NaN position or the player
-// inside a building.
-// Run: NOSHOT=1 node shot.js <url> x.png ./soak.js
+// Walking soak: holds W towards ten spots across the town in turn (14 × 0.4 s each), three rounds, with a snapshot at
+// the start and the end (game time, errors, renderer memory, draw calls, triangles, scene children, frame callbacks).
+// Env: none.
+// Output: `start {…}` and `end {…}` JSON lines; an `ISSUE {…}` line after any leg that ends with errors, a creature at
+//   a NaN position or the player inside a building.
+//   NOSHOT=1 node test/shot.js <url> x.png test/soak.js
+const { start } = require('./lib.js');
+
 module.exports = async (p) => {
-  await p.mouse.click(100, 100); await p.waitForTimeout(2000);
+  await start(p, 2000);
   const snap = () => p.evaluate(() => {
-    const bad = It.all.filter(e => !isFinite(e.group.position.x + e.group.position.y + e.group.position.z)).map(e => e.def.name);
+    const bad = It.all.filter((e) => !isFinite(e.group.position.x + e.group.position.y + e.group.position.z)).map((e) => e.def.name);
     const pl = At.position;
-    return { t: +Re.t.toFixed(1), err: Re.errors, mem: Object.assign({}, O.info.memory), calls: O.info.render.calls, tris: O.info.render.triangles, sceneKids: C.children.length, Lcbs: L.length, bad, player: [pl.x, pl.z].map(v => +v.toFixed(1)), inBuilding: F.buildings.filter(B => { const [lx, lz] = F.local(B, pl.x, pl.z); return B.parts.some(R => lx > R[0] && lx < R[2] && lz > R[1] && lz < R[3]); }).map(B => B.name) };
+    return { t: +Re.t.toFixed(1), err: Re.errors, mem: Object.assign({}, O.info.memory), calls: O.info.render.calls, tris: O.info.render.triangles, sceneKids: C.children.length, Lcbs: L.length, bad, player: [pl.x, pl.z].map((v) => +v.toFixed(1)), inBuilding: F.buildings.filter((B) => { const [lx, lz] = F.local(B, pl.x, pl.z); return B.parts.some((R) => lx > R[0] && lx < R[2] && lz > R[1] && lz < R[3]); }).map((B) => B.name) };
   });
   console.log('start', JSON.stringify(await snap()), await p.evaluate(() => jt.top));
   const targets = [[-20, 30], [-28, 0], [-24, -24], [24, -24], [27, 34], [0, 40], [30, 0], [-10, -30], [20, 20], [-30, 40]];

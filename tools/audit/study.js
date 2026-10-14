@@ -1,11 +1,16 @@
-// Large study renders of builders, built directly (no spawn batching), all layers, two angles. SPECS is a JSON file
-// of [label, builder key, def, opts]; each is built alone with the rest of the scene hidden, animated 60 steps and
-// rendered at 480×480 to <out>_<label>_0.png and _1.png (tile them with ../test/tile.py sheet).
-// Run (from this folder): SPECS=specs.json NOSHOT=1 node ../test/shot.js <url> study.png ./study.js
+// Large study renders of builders built directly (no spawn batching), every layer shown: each is built alone with the
+// rest of the scene hidden, animated 60 steps and rendered at 480×480 px from two angles (tile them with
+// test/tile.py sheet).
+// Env: SPECS (path to a JSON file of [[label, builder key, def, opts], …]).
+// Output: nothing printed; <out>_<label>_0.png and <out>_<label>_1.png per spec.
+//   SPECS=specs.json NOSHOT=1 node test/shot.js <url> study.png audit/study.js
+const fs = require('fs');
+const { savePng, outName } = require('../test/lib.js');
+
 module.exports = async (p, out) => {
-  const specs = JSON.parse(require('fs').readFileSync(process.env.SPECS, 'utf8'));
+  const specs = JSON.parse(fs.readFileSync(process.env.SPECS, 'utf8'));
   const res = await p.evaluate((specs) => {
-    const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 500), out = []; cam.layers.enableAll(); O.setSize(480, 480, false);
+    const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 500), out = []; cam.layers.mask = 0xffffffff; O.setSize(480, 480, false);
     try { At.visible = false; gcEB.ready = false; } catch (e) {}
     const hidden = []; C.children.forEach((ch) => { if (ch.visible && !ch.isLight) { hidden.push(ch); ch.visible = false; } });
     for (const [label, b, def, opts] of specs) {
@@ -21,6 +26,5 @@ module.exports = async (p, out) => {
     }
     hidden.forEach((ch) => (ch.visible = true)); return out;
   }, specs);
-  const fs = require('fs');
-  res.forEach(([lb, imgs]) => imgs.forEach((d, j) => fs.writeFileSync(out.replace('.png', '_' + lb + '_' + j + '.png'), Buffer.from(d.split(',')[1], 'base64'))));
+  res.forEach(([lb, imgs]) => imgs.forEach((d, j) => savePng(outName(out, lb + '_' + j), d)));
 };

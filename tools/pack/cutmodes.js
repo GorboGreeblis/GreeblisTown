@@ -2,8 +2,10 @@
 // marker through the next TEST-MODE-END marker goes, markers included. Then every commented-out line between a
 // FINAL-BUILD-BEGIN and a FINAL-BUILD-END marker is uncommented (the code that only the final build runs, such as the
 // start screen for desktop and phone browsers), and the two markers go. Fails on a fence or block left open, a nested
-// one, or an END with no BEGIN, and prints what it cut and applied.
-//   node pack/cutmodes.js ../index.html cut.html   (from tools/)
+// one, or an END with no BEGIN.
+// Env: none.
+// Output: `cut <n> fences (<n> lines); applied <n> final-build blocks (<n> lines); <out.html>: <bytes> bytes`.
+//   node pack/cutmodes.js ../index.html cut.html
 const fs = require('fs');
 const [src, out] = process.argv.slice(2);
 if (!src || !out) throw new Error('usage: node pack/cutmodes.js <page.html> <out.html>');

@@ -1,12 +1,16 @@
-// The test modes' error tools: throws one error into a frame callback, then checks the desktop counter (bottom left)
-// shows it and its "copy errors" button copies (or, where the page may not write to the clipboard, opens a box with
-// the text selected), and prints the copied text. With MOB=1 the page is opened with ?mobile=1 by the caller and the
-// mobile panel's button is used instead.
-//   NOSHOT=1 node shot.js <url> x.png ./t_errcopy.js        (desktop)
-//   node mob.js "<url>?mobile=1" x.png ./t_errcopy.js        (mobile)
+// The test modes' error tools: one error thrown into a frame callback, then the desktop counter (bottom left) showing
+// it and its "copy errors" button copying the text (or, where the page may not write to the clipboard, opening a box
+// with the text selected). In the mobile test mode (the page opened with ?mobile=1, in a phone context) the mobile
+// panel's button is used instead.
+// Env: none (the mode follows the page: window.__jgpMobile).
+// Output: `desktop counter: <text>` or `mobile panel: <text>`, then `copied:` and the copied text.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_errcopy.js
+//   MOBILE=1 NOSHOT=1 node test/shot.js "<url>?mobile=1" x.png test/t_errcopy.js
+const { start } = require('./lib.js');
+
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), mob = await p.evaluate(() => !!window.__jgpMobile);
-  mob ? await p.touchscreen.tap(200, 400) : await p.mouse.click(100, 60);
+  mob ? await p.touchscreen.tap(200, 400) : await start(p, 0);
   await W(2000);
   // (the clipboard in a headless page: kept in the page for the check)
   await p.evaluate(() => { window.__clip = null; try { navigator.clipboard.writeText = (t) => ((window.__clip = t), Promise.resolve()); } catch (e) {} });

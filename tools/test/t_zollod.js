@@ -1,16 +1,18 @@
 // ZOLLOD: his shyness sub-quest played through, and, once freed, his shop opened wherever he is (out visiting,
-// walking home, being visited).
-//   NOSHOT=1 node shot.js <url> x.png ./t_zollod.js   (at the default size: the shyness part clicks the book on screen)
-//     (PART=shyness,away runs only those)
+// walking home, being visited). Run at the default viewport: the shyness part clicks the book on screen.
+// Env: PART=shyness,away (only those parts).
+// Output: `== part: <name>` and each part's lines (below), each part ending in `err <n>`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_zollod.js
+const { log, start, waitGame, logErrors } = require('./lib.js');
 
 // ZOLLOD's shyness sub-quest, played through: before the book ZOLLOD has one Talk ("…/…/I'm shy…"), no Blossom, no
 // shop, and he neither visits nor is visited; OVERCOMING SHYNESS is taken from its Library shelf by clicking it on
 // screen (as a player points at it: a click, or a tap on a phone, goes the same way), leaves the shelf and says so;
 // the first Talk with it frees him ("…/That book…/Let me see../Wow I'm free from shyness!"), after which talking to
 // him opens the shop and he visits. Also MAMA GORBO's and GEMTOE's fourth Talk lines. Prints each step.
-const shyness = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+const shyness = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   // (every page of what opens, as typed out)
   const pages = async () => {
     const r = [];
@@ -29,7 +31,7 @@ const shyness = async (p, out) => {
   log('  says:', JSON.stringify(await pages()), '| shop open:', await p.evaluate(() => jt.has('panel')), '| counter prompt:', await p.evaluate(() => z.list.find((q) => q.id === 'gshop').label()));
   // (a visit asked of him, either way round, never starts)
   await p.evaluate(() => JGP.visitAt(Re.t, 'cutebex', 'm_kingdino'));
-  { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 200 && (await p.evaluate(() => Re.t)) - t0 < 6; k++) await W(250); }
+  await waitGame(p, 6, null, { max: 200 });
   log('  visits with him (asked for one):', JSON.stringify(await p.evaluate(() => JGP.visits().all.filter((q) => q.v === 'cutebex' || q.h === 'cutebex'))));
   // ---- the book: the player before its shelf, the camera turned to it, and a click where its cover shows on
   // screen (the pointer pick is the same path a phone tap takes)
@@ -72,22 +74,22 @@ const shyness = async (p, out) => {
     await p.evaluate((id) => { Kt.talkState[id] = 3; te(It.byId[id]); }, id); await W(300);
     log(id, 'fourth Talk:', JSON.stringify(await pages()));
   }
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
 // ZOLLOD out of his kiosk: before OVERCOMING SHYNESS frees him he never visits and is never visited; once freed, a
 // Talk with him wherever he is (out visiting, being visited, walking home) opens the Shop, and the Shop's outfits
-// (the mirror's "Change out") work from there.
-const away = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
-  const waitGame = async (sec, until) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 6000 && (await p.evaluate(() => Re.t)) - t0 < sec; k++) { if (until && (await p.evaluate(until))) return !0; await W(250); } return !1; };
+// (the mirror's "Change out") work from there. Prints the visits asked of him while shy, then per place where he is,
+// his menu and whether the shop opened.
+const away = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   // still shy: a visit asked for by name must not start
   await p.evaluate(() => { window.__gbNoThrottle = 1; Kt.shyFree = !1; JGP.visitAt(9e15); JGP.visitAt(9e15, 'cutebex', 'p_mamagorbo'); });
-  await waitGame(4);
+  await waitGame(p, 4);
   log('shy, asked to visit:', await p.evaluate(() => JSON.stringify(JGP.visits().all)));
   await p.evaluate(() => { JGP.visitAt(9e15, 'p_mamagorbo', 'cutebex'); });
-  await waitGame(4);
+  await waitGame(p, 4);
   log('shy, asked to be visited:', await p.evaluate(() => JSON.stringify(JGP.visits().all)));
   // freed: out on a visit, talk to him where he is
   const talkAt = async (label) => {
@@ -104,15 +106,15 @@ const away = async (p, out) => {
     await p.evaluate(() => { try { _t.close(); } catch (e) {} At.position.set(0, 0, 2); });
   };
   await p.evaluate(() => { Kt.shyFree = !0; Kt.acorns = 50; JGP.visitAt(9e15, 'cutebex', 'p_mamagorbo'); });
-  await waitGame(60, () => { const q = JGP.visits().all.find((q) => q.v === 'cutebex'); return !!q && q.stage === 'out' && q.gap < 12; });
+  await waitGame(p, 60, () => { const q = JGP.visits().all.find((q) => q.v === 'cutebex'); return !!q && q.stage === 'out' && q.gap < 12; });
   await talkAt('freed, out visiting');
-  await waitGame(90, () => { const q = JGP.visits().all.find((q) => q.v === 'cutebex'); return !!q && q.stage === 'back'; });
+  await waitGame(p, 90, () => { const q = JGP.visits().all.find((q) => q.v === 'cutebex'); return !!q && q.stage === 'back'; });
   await talkAt('freed, walking home');
-  await waitGame(150, () => !JGP.visits().all.some((q) => q.v === 'cutebex' || q.h === 'cutebex'));
+  await waitGame(p, 150, () => !JGP.visits().all.some((q) => q.v === 'cutebex' || q.h === 'cutebex'));
   await p.evaluate(() => { JGP.visitAt(9e15, 'p_mamagorbo', 'cutebex'); });
-  await waitGame(90, () => { const q = JGP.visits().all.find((q) => q.h === 'cutebex'); return !!q && q.stage === 'meet'; });
+  await waitGame(p, 90, () => { const q = JGP.visits().all.find((q) => q.h === 'cutebex'); return !!q && q.stage === 'meet'; });
   await talkAt('freed, being visited');
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
 module.exports = require('./parts.js')({ shyness, away });

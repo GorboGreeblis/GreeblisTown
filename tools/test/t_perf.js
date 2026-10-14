@@ -1,22 +1,27 @@
 // Performance profile of the game, for an optimisation pass:
-//  1. what each view costs the GPU: draw calls and triangles from a VR player's eyes (EYE m up, default 3.12: a 1.62 m eye
-//     plus the game's 1.5 m VR lift; a 100° VR-like
-//     lens) at fixed spots round the park, the biggest draws in each, and the totals of programs, textures,
-//     geometries and meshes;
-//  2. where the CPU time per frame goes: the game's frame run FRAMES times (default 300) back to back under a
-//     DevTools CPU profile, self time by function and line of index.html (line 2 is three.js), the top TOP
-//     (default 25), and the time per frame with and without rendering;
+//  1. what each view costs the GPU: draw calls and triangles from a VR player's eyes (a 1.62 m eye plus the game's
+//     1.5 m VR lift; a 100° lens) at eight spots round the park, with the far versions switched as they would be
+//     there; the biggest draws in each, the scene by owner, and the totals of programs, textures, geometries, meshes
+//     and materials;
+//  2. where the CPU time per frame goes: the game's frame run back to back under a DevTools CPU profile, with the GPU
+//     drained first; self time by function and index.html line (line 2 is three.js), and the time per frame with and
+//     without rendering;
 //  3. what allocates every frame: a sampled allocation profile over the same frames, by line.
-// EVENT=1 profiles during a Garden Event instead of quiet play. Run on its own (one browser at a time):
-//   NODE_PATH=$(npm root -g) NOSHOT=1 node shot.js http://localhost:8765/index.html x.png ./t_perf.js
+// Env: EYE (eye height, m, default 3.12); FRAMES (default 300); TOP (CPU lines printed, default 25); EVENT=1 (during a
+//   Garden Event instead of quiet play); WAIT (ms after the reload, default 6000).
+// Output: `== views`, `== the whole scene by owner`, one block per spot, `== totals`, `== per frame`, `== CPU self
+//   time` and `== allocations` sections, then `err <n>`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_perf.js
+const { log, start, startEvent, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
+  const W = (ms) => p.waitForTimeout(ms);
   const TOP = +(process.env.TOP || 25);
   // (catch the animation loop's frame function as three.js asks for each frame)
   // (several loops ask for frames; every distinct callback is kept, and the game's is the one that moves Re.t)
   await p.addInitScript(() => { const raf = window.requestAnimationFrame.bind(window), seen = (window.__rafs = new Set()); window.requestAnimationFrame = (cb) => (seen.add(cb), raf(cb)); });
-  await p.reload(); await W(+(process.env.WAIT || 6000));
-  { const vs = p.viewportSize(); await p.mouse.click(vs.width / 2, vs.height / 2); } await W(2500);
+  await p.reload({ timeout: 120000 }); await W(+(process.env.WAIT || 6000));
+  await start(p, 2500);
   // ---- 1. views
   const views = await p.evaluate((EYE) => {
     const SPOTS = { spawn: [0, 2, Math.PI], garden_edge: [0, 17, Math.PI], dance_floor: [-28, 10, Math.PI / 2], library: [-18, -18, -3 * Math.PI / 4], post_office: [18, -18, 3 * Math.PI / 4], plant_row: [30, 0, -Math.PI / 2], south_gate: [0, 45, 0], juice_bar: [-30, -2, Math.PI / 2] };
@@ -60,7 +65,7 @@ module.exports = async (p) => {
       }
       per.sort((a, b) => b[0] - a[0]);
       const by = new Map(); per.forEach(([n, w]) => { const g = w.startsWith('at ') ? 'elsewhere' : w.replace(/_[sq]\d+$/, ''); const r = by.get(g) || [0, 0]; r[0]++, (r[1] += n); by.set(g, r); });
-      const where = new Map(); per.forEach(([n, w]) => w.startsWith('at ') && where.set(w, (where.get(w) || 0) + 1));
+      const where = new Map(); per.forEach(([, w]) => w.startsWith('at ') && where.set(w, (where.get(w) || 0) + 1));
       out[name] = { calls, tris, meshesInView: per.length, top: per.slice(0, 5).map(([n, w]) => `${w} ${n}`).join(' | '), by: [...by.entries()].sort((a, b) => b[1][0] - a[1][0]).slice(0, 14).map(([g, [m, t]]) => `${g} ${m}d/${(t / 1e3).toFixed(1)}k`).join(', '), where: [...where.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([w, k]) => `${w.slice(3)}:${k}`).join(' ') };
     }
     // the whole scene by owner: drawable meshes (each one draw when in view) and triangles
@@ -85,7 +90,7 @@ module.exports = async (p) => {
   // ---- 2 and 3: CPU and allocations per frame. Headless rendering runs in another process, so left to itself the
   // page sits idle between a handful of frames; instead the game's own frame (captured from requestAnimationFrame
   // as the page starts, see the init script) is called FRAMES times back to back while the profilers run.
-  if (process.env.EVENT) await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  if (process.env.EVENT) await startEvent(p);
   else await p.evaluate(() => At.position.set(-6, 0, 12));
   await W(3000);
   const FRAMES = +(process.env.FRAMES || 300);
@@ -125,5 +130,5 @@ module.exports = async (p) => {
   const at = [...alloc.values()].reduce((a, b) => a + b, 0);
   log(`== allocations by the page's code: ${(at / FRAMES / 1e3).toFixed(1)} KB per frame (sampled), top 15`);
   [...alloc.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15).forEach(([k, v]) => log(`  ${(v / FRAMES / 1e3).toFixed(2).padStart(7)} KB/frame  ${k}`));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

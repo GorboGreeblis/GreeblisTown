@@ -1,9 +1,14 @@
-// The mobile test mode with no NEXT or CLOSE buttons (owner's request): a tap on the screen moves a dialogue on,
-// page by page, and closes it after the last; a tap off the action menu or a panel (the shop) closes it. Taps
-// are real touches on the page, away from the joystick and the TALK / GIVE buttons.
-//   node mob.js '<url>?mobile=1' x.png ./t_taps.js
+// The mobile test mode's taps (it has no NEXT or CLOSE buttons, the owner's request): a tap on the screen moves a
+// dialogue on page by page and closes it after the last; a tap off the action menu or a panel (the shop) closes it.
+// The taps are real touches on the page, away from the joystick and the TALK and GIVE buttons.
+// Env: none (a phone context with the page opened with ?mobile=1).
+// Output: `buttons: …`, `dialogue pages seen: […] | closed: <bool>`, the action menu and the shop panel before and
+//   after a tap off them, then `err <n>`.
+//   MOBILE=1 NOSHOT=1 node test/shot.js '<url>?mobile=1' x.png test/t_taps.js
+const { log, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
+  const W = (ms) => p.waitForTimeout(ms);
   const vp = p.viewportSize(), tap = async (x, y) => (await p.touchscreen.tap(x, y), W(500));
   // (a spot in the open sky, upper middle, clear of every control)
   const sky = [vp.width * 0.5, vp.height * 0.3];
@@ -38,5 +43,5 @@ module.exports = async (p) => {
   const opened = await p.evaluate(() => jt.has('panel'));
   await tap(vp.width * 0.5, vp.height * 0.6); // (open view below the panel, clear of every control)
   log('shop panel open:', opened, '-> after a tap off it:', await p.evaluate(() => jt.has('panel')));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

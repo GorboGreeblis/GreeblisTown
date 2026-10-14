@@ -6241,26 +6241,22 @@ const xe = (() => {
 								}));
 						})(),
 					(function () {
-						if (!o.presenting || !jt.has("panel") || "shop" !== _t.kind) return void (Pe && (Pe.visible = !1));
+						// (the Shop mirror: in VR, and in the test modes too so it can be checked there)
+						if (!(o.presenting || dk.on) || !jt.has("panel") || "shop" !== _t.kind) return void (Pe && (Pe.visible = !1));
 						if (!Pe) {
-							(Pe = new THREE.Group()),
-								(Pe.userData.xrUI = !0),
-								F.anchor.add(Pe),
-								Pe.position.set(1.12, -0.1, -0.02),
-								(Pe.rotation.y = -0.6),
-								Pe.scale.setScalar(0.8);
+							(Pe = new THREE.Group()), (Pe.userData.xrUI = !0), F.anchor.add(Pe);
 							const t = (t, e) => {
 									const o = new THREE.Shape();
 									return o.absellipse(0, 0, t, e, 0, l, !1, 0), o;
 								},
 								e = t(0.36, 0.56);
 							e.holes.push(t(0.32, 0.52)),
-								R(
+								(R(
 									new THREE.ShapeGeometry(e, 48),
 									x.clay("#c9a14a", { shininess: 90, specular: 16773296, side: THREE.DoubleSide }),
 									Pe,
 									[0, 0, 0.006],
-								);
+								).renderOrder = 10001);
 							const o = b(64, 128, (t) => {
 								const e = t.createLinearGradient(0, 0, 0, 128);
 								e.addColorStop(0, "#dfeef6"),
@@ -6268,7 +6264,11 @@ const xe = (() => {
 									(t.fillStyle = e),
 									t.fillRect(0, 0, 64, 128);
 							});
-							R(new THREE.ShapeGeometry(t(0.33, 0.53), 48), x.basic(16777215, { map: o, fog: !1 }), Pe, [0, 0, -0.004]);
+							R(new THREE.ShapeGeometry(t(0.33, 0.53), 48), x.basic(16777215, { map: o, fog: !1 }), Pe, [0, 0, -0.004]).renderOrder = 10001;
+							// (the test modes' camera sees the world between it and the mirror, so there the mirror draws on top:
+							// this unseen disc, drawn after the world's solid parts, clears the depth before the glass, the frame and the figure)
+							const g = R(new THREE.CircleGeometry(0.01, 3), new THREE.MeshBasicMaterial({ colorWrite: !1, depthWrite: !1 }), Pe);
+							(g.renderOrder = 1e4), (g.frustumCulled = !1), (g.onBeforeRender = (t) => dk.on && dk.mirror && (t.state.buffers.depth.setMask(!0), t.clearDepth()));
 						}
 						const t = Kt.equip,
 							e = [t.hat && t.hat.id, t.shoes && t.shoes.id, t.dress && t.dress.id].join("|");
@@ -6292,14 +6292,23 @@ const xe = (() => {
 							ze.rotation.set(0, 0, 0),
 							ze.scale.setScalar(0.4),
 							ze.traverse((t) => {
-								(t.frustumCulled = !1), t.isMesh && t.layers.set(0);
+								(t.frustumCulled = !1), (t.renderOrder = 10002), t.isMesh && t.layers.set(0);
 							}),
 							Pe.add(ze),
 							(ke = e)),
 							(ze.rotation.y = 0.25 * Math.sin(0.6 * Re.t)),
-							(Pe.visible = !0),
-							(Pe.position.y = -0.1),
-							F.anchor.updateMatrixWorld(!0);
+							(Pe.visible = !0);
+						// (VR: angled at the panel's right, at least 0.5 m off the floor; the test modes lay it out flat on the
+						// screen through dk.mirror)
+						const m = dk.on && dk.mirror;
+						if (
+							(m
+								? (Pe.position.set(m.x, m.y, 0), (Pe.rotation.y = 0), Pe.scale.setScalar(m.s), (ze.position.z = 0.06), ze.scale.setScalar(0.34))
+								: (Pe.position.set(1.12, -0.1, -0.02), (Pe.rotation.y = -0.6), Pe.scale.setScalar(0.8), (ze.position.z = 0.32), ze.scale.setScalar(0.4)),
+							F.anchor.updateMatrixWorld(!0),
+							m)
+						)
+							return;
 						const a = Ie.setFromObject(Pe),
 							n = (F.anchor.position.x, F.anchor.position.z, 0.5);
 						a.min.y < n && ((Pe.position.y += (n - a.min.y) / F.anchor.scale.y), F.anchor.updateMatrixWorld(!0));
@@ -6866,7 +6875,13 @@ const xe = (() => {
 				vw = vh * B.aspect,
 				panel = jt.has("panel"),
 				narrow = vw < vh,
-				sc = Math.min(panel ? (0.82 * vh) / 0.914 : (0.4 * vh) / 0.569, ((narrow ? 0.97 : 0.6) * vw) / 1.3);
+				// (the Shop leaves room for its mirror: beside the panel on a wide screen, below it on a portrait phone)
+				shop = panel && "shop" === _t.kind,
+				sc = Math.min(
+					panel ? (0.82 * vh) / 0.914 : (0.4 * vh) / 0.569,
+					((narrow ? 0.97 : 0.6) * vw) / 1.3,
+					shop ? (narrow ? (0.84 * vh) / 1.74 : (0.8 * vw) / 1.94) : 1 / 0,
+				);
 			dkF.set(0, 0, -1).applyQuaternion(B.quaternion),
 				dkR.set(1, 0, 0).applyQuaternion(B.quaternion),
 				dkU.set(0, 1, 0).applyQuaternion(B.quaternion),
@@ -6875,10 +6890,14 @@ const xe = (() => {
 				F.anchor.position
 					.copy(B.position)
 					.addScaledVector(dkF, D)
-					.addScaledVector(dkR, panel && !narrow ? 0.17 * vw : 0)
-					.addScaledVector(dkU, panel ? (narrow ? 0.08 * vh : 0) : narrow ? -0.12 * vh : -0.27 * vh),
+					.addScaledVector(dkR, panel && !narrow ? (shop ? 0.47 * vw - 1.29 * sc : 0.17 * vw) : 0)
+					.addScaledVector(dkU, panel ? (narrow ? (shop ? 0.22 * vh : 0.08 * vh) : 0) : narrow ? -0.12 * vh : -0.27 * vh),
 				(F.placed = !0),
 				(be = null);
+			if (shop) {
+				const b = He();
+				dk.mirror = narrow ? { x: 0, y: b.bottom - 0.43, s: 0.7 } : { x: 0.99, y: (b.top + b.bottom) / 2, s: 0.8 };
+			} else dk.mirror = null;
 		}
 		/* ============================ end desktop ============================ */
 		// ---- TEST-MODE-END ----
@@ -10886,6 +10905,8 @@ const JGP = (() => {
 		const front = (m) => Object.assign(m.clone(), { side: THREE.FrontSide }),
 			dh = th.dh || 0,
 			D = th.desk || 1.12,
+			// (the half width, to the side walls' middles: 3 m, the ART GALLERY's 4 m)
+			hw = th.hw || 3,
 			deck = front(KIT.surf("wood", "#a8865c", { rep: 2, bump: 0.03, shine: 12 })),
 			wall = front(KIT.surf("wood", th.wall, { rep: 1, bump: 0.03, shine: 10 })),
 			wall2 = front(KIT.surf("wood", th.wall2, { rep: 1, bump: 0.03, shine: 10 })),
@@ -10899,36 +10920,36 @@ const JGP = (() => {
 				}
 			}),
 			tin = new THREE.MeshPhongMaterial({ map: tinTex, shininess: 60, specular: 3355443, side: THREE.DoubleSide });
-		(tinTex.wrapS = tinTex.wrapT = THREE.RepeatWrapping), tinTex.repeat.set(5, 1);
+		(tinTex.wrapS = tinTex.wrapT = THREE.RepeatWrapping), tinTex.repeat.set((5 * (2 * hw + 0.9)) / 6.9, 1);
 		// deck, back wall with battens, half side walls, posts and beam
-		R(T.box(6.4, 0.2, 5.0), deck, o, [0, 0.1, -0.1]), R(T.box(6.5, 0.08, 0.12), white, o, [0, 0.2, 2.42]);
+		R(T.box(2 * hw + 0.4, 0.2, 5.0), deck, o, [0, 0.1, -0.1]), R(T.box(2 * hw + 0.5, 0.08, 0.12), white, o, [0, 0.2, 2.42]);
 		// the back wall stops inside the corner posts (flush end faces would flicker against them)
-		R(T.box(5.96, 3.3 + dh, 0.16), wall, o, [0, 1.85 + dh / 2, -2.45]);
+		R(T.box(2 * hw - 0.04, 3.3 + dh, 0.16), wall, o, [0, 1.85 + dh / 2, -2.45]);
 		// (the SHERIFF'S back wall is plain — its battens sat right in the Wanted posters' plane and cut
 		// across them, so the owner had them taken off; every other kiosk keeps its battens)
 		if (!th.noBattens) for (let k = 0; k < 11; k++) R(T.box(0.08, 3.3 + dh, 0.06), wall2, o, [-2.6 + 0.52 * k, 1.85 + dh / 2, -2.35]);
 		[-1, 1].forEach((sx) => {
-			R(T.box(0.16, 1.0, 4.6), wall, o, [3.0 * sx, 0.7, -0.15]), R(T.box(0.2, 0.08, 4.7), white, o, [3.0 * sx, 1.24, -0.15]);
-			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4 + dh, 0.24), white, o, [3.0 * sx, 1.9 + dh / 2, pz]));
+			R(T.box(0.16, 1.0, 4.6), wall, o, [hw * sx, 0.7, -0.15]), R(T.box(0.2, 0.08, 4.7), white, o, [hw * sx, 1.24, -0.15]);
+			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4 + dh, 0.24), white, o, [hw * sx, 1.9 + dh / 2, pz]));
 			// gable ends under the roof
 			const tri = new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(2.6, 3.5 + dh), new THREE.Vector2(-2.45, 3.5 + dh), new THREE.Vector2(0.12, 4.62 + dh)])).rotateY(Math.PI / 2);
-			R(tri, Object.assign(wall.clone(), { side: THREE.DoubleSide }), o, [3.08 * sx, 0, 0]);
+			R(tri, Object.assign(wall.clone(), { side: THREE.DoubleSide }), o, [(hw + 0.08) * sx, 0, 0]);
 		});
-		R(T.box(6.4, 0.28, 0.2), white, o, [0, 3.44 + dh, 2.15]);
+		R(T.box(2 * hw + 0.4, 0.28, 0.2), white, o, [0, 3.44 + dh, 2.15]);
 		// tin roof (optionally spotted like a toadstool) and the sign on the ridge
 		[
 			[1.24, 0.378],
 			[-1.49, -0.378],
 		].forEach(([pz, rx], k) => {
 			const slope = new THREE.Group();
-			slope.position.set(0, 4.16 + dh, pz), (slope.rotation.x = rx), o.add(slope), R(T.box(6.9, 0.1, 2.95), tin, slope);
+			slope.position.set(0, 4.16 + dh, pz), (slope.rotation.x = rx), o.add(slope), R(T.box(2 * hw + 0.9, 0.1, 2.95), tin, slope);
 			if (th.spots) {
 				const sr = srand(31 + k),
 					spot = x.clay("#fbf8f0", { shininess: 40 });
-				for (let j = 0; j < 9; j++) R(T.sphere(1, 12, 6), spot, slope, [-3 + 6 * sr(), 0.05, -1.1 + 2.2 * sr()], null, [0.22 + 0.16 * sr(), 0.05, 0.2 + 0.14 * sr()]);
+				for (let j = 0; j < 9; j++) R(T.sphere(1, 12, 6), spot, slope, [hw * (2 * sr() - 1), 0.05, -1.1 + 2.2 * sr()], null, [0.22 + 0.16 * sr(), 0.05, 0.2 + 0.14 * sr()]);
 			}
 		});
-		R(T.box(6.95, 0.12, 0.32), white, o, [0, 4.72 + dh, -0.12]);
+		R(T.box(2 * hw + 0.95, 0.12, 0.32), white, o, [0, 4.72 + dh, -0.12]);
 		const signTex = kioskSignTex(th);
 		[-1.6, 1.6].forEach((px) => R(T.box(0.12, 0.7, 0.12), white, o, [px, 4.95 + dh, -0.12]));
 		R(T.box(4.3, 1.05, 0.1), white, o, [0, 5.55 + dh, -0.12]), R(T.plane(4.1, 1.02), x.world(16777215, { map: signTex }), o, [0, 5.55 + dh, -0.04]);
@@ -12032,19 +12053,24 @@ const JGP = (() => {
 	// carries one big empty canvas (to be filled later); two generic paintings stand on easels on the lawn in
 	// front, either side of its walk, turned a little toward whoever comes up it.
 	const GALLERY = {
-		// [local x, local z, turn] of each easel, and the easels' and the canvas's footprints (for the colliders)
+		// the frame's half width (4 m: 2 m wider than the other kiosks, for the wide canvas)
+		hw: 4,
+		// the canvas's width and height
+		cw: 6.9,
+		ch: 2.6,
+		// [local x, local z, turn] of each easel (and their footprints, for the colliders)
 		easels: [
-			[-2.3, 3.45, 0.3],
-			[2.3, 3.45, -0.3],
+			[-2.6, 3.45, 0.3],
+			[2.6, 3.45, -0.3],
 		],
 	};
 	function buildGallery(o) {
-		kioskFrame(o, { sign: "GOOWARD'S GALLERY", ink: "#3a2a5a", wall: "#e8e0cc", wall2: "#d8cfb8", tin: [88, 66, 132], noBattens: !0, noDesk: !0 });
+		kioskFrame(o, { sign: "GOOWARD'S GALLERY", ink: "#3a2a5a", wall: "#e8e0cc", wall2: "#d8cfb8", tin: [88, 66, 132], noBattens: !0, noDesk: !0, hw: GALLERY.hw });
 		const G = goods(),
 			wood = "#7a5232",
 			gold = "#b8902e";
 		// the big empty canvas, stretched and primed, 1 cm off the back wall's face: its edge shows the stretcher's wood
-		G.box("#f4f1e8", 0, 1.95, -2.33, 4.6, 2.6, 0.06), G.box("#c8a070", 0, 0.62, -2.31, 4.5, 0.03, 0.09);
+		G.box("#f4f1e8", 0, 1.95, -2.33, GALLERY.cw, GALLERY.ch, 0.06), G.box("#c8a070", 0, 0.62, -2.31, GALLERY.cw - 0.1, 0.03, 0.09);
 		// the easels: two splayed front legs, a raking back leg, a ledge and a top clamp, each holding a framed painting
 		// tilted back a little
 		const paint = [];
@@ -12054,8 +12080,9 @@ const JGP = (() => {
 			[-1, 1].forEach((sx) => at(0.33 * sx, 0.93, 0.06, -0.06, 0, -0.12 * sx, 0.05, 1.9, 0.05));
 			at(0, 0.88, -0.36, 0.34, 0, 0, 0.05, 1.85, 0.05);
 			at(0, 0.82, 0.13, 0, 0, 0, 0.86, 0.05, 0.11), at(0, 1.62, 0.02, 0, 0, 0, 0.14, 0.07, 0.07);
+			// (the painting sits 1 cm proud of the frame's face, so the two never fight)
 			G.add(G.UBX, gold, base.clone().multiply(G.m(0, 1.2, 0.07, -0.1, 0, 0, 0.82, 0.64, 0.04)));
-			paint.push(base.clone().multiply(G.m(0, 1.2, 0.07, -0.1, 0, 0)).multiply(G.m(0, 0, 0.022)));
+			paint.push(base.clone().multiply(G.m(0, 1.2, 0.07, -0.1, 0, 0)).multiply(G.m(0, 0, 0.03)));
 		});
 		G.done(o);
 		// the two paintings, painted side by side on one texture and drawn as one mesh: a summer landscape (hills, a
@@ -18345,13 +18372,16 @@ const JGP = (() => {
 			const { x: X, z: Z, ry } = KIOSK_AT.K[name],
 				k0 = new THREE.Group();
 			k0.position.set(X, 0, Z), (k0.rotation.y = ry), (k0.userData.keepInFinale = !0), C.add(k0), JGP_K[name](k0);
-			H(k0), E.add(X, Z, 5.2, "scenery"), keepAt.push([X, Z]);
+			H(k0), E.add(X, Z, "gallery" === name ? 6.2 : 5.2, "scenery"), keepAt.push([X, Z]);
 			// (the Post Office's mail mountain behind it is solid, and kept clear of pickups and tufts)
 			const mail = "post" === name;
 			// (the ART GALLERY has no counter or crates: its solid parts are its walls and its two easels out front)
 			const gal = "gallery" === name,
 				easels = gal ? GALLERY.easels.map(([ex, ez]) => [ex - 0.45, ez - 0.5, ex + 0.45, ez + 0.35]) : [];
-			F.addBuilding(X, Z, ry, mail ? [-3.4, -6.75, 3.4, 2.45] : gal ? [-3.15, -2.62, 3.15, 3.8] : KIOSK_AT.hull, mail ? KIOSK_AT.parts.concat([[-3.3, -6.6, 3.3, -2.62]]) : gal ? KIOSK_AT.parts.slice(0, 3).concat(easels) : KIOSK_AT.parts, name);
+			// (and its frame is wider: its back and side walls stand at its half width)
+			const gw = GALLERY.hw + 0.15,
+				galParts = [[-gw, -2.62, gw, -2.28], [gw - 0.29, -2.62, gw, 2.3], [-gw, -2.62, -gw + 0.29, 2.3]];
+			F.addBuilding(X, Z, ry, mail ? [-3.4, -6.75, 3.4, 2.45] : gal ? [-gw, -2.62, gw, 3.8] : KIOSK_AT.hull, mail ? KIOSK_AT.parts.concat([[-3.3, -6.6, 3.3, -2.62]]) : gal ? galParts.concat(easels) : KIOSK_AT.parts, name);
 			gal && GALLERY.easels.forEach(([ex, ez]) => keepAt.push(KIOSK_AT.at("gallery", ex, ez)));
 			if (mail) {
 				const [mx, mz] = KIOSK_AT.at("post", 0, -4.6);

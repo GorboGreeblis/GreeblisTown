@@ -1,19 +1,19 @@
-// The town outside the park, for the background pass: a top-down map of everything out to the prairie
-// (<out>_map.png) and the views out of the square a player has, from 1.6 m up at each side of the park
-// (<out>_n/_s/_e/_w.png), and the town's static triangle count (the merged scenery meshes).
-//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_townview.js
+// The town outside the park: a top-down map of everything out to the prairie, the views out of the square a player
+// has from 1.6 m up at each side of the park, close-ups of every building and lore piece outside it, the park fence's
+// pickets from inside (their open tops must never show), the Library's rug from above, and the town's triangle and
+// mesh counts (the merged scenery meshes, named town_*).
+// Env: none.
+// Output: `town meshes (name: triangles): {…} | total <n> in <n> meshes`, `err <n>`; <out>_map.png (1000×1000 px),
+//   <out>_n/_s/_sw/_e/_w.png, <out>_c<k>.png, <out>_fence1/2.png and <out>_rug.png (1280×720 px).
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_townview.js
+const { log, start, render, outName, logErrors } = require('./lib.js');
+
 module.exports = async (p, out) => {
-  const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(2500);
-  const shot = (name, cam, look, ortho) => p.evaluate(([cam, look, ortho]) => {
-    let c;
-    if (ortho) { c = new THREE.PerspectiveCamera(2 * Math.atan(ortho / cam[1]) * 180 / Math.PI, 1, 10, 2000); c.up.set(0, 0, -1); }
-    else c = new THREE.PerspectiveCamera(70, 16 / 9, 0.1, 900);
-    c.position.set(...cam); c.lookAt(...look); c.updateMatrixWorld(); c.updateProjectionMatrix();
-    const fog = C.fog, hid = [];
-    if (ortho) { C.fog = null; C.traverse((o) => { if (o.visible && o.isMesh && o.getWorldPosition(new THREE.Vector3()).y > 40) (o.visible = !1), hid.push(o); }); }
-    ortho ? O.setSize(1000, 1000, !1) : O.setSize(1280, 720, !1); O.render(C, c); C.fog = fog; hid.forEach((o) => (o.visible = !0)); const d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); return d;
-  }, [cam, look, ortho]).then((d) => fs.writeFileSync(out.replace('.png', '_' + name + '.png'), Buffer.from(d.split(',')[1], 'base64')));
+  await start(p, 2500);
+  // (a map is a narrow lens from high above, its sky hidden; a view is a 70° lens at 16:9)
+  const shot = (name, cam, look, ortho) => render(p, outName(out, name), cam, look, ortho
+    ? { fov: (2 * Math.atan(ortho / cam[1]) * 180) / Math.PI, w: 1000, h: 1000, near: 10, far: 2000, up: [0, 0, -1], fog: false, hideAbove: 40 }
+    : { fov: 70, w: 1280, h: 720, near: 0.1, far: 900 });
   await shot('map', [0, 900, 8], [0, 0, 8], 118);
   await shot('n', [0, 1.6, -18], [0, 8, -90]);
   await shot('s', [12, 1.6, 22], [20, 8, 110]);
@@ -46,5 +46,5 @@ module.exports = async (p, out) => {
     C.traverse((o) => { if (o.isMesh && /^town_/.test(o.name || '')) { const g = o.geometry, t = Math.round((g.index ? g.index.count : g.attributes.position.count) / 3); r[o.name] = t; n += t; } });
     return JSON.stringify(r) + ' | total ' + n + ' in ' + Object.keys(r).length + ' meshes';
   }));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

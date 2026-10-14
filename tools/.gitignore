@@ -1,5 +1,24 @@
+# dependencies (npm install here and in lint/)
 node_modules/
+# renders, screenshots, pixel comparisons and runner logs, in any folder
 *.png
+*.ppm
 *.log
+# the lint's cut-out game script
 lint/game.js
-test/x*
+# coverage and state dumps (test/cov.js, audit/snap.js) and uncov.js listings
+cov_*.json
+snap_*.json
+uncov*.txt
+# the final pass's and the three.js trim's intermediates, written in tools/ (release.md)
+/cut.html
+/game.js
+/game.min.js
+/page.html
+/check.html
+/old.html
+/three.js
+/three_p*.js
+/game_all.js
+# Python bytecode
+__pycache__/

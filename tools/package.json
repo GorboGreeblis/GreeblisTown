@@ -3,9 +3,11 @@
   "private": true,
   "description": "Build, check, trim and pack tools for Greeblis Town (see README.md)",
   "scripts": {
-    "lint": "cd lint && npm install --no-save >/dev/null && sh lint.sh",
+    "lint": "[ -d lint/node_modules/eslint ] || (cd lint && npm install --no-save >/dev/null); sh lint/lint.sh",
     "test": "test/quick.sh",
-    "battery": "test/battery.sh"
+    "battery": "test/battery.sh",
+    "size": "node pack/size.js",
+    "deadprops": "node lint/deadprops.js"
   },
   "dependencies": {
     "acorn": "8.12.1",

@@ -1,10 +1,14 @@
-// What the game weighs at each step of the release pass: the readable page, the page with its scripts
-// minified (the game script with the release terser settings, as pack/min.js), and that page packed into the ordinal
-// (pack/pack.js, round trip checked). Writes the intermediate files to <outdir> so they can be
-// boot-tested (test/ordtest.js). Nothing in the repo is changed.
-//   node pack/size.js [index.html] [outdir]        (needs terser: `npm install` in tools/)
+// The page's weight at each step of the final pass, without touching the repo: readable; with every script minified
+// (the game script with the release settings of pack/min.js, the helper scripts without top-level mangling, three.js
+// as it is); and that page packed into the ordinal (pack/pack.js, round trip checked). Label and comment stripping
+// (the final pass's step 5) is not done.
+// Env: none.
+// Output: `readable page`, `minified page` and `packed ordinal` lines with their sizes (B) and times; page.html (the
+//   minified page) and index.html (packed) in <outdir> (default a new temporary folder), for test/ordtest.js.
+//   node pack/size.js [index.html] [outdir]   (terser comes with `npm install` in tools/)
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const { minify } = require('terser');
+const { OPTIONS } = require('./min.js');
 (async () => {
   const src = process.argv[2] || path.join(__dirname, '../../index.html');
   const out = process.argv[3] || fs.mkdtempSync(path.join(require('os').tmpdir(), 'gsize-'));
@@ -18,8 +22,8 @@ const { minify } = require('terser');
   for (const [k, m] of blocks.entries()) {
     const code = m[2], start = m.index + m[1].length;
     let min = code;
-    if (k === last) (game = code), (r = await minify(code, { ecma: 2020, toplevel: true, compress: { passes: 2 }, mangle: { toplevel: true }, format: { ascii_only: false, wrap_func_args: false } })), (min = r.code);
-    else if (!/^\s*var THREE=/.test(code) && code.trim()) min = (await minify(code, { ecma: 2020, compress: { passes: 2 }, format: { ascii_only: false, wrap_func_args: false } })).code;
+    if (k === last) (game = code), (r = await minify(code, OPTIONS)), (min = r.code);
+    else if (!/^\s*var THREE=/.test(code) && code.trim()) min = (await minify(code, { ...OPTIONS, toplevel: false, mangle: true })).code;
     (page += html.slice(at, start) + min), (at = start + code.length);
   }
   page += html.slice(at);

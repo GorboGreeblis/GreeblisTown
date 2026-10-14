@@ -27,7 +27,7 @@
     "no-empty-character-class": "error",
     "no-invalid-regexp": "error",
     "no-obj-calls": "error",
-    "no-use-before-define": ["warn", { "functions": false, "classes": false, "variables": false }],
+    "no-use-before-define": "off",
     "no-import-assign": "error",
     "getter-return": "error",
     "no-setter-return": "error",

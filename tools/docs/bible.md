@@ -203,7 +203,8 @@ The same five flowers make the town seal and bloom on the schoolhouse mural (1.7
 This section describes the five kiosks and what each shows. Four share one frame: a plank deck, a back wall, half side
 walls, white posts, a tin roof with the kiosk's sign standing on its ridge, and a counter with crates either side.
 The Post Office and Garden Supplies have board-and-batten back walls; the Sheriff's and the Gallery have plain ones.
-The Gallery has no counter. The Library is an open reading ground instead. Only a kiosk's keeper stands inside it;
+The Gallery has no counter, and its frame is 2 m wider than the others' (8 m), for its wide canvas. The Library is an
+open reading ground instead. Only a kiosk's keeper stands inside it;
 GOOWARD keeps the Gallery from the lawn outside.
 
 | Kiosk | Keeper | What it shows |
@@ -212,7 +213,7 @@ GOOWARD keeps the Gallery from the lawn outside.
 | **POST OFFICE** (north-east) | SOMLET | Navy walls and a red roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, faceted heaps of paper under loose envelopes, tied bundles and parcels stuck in its slopes, tall stacks leaning on its sides and an avalanche of letters fanned out round its foot. Five buried parcels carry readable labels (1.15). SOMLET sleeps in front of it. |
 | **SHERIFF'S** (north-east, beside the Post Office) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts, and **the Consortium's flag** flying from a pole behind the sign (1.10). A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the plain back wall over the wanted posters (1.10). Its roof stands 1 m higher than the others' and its desk is raised (top 1.5 m up), so the Sheriff, standing on it, looks down on his visitors. |
 | **GARDEN SUPPLIES** (south-east) | ZOLLOD | Sage walls and a terracotta roof, with plants everywhere: potted shrubs, flowers, ferns, succulents and little trees, seedling trays, a sunflower tray, hanging baskets, bags of soil and compost, a wheelbarrow of flowers out front, a rake and a shovel against the side wall. Among them grow **strange curiosities** after the plates of the Voynich manuscript, in faded inks (pale blue, olive, red-brown, ochre, parchment): bare bulbous roots as big as the plant, striped cup blooms, an "eye of a flower" (a ringed blue eye on legs of forked roots), trumpet clusters on a knot of roots, a scaled bud on a hand of fat roots, a striped lantern bloom on an onion with a beard of roots. A parchment card on the counter is written in the manuscript's unread script. The town's one shop (1.13); ZOLLOD is too shy to keep it until OVERCOMING SHYNESS frees him (1.13). |
-| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big **empty canvas**, stretched and primed, hangs on the back wall, waiting to be filled. On the lawn in front, either side of the walk up to it, two framed paintings stand on wooden easels, turned a little toward whoever comes up the walk: a summer landscape (hills, a tree, a lake under a big sky) and a still life (a jug of flowers and fruit on a table). GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
+| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big **empty canvas** (6.9 m wide and 2.6 m tall), stretched and primed, hangs on the back wall, waiting to be filled. On the lawn in front, either side of the walk up to it, two framed paintings stand on wooden easels, turned a little toward whoever comes up the walk: a summer landscape (hills, a tree, a lake under a big sky) and a still life (a jug of flowers and fruit on a table). GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
 
 ### 1.5 The Juice Bar, the dance floor and the phone booth
 
@@ -6218,7 +6219,9 @@ This section specifies the SEEDS quest: ZOLLOD's shyness, the shop and the Seeds
 - **Clothes** are bought once; afterwards each toggles on and off for free, its button reading "Change out" while
   worn.
 - **The mirror:** a gold-framed oval mirror beside the panel shows a small turning figure of the player in the current
-  outfit. In VR it is the only place the player sees how they look.
+  outfit. In VR it is the only place the player sees how they look. In VR it stands angled at the panel's right; in the
+  desktop and mobile test modes it is laid flat on the screen (beside the panel, or below it on a portrait phone) and
+  drawn over the world so nothing hides it.
 
 ### 5.10 SUMMONING STONE
 

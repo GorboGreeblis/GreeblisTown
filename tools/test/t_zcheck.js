@@ -1,13 +1,17 @@
-// Does a z-fight candidate (from t_zfight.js) actually flicker on screen? For each point in POINTS (JSON list of
-// [name, x, y, z]) the camera stands where the player's eyes can be (inside the park, 1.6 m up, and at least
-// 3 m away across the ground so it never looks straight up), looks at the point through a narrow lens (about
-// 1 m across at the point), and renders it three times with the near plane nudged by a fraction of a
-// millimetre. Nothing moves on screen between them, but the depth values change in their last bits, so
-// wherever two surfaces fight the winner changes: those pixels are the flicker a moving head would see.
-// Prints the count of changed pixels; SHOTS=1 writes <out>_<name>_a/b.png.
+// Whether a z-fighting candidate from t_zfight.js flickers on screen: for each point the camera stands where the
+// player's eyes can be (inside the park, 1.6 m up, at least 3 m away across the ground so it never looks straight up),
+// looks at the point through a narrow lens (about 1 m across at the point) and renders it three times with the near
+// plane nudged by a fraction of a millimetre. Nothing moves between the renders but the depth values change in their
+// last bits, so wherever two surfaces fight the winner changes: those pixels are the flicker a moving head would see.
+// A count under about 10 is edge noise.
+// Env: POINTS (JSON [[name, x, y, z], …]); SHOTS=1 (writes two of the renders, for tile.py diff).
+// Output: per point `<name>: <n> flickering of <n> pixels (seen from <d> m)`, then `err <n>`; with SHOTS=1
+//   <out>_<name>_a.png and <out>_<name>_b.png.
+//   POINTS='[["bench",3.2,0.45,-7.9]]' VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_zcheck.js
+const { start, savePng, outName, logErrors } = require('./lib.js');
+
 module.exports = async (p, out) => {
-  const fs = require('fs');
-  await p.mouse.click(100, 60); await p.waitForTimeout(2500);
+  await start(p, 2500);
   for (const [name, x, y, z] of JSON.parse(process.env.POINTS || '[]')) {
     const r = await p.evaluate(([x, y, z]) => {
       const S = 160, gl = O.getContext(), px = (cam) => { O.setSize(S, S, !1); O.render(C, cam); const b = new Uint8Array(S * S * 4); gl.readPixels(0, 0, S, S, gl.RGBA, gl.UNSIGNED_BYTE, b); return b; };
@@ -29,7 +33,7 @@ module.exports = async (p, out) => {
       return { d: +d.toFixed(1), flat, flick, a: toUrl(a), b: toUrl(b) };
     }, [x, y, z]);
     console.log(`${name}: ${r.flick} flickering of ${r.flat} pixels (seen from ${r.d} m)`);
-    if (process.env.SHOTS) ['a', 'b'].forEach((k) => fs.writeFileSync(out.replace('.png', `_${name}_${k}.png`), Buffer.from(r[k].split(',')[1], 'base64')));
+    if (process.env.SHOTS) ['a', 'b'].forEach((k) => savePng(outName(out, name + '_' + k), r[k]));
   }
-  console.log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

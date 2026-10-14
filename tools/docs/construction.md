@@ -380,7 +380,8 @@ building hull. Pickups are instanced ([Performance](#12-performance)).
 - **Phone lock:** `Kt.phone` is set in `te()` when MUSHROOM receives a Blossom. Before that, the booth reports the
   connection to the Portal as blocked; afterwards it works for the session.
 - **Shop** (Garden Supplies): Flower Hat, Sun Dress and Frog Shoes at 3 flint each, and the Seeds. The mirror
-  changes outfits.
+  shows the outfit as it changes. It is shown in VR (angled at the panel's right) and in the test modes (flat beside the
+  panel, or below it on a portrait phone, drawn over the world through `dk.mirror`).
 
 ### Dance battles
 
@@ -610,17 +611,18 @@ boxes take front-only material clones ([§11](#11-no-clipping-no-flicker)).
 | `dh` | Raises the roof and everything above the walls by that many metres (`SHERIFF_DH` 1). |
 | `desk` | Counter-top height; default 1.12 m (`SHERIFF_DESK` 1.5). |
 | `noDesk` | Omits the counter and crates (Gallery). |
+| `hw` | Half width to the side walls' middles; default 3 m (Gallery `GALLERY.hw` 4). Deck, walls, beam, roof and ridge follow it; the sign does not. |
 
 - Goods are added through `goods()`, which merges all small items into one vertex-coloured mesh.
 - `KIOSK_AT` holds each kiosk's placement (`K[name]`: `x`, `z`, `ry`; local +z faces the customer) and the helpers
   `spot`, `desk`, `front`, `exit`, `at(name, lx, lz)`, plus the shared `hull` and `parts`.
-- Each framed kiosk (`post`, `sheriff`, `garden`, `gallery`) adds a 5.2 m `scenery` keep-clear zone and a tuft
-  exclusion (`keepAt`) at its centre.
+- Each framed kiosk (`post`, `sheriff`, `garden`, `gallery`) adds a 5.2 m `scenery` keep-clear zone (6.2 m for the
+  wider Gallery) and a tuft exclusion (`keepAt`) at its centre.
 
 | Kiosk | Construction specifics |
 | --- | --- |
 | Sheriff's | Roof raised 1 m (`SHERIFF_DH`), raised desk (`SHERIFF_DESK`), plain back wall carrying eight non-overlapping parchment Wanted posters (0.62 × 0.78 m planes, 128 × 160 px canvases; subjects: [bible 1.10](bible.md#110-factions-and-forces)). **Consortium flag** (the only flag: [rules](rules.md#the-world)) on a pole rising from the roof behind the sign, built in the kiosk's `goods()` merge (no texture, no extra draw): a 2.1 × 1.4 m navy cloth and gold hem as flat planes; on each face a cream stem, red half-disc cap and white spots, each layer 1.5 cm further from the cloth than the one beneath, so no layer z-fights another. |
-| GOOWARD'S GALLERY | `buildGallery` (`noBattens`, `noDesk`). The 4.6 × 2.6 m blank canvas (1 cm off the back wall) and both easel frames are in the goods merge; easels at local (±2.3, 3.45), turned ±0.3 rad (`GALLERY.easels`). The two paintings share one 512 × 192 px texture on one mesh. Parts: the three walls plus each easel's footprint; hull `[-3.15, -2.62, 3.15, 3.8]` reaches the easels, which are also in `keepAt`. A walk runs from the garden ring to its deck. GOOWARD keeps it from outside (`JGP.galleryRoam`). |
+| GOOWARD'S GALLERY | `buildGallery` (`noBattens`, `noDesk`, `hw` 4: 2 m wider than the other kiosks). The `GALLERY.cw` × `GALLERY.ch` (6.9 × 2.6 m) blank canvas (1 cm off the back wall) and both easel frames are in the goods merge; easels at local (±2.6, 3.45), turned ±0.3 rad (`GALLERY.easels`). The two paintings share one 512 × 192 px texture on one mesh. Parts: the three walls at the wider half width plus each easel's footprint; hull `[-4.15, -2.62, 4.15, 3.8]` reaches the easels, which are also in `keepAt`. A walk runs from the garden ring to its deck. GOOWARD keeps it from outside (`JGP.galleryRoam`). |
 | Garden Supplies | Wheelbarrow geometry: two fork rails from under the tray's front edge to the axle, wheel top level with the tray bottom, two rear legs. |
 | Post Office | Mail mountain behind the kiosk, below its roof line and hidden from the square: a heightfield of 19 overlapping cones under about 2,300 envelopes, bundles, parcels and stacks. Five readable kraft parcels (labels chosen by the owner) sit half-sunk round the heap, never stacked; each label stands 6 mm proud and faces straight out. `buildPostOffice` adds another in one line, clear of the others. Solid: hull `[-3.4, -6.75, 3.4, 2.45]` plus a 4.2 m keep-clear zone. |
 

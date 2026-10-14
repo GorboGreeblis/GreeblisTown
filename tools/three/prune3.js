@@ -1,6 +1,10 @@
-// Removes three.js class methods that never ran in any recorded session and that nothing (three.js
-// itself or the game) can name.
-// node prune3.js <three.js> <game.js (all other scripts)> <out.js> cov1.json [cov2.json ...]
+// Removes the three.js class methods that never ran in any recorded session and that nothing (three.js itself or the
+// game) names, in rounds (a method removed may have been the only one naming another). The three.js text must be the
+// page's second <script> block exactly as recorded by cov.js; the second file is every other script plus the HTML.
+// Env: none.
+// Output: `round <k> removed <n>` per round, `removed methods <n> bytes <n>` and the methods removed with their sizes;
+//   the result to <out.js>.
+//   node three/prune3.js three.js game_all.js three_p1.js cov_d.json [cov_m.json …]
 const acorn = require('acorn'), fs = require('fs');
 const [srcPath, gamePath, outPath, ...covs] = process.argv.slice(2);
 const src = fs.readFileSync(srcPath, 'utf8'), game = fs.readFileSync(gamePath, 'utf8'), N = src.length;
