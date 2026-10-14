@@ -115,6 +115,11 @@ Rules for what is finished and who may change it.
    props, the scenery) done, it is locked as finished models are, and any change to it needs the owner's approval
    first. Greeblis Town's environment is not yet declared done; the church's inside and its secret room are.
 5. A creature carried into another game must keep its model exactly.
+6. GOOWARD's painting ([bible 1.18](bible.md#118-goowards-painting)) must keep its quality as fully as possible.
+   Any change to it, or to how the game paints and shows it (for performance, size, the fallback, a fix nearby), must
+   keep its resolution (3072 × 1158), its detail, its colours, its brushwork and every symbol; a change that would cost
+   any of these is put to the owner first. Each such change is checked by rendering the painting before and after and
+   comparing them.
 
 ## Platforms (every game)
 
@@ -131,6 +136,9 @@ Rules for where the game runs. The gate that enforces them is described in
 6. Any other browser or device must be shown a plain notice on the start screen instead of the game, naming where the
    game does play, and the game must not boot.
 7. Test tools must emulate only supported devices.
+8. Performance work always puts VR in the Meta Quest Browser first: where a choice helps one platform at another's
+   cost, VR on the Quest wins, then Android, then the desktop. A change that would cost VR frame rate, comfort or
+   load time to gain elsewhere is not made.
 
 ## Privacy and conduct
 
