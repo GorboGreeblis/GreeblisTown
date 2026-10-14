@@ -18,7 +18,7 @@ and 2.7 is half time. A move's size scales its whole-body offset.
 | --- | --- | --- | --- | --- | --- |
 | SPARKAKUS | `keeper` | `BORN.sparkakus`, through the Library's worker `st` | The Library, browsing | pat, 1.6, 1 | funk (5.45, 1), with his own moves in his model |
 | MAMA GORBO | `p_mamagorbo` | `born_mamagorbo` | Wanders the park | pat, 1.3, 1.2 | jelly (5.45, 1) |
-| GOOWARD | `gorbo` | `born_gooward` | Wanders the park | pat, 1.6, 1.1 | bounce (5.45, 1.1) |
+| GOOWARD | `gorbo` | `born_gooward` | Wanders round his Gallery | pat, 1.6, 1.1 | bounce (5.45, 1.1) |
 | GEMTOE | `p_gemtoe` | `born_gemtoe` | Wanders the park | scatter, 2.4, 1 | twirl (2.7, 1) |
 | MONTGUMMERY | `w_mont` | `pk_mont` | Wanders the dance floor | pat, 1.9, 1 | His own: the robot |
 | ETCHER | `p_etcher` | `born_etcher` | Wanders the dance floor | pat, 2.1, 0.9 | His own: the tentacle dance |
@@ -103,7 +103,8 @@ Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)})`. ZOLL
   that flutter.
 - **Voice:** only ever "Gomp".
 - **Blossom:** he shoots goo at the player, as MAMA GORBO does.
-- **Role:** wanders the park and meets MAMA GORBO.
+- **Role:** runs the Art Gallery: wanders round GOOWARD'S GALLERY (in front and to either side, never inside or
+  behind it), stops to look at it, and meets MAMA GORBO.
 
 ### GEMTOE
 

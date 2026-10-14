@@ -16,7 +16,8 @@ module.exports = async (p) => {
       const p = h.group.position, id = h.id, a = h.def.at, FL = ['p_etcher', 'p_glyph', 'w_mont'];
       if (FL.includes(id)) return JGP.onDance(p.x, p.z, 0.05);
       if (id === 'gratelet') return Math.hypot(p.x - ot.x, p.z - ot.z) < 9;
-      if (id === 'p_gemtoe' || id === 'p_mamagorbo' || id === 'gorbo') return JGP.roamFree(p.x, p.z, 0.25);
+      if (id === 'p_gemtoe' || id === 'p_mamagorbo') return JGP.roamFree(p.x, p.z, 0.25);
+      if (id === 'gorbo') return Math.hypot(p.x - 31, p.z - 14.5) < 12 && JGP.roamFree(p.x, p.z, 0.25);
       if (id === 'frog') return Math.abs(p.x - JGP.barSpot(0)[0]) < 0.8 && Math.abs(p.z) < 8.5;
       return Math.hypot(p.x - a[0], p.z - a[1]) < 1.2;
     };

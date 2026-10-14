@@ -10,7 +10,7 @@ game's own text, exactly as written.
 
 ## Contents
 
-**[1. The world](#1-the-world)**: [Setting](#11-setting) · [Greeblis Park](#12-greeblis-park) · [The Portal and the Summoning Stone](#13-the-portal-and-the-summoning-stone) · [The four kiosks](#14-the-four-kiosks) · [The Juice Bar, the dance floor and the phone booth](#15-the-juice-bar-the-dance-floor-and-the-phone-booth) · [The church](#16-the-church) · [The town](#17-the-town) · [The eras and the Ancients](#18-the-eras-and-the-ancients) · [The Originator, the Traveler, the Sphinx and the faith](#19-the-originator-the-traveler-the-sphinx-and-the-faith) · [Factions and forces](#110-factions-and-forces) · [Motifs](#111-motifs) · [The Ancient Artifacts and the Ancient Gem](#112-the-ancient-artifacts-and-the-ancient-gem) · [Objects and items](#113-objects-and-items) · [The Garden Event and the legend of Backpacka](#114-the-garden-event-and-the-legend-of-backpacka) · [Written things](#115-written-things) · [Canon facts (fixed)](#116-canon-facts-fixed) · [Running jokes](#117-running-jokes)
+**[1. The world](#1-the-world)**: [Setting](#11-setting) · [Greeblis Park](#12-greeblis-park) · [The Portal and the Summoning Stone](#13-the-portal-and-the-summoning-stone) · [The five kiosks](#14-the-five-kiosks) · [The Juice Bar, the dance floor and the phone booth](#15-the-juice-bar-the-dance-floor-and-the-phone-booth) · [The church](#16-the-church) · [The town](#17-the-town) · [The eras and the Ancients](#18-the-eras-and-the-ancients) · [The Originator, the Traveler, the Sphinx and the faith](#19-the-originator-the-traveler-the-sphinx-and-the-faith) · [Factions and forces](#110-factions-and-forces) · [Motifs](#111-motifs) · [The Ancient Artifacts and the Ancient Gem](#112-the-ancient-artifacts-and-the-ancient-gem) · [Objects and items](#113-objects-and-items) · [The Garden Event and the legend of Backpacka](#114-the-garden-event-and-the-legend-of-backpacka) · [Written things](#115-written-things) · [Canon facts (fixed)](#116-canon-facts-fixed) · [Running jokes](#117-running-jokes)
 
 **[2. The cast](#2-the-cast)**: [SPARKAKUS](#21-sparkakus) · [MAMA GORBO](#22-mama-gorbo) · [GOOWARD](#23-gooward) · [GEMTOE](#24-gemtoe) · [MONTGUMMERY ("Mont")](#25-montgummery-mont) · [ETCHER](#26-etcher) · [GLYPH](#27-glyph) · [KING DINO](#28-king-dino) · [FORTIZMO](#29-fortizmo) · [SOMLET](#210-somlet) · [MUSHROOM](#211-mushroom) · [ZOLLOD](#212-zollod) · [ANOMALEE](#213-anomalee) · [HENNRICK](#214-hennrick) · [NEXTESSA](#215-nextessa) · [BACKPACKA](#216-backpacka) · [THE ANCIENT](#217-the-ancient) · [The birds](#218-the-birds) · [The player](#219-the-player) · [Relationships](#220-relationships)
 
@@ -56,7 +56,8 @@ several pages of the dialogue box, the pages are joined with a space.
   - MUSHROOM is the town's sheriff;
   - ZOLLOD runs Garden Supplies and the grocer's;
   - MONTGUMMERY runs the town's video store;
-  - MAMA GORBO and GOOWARD run the town's Mistergummery's;
+  - MAMA GORBO runs the town's Mistergummery's;
+  - GOOWARD runs the town's Art Gallery, GOOWARD'S GALLERY in the park;
   - KING DINO and FORTIZMO are famous jazz musicians.
 - **The tone** is gentle, dry and absurd: ancient relics fixed with school glue, a sheriff who takes bribes in
   flowers, a monster who rewinds a tape before eating it.
@@ -75,7 +76,7 @@ The park is the play area: a mowed green inside an iron fence, crossed by walks,
 | **The Portal** | The gateway between eras (1.3). HENNRICK strolls round it. |
 | **The Juice Bar and dance floor** | FORTIZMO's open-air bar on the west side, its purple dance floor, and KING DINO's drum kit (1.5). |
 | **The phone booth** | The way to call NEXTESSA's pizza shop (1.5). |
-| **The four kiosks** | The LIBRARY, the POST OFFICE, the SHERIFF'S and GARDEN SUPPLIES (1.4). |
+| **The five kiosks** | The LIBRARY, the POST OFFICE, the SHERIFF'S, GARDEN SUPPLIES and GOOWARD'S GALLERY (1.4). |
 | **The gazebo** | A white octagonal gazebo on a low board deck, with railings, a green shingle roof, a small cupola and a gold ball on top. |
 | **The church** | A Gothic Revival church at the end of the south walk, with its windows and its secret room (1.6). |
 | **Furnishings** | ZOLLOD's hanging baskets on four posts (an iron arm, a chain, a coir basket and a dome of pinks); a hydrant and a blue mailbox by the south walk; SOMLET's mail cart at the kerb opposite the Post Office, its sack slumped, two letters dropped beside it; SPARKAKUS's paw prints set in the north sidewalk by the Library's corner, a lope heading east. |
@@ -110,10 +111,12 @@ The park is the play area: a mowed green inside an iron fence, crossed by walks,
   common milkweed (a round umbel of dusky mauve flowers) and zebra mallow (pale pink flowers streaked with dark purple
   veins). The same five make the town seal (1.7).
 
-### 1.4 The four kiosks
+### 1.4 The five kiosks
 
-All four share one frame: a plank deck, a board-and-batten back wall, half side walls, white posts, a tin roof with
-the kiosk's sign standing on its ridge, and a counter with crates either side.
+The Post Office, the Sheriff's, Garden Supplies and the Gallery share one frame: a plank deck, a board-and-batten back
+wall, half side walls, white posts, a tin roof with the kiosk's sign standing on its ridge, and a counter with crates
+either side (the Gallery has no counter). The Library is an open reading ground instead. No creature walks into a
+kiosk or gets stuck in one; only its keeper stands inside (GOOWARD, who keeps the Gallery, stays outside it).
 
 | Kiosk | Keeper | What it shows |
 | --- | --- | --- |
@@ -121,6 +124,7 @@ the kiosk's sign standing on its ridge, and a counter with crates either side.
 | **POST OFFICE** (north-east) | SOMLET | Navy walls and a red roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, tall stacks leaning on its sides, parcels half buried in it and an avalanche of letters fanning out round its foot. Some of the buried parcels carry readable labels. |
 | **SHERIFF'S** (north-east) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts, and **the Consortium's flag** flying over it all from a pole behind the sign: navy with a gold hem, a red toadstool with white spots on a cream stem on each face. A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the back wall over the wanted posters (1.10). Its roof stands a metre higher than the others' and its desk is raised, so that the Sheriff looks down on his visitors. |
 | **GARDEN SUPPLIES** (south-east) | ZOLLOD | Sage walls and a terracotta roof, with plants everywhere: potted shrubs, flowers, ferns, succulents and little trees, seedling trays, a sunflower tray, hanging baskets, bags of soil and compost, a wheelbarrow of flowers out front, a rake and a shovel against the side wall. Among them grow **strange curiosities** drawn like an old herbal manuscript in faded inks: bare bulbous roots as big as the plant, striped cup blooms, an "eye of a flower" (a ringed blue eye on legs of forked roots), trumpet clusters on a knot of roots, a scaled bud on a hand of fat roots, a striped lantern bloom on an onion with a beard of roots. A parchment card on the counter is written in the manuscript's unread script. The town's one shop (1.13). |
+| **GOOWARD'S GALLERY** (east, between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No desk: the floor is open. One big **empty canvas** in a light wood frame hangs on the back wall, waiting to be filled. On the lawn in front, either side of the walk up to it, two paintings stand on wooden easels, turned a little toward whoever comes up the walk: a landscape and a still life. GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
 
 ### 1.5 The Juice Bar, the dance floor and the phone booth
 
@@ -194,7 +198,7 @@ strands of dry grass and damp stains lie about. **THE ANCIENT** lies across the 
 
 | Building | Whose | Emblem and meaning |
 | --- | --- | --- |
-| **Mistergummery's** | MAMA GORBO and GOOWARD run it | The town's branch of Mistergummery's, a fast-food franchise like McDonald's on Earth, founded by MONTGUMMERY's father: a burger drive-in of red and cream tiles under a red mansard roof, chrome-framed wraparound windows, big teal "M" arches on a pylon, a drive-thru lane with a **MENU** board and speaker, umbrella tables, a little red slide out back. Trimmed in MONTGUMMERY's teal (his father's chain) where a burger chain would have its yellow. |
+| **Mistergummery's** | MAMA GORBO runs it | The town's branch of Mistergummery's, a fast-food franchise like McDonald's on Earth, founded by MONTGUMMERY's father: a burger drive-in of red and cream tiles under a red mansard roof, chrome-framed wraparound windows, big teal "M" arches on a pylon, a drive-thru lane with a **MENU** board and speaker, umbrella tables, a little red slide out back. Trimmed in MONTGUMMERY's teal (his father's chain) where a burger chain would have its yellow. |
 | **The gem exchange** | GEMTOE | Crimson brick; her amethysts clustered on the crest and one gem hung over the walk; iron bars over the display windows (the one store that keeps gems); her trader's scales on the band, an amethyst on the high pan outweighing coins spilling off the low one: Avarice. |
 | **The barber's** | — | A barber's pole, the trade sign everybody reads. |
 | **The picture house** | KING DINO, billed | A marquee of bulbs carrying tonight's bill, KING DINO (his crown, plume and drumsticks, no words); gold stars up the corner; a premiere searchlight on the roof. |
@@ -526,7 +530,7 @@ MONTGUMMERY's tape "‘Flint Knapping for Beginners’" (a joke only).
 
 **Signs**
 - The kiosk signs on their roof ridges, in each kiosk's ink on cream: **LIBRARY** (on a banner on posts), **POST
-  OFFICE**, **SHERIFF'S**, **GARDEN SUPPLIES**.
+  OFFICE**, **SHERIFF'S**, **GARDEN SUPPLIES**, **GOOWARD'S GALLERY**.
 - **JUICE BAR**; **TELEPHONE** on the phone booth; **KING / DINO** on his bass drum head.
 - **FIRST BANK OF GREEBLIS**: dark brown letters on a cream band over the bank's columns.
 - **Mistergummery's**: white on red, edged in MONTGUMMERY's teal, on the drive-in's roof, front and back; **MENU** on
@@ -586,6 +590,7 @@ horizontal like paper!", and its "The beat won't let you go!"; the shop's "Welco
 - **THE ANCIENT** never moves, dances or plants; it is reached only inside the secret room behind the red X; nothing
   outside the park comes from it. Its Garden Event line is "Hello".
 - **MAMA GORBO and GOOWARD** are married; they met over a spilled goo shake.
+- **MAMA GORBO runs Mistergummery's** on her own; **GOOWARD runs the Art Gallery**, GOOWARD'S GALLERY in the park.
 - **KING DINO**'s drums "have been in the family since the Cretaceous"; he stamps his coins himself and is working
   off his bar tab. He never leaves his drums.
 - The Juice Bar's carrot juice "on the rocks" is just carrots and ice.
@@ -645,8 +650,8 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 | Creature | Kind | Role | Post | Tag colour | Messenger |
 | --- | --- | --- | --- | --- | --- |
 | **SPARKAKUS** | Organic | Runs the town's Library | The LIBRARY | orange | a card |
-| **MAMA GORBO** | Organic | Runs Mistergummery's with GOOWARD | Roams the park | `#ff9f5c` | goo |
-| **GOOWARD** | Organic | Her husband; runs Mistergummery's with her | Roams the park | `#30b4e4` | goo |
+| **MAMA GORBO** | Organic | Runs Mistergummery's | Roams the park | `#ff9f5c` | goo |
+| **GOOWARD** | Organic | Her husband; runs the Art Gallery | Round GOOWARD'S GALLERY | `#30b4e4` | goo |
 | **GEMTOE** | Organic | Gem trader; inventor of Avarice | Roams the park | `#c870d0` | a gem |
 | **MONTGUMMERY** | Synthetic | Runs the video store; a Dancer (the robot) | The dance floor | `#55b8c6` | a coin |
 | **ETCHER** | Synthetic | A Dancer (the tentacle dance); data preservation | The dance floor | `#9ee09a` | a card |
@@ -694,7 +699,7 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.2 MAMA GORBO
 
-- **Kind:** an Organic; she and GOOWARD run the town's Mistergummery's (1.7).
+- **Kind:** an Organic; she runs the town's Mistergummery's (1.7). Her husband GOOWARD runs the Art Gallery.
 - **Look:** a round, glossy goo drop in bright peach, her big head melting into a shiny puddle of a foot, with runs of
   paler goo dripping and splatting down her sides. **Signature:** two octagon port eyes (magenta rims, purple lenses;
   one big and high, one small and low) that blink together; a thick lime goo tail curling round her front; streams of
@@ -711,8 +716,8 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 - **Blossom:** shoots her colourful goo at the player.
 - **Dance and planting:** **jelly**; plants with a **pat**.
 - **Lines:**
-  - Talk: "Hello dear! I’m so excited to start gardening." / "Please take a coupon for our famous goo burger. The
-    hubby and I run the local fast food joint." / "What a beautiful day in Greeblis Park!" / "I hear there is a book
+  - Talk: "Hello dear! I’m so excited to start gardening." / "Please take a coupon for my famous goo burger. I run
+    the local fast food joint, and the hubby runs the Art Gallery now." / "What a beautiful day in Greeblis Park!" / "I hear there is a book
     that can help anyone overcome shyness." / flavour: "The hubby and I met over a spilled goo shake. Love at first
     splat!"
   - Blossom: "Gooooooom!"
@@ -722,11 +727,13 @@ in the game's UI, and the speaker's tag takes the creature's colour. Full build 
 
 ### 2.3 GOOWARD
 
-- **Kind:** an Organic; he and MAMA GORBO run the town's Mistergummery's.
+- **Kind:** an Organic; he runs the town's Art Gallery, GOOWARD'S GALLERY in the park (1.4). MAMA GORBO runs
+  Mistergummery's.
 - **Look:** an egg-shaped jelly of fused bubbles, cyan above and peach below. **Signature:** white "+" eyes, cheek
   spots, wavy teal brows, gold leaf crests and a ribbon tongue; the goo family's purple octagon ports and float ring,
   with a little **AP** tag; crystal wings; pastel root tendrils spilling out underneath.
-- **Home and post:** roams the park; shares the Gorbos' house. His drips cross the north-east crosswalk in a goo
+- **Home and post:** wanders round his Gallery (in front of it and to either side, never inside or behind it),
+  stopping to look at it; shares the Gorbos' house. His drips cross the north-east crosswalk in a goo
   trail; his winged cone is on the ice cream parlour's band.
 - **Personality and voice:** says only "Gomp", in every shade of feeling; cheerful, eager, easily cowed.
 - **Relationships:** MAMA GORBO's husband. Mont understands him; ZOLLOD welcomes his goo for the soil; the Sheriff,
@@ -1639,7 +1646,8 @@ ANCIENT says "Hello".
 | Creature | Ground | Behaviour |
 | --- | --- | --- |
 | HENNRICK | Round the Portal | Strolls to spots 3.2–6 m from it (never in its doorway) every 4–10 s, and stops facing it |
-| GEMTOE, MAMA GORBO, GOOWARD | The open park | Roam 5–16 m at a time every 3–8 s, never onto the dance floor, keeping apart |
+| GEMTOE, MAMA GORBO | The open park | Roam 5–16 m at a time every 3–8 s, never onto the dance floor, keeping apart |
+| GOOWARD | Round GOOWARD'S GALLERY | Every 3–8 s wanders to a spot 6.6–10 m from the Gallery's middle, in front or to either side (never inside or behind it), at least 2.5 m off, and stops facing it |
 | ETCHER, GLYPH, MONTGUMMERY | The dance floor (12 × 38 m of 1.2 m tiles) | Roam 3–12 m at a time on the floor every 3–7 s, apart. They dance only in battles, at victory and at the Event |
 | FORTIZMO | Behind the Juice Bar's 18 m counter | Every 3–8 s walks at least 3 m along it, then faces the dance floor |
 | SPARKAKUS | His open-air Library | Browses before the bookcases every 4–10 s; greets the player with a "!" and a nod within 6 m |
@@ -1698,7 +1706,8 @@ ANCIENT says "Hello".
 - THE ANCIENT's scenes play only during a visit to it, and are seen only by a player inside the church.
 
 **MAMA GORBO and GOOWARD**
-- Every 20–40 s they seek each other, meet at a spot both can walk straight to, turn face to face and throw **four
+- Every 20–40 s they seek each other (MAMA GORBO comes over from the park; GOOWARD takes the spot by his Gallery
+  nearest her), meet at a spot both can walk straight to, turn face to face and throw **four
   volleys** of three goo balls, alternating, a ♥ rising over each catcher. Anything that takes either away calls it
   off; they try again 40 s later.
 
@@ -2080,6 +2089,7 @@ the south walk.
 | POST OFFICE | `#22325a` | navy `#33508f` / `#26407a` | red `#962a26` | Tidy in front (bundled letters, stuffed sorting cubbies, kraft parcels with twine, a blue collection box); behind it, the joke: a slumped mountain of envelopes over 3 m high with an avalanche round its foot |
 | SHERIFF'S | `#6a3a1a` | mushroom brown `#8a5a3a` / `#6e4628` (no battens) | toadstool red `#b82822` with white spots | Toadstools everywhere; a gold six-point star on the back wall; a lantern; wanted posters; MUSHROOM's raised desk |
 | GARDEN SUPPLIES | `#2f5a2a` | sage `#6f8f5a` / `#5a7a48` | terracotta `#a85c3a` | Plants everywhere: terracotta pots of shrubs, a cactus, little trees; seedling trays, soil bags, a teal wheelbarrow of blooms, a rake and shovel; and the curiosities (see Vegetation) |
+| GOOWARD'S GALLERY | `#3a2a5a` | cream `#e8e0cc` / `#d8cfb8` (no battens) | violet `#584284` | No desk; one big empty canvas `#f4f1e8` on the back wall; two easels of wood `#7a5232` on the lawn, each holding a gold-framed `#b8902e` painting (a landscape and a still life) |
 
 - **Wanted posters** are parchment (`#efe0b8`) with WANTED at the top and REWARD at the foot in dark brown serif,
   and a flat, simple drawing between; each tilted a little, none overlapping.

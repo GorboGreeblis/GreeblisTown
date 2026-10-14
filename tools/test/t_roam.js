@@ -1,4 +1,4 @@
-// The roamers: HENNRICK round the Portal, GEMTOE, MAMA GORBO and GOOWARD round the park, the three Dancers on
+// The roamers: HENNRICK round the Portal, GEMTOE and MAMA GORBO round the park, GOOWARD round his Gallery, the three Dancers on
 // the dance floor. Watches them for a while: where they go, that they never stand anywhere they should not
 // (outside the square, in a building, the garden, the pond, scenery) and never stay stuck; then has MAMA
 // GORBO and GOOWARD meet. Run with a small viewport (VW=320 VH=240).
@@ -21,11 +21,14 @@ module.exports = async (p) => {
       // (a roamer away on a visit, in a vignette or otherwise busy is allowed off its ground: it is walking to someone)
       ok || e.visiting || e.vig || e.busy || r.bad.length > 5 || r.bad.push(q.x.toFixed(1) + ',' + q.z.toFixed(1));
       id === 'gratelet' && (r.far = Math.max(r.far, Math.hypot(q.x - ot.x, q.z - ot.z)));
+      id === 'gorbo' && (r.far = Math.max(r.far, Math.hypot(q.x - 31, q.z - 14.5)));
+      // (no one ever stands in GOOWARD's Gallery)
+      { const G = F.buildings.find((B) => B.name === 'gallery'); G && F.inHull(G, q.x, q.z, 0) && (r.inGal = (r.inGal || 0) + 1); }
     }
     return Re.t - __t0;
   });
   for (let k = 0; k < 4000; k++) { await W(400); if ((await sample()) > secs) break; }
-  log(await p.evaluate(() => Object.entries(__R).map(([id, r]) => `${It.byId[id].def.name}: ${Object.keys(r.spots).length} spots, longest stuck ${r.maxStill.toFixed(1)} s, bad ${r.bad.length ? r.bad.join(' ') : 'none'}${id === 'gratelet' ? ', furthest from the Portal ' + r.far.toFixed(1) + ' m' : ''}`).join('\n')));
+  log(await p.evaluate(() => Object.entries(__R).map(([id, r]) => `${It.byId[id].def.name}: ${Object.keys(r.spots).length} spots, longest stuck ${r.maxStill.toFixed(1)} s, bad ${r.bad.length ? r.bad.join(' ') : 'none'}${id === 'gratelet' ? ', furthest from the Portal ' + r.far.toFixed(1) + ' m' : ''}${id === 'gorbo' ? ', furthest from his Gallery ' + r.far.toFixed(1) + ' m' : ''}${r.inGal ? ', IN THE GALLERY ' + r.inGal : ''}`).join('\n')));
   // the Gorbos meet
   await p.evaluate(() => { window.__hearts = 0; const u = Ut.above; Ut.above = function (e, s, c) { s === '♥' && (e.id === 'gorbo' || e.id === 'p_mamagorbo') && __hearts++; return u.apply(this, arguments); }; JGP.meetAt(Re.t); window.__t0 = Re.t; });
   let met = '';
@@ -69,7 +72,7 @@ module.exports = async (p) => {
   for (let k = 0; k < 4000; k++) { await W(400); if ((await p.evaluate(() => Re.t - __t0)) > trapS) break; }
   await p.evaluate(() => { window.__trapFn = () => {}; At.position.set(-2, 0, 30); window.__t0 = Re.t; });
   for (let k = 0; k < 4000; k++) { await W(400); if ((await p.evaluate(() => Re.t - __t0)) > 20) break; }
-  log(await p.evaluate(() => Object.entries(__S).map(([id, r]) => { const e = It.byId[id], q = e.group.position, floor = /^(p_etcher|p_glyph|w_mont)$/.test(id), ok = floor ? JGP.onDance(q.x, q.z, 0.05) : JGP.roamFree(q.x, q.z, 0.25);
+  log(await p.evaluate(() => Object.entries(__S).map(([id, r]) => { const e = It.byId[id], q = e.group.position, floor = /^(p_etcher|p_glyph|w_mont)$/.test(id), ok = floor ? JGP.onDance(q.x, q.z, 0.05) : JGP.roamFree(q.x, q.z, 0.25) && (id !== 'gorbo' || JGP.homeGround(e));
     return `trap: ${e.def.name}: blocked ${r.blocked} times, ${r.homes.size} spots, longest still on the way ${r.max.toFixed(1)} s, now ${ok ? 'somewhere fine' : 'SOMEWHERE BAD ' + q.x.toFixed(1) + ',' + q.z.toFixed(1)}`; }).join('\n')));
   log('err', await p.evaluate(() => Re.errors));
 };
