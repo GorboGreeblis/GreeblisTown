@@ -13625,10 +13625,19 @@ const JGP = (() => {
 			}
 		}
 		function fossilJaw(x, y) {
-			const pts = [[x - 50, y - 6], [x - 20, y - 12], [x + 20, y - 10], [x + 46, y - 2], [x + 40, y + 6], [x, y + 4], [x - 46, y + 6]];
-			poly(pts, "#d8ccb0"), poly(pts.map(([px, py]) => [px, py + 3]), "rgba(120,100,70,0.35)");
-			for (let k = 0; k < 12; k++) poly([[x - 40 + k * 7, y - 9], [x - 37 + k * 7, y - 18 - (k % 3) * 2], [x - 34 + k * 7, y - 9]], "#f0e8d4");
-			c.strokeStyle = "#ffd23a", c.lineWidth = 1.2, c.beginPath(), c.ellipse(x - 10, y - 26, 16, 4, -0.05, 0, TAU), c.stroke();
+			// the jaw as only its bite: a sagging arc of small pale teeth on a faint line of bone, half sunk in the stratum,
+			// a thin ring of gold over it
+			const P = [];
+			for (let k = 0; k <= 16; k++) {
+				const t = k / 16;
+				P.push([x - 52 + 104 * t, y - 4 + 12 * Math.sin(Math.PI * t) - 6 * t]);
+			}
+			curve(P, "rgba(216,204,176,0.45)", 2.2);
+			P.forEach(([px, py], k) => {
+				const h = 3 + (k % 3) * 2 + (k > 4 && k < 12 ? 1.5 : 0);
+				poly([[px - 2, py], [px, py - h], [px + 2, py]], "rgba(240,232,212,0.8)");
+			});
+			c.strokeStyle = "#ffd23a", (c.lineWidth = 1.2), c.beginPath(), c.ellipse(x - 10, y - 22, 16, 4, -0.05, 0, TAU), c.stroke();
 		}
 		function robedFigure(x, y, h) {
 			// a figure in a white robe with sandals, brown hair, the face a smooth oval of pale light; real folds, real weight
