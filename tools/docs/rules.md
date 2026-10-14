@@ -82,7 +82,14 @@ Rules for how changes are made, checked and recorded.
    through a pipe that prints at the end), big tasks are split into short steps that are each committed and pushed
    when done, and a task's plan and state are written down where the next session can pick them up. The logs are
    working files, a tool for finishing the task: they stay in the scratch folder, are never committed, and are
-   deleted once the task is finished. This holds for this game and every future Greeblis game.
+   deleted once the task is finished. The method, step by step:
+   - start the long run in the background, its log file named for the task in the scratch folder;
+   - while it runs, read the log to follow its progress; if the run fails or is cut off, read the log, fix the
+     cause, and resume from the last step it reached instead of starting over;
+   - when the run ends, read the whole log and act on what it shows (report the results, fix what failed);
+   - once the task is finished, delete its logs.
+
+   This holds for this game and every future Greeblis game.
 
 ## Locks and approvals
 
