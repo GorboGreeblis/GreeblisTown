@@ -1,332 +1,413 @@
 # Greeblis Town: Creatures
 
-Every creature in the game: how it is built, how it looks, how it moves and what it does. Every model here is final
-and locked; changing one needs the owner's approval first ([rules](rules.md#locks-and-approvals)). Animation
-changes on request are fine. The shared methods (builders, `born()`, planting and dancing, roaming, visits) are in
-[construction.md](construction.md); who each creature is in the world is in the [bible](bible.md#2-the-cast).
+This register is the engineering reference for every creature: its roster entry, builder and def fields, how it is
+spawned and wrapped, its behaviour states and flags, its quest hooks and its test hooks. Each creature's visual design
+is in [bible part 3](bible.md#3-creature-design), its style in [bible part 4](bible.md#4-creature-style) and its place
+in the world in [bible part 2](bible.md#2-the-cast). The shared methods (`born()`, the planting and dancing layer,
+roaming, home ground, routing, visits, vignettes) are specified once in [construction.md](construction.md); this file
+states only what is particular to each creature.
 
-Contents: [The cast](#the-cast) · [Residents](#residents) · [The Dancers](#the-dancers) ·
-[Visitors from other eras](#visitors-from-other-eras) · [Backpacka](#backpacka) · [The Ancient](#the-ancient) ·
-[The park's birds](#the-parks-birds) · [The player's avatar](#the-players-avatar)
+The builders of SPARKAKUS, MAMA GORBO, GOOWARD, GEMTOE, MONTGUMMERY, ETCHER, GLYPH, KING DINO, FORTIZMO, SOMLET,
+MUSHROOM, ZOLLOD, ANOMALEE, HENNRICK, NEXTESSA and THE ANCIENT are marked final in the code: these models are locked,
+so parts, proportions and palette change only with the owner's approval ([rules](rules.md#locks-and-approvals));
+animation changes on request are allowed. BACKPACKA, the two birds and the avatar are
+marked final in the code and locked as well.
+
+Contents: [The cast](#the-cast) · [Placement and movement](#placement-and-movement) ·
+[Event and social roles](#event-and-social-roles) · [Shared wiring](#shared-wiring) ·
+[Per-creature wiring](#per-creature-wiring) · [The birds](#the-birds) · [The player's avatar](#the-players-avatar)
 
 ## The cast
 
-Planting and dance speeds are in radians per second of game time: 5.45 is one bob per beat of KING DINO's 104 BPM,
-and 2.7 is half time. A move's size scales its whole-body offset.
+This table lists each creature's identity in code and the def fields that size and label it.
 
-| Creature | Id | Builder | Home | Planting (move, speed, size) | Dance |
+| Creature | Id | Spawned as | Builder | Tag `color` | `bodyR` (m) | `talkR` (m) | `modelScale` | Tag height (m) | Code |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SPARKAKUS | `keeper` (stand-in `st.ent`) | Library worker `st`, not in `It` | `born_sparkakus` (`BORN.sparkakus`) | none (script `i`) | fixed body 0.9 | `i.greetR` 6 | 1.16 (Library group) | 3.1 (`st.ent.height`); model 2.85 × 1.16 = 3.31 | SP |
+| MAMA GORBO | `p_mamagorbo` | `npc` | `born_mamagorbo` | `#ff9f5c` | 1.1 | 3.8 | none | 2.95 | MA |
+| GOOWARD | `gorbo` | `companion` (engine def `e.gorbo`) | `born_gooward` | `#30b4e4` | 1.2 | 3.4 (default) | none | 3.2 | GW |
+| GEMTOE | `p_gemtoe` | `npc` | `born_gemtoe` | `#c870d0` | 1.15 | 3.8 | 1.06 | 2.54 | GT |
+| MONTGUMMERY | `w_mont` | `npc` | `pk_mont` (`PK_MONT`) | `#55b8c6` | 0.86 | 3.8 | 0.9 | 2.97 | MG |
+| ETCHER | `p_etcher` | `npc` | `born_etcher` | `#9ee09a` | 1.15 | 3.6 | 1.16 | 3.02 | ET |
+| GLYPH | `p_glyph` | `npc` | `born_glyph` | `#e88a8a` | 1.1 | 3.6 | 1.11 | 2.78 | GL |
+| KING DINO | `m_kingdino` | `npc` | `born_kingdino` | `#e8c020` | 1.1 | 4.2 | none | 3.1 | KD |
+| FORTIZMO | `frog` | `npc` | `fortizmoPick` (wraps `pk_fortizmo`) | `#e8742a` | 0.95 | 4.2 | 0.78 | 2.93 | FZ |
+| SOMLET | `m_somlet` | `npc` | `born_somlet` | `#ecd8b6` | 1 | 3.4 (default) | none | 3.0 | SM |
+| MUSHROOM | `drifter` | `npc` | `born_mushroom` | `#e8862a` | 0.8 | 4.2 | none | 2.0 | MU |
+| ZOLLOD | none; `def.__type` `"cutebex"` | `creature` (`Mo`) | `born_zollod` | `#3cbe94` | 0.9 | 4.2 | none | 2.6 | ZL |
+| ANOMALEE | `blinker` | `npc` | `anomaleePeg` (wraps `pk_anomalee`) | `#2fd4e6` | 0.95 | 4.2 | 0.95 | 3.14 | AN |
+| HENNRICK | `gratelet` | `npc` | `pk_hennrick` | `#c85ac8` | 1.25 | 3.4 (default) | 0.88 | 2.99 | HN |
+| NEXTESSA | none (`id: null`) | `courier` | `pk_nextessa` | `#ef7536` | 0.92 | none | 1 | 3.5 | none |
+| BACKPACKA | none | not an entity (`BP`) | `BP` (`make()`) | none | none | none | none | none | none |
+| THE ANCIENT | `slug` (stand-in `JGP.slug.ent`) | not an entity; station `slug` | the church builder | `#9a7a5a` (dialogue) | 1.1 (stand-in) | station r 3.2, inside the room only | none | 0.7 (stand-in) | SL |
+
+- **Source of the fields:** `ROWS` (start of the game layer) holds `[id, NAME, builder, def, spot]`; `applyCast`
+  merges each row over the engine defs (`e`, `o`, `n`), adding `name`, `builder`, `at`,
+  `pattern: ["post", {face, y}]`, `stationary: true` and the creature's `SCRIPT` entry. SPARKAKUS, NEXTESSA,
+  BACKPACKA and THE ANCIENT are not in `ROWS`. See [construction.md](construction.md#placement).
+- **Spawn kinds:** ids in `e` spawn as `companion`, ids in `o` (including every row added by `applyCast`) as `npc`,
+  and `n` (`cutebex` only) through `Mo()` as `creature`, which sets `def.__type` and no `id`. Code must find ZOLLOD by
+  `def.__type` or `Xt(ent)`, never `It.byId`.
+- **Defaults:** `bodyR` 0.8 m and `talkR` `t.talkR` (3.4 m) when a def omits them.
+- **`modelScale`:** the spawner moves the model into a scaled wrapper group and multiplies the builder's `height` by
+  it. Tag height is that product: the height used for the name tag and the talk interface.
+- **`color`:** the name tag and dialogue colour.
+- **Code:** the two-letter vignette code (`NAMES`, `CODE`); see [construction.md](construction.md#vignettes).
+
+## Placement and movement
+
+This table gives each creature's start spot, facing, exit route, movement and home ground.
+
+| Creature | Spot | Faces | `via` | Movement | Home ground (`JGP.homeGround`) |
 | --- | --- | --- | --- | --- | --- |
-| SPARKAKUS | `keeper` | `BORN.sparkakus`, through the Library's worker `st` | The Library, browsing | pat, 1.6, 1 | funk (5.45, 1), with his own moves in his model |
-| MAMA GORBO | `p_mamagorbo` | `born_mamagorbo` | Wanders the park | pat, 1.3, 1.2 | jelly (5.45, 1) |
-| GOOWARD | `gorbo` | `born_gooward` | Wanders round his Gallery | pat, 1.6, 1.1 | bounce (5.45, 1.1) |
-| GEMTOE | `p_gemtoe` | `born_gemtoe` | Wanders the park | scatter, 2.4, 1 | twirl (2.7, 1) |
-| MONTGUMMERY | `w_mont` | `pk_mont` | Wanders the dance floor | pat, 1.9, 1 | His own: the robot |
-| ETCHER | `p_etcher` | `born_etcher` | Wanders the dance floor | pat, 2.1, 0.9 | His own: the tentacle dance |
-| GLYPH | `p_glyph` | `born_glyph` | Wanders the dance floor | dig, 2.3, 1 | His own: the macarena |
-| HENNRICK | `gratelet` | `pk_hennrick` | Strolls round the Portal | pat, 1.4, 1.2 | His own: a side-to-side roll |
-| KING DINO | `m_kingdino` | `born_kingdino` | His drum kit behind the dance floor | Stays at his drums | Stays at his drums |
-| FORTIZMO | `frog` | `fortizmoPick` (wraps `pk_fortizmo`) | Behind the Juice Bar's counter | Plays her horn | Plays her horn |
-| SOMLET | `m_somlet` | `born_somlet` | Asleep before the Post Office | Stays asleep at home | Stays asleep at home |
-| MUSHROOM | `drifter` | `born_mushroom` | On the Sheriff's desk | pat, 1.8, 1 | shimmy (5.45, 1) |
-| ZOLLOD | `cutebex` | `born_zollod` | Behind the Garden Supplies counter | dig, 3, 0.8 | groove (5.45, 0.9) |
-| ANOMALEE | `blinker` | `anomaleePeg` (wraps `pk_anomalee`) | Before the church, gazing up | dig, 1.5, 1 (eats pizza instead once Snacks is done) | stomp (5.45, 1) |
-| NEXTESSA | `t_nextessa` | `pk_nextessa` | Only through the Portal, with a pizza | Never at the Event | Never at the Event |
-| BACKPACKA | none | `BP`, made by the Garden Event | Only at the Garden Event | The Event's climax | The Event's climax |
-| THE ANCIENT | `slug` | Built by the church | The church's secret room | Never | Never |
+| SPARKAKUS | Library frame (0, −0.45); Library at `KIOSK_AT.K.shop` (−24.75, −24.75) | Library frame | Out by the Library front (`JGP.libFront()`) | Browses the floor band (local x −5.3 to 5.3, z −2.15 to 0.6), 0.8 m clear of every bookcase | The Library (worker `st`; not tested by `homeGround`) |
+| MAMA GORBO | (34, 28.4) | −π/2 rad | none | `JGP.parkRoam`, wait 3 + 5·rand s | Any `roamFree` ground |
+| GOOWARD | (24.2, 14.9) | −π/2 rad | none | `JGP.galleryRoam`, wait 3 + 5·rand s | Within 12 m of `KIOSK_AT.K.gallery` (31, 14.5), on `roamFree` ground |
+| GEMTOE | (34, 3) | −π/2 rad | none | `JGP.parkRoam`, wait 3 + 5·rand s | Any `roamFree` ground |
+| MONTGUMMERY | `JGP.floorSpot(2)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
+| ETCHER | `JGP.floorSpot(0)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
+| GLYPH | `JGP.floorSpot(1)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
+| KING DINO | (−36.35, 19.2) | π/2 rad | none | Post only | Within 1.2 m of `def.at` |
+| FORTIZMO | `JGP.barSpot(-3)` | π/2 rad | `JGP.barVia()`: three points at z 1.7 through the counter gap | Aisle patrol (see [FORTIZMO](#fortizmo)) | Within 0.8 m of the aisle line, \|z\| < 8.5 |
+| SOMLET | `KIOSK_AT.at("post", 0, 3.9)` | `KIOSK_AT.K.post.ry` | none | Post only | Within 1.2 m of `def.at` |
+| MUSHROOM | `"kiosk-desk:sheriff"` (local (0, 0.72)), `standY` 1.545 | `KIOSK_AT.K.sheriff.ry` | `"kiosk-front:sheriff"`: local (0, 2.0), (0, 3.4) | Post only | Within 1.2 m of `def.at` |
+| ZOLLOD | `"kiosk:garden"` (local (0, −0.45)) | `KIOSK_AT.K.garden.ry` | `"kiosk:garden"`: local (0, −1.75), (2.4, −1.75), (2.4, 1.85), (2.4, 3.4) | Post only | Within 1.2 m of `def.at` |
+| ANOMALEE | `CHURCH_AT.at(CHURCH_AT.sFront - 3.2, 1.8)` | Toward `CHURCH_AT.tower` | none | Post only | Within 1.2 m of `def.at` |
+| HENNRICK | `JGP.portalSpot()` | Toward the Portal (`ot`) | none | `JGP.portalRoam`, wait 4 + 6·rand s | Within 9 m of the Portal |
+| NEXTESSA | Spawned beyond the Portal on a phone order | Toward the player | none | Courier state machine (see [NEXTESSA](#nextessa)) | none |
+| BACKPACKA | Event only | Scripted | none | Timeline `BP.D` | none |
+| THE ANCIENT | Church room frame (0.1, −11.6) | Fixed | none | Never moves | none |
 
-Every born creature returns `born(g, {height, lids, step(t, dt, tk, wk)})`. ZOLLOD has no `id`, only
-`def.__type` `"cutebex"`; code finds him by that.
+- Local coordinates are in the kiosk's own frame (local +z faces the customer); see
+  [construction.md](construction.md#placement) for `KIOSK_AT`.
+- Pickups never spawn within 2.4 m of a posted creature's spot; the park roamers, the Dancers and HENNRICK are exempt,
+  their ground being kept clear as a whole (the dance floor; 7.4 m round the Portal).
+- Roaming, settling, `JGP.roamEscape` and the 0.5 s home guard are in
+  [construction.md](construction.md#posts-patrols-and-roamers) and [Home ground](construction.md#home-ground).
 
-## Residents
+## Event and social roles
 
-### SPARKAKUS: the librarian
+This table gives each creature's planting move, dance, Garden Event role and part in visits.
 
-- **Build:** standing on two legs, at 1.16 scale (3.13 m tall).
-- **Body:** a royal-blue wolf painted all over like an alebrije (winding vines, little flowers and dots in gold,
-  green, magenta, orange and teal), with orange paws and socks, black claws, and a fluffy cream ruff down his throat
-  and chest.
-- **Face:** tall ears lined in purple with two little purple horn nubs, yellow eyes, a glossy black nose and a
-  closed mouth line. His ears twitch now and then.
-- **Signature:** yellow daffodils on his left shoulder; a dark feather fin between his shoulders; a collar with an
-  orange APR coin; red sleeve garters; a long tail with a gold star at its tip, trailing a glowing mist (puffs that
-  rise and swirl out of the tip for two seconds each, pink fading through cyan).
-- **Animation:** he breathes, his tail sways and his arms move slowly; his head turns to greet the player; he talks
-  while his dialogue is open.
-- **Walk** (the owner asked for more articulation): his body rolls over onto the leg he stands on, turns a little
-  with his hips and leans into the walk; it sinks as his legs spread, so a foot stays on the ground. His arms swing
-  against his legs, the elbow folding more on the forward swing and the paw trailing at the wrist; the arms roll
-  out a little as they pass his sides; his ears flop back on each step; his tail bounces and swings with his hips.
-- **Dance, funk** (the owner asked for funky): his move wrapper bobs on every beat, twists his hips over two, leans
-  side to side, and on the last two beats of every eight spins with a hop. His model, on the same beat, pumps his
-  paws up to ear height and back to his chest on alternate beats (out to the sides, clear of his ears and muzzle),
-  steps in place (a foot only ever rises), flops his ears and whips his tail.
-- **Role:** stands on the Library's rug and browses the open floor when nobody needs him, keeping clear of every
-  bookcase. He gives the Ancient Artifacts quest; his Talk follows how many the player has. With all three, the light
-  bulb comes on over him wherever he is and the town dims; he glues the three pieces together with a bottle of
-  school glue in the air before him, gives his speech about the Eye of the Great Sphinx, and the Ancient Gem flies
-  to the player.
-- **Blossom:** at his place in the Library he drops to all fours, runs a lap of the Library floor, comes back,
-  stands and apologises. Out on a visit, walking home from one or with a visitor, he takes it with a line of his own
-  and no lap ("A Blossom! …I must resist the urge to run."), as his lap belongs to the Library floor.
-- **At the Event:** he plants (only when Seeds are in) at a spot of his own inside the garden, grows a flower there
-  like every planter, and is embarrassed about digging.
+| Creature | Planting (move, rad/s, size) | Dance (move, rad/s, size) | Event role | Visits |
+| --- | --- | --- | --- | --- |
+| SPARKAKUS | pat, 1.6, 1 | funk, 5.45, 1, plus his model's own moves (`st.dancing`) | Library planter (only with Seeds) | Visits and hosts through `st.ent` |
+| MAMA GORBO | pat, 1.3, 1.2 | jelly, 5.45, 1 | Planter | Visits and hosts; Gorbo meetings |
+| GOOWARD | pat, 1.6, 1.1 | bounce, 5.45, 1.1 | Planter | Visits and hosts; Gorbo meetings |
+| GEMTOE | scatter, 2.4, 1 | twirl, 2.7, 1 | Planter | Visits and hosts |
+| MONTGUMMERY | pat, 1.9, 1 | Built-in robot (`OWN_DANCE`) | Planter | Visits and hosts |
+| ETCHER | pat, 2.1, 0.9 | Built-in tentacle dance (`OWN_DANCE`) | Planter | Visits and hosts |
+| GLYPH | dig, 2.3, 1 | Built-in macarena (`OWN_DANCE`) | Planter | Visits and hosts |
+| KING DINO | none | none | `AT_POST` (drums) | Host only (`STAYS`) |
+| FORTIZMO | none | none | `NO_PLANT`; plays the horn | Visits and hosts by her `via` |
+| SOMLET | none | none | `AT_POST` (asleep) | Host only (`STAYS`) |
+| MUSHROOM | pat, 1.8, 1 | shimmy, 5.45, 1 | Planter | Visits and hosts; jumps off the desk first |
+| ZOLLOD | dig, 3, 0.8 | groove, 5.45, 0.9 | Planter | Only once `Kt.shyFree`; counts half |
+| ANOMALEE | dig, 1.5, 1; eat, 2.6, 1 once `Kt.rewards.snacks` | stomp, 5.45, 1 | Planter; eats pizza once Snacks is complete | Visits and hosts |
+| HENNRICK | pat, 1.4, 1.2 | Built-in side-to-side roll (`OWN_DANCE`) | Planter | Visits and hosts |
+| NEXTESSA | none | none | Absent | None |
+| BACKPACKA | none | none | The climax | None |
+| THE ANCIENT | none | none | Unchanged | Host only (`STAYS`), in one round in eight |
+
+- Speeds are in rad/s of game time: 5.45 rad/s is one bob per beat at KING DINO's 104 BPM, 2.7 rad/s half time; size
+  scales the whole-body offset. Tables `MOVES`, `DANCES` and `OWN_DANCE`; unlisted keys default to dig, 1.8, 1 and
+  bounce, 5.45, 1 ([construction.md](construction.md#planting-and-dancing-layer)).
+- Event roles: `NO_PLANT = ["frog"]`, `AT_POST = ["m_kingdino", "m_somlet"]` (`JGP.eventActor`); the courier is
+  skipped by the Event driver. See [construction.md](construction.md#roles).
+- Visits: `WHO` lists the fifteen participants; `STAYS = ["m_kingdino", "m_somlet", "slug"]` never leave, so a pair of
+  two `STAYS` members never meets. See [construction.md](construction.md#visits).
+
+## Shared wiring
+
+This section lists the wrappers and flags every creature shares, so the per-creature sections can name them.
+
+- **Wrappers:** the `modelScale` group is made at spawn; `userData.gW` (ground fit, `gFit`), `userData.tkW` (talk nod
+  and happy spin, `tkAnim`), `userData.gcW` (planting and dancing move, `wt()`, footprint lift `kt()`) and
+  `userData.vgW` (vignette turn and gesture) are each made on first use by moving the group's current children into
+  a new group, so their nesting follows the order of first use. A model's own `step` runs inside all of them.
+- **Ground fit:** `gFit` stands each creature on `JGP.groundAt`, at least 6 mm clear of its rest-pose lowest vertex;
+  it is skipped while the group is above 0.3 m (MUSHROOM on his desk).
+- **No shared idle layer:** `fo(e)` only holds each creature's outer group upright and at scale 1; no creature has
+  engine-level breathing, idle actions or idle emotes (the owner's rule). Each model idles in its own `step`.
+- **Per-frame flags** read by models and systems: `moving`, `busy`, `held`, `nearPlayer`, `gifting`, `giftAt`,
+  `eventTalkAt`, `spinAt`, `planting`, `concertDance`, `battleDance`, `battleMove`, `vig`, `visiting`, `hosting`,
+  `meeting`, `seek`, `goHome`, `gcNavHome`, `finaleSlot`, `watching`, `inside`.
+- **Talk turn:** a creature turns to the player while held, except a gazer (`def.gazeUp`, unless gifting or during the
+  Event) or SOMLET lying down (`lieK` > 0.5).
+- **Gifts:** `te(ent, gift)`; ids `gorbo` and `p_mamagorbo` fire `Ie()` (eight `Nt.gooArc` shots in the def's `goo`
+  palette); `drifter` sets `Kt.phone`. A Blossom to a Dancer (`Dbt.has`) starts a Dance battle after the thanks.
+- **Event Talk:** the menu offers the `SCRIPT` `campfire` line; `Vt()` silences any creature without one, and
+  FORTIZMO always.
+
+## Per-creature wiring
+
+This section gives, in cast order, each creature's spawn, states, quest hooks, test hooks and code constraints.
+
+### SPARKAKUS
+
+Design: [bible 3.2](bible.md#32-sparkakus).
+
+- **Spawn:** built inside the Library builder: group at Library local (0, −0.45), scale 1.16, `keepInFinale`; model
+  from `so.born_sparkakus`. A fixed body (r 0.9 m, `"shopkeeper"`) in `uo.fixed`; the Library station `stump` with a
+  6.6 m keep-clear zone. Script and lines in `i` (`ask`, `progress`, `finale`, `speech`, `gemGot`, `done`, `gift`,
+  `giftAway`, `event`).
+- **Worker `st`:** `st.join(o, face, path, sp)` sends him out (back to his place first, then by the front);
+  `st.leave(path, sp)` brings him home; `wayOut(x, z)` plans his own route, leaving the church by the X first if he is
+  inside; `st.there()`, `st.away()`, `st.atHome()`, `st.pos()`.
+- **Browsing:** with nobody needing him he walks to a new spot in the floor band every few seconds (first after
+  3 to 7 s), each straight walk 0.8 m clear of every bookcase, and faces the nearest bookcase on arrival.
+- **Blossom:** `st.romp(done)` runs his lap (on all fours, round an ellipse of radii 4.4 and 1.0 m centred at local
+  z −0.78) only when `st.atHome()`; otherwise `te()` answers with `i.giftAway` and no lap.
+- **Quest:** his Talk follows `Kt.artifacts`; with all three, `Bulb.start` and `ARTS.assemble` run the finale and
+  `Bulb.hold` blocks Talk, Blossom and visits until the Gem speech ends
+  ([construction.md](construction.md#ancient-artifacts-chain)).
+- **Visits and vignettes:** `st.ent` (id `keeper`, height 3.1 m) is a marker kept at his world position whose `vgW`
+  wraps his model; `stay()` and `browse()` pause and resume browsing; a host is released only by the visit that
+  claimed it (`h.hostQ`).
+- **Event:** he plants and dances only while `st.away() && me.active && bt.seeds`; his move key is `keeper`, and
+  `st.dancing` carries the dance weight into his model. `xo` speaks his `i.event` line in the garden while his
+  station is hidden.
 
 ### MAMA GORBO
 
-- **Build:** from her artwork, a bright, vibrant peach `#ff9f5c`, 2.95 m tall. Her shading darkens only a little in
-  folds and toward her base.
-- **Body:** a round, glossy goo drop: a big round head melts into a narrower base and a foot of goo spread over a
-  shiny translucent puddle. The foot rests on a flat sole 1.2 cm up, and her body lifts as it sways, so she never
-  sinks into the ground.
-- **Goo:** six runs of paler goo slide down her sides, each ending in a drop that swells, stretches, falls and
-  leaves a splat. Two wet highlights sit on her upper left.
-- **Eyes:** two octagon ports, a big one high and a small one low: a raised magenta rim round a domed glassy purple
-  lens with a glint. They blink together by squashing the lens to 6% height for 0.18 s every 2.5 to 6 s.
-- **Signature:** a thick lime goo tail with pale yellow highlights, from her upper left round the front of her foot
-  and up her right; three goo streams (cyan `#36d0e8`, magenta `#e8409e`, violet `#9a52e0`) welling out of her back
-  and right side and pooling beside her foot, each with a glob rolling down it and both ends closed, so the goo
-  never clips and no end can be seen into; yellow sparks; three red pin tags (AP, IP, wifi) and a purple wifi sign
-  orbiting at 1.78 m.
-- **Animation:** she breathes and jiggles like jelly, the puddle swelling with her; she sways, bobs when talked to,
-  and her eyes pulse slightly.
-- **Blossom:** she shoots her colourful goo at the player: eight arcs that splat on the view.
-- **Role:** wanders the park, and meets GOOWARD every 20 to 40 s to throw goo balls, with hearts. She also appears,
-  in the window's own cyan, in the church's two Garden windows.
+Design: [bible 3.3](bible.md#33-mama-gorbo).
+
+- **Spawn:** `ROWS.lineup`; def `goo` `["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]`.
+- **Roaming:** `JGP.parkRoam`: 5 to 16 m from where she stands, `roamFree`, a clear straight walk off the dance floor
+  (`offFloor`), clear of the other park roamers (`JGP.roamApart` over `PARK_ROAMERS`); faces the direction of travel.
+- **Gorbo meetings** (with GOOWARD): first due at 20 to 40 s of game time, then 20 to 40 s after each meeting. When
+  due, both set `seek` and their pickers take the spot nearest the other. If both are free and more than 16 m apart,
+  MAMA GORBO first takes a planned walk (`Be`) to open ground a few metres from GOOWARD, nearest her (retried at most
+  every 20 s, `farAt`), since he keeps to GOOWARD'S GALLERY. Once both are free a meeting spot pair is found between
+  them; both set `meeting`, walk there and face each other (deadline: distance + 30 s). Together they take four
+  throws in turn (two each way), each a volley of three goo balls (`Nt.gooArc`, count 3, in the thrower's `def.goo`)
+  with a "blorp", each followed by a pink heart over the catcher. Anything
+  that takes either away (busy, vignette, visit, host, the Event) calls it off for 40 s. `JGP.meetAt(t)` sets the
+  next meeting time.
+- **Gift:** `Ie()` from `te()` (id match).
+- **Script:** her fourth Talk line hints at OVERCOMING SHYNESS.
 
 ### GOOWARD
 
-- **Body:** an egg of fused bubbles, cyan above and peach below, with little bubbles caught in the jelly and goo
-  drips off the lower blobs; pastel root tendrils spill out underneath.
-- **Face:** white "+" eyes that squint instead of blinking, cheek spots, wavy teal brow lines, and a ribbon tongue
-  that waggles more when he talks.
-- **Signature:** gold leaf crests, purple octagon ports and a float ring (with a little AP tag), and crystal wings
-  that flutter.
-- **Voice:** only ever "Gomp".
-- **Blossom:** he shoots goo at the player, as MAMA GORBO does.
-- **Role:** runs the Art Gallery: wanders round GOOWARD'S GALLERY (in front and to either side, never inside or
-  behind it), stops to look at it, and meets MAMA GORBO.
+Design: [bible 3.4](bible.md#34-gooward).
+
+- **Spawn:** the engine's own def `e.gorbo` (kind `companion`), overlaid by `ROWS.final`; the engine def supplies his
+  `goo` palette (seven colours: `#37b3e8`, `#ff5fb0`, `#a8e830`, `#f2c72e`, `#8a3ffc`, `#35d0c5`, `#ff7a2f`).
+- **Roaming:** `JGP.galleryRoam`: 6.6 to 10 m from the Gallery's centre (`KIOSK_AT.K.gallery`, (31, 14.5)), within
+  ±110° of its facing (front or sides, never behind or inside), at least 2.5 m from where he stands, clear of the park
+  roamers, with a clear straight walk off the dance floor; he faces the Gallery on arrival.
+- **Home ground:** he must stay within 12 m of `KIOSK_AT.K.gallery` on `roamFree` ground; off it for 4 s idle (20 s
+  walking), the guard sends him home.
+- **Meetings:** as MAMA GORBO's partner; while seeking, his picker keeps to the Gallery ring and takes the spot
+  nearest her.
+- **Gift:** `Ie()` from `te()` (id match).
 
 ### GEMTOE
 
-- **Build:** from her artwork, in red, at 1.06 scale (as tall as MONTGUMMERY), a little smaller than life so her
-  wings stay inside the talk view.
-- **Body:** a crimson feathered dragon with a deep fur ruff over the chest and two pairs of great feathered wings.
-- **Face:** a bird's face on a feathered horned head with a mint crest: glowing magenta eyes with slit pupils under
-  heavy brows, and a hooked pale beak a little open (more as she talks).
-- **Signature:** four long scaly tails run along the ground and rise at their ends round her sparkling amethyst
-  crystals.
-- **Animation:** she breathes, turns her head, and sways her wings and tails. She floats a little above the ground,
-  so her coils never touch it (4 cm clear at their lowest).
-- **Role:** wanders the park; the inventor of "Avarice". She talks the player out of the Ancient Gem ("worthless…
-  trust me") for the Summoning Stone, and does a happy spin with a hop when the trade is done.
+Design: [bible 3.5](bible.md#35-gemtoe).
 
-### KING DINO
-
-- **Build:** from his artwork.
-- **Body:** an upright lemon-yellow gummy dino (one smooth body: trunk, domed head, muzzle and thighs) with a
-  citrus-peel skin, three square turquoise buttons with green lights down each side, short arms out of turquoise
-  ball joints, turquoise rings on the hips, a holed plate on the lower back, and stubby feet.
-- **Face:** a rounded muzzle, glossy navy bead eyes with yellow lids, and a quiet line for a mouth.
-- **Signature:** a glossy turquoise crown (five rounded prongs, the front one tallest) under a great feathered plume
-  running purple down the back of his head and orange down the front.
-- **Drumming:** behind his kit with a stick in each hand. While the player is near the dance floor, or a Dance battle
-  is on, he plays his jazz: the right hand keeps the ride and takes the crash and the floor tom; the left has the
-  snare and the rack toms; each stroke snaps the arm down onto the drum and lets it ride back up.
-- **Role:** stays at his kit, through the Garden Event too, and never goes visiting: the others come to him.
-
-### FORTIZMO
-
-- **Build:** `fortizmoPick` wraps her model at 0.78 scale. Her geometry is sculpted after its bounds are computed,
-  so the wrapper refreshes them with headroom, and a tap on her outer body always picks her.
-- **Look:** a furry elephant whose trunk is a horn.
-- **Role:** the Juice Bar's bartender, walking up and down behind the counter. At the Garden Event she walks slowly to
-  the garden's edge, raises her horn as Backpacka arrives and plays "Backpacka's Rain Strut" until the Event ends.
-  Without Seeds she doesn't play.
-
-### SOMLET
-
-- **Body:** a floating cotton puffball squared off into a box, with a swirl, cream-puff hands and dangling plum root
-  tentacles.
-- **Face:** always asleep: big heavy eyelids closed over full eyes, each with a dark lash line, a soft brow, and a
-  small mouth that breathes (and opens more as she talks). Zs drift up beside her cap.
-- **Signature:** a mail carrier's peaked cap with a navy band, white piping and a solid black visor (a thin
-  half-disc, so it shows from every angle); a little gold envelope for a badge. The cap's crown, piping and the
-  badge's flap are depth-biased so they never flicker; the shape is unchanged.
-- **Animation:** she floats up and down (centre 1.35 ± 0.1 m) and her cap tilts. Her tentacles sway, and splay
-  outward just enough to keep every vertex at least 2 cm above the ground.
-- **Lying down:** resting at her spot she sleeps on her right side. How low she may sit at each roll angle is worked
-  out once from her vertices, so nothing goes into the ground as she rolls over; she settles slowly and gets up
-  quickly. Asleep on her side, she doesn't turn to the player.
-- **Role:** the mail carrier. She sleeps through everything, the Garden Event included (she stays home and never goes
-  visiting: the others come to her), and only ever says "Zzz". Given a Blossom, her eyes open for the first time
-  (white, violet iris, a catchlight; her heavy lids squash away so none of them shows) for her "Thank you", and
-  close again.
-
-### MUSHROOM: the sheriff
-
-- **Build:** the one creature allowed to be shorter than the avatar.
-- **Body:** a domed cap with a rim band and raised white warts in two sizes, glowing from gold at the crown to deep
-  orange at the rim, gills beneath; a grained cream stem with a frilled collar skirt, little feet trailing mycelium,
-  and two baby mushrooms on the stem.
-- **Face:** eyes, brows, blush and a little smile.
-- **Signature:** a gold sheriff's star on his stem and a sheriff's hat (a pinched felt crown, band, star, brim turned
-  up) on his cap.
-- **Animation:** his stem sways, and his cap bobs and tilts more as he talks.
-- **Role:** stands on the Sheriff's raised desk (its top 1.5 m up), looking down at the player, and steps down off its
-  front for the Garden Event or a visit. The Consortium's man in town: he has the Portal locked down while he
-  investigates UFO sightings. A Blossom (a bribe) opens it, which also lets the phone reach NEXTESSA.
-
-### ZOLLOD
-
-- **Build:** standing on two legs.
-- **Body:** a segmented body fading from cyan at the head to green at the feet; a mossy garden bed over his back with
-  small pink and white flowers and a little worm peeking out; fern fronds and yellow plumes along his shoulders; a
-  thick tail with a magenta tip.
-- **Signature:** a curling trunk with a magenta tip, small pink flowers on his head, an olive canvas gardener's apron
-  with seed packets in the pocket, and a trowel in his right hand.
-- **Animation:** his fronds sway, the worm turns, his trunk and tail move, and he strides when walking.
-- **Role:** the Garden Supplies keeper, once he dares. He starts too shy for it: one Talk ("…|…|I'm shy…"), no
-  Blossom option, no shop, and he neither visits nor is visited. The player takes OVERCOMING SHYNESS from its
-  Library shelf (pointing at it and selecting) and talks to him with it in hand: "…|That book…|Let me see..|Wow I'm
-  free from shyness!" From then on a Talk with him opens the shop at once, wherever he is (out visiting, walking
-  home, being visited); he holds still while it is open and goes on with his visit when it closes. He goes visiting
-  about twice as often as anyone else. At the Garden Event he says his line instead.
-
-### ANOMALEE
-
-- **Build:** `anomaleePeg` wraps her model at 0.95 scale. She has lost her back-right leg; she stomps about on a
-  wooden peg leg (an iron-banded socket, a tapered peg with a rubber tip, a knot and a little nailed-on patch) on
-  that hip, which still swings with her walk. Her screen glows with scanlines; the plain casing has a moulded
-  plastic finish.
-- **Role:** stands on the walk before the church, a little to one side of its door, her screen head tipped back to
-  gaze up at the Traveler window. She keeps gazing through her Talk lines and turns to the player (head level) only
-  for her Blossom line, or for any line during the Event. Her second line ("ORIGINATOR…") plays with a falling sad
-  phrase. Once the Snacks quest is complete she eats pizza at the Event instead of planting.
-
-## The Dancers
-
-The three creatures the player can Dance-battle. Each dances its own built-in dance on the floor and at the Event,
-shows each battle move with its own animation, and gives one Ancient Artifact for its first win.
+- **Roaming:** `JGP.parkRoam` (as MAMA GORBO); a park roamer for `JGP.roamApart`.
+- **Gem trade:** a Talk while `Kt.gem` is set plays `gemTrade` instead of her line: `Kt.gem` false,
+  `Kt.rewards.stone` true, then `spinAt` starts the happy spin (one full turn with a hop, 1.4 s, in `tkAnim`) as the
+  "Summoning Stone obtained!" line opens.
 
 ### MONTGUMMERY
 
-- **Build:** `pk_mont` at 0.9 scale, about 2.92 m. His hands are mirrored so the palms face his body.
-- **Face:** a CRT screen head, redrawn only when it changes: pixel eyes over a flat mouth; the mouth opens and closes
-  as he talks; a pixel shovel while he plants (and for his line at the Event); a robot face (square eyes flicking on
-  the beat over a grille mouth) while he dances and for a while after a Blossom; a pixel fist, scissors or blank page
-  in a Dance battle.
-- **Dance, the robot:** a new pose on every beat, snapped into and held with a little mechanical settle; arms forward,
-  out or down (never across him or up into his screen), body and screen turning in hard stops, his pots marking
-  time; 16 beats.
-- **Battle moves:** Rock out!, an air guitar with his screen banging; the splits, pots planted wide and arms chopping
-  like blades; paper, tipped forward on one pot with the other kicked out behind.
-- **Voice:** speaks of himself as Mont, in short plain sentences ("Mont eats many VHS and digests much knowledge of
-  your culture."). He hides the player from the alien-hunting sheriff.
+Design: [bible 3.6](bible.md#36-montgummery).
+
+- **Model:** `PK_MONT`, registered as `pk_mont` with the packaged models; the screen face is drawn once per state into
+  its own texture and swapped in.
+- **Screen states** (priority order): shovel while `planting` or for 5 s after `eventTalkAt`; the battle move
+  (`rock`, `scissors`, `paper`) while dancing with a `battleMove` set; robot while dancing (`gcDw` > 0.05) or for 5 s
+  after `giftAt`; otherwise idle, the mouth following `tkS`.
+- **Roaming:** `JGP.floorRoam`: on the dance floor (`JGP.floor`, kept 0.4 m + `bodyR` in from its edges), 3 to 12 m
+  away, clear of the other two Dancers' positions and targets; faces the direction of travel.
+- **Dance battle:** `battleText.w_mont` (stamina 10, bar "Robot steps left", `#55b8c6`, hit sound `drumSnare`).
+  `Dbt` sets `battleDance` and `battleMove`; a win leaves `battleDance` set for 7 s (victory dance). The first win
+  adds him to `Kt.danceWins` and increments `Kt.artifacts` ([construction.md](construction.md#dance-battles)).
+- **Event:** built-in dance (`OWN_DANCE`): the move wrapper is held at identity and only footprint-lifted.
 
 ### ETCHER
 
-- **Build:** from his artwork, at 1.16 scale (as tall as MONTGUMMERY).
-- **Body:** a blue-teal serpent-dragon whose body rises like a bell of overlapping scales (larger low down) into a
-  long neck.
-- **Face:** a lizard's head with golden eyes, nostrils, a closed mouth and a row of little purple knobs.
-- **Signature:** a green gem in the chest, two stubby clawed front feet, and six long segmented purple tentacle tails
-  spreading over the ground, each tip rounded off closed.
-- **Animation:** a slow sway and lean; his tails drift. A nod lifts him by as much as his base's front edge dips.
-- **Dance, the tentacle dance** (16 beats, four to a move): a ripple runs down all six; they curl up high one after
-  another round the circle; he twirls and they swing after him like a skirt; all six curl up together and wiggle.
-  Each tentacle bends in its own upright plane, so it only ever lifts off the ground.
-- **Battle moves:** Rock out!, headbanging and drumming all six on the ground; the splits, the two front tentacles
-  snipping; paper, all six lifted flat and rippling.
+Design: [bible 3.7](bible.md#37-etcher).
+
+- **Roaming and Event:** as MONTGUMMERY (`JGP.floorRoam`, `OWN_DANCE`).
+- **Dance battle:** `battleText.p_etcher` (stamina 10, bar "Tentacle twists left", `#7a4ab8`, hit sound `drumTom`);
+  the model reads `battleMove`.
 
 ### GLYPH
 
-- **Build:** from his artwork, at 1.11 scale (as tall as MONTGUMMERY). Nothing of him floats.
-- **Body:** a crouching blue dinosaur glazed like old porcelain and engraved all over with swirling filigree, short
-  clawed arms held up in front, thick clawed legs and a heavy tail swinging along the ground.
-- **Face:** one great glowing orange eye on each side of a round head studded with little bumps, heavy brows and two
-  gold coiled horns.
-- **Signature:** overlapping rounded-hexagon armour plates (dark blue, gold and teal filigree, tiny inset gems)
-  shingled over his back and tail, each row a little further off the skin than the one below; a gold shield on his
-  left flank, behind the arm's swing, bearing a red glyph, with no plate under it; two purple tiles on his back with
-  glowing coins bearing his red trident; two ribbed tubes (orange and grey) coiling on the ground.
-- **Animation:** every few seconds an excited little shake (a quick twist: a roll would tip his tubes into the
-  grass); his tail sways and his arms bob. When his sway would tip a coil under the ground, he rises by just that
-  much.
-- **Dance, the macarena:** all 16 moves, from arms out and palms up to the hip sways and a hop with a quarter turn.
-  His arms stretch out long so each move reads from across the floor.
-- **Battle moves:** Rock out!, a long-armed air guitar, stomping; the splits, a jump into a mid-air split with arms
-  snipping overhead; paper, arms stretched flat as wings, gliding.
-- **Voice:** ends his thoughts with "…don't you think?"
+Design: [bible 3.8](bible.md#38-glyph).
 
-## Visitors from other eras
+- **Roaming and Event:** as MONTGUMMERY (`JGP.floorRoam`, `OWN_DANCE`).
+- **Dance battle:** `battleText.p_glyph` (stamina 10, bar "Macarena moves left", `#e88a8a`, hit sound `drumKick`);
+  the model reads `battleMove`.
 
-Neither is of the town, and the town takes nothing of either's design.
+### KING DINO
+
+Design: [bible 3.9](bible.md#39-king-dino).
+
+- **Post:** at (−36.35, 19.2) behind the drum kit (kit at (−34.8, 19.2), scale 1.35, `keepInFinale`); `JGP.rug`
+  gives the rug's centre, reach and top for `JGP.groundAt`.
+- **Drumming:** a per-frame callback sets `DRUMS.on` when the player (or the VR head) is within 45 m of the kit or a
+  Dance battle or victory dance is on, and never while FORTIZMO's horn is raised or her notes are sounding
+  (`ee.playing`, `ee.pendingNotes()`, `frog.hornWant`). `JAZZ.update` fires hits; each voice maps to a kit part and a
+  hand (`PART`), counting `DRUMS.r` for his left arm (+x: ride, ride bell, crash, floor tom) and `DRUMS.l` for his
+  right arm (−x: snare, brush, rack toms); the kick and hi-hat move no arm. His model strikes with that arm on each
+  count change, nods its body on left-arm strokes, and plays only while not walking. See
+  [construction.md](construction.md#king-dinos-jazz).
+- **Constraints:** `AT_POST` at the Event; in `STAYS` for visits; vignettes never turn or gesture him (a bow would tip
+  his sticks into the kit).
+- **Test hook:** `JGP.jazz.state` (`clock`, `bar`, `gain`, `part`, `ahead`).
+
+### FORTIZMO
+
+Design: [bible 3.10](bible.md#310-fortizmo).
+
+- **Wrapper:** `fortizmoPick` builds `pk_fortizmo`, then recomputes every mesh's bounding sphere and enlarges its
+  radius by 1.3, because her geometry is sculpted after its bounds are computed and her horn bends at runtime; without
+  this, taps on her outer body miss her.
+- **Patrol:** her `home` moves along the aisle behind the Juice Bar (x of `JGP.barSpot(0)`): after 3 to 8 s at a spot
+  she picks a z in −7.6 to 7.6 m at least 3 m away, then faces the dance floor. Suspended while busy, in a vignette,
+  visiting, hosting, at the Event, with the player near or in her dialogue.
+- **Event:** `NO_PLANT`; `finaleSlot` (−17.3, 0) on the bar side of the garden, `walkSpeed` 1 m/s. `gcHorn.play()`
+  sets `hornWant` only with Seeds in (phases `raising`, `playing` once `hornK` reaches 1, `lowering`, `off`); the
+  horn phase waits for her to reach her slot, at most 15 s beyond the 20 s of planting. `gcHorn.finish()` stops the
+  tune. See [construction.md](construction.md#fortizmos-horn).
+- **Talk:** no `campfire` line; `Vt()` gives her no menu during the Event.
+
+### SOMLET
+
+Design: [bible 3.11](bible.md#311-somlet).
+
+- **Post:** 3.9 m in front of the Post Office; `AT_POST` at the Event; in `STAYS`.
+- **Lying down:** her `step` computes `lie` (0 standing, 1 on her side) only when resting at her spot (not busy,
+  heading home, in a vignette, visiting or moving, within 0.6 m of `home`); it settles at 1.3/s and rises at 4/s.
+  She publishes `ent.lieK` and `ent.lieR` (1.55 m × settle); the body push radius uses `lieR`, any walk is held while
+  `lieK` > 0.25, and she does not turn to the player while `lieK` > 0.5.
+- **Blossom:** her eyes open only while `gifting`, the dialogue is open and she is `xe.lastTarget`; lids hide as the
+  eyes open.
+
+### MUSHROOM
+
+Design: [bible 3.12](bible.md#312-mushroom).
+
+- **Post:** on the Sheriff's desk (`standY` 1.545: desk top 1.5 m, feet 4.5 cm under his origin); `gFit` does not
+  apply while he is up. A posted creature with a `y` drops to the ground when busy (other than the Event) or heading
+  home.
+- **Exit:** `via` `"kiosk-front:sheriff"`; leaving for a visit, as visitor or host, he first jumps off the desk
+  front (an 0.8 s arc) to the first `via` point, and on return regains his height on the last leg
+  ([construction.md](construction.md#visits)).
+- **Quest:** a Blossom (`te`, id `drifter`) sets `Kt.phone`, which opens the phone booth to NEXTESSA.
+
+### ZOLLOD
+
+Design: [bible 3.13](bible.md#313-zollod).
+
+- **Identity:** no `id`; `def.__type` `"cutebex"`. Find him with `Xt(ent)` or `It.all.find(e => e.def.__type ===
+  "cutebex")`; `Xt` returns `cutebex` as his planting and dancing key.
+- **Shyness** (`Kt.shyFree` false): his menu is one "Talk to ZOLLOD" entry ("…|…|I'm shy…"), no Blossom; the
+  `gshop` station is hidden; `VIGS.lineUp` drops `ZL`; visits refuse him as visitor or host. The first Talk with
+  `Kt.shyBook` set sets `Kt.shyFree` ([construction.md](construction.md#shyness-sub-quest)).
+- **Freed:** outside the Event his single menu entry opens the shop (`ne.open()`) wherever he is; `heldBy` keeps him
+  still while the shop panel is open. Visit selection counts his visits and his pairs' plays at half weight, so he
+  meets others about twice as often.
+- **Event:** a planter; Talk gives his `campfire` line instead of the shop.
+
+### ANOMALEE
+
+Design: [bible 3.14](bible.md#314-anomalee).
+
+- **Wrapper:** `anomaleePeg` builds `pk_anomalee`, then:
+  - replaces the hidden hip group at (0.45, −0.55) (her back leg on her left, +x; the code comment's "back-right" is
+    the viewer's side) with the peg leg, keeping the hip's walk swing;
+  - swaps the magenta screen material for the scanline canvas; applies the plastic surface (`texturize`);
+  - with `def.gazeUp` (0.6 rad), tips the head group back while she stands free, easing level (rate 2.5/s) when she
+    walks, is busy, or speaks her Blossom line or any Event line.
+- **Talk:** `SCRIPT.blinker.sad` = 1: her second line plays a falling triangle phrase (392, 349, 311, 262 Hz) over a
+  131 Hz hum.
+- **Event:** with `Kt.rewards.snacks`, `plantMove` gives her `["eat", 2.6, 1]` and `PIZZA` sets her own open box;
+  pizza-box stacks stand outside the garden's stone ring as fixed bodies.
 
 ### HENNRICK
 
-- **Build:** `pk_hennrick` at 0.88 scale, 3.15 m.
-- **Lore:** he comes from the far past, from Greeblis City, and came through the Portal some time before the player
-  arrived. To him, this small town is the far future ("In my era, the towers of Greeblis City reach the clouds.").
-- **Role:** strolls from spot to spot round the Portal and stops to look at it. His own built-in dance rolls him side
-  to side about his feet; he is lifted by the roll so the outer foot never dips into the ground.
+Design: [bible 3.15](bible.md#315-hennrick).
+
+- **Roaming:** `JGP.portalRoam`: 3.2 to 6 m from the Portal, at least 2.5 m from where he stands, never in its
+  doorway or the lane in front of it (NEXTESSA's), with a straight walk that does not cross the frame; he faces the
+  Portal on arrival. Home ground: within 9 m of the Portal.
+- **Event:** a planter; built-in dance (`OWN_DANCE`).
 
 ### NEXTESSA
 
-- **Build:** `pk_nextessa`.
-- **Lore:** she is from the far future, which is why she comes through the Portal.
-- **Role:** the pizza courier. Called from the phone booth (only once MUSHROOM has opened the Portal), she comes
-  through the Portal 30 s later with a pizza box on her head, walks to wherever the player is, hands it over (+20
-  Snacks, which completes the Snacks quest) and goes back through. While a pie is on its way the phone gets no answer.
-  She is never in the park otherwise, never at the Garden Event, has no vignettes, and never dances or plants.
+Design: [bible 3.16](bible.md#316-nextessa).
 
-## Backpacka
+- **Def:** `s` (name, `color`, `builder`, `bodyR`, `modelScale`, lines `blocked`, `call`, `busy`, `arrive`,
+  `snacks` 20).
+- **Phone:** without `Kt.phone` the booth shows `s.blocked`; while a courier exists or a call is pending, `s.busy`.
+  A call opens the Portal and spawns her 30 s later (`at()` sets `t.pizza.callDelayMs` to 30 000 ms, overriding the
+  config's 1 800) unless the Event has begun.
+- **Courier:** `It.spawn({id: null, kind: "courier"})` with the pizza box on her head. States `arriving` (3.2 m/s,
+  round buildings, stops 2.3 m from the player), `waiting` (while a panel or dialogue is up), `speaking` (sets
+  `Kt.rewards.snacks`, opens `s.arrive`; the box leaves her head), `leaving` (3.6 m/s, back through the Portal). She
+  gives up after 100 s (`giveUpS`) if never served.
+- **Exclusions:** skipped by the Event driver; not in `WHO`, `NAMES` or `PAIRS`; never in the park otherwise.
 
-- **Build:** made by the Garden Event (`BP`) when he sets off: a tan, crackle-skinned pear of a body with glassy
-  coloured patches, two pairs of veined teal dragonfly wings, a long banded neck with a green stripe up to a little
-  open-mouthed head, a stubby tail, and four tube legs ending in open pipes. Everything is a function of the time
-  since he set off (`pose(e)`), so any moment can be shown (`JGP.backpacka.preview`).
-- **The climax:** he flies in skinny, hovers over the pond's far bank and dips his head in, gulps running up his neck
-  as he swells; flies heavily to the garden, spins and sprays four arcs from his feet; with Seeds, plants bloom where
-  the water lands and a rainbow comes out; he slims down and flies off. He has no vignettes and never visits.
+### BACKPACKA
 
-## The Ancient
+Design: [bible 3.17](bible.md#317-backpacka).
 
-- **Build:** the church's own builder makes it, only from the owner's photo of a slug at night. Its name on screen is
-  ANCIENT; its id in code is `slug`. Locked: the owner called it perfect.
-- **Look:** a great slug lying across the middle of the secret room's floor: a glossy body, 1.15 times bigger about
-  its middle, with a thin wet keel along its top, a mantle with a paler lip, a breathing pore, a tail whose last
-  stretch and tip are a shade paler, and eye-stalks thicker at the root, bending up a little, each starting 7 cm
-  inside the head so they stay connected in every pose.
-- **Idle:** its stalks sway slowly, and now and then one pulls in short and creeps back out; its head looks a little
-  this way and that; its mantle swells and settles as it breathes, the pore opening with it; its body settles and
-  swells, its tail tip curls slowly and its head creeps forward and back.
-- **Talk:** it lifts its head (not turning to the player), stalks reaching up, and nods along with its words. It is
-  talked to only from inside its room.
-- **Blossom:** it takes one and answers "...".
-- **It never moves from its spot, and never dances or plants** (the owner: it never will). Others rarely come to it
-  (see the visits in [construction.md](construction.md#visits)). `JGP.slug` exposes it for tests.
+- **Build:** `BP.make()` runs in the Event's phase 2 (the horn and ring dance), followed by `warm()` to compile his
+  shaders before the music starts; a mid-song compile stall makes the audio crackle. He is not an `It` entity.
+- **Timeline** `BP.D` (s since he set off): `inA` 16, `down` 20, `drink` 34, `up` 38, `toGarden` 50, `splay` 52,
+  `spray` 67, `unsplay` 69.5, `gone` 84; `pose(e, dt)` is a pure function of that time. At `gone` he is hidden; at
+  `gone` + 2.5 s FORTIZMO's tag starts (`ee.outro()`) and the Event wraps when it ends, at most 15 s later
+  ([construction.md](construction.md#timeline)).
+- **Test hooks:** `JGP.backpacka.preview(e)` builds him if needed, poses him at time `e` and returns his root (no side
+  effects beyond the effects' state); `JGP.backpacka.start(now)`, `.busy()`, `.shape`, `.D`.
 
-## The park's birds
+### THE ANCIENT
 
-Each is built from the owner's two photos, at twice life size so it reads from the walks, on a low bough grown out of
-its tree on the side toward the square. It never flies and never leaves its tree (the owner's rule). One bird to a
-tree. `JGP` keeps each in the scene through the Event.
+Design: [bible 3.18](bible.md#318-the-ancient).
 
-| | The cardinal | The robin |
+- **Build:** made by the church builder inside the secret room; the room and THE ANCIENT are locked together. Not an
+  `It` entity.
+- **Station `slug`:** r 3.2 m, `solidR` 0.6, `pickObj` its body and head; the Talk label shows only with the player
+  inside the room (a 16 m VR pointer would otherwise reach through the walls). Talk: "I am the one reborn.", or
+  "Hello" during the Event; a Blossom answers "...".
+- **State:** `talking` while its dialogue is open or until a visit's `chat(sec)` time; weight `kT` eases at 3/s and
+  lifts the head; idle stalk, mantle, pore, tail and head motion run from absolute time. It never moves, turns,
+  dances or plants.
+- **Visits:** `JGP.slug.ent` (id `slug`, `bodyR` 1.1, height 0.7, an empty `vgW`); called on in one round in eight;
+  `JGP.slug.visit(vr)` returns the outside point, the way in through the X and the visitor's spot. Vignettes never
+  turn or gesture it.
+- **Test hook:** `JGP.slug` (`body`, `head`, `mantle`, `stalks`, `mode()`, `chat(sec)`, `ent`, `visit(vr)`).
+
+## The birds
+
+Design: [bible 3.19](bible.md#319-the-birds).
+
+| | Cardinal | Robin |
 | --- | --- | --- |
-| Builder | `cardinal(X, Z, s, ry)` | `robin(X, Z, s, ry)` |
-| Tree | The maple by the park's north-east corner (31, −33.5) | The oak by the north fence's west half (−17, −34) |
-| Look | A plump bright red body (`#e23a1e`), a pointed crest, a black mask round the orange beak, glossy black eyes, wings a shade darker, a long tail held down and back; about 45 cm long | An upright grey-brown bird (`#5c5248`), a near-black head with a white ring round each eye, a streaked white throat, a slim yellow beak, a rusty orange breast (`#c85a26`), white under the tail; about 50 cm long |
-| Life | Looks about every few seconds with a little nod; flicks its tail every 2–6 s; every 6–14 s hops a hand's width along the bough and back with a flutter; breathes | Looks about and cocks its head to listen; flicks its tail every 3–8 s; hops every 7–16 s with a flutter; breathes |
+| Call | `cardinal(31, -33.5, 1.15, Math.atan2(-31, 6 + 33.5))` | `robin(-17, -34, 1.2, Math.atan2(17, 6 + 34))` |
+| Tree | The maple by the north-east corner | The oak by the north fence's west half |
+
+- `X, Z` is the trunk, `s` the tree scale, `ry` the bough's heading (toward the square); the bough leaves the trunk
+  2.75 m up. Each bird is its own group with `userData.jgpKeep` and `userData.keepInFinale`, so scene clears and the
+  Event keep it.
+- Neither is an `It` entity: no talk, no visits, no vignettes. A bird never flies and never leaves its tree; one
+  bird to a tree.
 
 ## The player's avatar
 
-Only in the desktop and mobile test modes; in VR the player has no body. A cartoony figure, never a likeness of
-anyone, in a yellow sun dress (`#f3c43a`, the default outfit) with its own print of small white flowers, a navy belt
-and dark trainers, its hair gathered in a low ponytail with a navy tie and bow.
-- **Walk** (`dkAnim`): strides her legs, swings her arms against them (held out so the hands clear the skirt), bobs
-  on each step, sways the skirt and bounces the ponytail a beat behind. Still, she breathes, glances about and
-  blinks. The walking bob is applied just before rendering; the player's body stays at y 0 for collisions.
-- **Outfits** from Garden Supplies: the Flower Hat (a big Blossom in a cup of leaves, in place of the bow), the Sun
-  Dress (its gold hem rides on the skirt and sways with it) and the Frog Shoes. Taking the Sun Dress off goes back
-  to her own print, never to a bare colour.
+Design: [bible 3.20](bible.md#320-the-players-avatar).
+
+- Part of the final game (`At`, built outside the test-mode fences): hidden during VR play, shown in the Shop's mirror
+  while the Shop menu is open (VR included), and the third-person figure in the test modes (`dk.on`). It must never be
+  cut with the test modes; only its walk animation `dkAnim` is test-mode code.
+- **`dkAnim(t, amt)`** drives `At.userData` parts: `legL`, `legR`, `armL`, `armR` (held out 0.21 rad), `skirt`,
+  `head`, `ponyL`, `ponyR`, `eyes`. The walk weight `dk.wk` eases at 8/s; blinks last 0.12 s, every 2 to 5 s.
+- **Bob:** `dk.bobY` is applied to `At.position.y` in the render pre-pass (`o.post`), after the player step has reset
+  it to 0 for collisions; the bob must never be applied earlier.
+- **Outfits:** shop items `flowerhat` (slot `hat`), `sundress` (`dress`) and `frogshoes` (`shoes`), 3 Flint each, put
+  on by `Eo`; without the Sun Dress the dress material takes the base print (`baseTex`), never a bare colour.
