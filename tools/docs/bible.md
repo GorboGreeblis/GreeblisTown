@@ -5968,8 +5968,8 @@ This section specifies the player's body, controls, pointer, comfort measures, h
 - A 0.15 m card on the left controller's grip, tilted toward the eye; hidden when there is no left controller.
 - Content, top to bottom: the three quests with ☐ or ☑ (SEEDS, SUMMONING STONE, SNACKS); then the items in hand, four
   to a row, in this order: Blossoms and Flint with counts, the Ancient Artifacts with their count (until glued), the
-  Ancient Gem (until traded), the Summoning Stone, OVERCOMING SHYNESS (until ZOLLOD has it), the Seeds, the pizza, and
-  the Flower Hat, Sun Dress and Frog Shoes once bought. An item not held has no tile. The card grows downward; the
+  Ancient Gem (until traded), the Summoning Stone, OVERCOMING SHYNESS (until ZOLLOD has it), the Seeds and the pizza.
+  An item not held has no tile. Clothes never have a tile: the Shop's mirror shows them. The card grows downward; the
   quests never move.
 - The same card is the HUD in every mode (on the wrist in VR, in a screen corner in the test modes).
 
@@ -7042,7 +7042,7 @@ This section specifies the interface's type, palette, surfaces, VR placement and
   `#5ab4ff`, **SNACKS** in orange `#ff9a3a`.
 - Under a faint rule, the items in hand on 52 px tiles, four to a row, each painted in code in the item's own colours:
   a red flame Blossom, a dark faceted Flint, the teal Artifacts and Gem, the grey rune stone, the pink book, a paper
-  seed packet, a pizza slice, the three clothes. Counts ("x3") in white bold with an ink outline. No item, no tile.
+  seed packet, a pizza slice (never clothes). Counts ("x3") in white bold with an ink outline. No item, no tile.
 
 #### The start screen and notices
 

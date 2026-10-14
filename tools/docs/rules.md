@@ -192,6 +192,8 @@ Rules for how creatures act towards the player and the park. The systems are in
    is over.
 10. A creature says its Garden Event line only at an Event with the Seeds, when everyone comes to the garden. Without
     the Seeds nobody comes, and everyone says its everyday lines.
+11. Clothes and outfit items never appear in the Game UI (the HUD's items); the Shop's mirror is where the player sees
+    them.
 
 ## Names and text
 

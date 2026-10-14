@@ -372,7 +372,7 @@ building hull. Pickups are instanced ([Performance](#12-performance)).
 - The HUD lists three quests: SEEDS, SUMMONING STONE and SNACKS.
 - Below them it shows held items (`INV_ICON`, one painter per item; the list is rebuilt from `Kt` each frame and the
   card redrawn only on change): Blossoms, Flint, the Artifacts with counts, the Gem, the Summoning Stone, the shyness
-  book, the Seeds, the pizza and purchased clothes. Items not held are omitted. The canvas extends below the quests
+  book, the Seeds and the pizza. Items not held are omitted, and clothes never show (a rule). The canvas extends below the quests
   and its plane is offset down, so the quests keep their position on the wrist and in the test modes' screen corner.
 
 | Quest | Completion |
