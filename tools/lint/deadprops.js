@@ -1,9 +1,11 @@
-// Properties the game defines but never reads: object keys, class/object methods and `x.name = …` assignments
-// in the game script whose name is read nowhere: not by the game (member reads, destructuring, `in`, any string
-// literal, as these can be dynamic keys), not by the page's other scripts (three.js calls back into some, e.g.
-// onBeforeRender). Names the test scripts use are listed apart: they are test hooks, kept on purpose.
-// ESLint's no-unused-vars only sees local variables; this sees the rest. A lead, not proof: check each by hand.
-//   node lint/deadprops.js [index.html] [min name length, default 3]   (from tools/; acorn comes with `npm install`)
+// Properties the game defines but never reads: object keys, class and object methods and `x.name = …` assignments in
+// the game script whose name is read nowhere: not by the game (member reads, destructuring, `in`, any string literal,
+// as these can be dynamic keys), not by the page's other scripts (three.js calls back into some, e.g. onBeforeRender).
+// Names the probes and audits (test/, audit/) use are listed apart: they are test hooks, kept on purpose. ESLint's
+// no-unused-vars sees only local variables; this sees the rest. A lead, not proof: check each by hand.
+// Env: none.
+// Output: `== defined, never read (<n>):` and `== read only by the tests (<n>):`, each followed by `<name> (line …)`.
+//   node lint/deadprops.js [index.html] [min name length, default 3]   (acorn comes with `npm install` in tools/)
 const fs = require('fs'), path = require('path');
 const acorn = require('acorn');
 const html = fs.readFileSync(process.argv[2] || path.join(__dirname, '../../index.html'), 'utf8');
@@ -35,9 +37,10 @@ const keyName = (k, computed) => (computed ? (k.type === 'Literal' && typeof k.v
 })(ast, null);
 // names the other scripts mention (callbacks three.js makes, globals the throttle reads)
 const otherWords = new Set(others.match(/[A-Za-z_$][\w$]*/g) || []);
-// names the test scripts mention
-const testDir = path.join(__dirname, '../test'), testWords = new Set();
-for (const f of fs.readdirSync(testDir)) if (f.endsWith('.js')) (fs.readFileSync(path.join(testDir, f), 'utf8').match(/[A-Za-z_$][\w$]*/g) || []).forEach((w) => testWords.add(w));
+// names the probes and audits mention
+const testWords = new Set();
+for (const dir of ['../test', '../audit'].map((d) => path.join(__dirname, d)))
+  for (const f of fs.readdirSync(dir)) if (f.endsWith('.js')) (fs.readFileSync(path.join(dir, f), 'utf8').match(/[A-Za-z_$][\w$]*/g) || []).forEach((w) => testWords.add(w));
 // properties the browser reads when the game sets them (canvas, DOM, audio, WebXR, listener options)
 const BROWSER = new Set('fillStyle strokeStyle font globalAlpha lineCap lineJoin lineWidth textAlign textBaseline className cssText innerHTML textContent marginTop scrollTop onended onclick passive latencyHint optionalFeatures willReadFrequently fixedFoveation'.split(' '));
 const dead = [], testOnly = [];

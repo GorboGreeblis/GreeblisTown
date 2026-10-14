@@ -1,15 +1,17 @@
-// The church's secret room: the player walks in through the right-hand Garden window (and only there), no
-// creature ever stays inside, the VR head guard leaves the inside clear but darkens inside a wall, and the
-// the ANCIENT offers Talk and, with Blossoms in hand, a Blossom (taking one, answered with "..."), lifts its head while talking (not turning to the player),
-// keeps breathing and waving its stalks, and never leaves its spot; and no Blossom or Flint ever spawns in the room
-// (2,000 spawn spots sampled for each, plus every one in the town now).
-// Walking uses the game's own player collision (F.solid on the player's position), step by step, as every
-// mode does (desktop, mobile and VR all move the same body). Run: NOSHOT=1 node shot.js <url> x.png ./t_church.js
+// The church's secret room: the player walks in through the right-hand Garden window and nowhere else; no creature
+// stays inside; the VR head guard leaves the inside clear but darkens inside a wall; the ANCIENT offers Talk and, with
+// Blossoms in hand, a Blossom (taking one, answered with "..."), lifts its head while talking (not turning to the
+// player), keeps breathing and waving its stalks, and never leaves its spot; and no Blossom or Flint ever spawns in
+// the room (2,000 spawn spots sampled for each, plus every pickup in the town now). Walking uses the game's own player
+// collision (F.solid on the player's position), step by step, as every mode does (desktop, mobile and VR all move the
+// same body).
+// Env: none.
+// Output: one line per check ending in `ok`, `IN`, `blocked`, `animates` or a FAIL, then `err <n>`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_church.js
+const { log, start, waitGame, closeDialogs, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const log = (...a) => console.log(...a);
-  // (the click that starts the game goes to the middle of the view: a click near the top edge can land on the menu bar,
-  // and the world's frame callbacks stand still while a menu is open)
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(2500);
+  await start(p, 2500);
   const r = await p.evaluate(() => {
     const B = F.buildings.find((b) => b.name === 'church'), D = 18, P = At.position, out = {};
     // walk straight from local (8, z) towards local x = 2, 5 cm a step, colliding as the game does
@@ -52,18 +54,17 @@ module.exports = async (p) => {
   const pose = () => p.evaluate(() => JSON.stringify({ head: +JGP.slug.head.rotation.y.toFixed(3), breath: +JGP.slug.mantle.scale.y.toFixed(4), stalk: +JGP.slug.stalks[0].rotation.x.toFixed(3) }));
   const idle = [await pose()];
   // (1.5 s of game time, not wall time: headless game time runs slower)
-  { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 600 && (await p.evaluate(() => Re.t)) - t0 < 1.5; k++) await p.waitForTimeout(100); }
+  await waitGame(p, 1.5, null, { step: 100, max: 600 });
   idle.push(await pose());
   await p.evaluate(() => xe.run('interact'));
-  // (wait 2 s of game time, not wall time: headless game time runs about ten times slower)
-  { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 600 && (await p.evaluate(() => Re.t)) - t0 < 2; k++) await p.waitForTimeout(100); }
+  await waitGame(p, 2, null, { step: 100, max: 600 });
   const talk = await p.evaluate(() => ({ mode: JGP.slug.mode(), open: qt.isOpen, name: document.getElementById('dlgName').textContent, hy: +JGP.slug.head.rotation.y.toFixed(2), hx: +JGP.slug.head.rotation.x.toFixed(2), pos: JGP.slug.body.position.toArray().map((v) => +v.toFixed(3)) }));
   log('the Ancient: target', sl.target, '| options', JSON.stringify(sl.actions), sl.target === 'slug' && sl.actions.length === 2 && sl.actions[0] === 'Talk' && /blossom/i.test(sl.actions[1]) ? 'ok' : 'FAIL');
   // its Blossom: one taken from the hand, and its answer
   const gift = await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} const b0 = Kt.blossoms; xe.scan(); xe.run('give'); return { took: b0 - Kt.blossoms, open: qt.isOpen }; });
   // (its words once typed out)
   await p.waitForTimeout(1500), (gift.says = await p.evaluate(() => (qt.isOpen ? document.getElementById('dlgText').textContent : null)));
-  await p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });
+  await closeDialogs(p);
   log('the Ancient Blossom: took', gift.took, '| says', JSON.stringify(gift.says), gift.took === 1 && gift.says === '...' ? 'ok' : 'FAIL');
   log('the Ancient idle pose', idle.join(' -> '), idle[0] !== idle[1] ? 'animates' : 'FAIL: still');
   log('the Ancient talking: mode', talk.mode, '| open', talk.open, talk.name, '| head yaw (stays at -0.45)', talk.hy, 'lift', talk.hx, '| body at', JSON.stringify(talk.pos), talk.mode === 'talk' && talk.open && talk.hx < -0.1 && Math.abs(talk.hy + 0.45) < 0.05 && talk.pos.every((v) => v === 0) ? 'ok' : 'FAIL');
@@ -76,5 +77,5 @@ module.exports = async (p) => {
     return { sampled: n, inRoom: bad, pickupsInRoomNow: now };
   });
   log('Blossom and Flint spawn spots in the church:', JSON.stringify(pk), !pk.inRoom && !pk.pickupsInRoomNow ? 'ok' : 'FAIL');
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

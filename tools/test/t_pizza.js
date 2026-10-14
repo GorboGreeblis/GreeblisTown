@@ -1,12 +1,16 @@
-// The phone and the pizza courier: the phone is locked (its connection to the Portal blocked) until MUSHROOM
-// has a Blossom, then calls NEXTESSA for the rest of the session; and the courier's delivery itself.
-//   NOSHOT=1 node shot.js <url> x.png ./t_pizza.js   (PART=lock,courier runs only those)
+// The phone and the pizza courier: the phone is locked until MUSHROOM has a Blossom, then calls NEXTESSA for the rest
+// of the session; and the courier's delivery itself.
+// Env: PART=lock,courier (only those parts).
+// Output: `== part: <name>` and each part's lines (below), `err <n>`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_pizza.js
+const { log, start, logErrors } = require('./lib.js');
 
-// The phone booth (and so NEXTESSA's pizza) is locked until MUSHROOM has been given a Blossom: before, its
-// connection to the Portal is blocked and no courier is called; after, it calls her, and it stays unlocked for the session.
-const lock = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(640, 60); await W(1500);
+// The phone booth (and so NEXTESSA's pizza) is locked until MUSHROOM has been given a Blossom: before, its connection
+// to the Portal is blocked and no courier is called; after, it calls her, and it stays unlocked for the session.
+// Prints the phone's menu, what it says and the courier's state before and after, each ending in `ok` or `FAIL`.
+const lock = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const usePhone = () => p.evaluate(() => {
     for (let i = 0; i < 10 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {}
     const ph = z.list.find((s) => s.id === 'phone');
@@ -33,13 +37,13 @@ const lock = async (p, out) => {
   // and it stays unlocked (nothing in the session locks it again)
   await W(3000);
   log('still unlocked later:', await p.evaluate(() => Kt.phone));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
-// The pizza courier: shortens the call delay, calls a pizza (ue.call) and skips the dialogue, then prints the courier's
-// name, spawn spot and state, and 20 s later where it is (or 'gone') and the error count.
-const courier = async (p, out) => {
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
+// The pizza courier: the call delay shortened, a pizza called (ue.call) and the dialogue skipped. Prints the courier's
+// name, spawn spot and state, and 20 s later where it is (or `gone`) and the error count.
+const courier = async (p) => {
+  await start(p);
   await p.evaluate(() => { t.pizza.callDelayMs = 300; At.position.set(-7, 0, 21); ue.call(); });
   for (let k = 0; k < 8; k++) { await p.waitForTimeout(400); await p.evaluate(() => { try { qt.skipAll(); qt.advance(); } catch (e) {} }); }
   await p.waitForTimeout(3000);

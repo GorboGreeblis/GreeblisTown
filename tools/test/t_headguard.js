@@ -1,9 +1,14 @@
-// The VR head guard (JGP.headGuard): the signed distance to solid structures at known spots, and how dark
-// the view goes with a (pretend) headset there. VR can't run headless, so the guard's test probe
-// (JGP.headGuard.at) stands in for the headset for a few frames at each spot. Run with VW=320 VH=240.
+// The VR head guard (JGP.headGuard): the signed distance to solid structures at known spots, and how dark the view
+// goes with a headset there. VR cannot run headless, so the guard's test hook (JGP.headGuard.at) stands in for the
+// headset for a few frames at each spot.
+// Env: none.
+// Output: per spot `<spot>: distance <m> m, dark <0..1>`, then `after: dark <n> | err <n>`.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_headguard.js
+const { log, start } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(100, 60); await W(1500);
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const spots = await p.evaluate(() => {
     const K = (name, lx, lz) => { const Bd = F.buildings.find((q) => q.name === name); return F.world(Bd, lx, lz); };
     return [

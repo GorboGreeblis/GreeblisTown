@@ -3,21 +3,24 @@
 // with the head nudged by less than a pixel (a millimetre sideways and up, a hundredth of a degree of yaw and
 // pitch). Nothing moves in the world between those renders, so a pixel that changes a lot is one the head's own
 // smallest motion makes flicker: a thin picket, a far edge, a texture with no mipmaps, two faces fighting.
-// For each spot: how many pixels flicker, and which things they land on (up to RAYS rays, default 700, cast
-// through the flickering pixels and named by owner as t_perf names them, with the mean distance), plus a heat
-// map PNG, <out>_<spot>.png (the view dimmed, flickering pixels red). SPOTS (JSON {name: [x, z, yawDeg, pitchDeg]})
-// replaces the built-in spots; PX sets the size; THRESH the change (0 to 255 on a channel) that counts, default 40.
-//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_shimmer.js
+// For each spot: how many pixels flicker, and what they land on (rays cast through a sample of them, each hit named by
+// owner as t_perf.js names them, with the mean distance), plus a heat map (the view dimmed, flickering pixels red).
+// Env: SPOTS (JSON {name: [x, z, yaw°, pitch°]}, replaces the built-in spots); PX (the eye's size, px, default 1600);
+//   THRESH (the change on a channel that counts, 0 to 255, default 40); RAYS (rays cast, default 700).
+// Output: per spot `<spot>: <n> flickering pixels (<p>% of the eye; by nudge …) | on: <owner>: <p>% at <d> m | …`,
+//   then `err <n>`; <out>_<spot>.png (400×400 px) per spot.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_shimmer.js
+const { log, start, savePng, outName, logErrors } = require('./lib.js');
+
 module.exports = async (p, out) => {
-  const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(160, 120); await W(2500);
+  await start(p, 2500);
   const PX = +(process.env.PX || 1600), TH = +(process.env.THRESH || 40), RAYS = +(process.env.RAYS || 700);
   const SPOTS = process.env.SPOTS ? JSON.parse(process.env.SPOTS) : {
     spawn_billboard: [-36.3, -20, -118, 8], spawn_park: [-36.3, -20, 62, 0], garden_to_church: [0, 8, 180, 2],
     floor_north: [-28, 10, 0, 0], post_office_sw: [18, -18, 45, 0], gate_north: [0, 36, 0, 2], secret_room: null,
   };
   for (const [name, spot] of Object.entries(SPOTS)) {
-    const r = await p.evaluate(async ([name, spot, PX, TH, RAYS]) => {
+    const r = await p.evaluate(async ([spot, PX, TH, RAYS]) => {
       const gl = O.getContext();
       let E, yaw, pitch;
       // (never exactly level: at a pitch of exactly 0 the renderer's own precision makes a frame differ from the next in
@@ -26,8 +29,8 @@ module.exports = async (p, out) => {
       else {
         // (the secret room: 2.4 m from the ANCIENT, looking at it and a little down at the floor)
         const sl = JGP.slug && JGP.slug.ent; if (!sl) return null; const g = sl.group.position;
-        const a = Math.atan2(-g.x, -g.z); E = new THREE.Vector3(g.x + 2.4 * Math.sin(a + Math.PI), 1.6, g.z + 2.4 * Math.cos(a + Math.PI));
-        E.set(g.x - 2.4 * Math.sin(a), 1.6, g.z - 2.4 * Math.cos(a)); yaw = Math.atan2(g.x - E.x, g.z - E.z); pitch = -0.35;
+        const a = Math.atan2(-g.x, -g.z);
+        E = new THREE.Vector3(g.x - 2.4 * Math.sin(a), 1.6, g.z - 2.4 * Math.cos(a)); yaw = Math.atan2(g.x - E.x, g.z - E.z); pitch = -0.35;
       }
       const cam = new THREE.PerspectiveCamera(96, 1, 0.15, B.far), hidden = At.visible; At.visible = !1;
       const look = (dx, dy, dyaw, dpitch) => {
@@ -89,10 +92,10 @@ module.exports = async (p, out) => {
       cx.putImageData(im, 0, 0);
       O.setSize(innerWidth, innerHeight); At.visible = hidden;
       return { n, pct: +((100 * n) / (PX * PX)).toFixed(2), byNudge, cast, missed, rows, png: cv.toDataURL('image/png') };
-    }, [name, spot, PX, TH, RAYS]);
+    }, [spot, PX, TH, RAYS]);
     if (!r) { log(name, ': no such spot'); continue; }
-    fs.writeFileSync(out.replace('.png', '_' + name + '.png'), Buffer.from(r.png.split(',')[1], 'base64'));
+    savePng(outName(out, name), r.png);
     log(name + ': ' + r.n + ' flickering pixels (' + r.pct + '% of the eye; by nudge 1 mm x / 1 mm y / 0.01° yaw / 0.01° pitch: ' + r.byNudge.join(' / ') + ') | on: ' + r.rows.join(' | ') + (r.missed ? ' | ' + r.missed + ' of ' + r.cast + ' rays hit nothing' : ''));
   }
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

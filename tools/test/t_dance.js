@@ -1,16 +1,19 @@
 // Planting and dancing at the Garden Event: every menu holds only Talk (and Give a blossom), each creature's moves
 // move it, SPARKAKUS's moves measured beside the others', and frames of his funky dance against the ground.
-//   VW=320 VH=240 node shot.js <url> x.png ./t_dance.js   (PART=moves,sparkakus,funk runs only those)
+// Env: PART=moves,sparkakus,funk (only those parts).
+// Output: `== part: <name>` and each part's lines (below); the renders named there.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_dance.js
+const { log, start, render, outName, startEvent, logErrors } = require('./lib.js');
 
-// Planting and dancing are creature animations, not menu options. Checks:
-// 1. every creature's menu holds only Talk (and "Give a blossom" while the player has one), and ZOLLOD's opens the shop;
-// 2. each creature's own planting move and dance (JGP.plantMove / JGP.danceMove, keyed by Xt(ent)) moves it;
-// 3. at the Garden Event (with Seeds) creatures plant, then dance while FORTIZMO plays.
-// Run with run.js. Headless game time is slow: the Event part waits on Re.t and can take several minutes.
-const moves = async (p, out) => {
+// Planting and dancing are creature animations, not menu options: every creature's menu holds only Talk (and "Give a
+// blossom" while the player has one), and ZOLLOD's opens the shop; each creature's own planting move and dance
+// (JGP.plantMove, JGP.danceMove, keyed by Xt(ent)) moves it; at the Garden Event (with the Seeds) creatures plant,
+// then dance while FORTIZMO plays (the Event waits on game time and can take several minutes). Prints `menus ok` (or
+// `BAD: …`), each creature's largest plant and dance offset, then the most planting and dancing at once.
+const moves = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
-  console.log(await p.evaluate(() => {
+  await start(p);
+  log(await p.evaluate(() => {
     Kt.blossoms = 1;
     const bad = [], moves = [];
     for (const e of It.all) {
@@ -29,7 +32,7 @@ const moves = async (p, out) => {
     return 'menus ' + (bad.length ? 'BAD: ' + bad.join(' | ') : 'ok') + '\n' + moves.join('\n');
   }));
   // the Garden Event: count creatures well into each move
-  await p.evaluate(() => { Kt.rewards.seeds = !0; At.position.set(0, 0, 2.8); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await startEvent(p, { at: [0, 2.8] });
   const seen = { plant: 0, dance: 0 };
   for (let k = 0; k < 300 && !(seen.plant && seen.dance); k++) {
     await W(1000);
@@ -37,15 +40,15 @@ const moves = async (p, out) => {
     seen.plant = Math.max(seen.plant, c.plant), seen.dance = Math.max(seen.dance, c.dance);
     if (k === 30 && !seen.dance) await p.evaluate(() => JGP.backpacka.start(Re.t - 1));
   }
-  console.log('event: most planting at once ' + seen.plant + ', most dancing at once ' + seen.dance + ', errors ' + (await p.evaluate(() => Re.errors)));
+  log('event: most planting at once ' + seen.plant + ', most dancing at once ' + seen.dance + ', errors ' + (await p.evaluate(() => Re.errors)));
 };
 
 // SPARKAKUS's planting and dance at the Garden Event, measured like any guest's: how far his move wrapper (and, for
 // comparison, GLYPH's and MUSHROOM's) swings while everyone plants, and while everyone dances to FORTIZMO's horn —
-// the largest offset and turn seen in each phase. Zero means no animation.
-const sparkakus = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+// the largest offset and turn seen in each phase (0 means no animation), and whether he is inside the garden.
+const sparkakus = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   await p.evaluate(() => {
     window.__gbNoThrottle = 1; JGP.visitAt(9e15);
     window.__MV = {};
@@ -61,9 +64,8 @@ const sparkakus = async (p, out) => {
         m.rot = Math.max(m.rot, Math.abs(c.rotation.x) + Math.abs(c.rotation.y) + Math.abs(c.rotation.z));
       }
     });
-    Kt.rewards.seeds = Kt.rewards.stone = !0;
-    At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes();
   });
+  await startEvent(p);
   const t0 = await p.evaluate(() => Re.t);
   for (let k = 0; k < 3000; k++) {
     await W(500);
@@ -75,19 +77,16 @@ const sparkakus = async (p, out) => {
   log('SPARKAKUS inside the garden:', await p.evaluate(() => { const q = st.pos(); return Math.hypot(q.x, q.z) < JGP.GARDEN_R; }), '| err', await p.evaluate(() => Re.errors));
 };
 
-// SPARKAKUS's funky dance at the Garden Event: the Event started with Seeds in, then once FORTIZMO plays and his dance
-// weight is up, eight frames over one eight-beat loop from his front-left (<out>_f*.png) and two from his side
-// (<out>_s*.png); the lowest point of his model against the ground each frame (a foot or tail through the soil would
-// show as a negative), and his paws' nearest approach to his head (clipping would be under ~0.3).
+// SPARKAKUS's funky dance at the Garden Event: the Event started with the Seeds, then, once FORTIZMO plays and his
+// dance weight is up, eight frames over one eight-beat loop from his front-left (<out>_f*.png) and two from his side
+// (<out>_s*.png), with the lowest point of his model against the ground each frame (a foot or tail through the soil
+// shows as a negative). Prints `dancing: <bool>`, where he is and his facing, the lowest points, then `err <n>`.
 const funk = async (p, out) => {
-  const fs = require('fs'), W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
-  const shot = (name, cam, look) => p.evaluate(([cam, look]) => {
-    const c = new THREE.PerspectiveCamera(45, 4 / 3, 0.05, 300);
-    c.position.set(...cam); c.lookAt(...look); c.updateMatrixWorld(); c.updateProjectionMatrix();
-    O.setSize(800, 600, !1); O.render(C, c); const d = O.domElement.toDataURL('image/png'); O.setSize(innerWidth, innerHeight); return d;
-  }, [cam, look]).then((d) => fs.writeFileSync(out.replace('.png', '_' + name + '.png'), Buffer.from(d.split(',')[1], 'base64')));
-  await p.evaluate(() => { window.__gbNoThrottle = 1; JGP.visitAt(9e15); Kt.rewards.seeds = Kt.rewards.stone = !0; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
+  const shot = (name, cam, look) => render(p, outName(out, name), cam, look, { fov: 45 });
+  await p.evaluate(() => { window.__gbNoThrottle = 1; JGP.visitAt(9e15); });
+  await startEvent(p);
   const t0 = await p.evaluate(() => Re.t);
   let ok = !1;
   for (let k = 0; k < 2000; k++) {
@@ -97,20 +96,17 @@ const funk = async (p, out) => {
     if (r[2] === 'dance' && r[3] > 0.95) { ok = !0; break; }
   }
   log('dancing:', ok);
-  if (!ok) return log('err', await p.evaluate(() => Re.errors));
+  if (!ok) return logErrors(p);
   const info = () => p.evaluate(() => {
-    const g = st.group, v = new THREE.Vector3(), h = new THREE.Vector3(), hd = [];
+    const g = st.group, v = new THREE.Vector3();
     g.updateMatrixWorld(!0);
     let lo = 1e9;
     g.traverse((o) => { if (!o.isMesh || !o.geometry.attributes.position) return; const P = o.geometry.attributes.position; for (let k = 0; k < P.count; k += 3) lo = Math.min(lo, v.fromBufferAttribute(P, k).applyMatrix4(o.matrixWorld).y); });
-    const q = st.pos(), ground = JGP.groundAt ? JGP.groundAt(q.x, q.z) : 0;
-    // the paws (the mitt spheres, found by their orange material under an arm's hand group) against the head's centre
-    const heads = []; g.traverse((o) => { if (o.isMesh && o.material && o.material.color && o.material.color.getHexString() === 'f2c21a') { o.getWorldPosition(h); heads.push(h.clone()); } });
-    const eye = heads.length ? heads.reduce((a, b) => a.add(b), new THREE.Vector3()).multiplyScalar(1 / heads.length) : null;
-    return { lo: +(lo - ground).toFixed(3), eyes: heads.length, ry: +(g.rotation.y).toFixed(2), at: [q.x, q.y, q.z], face: g.rotation.y };
+    const q = st.pos();
+    return { lo: +(lo - JGP.groundAt(q.x, q.z)).toFixed(3), at: [q.x, q.y, q.z], face: g.rotation.y };
   });
   const a0 = await info();
-  log('eyes found', a0.eyes, '| he is at', a0.at.map((v) => +v.toFixed(2)).join(','), '| facing', a0.face.toFixed(2));
+  log('he is at', a0.at.map((v) => +v.toFixed(2)).join(','), '| facing', a0.face.toFixed(2));
   const los = [];
   for (let k = 0; k < 8; k++) {
     // (from in front and above, over the heads of the others round the garden)
@@ -121,7 +117,7 @@ const funk = async (p, out) => {
     await W(190);
   }
   log('lowest point above the ground per frame (m):', los.join(' '));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
 module.exports = require('./parts.js')({ moves, sparkakus, funk });

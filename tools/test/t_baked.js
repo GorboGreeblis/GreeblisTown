@@ -1,12 +1,16 @@
-// Animations acting on merged-away parts: a fresh copy of every creature is built while every part the build's
-// merges remove is recorded; each copy is then driven through idle (12 s), walking, a Talk dialogue, a Blossom
-// dialogue, busy with dance, a vignette and lying, and any removed part its animation still moves, hides,
-// shows or rescales is reported by creature (such a part is no longer drawn: the change never shows, as with
-// GOOWARD's squint and SOMLET's lids before userData.keep). The copies are removed after.
-//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_baked.js
+// Animations acting on merged-away parts: a fresh copy of every creature is built while every part the build's merges
+// remove is recorded; each copy is then driven through idle (12 s), walking, busy with a dance, a vignette, lying, a
+// Talk dialogue and a Blossom dialogue, and any removed part its animation still moves, hides, shows or rescales is
+// reported (such a part is no longer drawn, so the change never shows: mark it userData.keep). The copies are removed
+// after.
+// Env: none.
+// Output: per creature `<name>: <n> merged-away objects, none moved` (or `MOVED: <phase>:<part>…`), then `err <n>`.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_baked.js
+const { start } = require('./lib.js');
+
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
-  await p.mouse.click(160, 120); await W(2000);
+  await start(p, 2000);
   await p.evaluate(() => {
     const removed = new Set(), orig = THREE.Object3D.prototype.remove;
     THREE.Object3D.prototype.remove = function (...objs) { if (window.__bkRec) for (const o of objs) o && o !== this && removed.add(o); return orig.apply(this, objs); };
@@ -26,7 +30,7 @@ module.exports = async (p) => {
     __bk.snapAll();
   });
   const phase = async (name, on, off, ms) => {
-    await p.evaluate(([name, on]) => { __bk.snapAll(); __bk.copies.forEach((q) => new Function('c', on)(q.c)); }, [name, on]);
+    await p.evaluate((on) => { __bk.snapAll(); __bk.copies.forEach((q) => new Function('c', on)(q.c)); }, on);
     await W(ms);
     await p.evaluate(([name, off]) => { __bk.diffAll(name); __bk.copies.forEach((q) => new Function('c', off)(q.c)); }, [name, off]);
   };
@@ -41,7 +45,7 @@ module.exports = async (p) => {
     for (const gift of [false, true]) {
       await p.evaluate(([i, gift]) => { __bk.snapAll(); const c = __bk.copies[i].c; Kt.blossoms = Math.max(Kt.blossoms, 2); try { (c.def.lines || gift) && te(c, gift); } catch (x) {} }, [i, gift]);
       await W(1800);
-      await p.evaluate(([i, gift]) => { __bk.diffAll(gift ? 'gift' : 'talk'); try { for (let k = 0; k < 20 && qt.isOpen; k++) qt.skipAll(); } catch (x) {} }, [i, gift]);
+      await p.evaluate((gift) => { __bk.diffAll(gift ? 'gift' : 'talk'); try { for (let k = 0; k < 20 && qt.isOpen; k++) qt.skipAll(); } catch (x) {} }, gift);
       await W(300);
     }
   }

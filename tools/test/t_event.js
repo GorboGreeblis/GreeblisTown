@@ -1,14 +1,18 @@
-// The Garden Event's planting: every planter grows one flower at its spot, and three Events in a row (only the
-// first grows flowers; the second and third replay the same spots and leave the garden as it was).
-//   VW=200 VH=150 node shot.js <url> x.png ./t_event.js   (PART=planters,rounds runs only those)
+// The Garden Event's planting: every planter grows one flower at its spot, and three Events in a row (only the first
+// grows flowers; the second and third replay the same spots and leave the garden as it was). Slow.
+// Env: PART=planters,rounds (only those parts).
+// Output: `== part: <name>` and each part's lines (below).
+//   VW=200 VH=150 NOSHOT=1 node test/shot.js <url> x.png test/t_event.js
+const { log, start, startEvent, logErrors, watchAncient, ancientReport } = require('./lib.js');
 
-// The Garden Event's planters, one by one (owner's rules): every planting creature, SPARKAKUS too, plants at a spot
+// The Garden Event's planters, one by one (the owner's rules): every planting creature, SPARKAKUS too, plants at a spot
 // inside the garden and grows a flower there in the first Event; SPARKAKUS has a Talk line through it; the church's
-// ANCIENT never dances or plants; and ZOLLOD (freed, and out on a visit to KING DINO when it starts) goes to the
-// garden straight, never back into his kiosk.
-const planters = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+// ANCIENT never plants or dances (lib.js watchAncient); and ZOLLOD (freed, and out on a visit to KING DINO when it
+// starts) goes to the garden straight, never back into his kiosk. Prints SPARKAKUS's Talk at his spot, one line with
+// the planters, the plants, the missing flowers and ZOLLOD's frames in his kiosk, then the Ancient's line (ok or FAIL).
+const planters = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   // ZOLLOD freed and sent to KING DINO, the Event started once he is out of his kiosk
   await p.evaluate(() => { window.__gbNoThrottle = 1; Kt.shyFree = !0; JGP.visitAt(Re.t, 'cutebex', 'm_kingdino'); });
   for (let k = 0; k < 400; k++) {
@@ -17,18 +21,17 @@ const planters = async (p, out) => {
     if (out) break;
   }
   await p.evaluate(() => {
-    window.__EV = { zIn: 0, slug: new Set(), spTalk: null, pl: {} };
+    window.__EV = { zIn: 0, pl: {} };
     L.push(() => {
       if (!me.active) return;
       const z0 = It.all.find((q) => q.def.__type === 'cutebex'), KB = F.buildings.find((B) => B.name === 'garden'), q = z0.group.position;
       F.inHull(KB, q.x, q.z) && __EV.zIn++;
-      __EV.slug.add(JGP.slug.mode());
       // (each planter's spot, kept: the slots are cleared when the Event ends)
       for (const e of It.all) e.finaleSlot && e.id !== 'frog' && Math.hypot(e.finaleSlot.x, e.finaleSlot.z) < JGP.GARDEN_R && (__EV.pl[e.id] = { name: e.def.name, x: e.finaleSlot.x, z: e.finaleSlot.z });
     });
-    Kt.rewards.seeds = Kt.rewards.stone = !0; Kt.rewards.snacks = !1;
-    At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes();
   });
+  await watchAncient(p);
+  await startEvent(p, { snacks: false });
   // through the planting and the growing (game time)
   const t0 = await p.evaluate(() => Re.t);
   let tk = 0;
@@ -44,17 +47,19 @@ const planters = async (p, out) => {
   log(await p.evaluate(() => {
     const g = JGP.garden, planters = Object.entries(__EV.pl);
     const has = (x, z) => g.plants.some((pl) => Math.hypot(pl.g.position.x - x, pl.g.position.z - z) < 1.7);
-    const missing = planters.filter(([id, q]) => !(id === 'blinker' && Kt.rewards.snacks) && !has(q.x, q.z)).map(([id, q]) => q.name);
+    const missing = planters.filter(([id, q]) => !(id === 'blinker' && Kt.rewards.snacks) && !has(q.x, q.z)).map(([, q]) => q.name);
     const sp = st.pos(), spFlower = has(sp.x, sp.z);
-    return 'planters ' + planters.length + ' + SPARKAKUS | plants ' + g.plants.length + ' | missing a flower: ' + (missing.join(', ') || 'none') + ' | SPARKAKUS flower: ' + spFlower + ' | the ANCIENT was: ' + [...__EV.slug].join(', ') + ' | ZOLLOD frames inside his kiosk during the Event: ' + __EV.zIn + ' | err ' + Re.errors;
+    return 'planters ' + planters.length + ' + SPARKAKUS | plants ' + g.plants.length + ' | missing a flower: ' + (missing.join(', ') || 'none') + ' | SPARKAKUS flower: ' + spFlower + ' | ZOLLOD frames inside his kiosk during the Event: ' + __EV.zIn + ' | err ' + Re.errors;
   }));
+  log('the ANCIENT:', await ancientReport(p));
 };
 
 // Three Garden Events in a row: only the first grows flowers (one per planter); the second and third send
-// everyone back to the same spots to plant, and the garden is left exactly as the first Event left it.
-const rounds = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(100, 60); await W(1500);
+// everyone back to the same spots to plant, and the garden is left exactly as the first Event left it. Prints one
+// line per Event ending in `ok` or `FAIL`, whether events 2 and 3 used event 1's spots, the spots, then `err <n>`.
+const rounds = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const spotsByRound = [];
   for (let ev = 1; ev <= 3; ev++) {
     // wait for everyone to be home (or 60 game s) before the next Event
@@ -63,12 +68,8 @@ const rounds = async (p, out) => {
       if (ok) break;
       await W(1000);
     }
-    const before = await p.evaluate(() => {
-      Kt.rewards.seeds = !0; At.position.set(0, 0, 3);
-      window.__snap = JGP.garden.plants.map((q) => [q.g.position.x, q.g.position.z, q.g.scale.x, q.grow]);
-      (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes();
-      return window.__snap.length;
-    });
+    const before = await p.evaluate(() => (window.__snap = JGP.garden.plants.map((q) => [q.g.position.x, q.g.position.z, q.g.scale.x, q.grow])).length);
+    await startEvent(p);
     let spots = null, maxPlanting = 0;
     for (let k = 0; k < 4000; k++) {
       await W(1000);
@@ -96,7 +97,7 @@ const rounds = async (p, out) => {
   log('events 2 and 3 use event 1 spots:', same(1), same(2));
   log('spots 1:', (spotsByRound[0] || []).join(' '));
   log('spots 2:', (spotsByRound[1] || []).join(' '));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
 module.exports = require('./parts.js')({ planters, rounds });

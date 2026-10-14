@@ -1,11 +1,16 @@
-// The owner's extra flavor Talk lines: every creature's Talk outside the Event goes through all its lines in turn,
-// the new last one included (printed in full); SPARKAKUS keeps his quest Talk only (owner's call); at the
-// Garden Event each creature's Talk gives only its Event line, never a flavor line, SPARKAKUS's included (beside
-// him at his garden spot).
-//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_flavor.js
+// The flavour Talk lines (the owner's): every creature's Talk outside the Event goes through all its lines in turn, the
+// last (the flavour line) included; SPARKAKUS keeps his quest Talk only (the owner's call); at the Garden Event each
+// creature's Talk gives only its Event line, never a flavour line, SPARKAKUS's included (beside him at his garden
+// spot).
+// Env: none.
+// Output: per creature `<id> <n> lines | last: "…" | all distinct: <bool>`, SPARKAKUS's two Talks, then at the Event
+//   one line per creature ending in `ok` or `FLAVOR LEAKED` and SPARKAKUS's ending in `ok` or `MISSING`; `err <n>`.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_flavor.js
+const { log, start, startEvent, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   // (the whole line, every page, as handed to the dialogue)
   await p.evaluate(() => { const o = qt.open; window.__said = null; qt.open = function (a, b, t, ...r) { window.__said = t; return o.call(this, a, b, t, ...r); }; });
   const said = () => p.evaluate(() => { const t = __said; __said = null; try { qt.close(); } catch (e) {} return t; });
@@ -16,13 +21,14 @@ module.exports = async (p) => {
     for (let k = 0; k < n; k++) { await p.evaluate((id) => { const e = It.all.find((q) => q.id === id || q.def.__type === id); Kt.gem = !1; te(e); }, id); r.push(await said()); }
     log(id, n, 'lines | last:', JSON.stringify(r[n - 1]), '| all distinct:', new Set(r).size === n);
   }
-  // (SPARKAKUS has no flavor line: his Talk is his quest, as before)
+  // (SPARKAKUS has no flavour line: his Talk is his quest)
   const sp = [];
   await p.evaluate(() => { Kt.artifacts = 1; });
   for (let k = 0; k < 2; k++) { await p.evaluate(() => LIB.talk()); sp.push(await said()); }
   log('SPARKAKUS, 1 Artifact, two Talks:', JSON.stringify(sp));
   // ---- the Event: the station's Talk run on each, twice
-  await p.evaluate(() => { Bulb.hold = !1; Kt.rewards.seeds = Kt.rewards.stone = !0; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { Bulb.hold = !1; });
+  await startEvent(p);
   for (let k = 0; k < 40 && !(await p.evaluate(() => me.active)); k++) await W(250);
   await W(1500);
   const ev = [];
@@ -54,5 +60,5 @@ module.exports = async (p) => {
   }
   ev.push('SPARKAKUS in the garden: ' + JSON.stringify(spe) + (spe.every((t) => t.includes('Digging in the dirt')) ? ' ok' : ' MISSING'));
   log('Event active', await p.evaluate(() => me.active), '\n ' + ev.join('\n '));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

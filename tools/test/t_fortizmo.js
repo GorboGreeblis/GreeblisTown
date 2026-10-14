@@ -1,8 +1,12 @@
-// Fortizmo's walk behind the bar: four times pushes her roam callback past its wait (headless game time is slow), then
-// samples her every 5 s for 40 s as home z / position x,z (* while moving) and heading. Prints the samples and errors.
-// Run: NOSHOT=1 node shot.js <url> x.png ./t_fortizmo.js
+// FORTIZMO's walk behind the bar: four times her roam callback is pushed past its wait (headless game time is slow),
+// then she is sampled every 5 s for 40 s.
+// Env: none.
+// Output: one line of samples `<home z>/<x>,<z>[*] ry <heading>` (* while moving), then `err <n>`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_fortizmo.js
+const { start, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
+  await start(p);
   const st = () => p.evaluate(() => { const f = It.byId.frog; return f.home.z.toFixed(1) + '/' + f.group.position.x.toFixed(2) + ',' + f.group.position.z.toFixed(1) + (f.moving ? '*' : '') + ' ry ' + f.group.rotation.y.toFixed(2); });
   const out = [];
   for (let r = 0; r < 4; r++) {
@@ -11,5 +15,5 @@ module.exports = async (p) => {
     for (let k = 0; k < 8; k++) { await p.waitForTimeout(5000); out.push(await st()); }
   }
   console.log(out.join('  '));
-  console.log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

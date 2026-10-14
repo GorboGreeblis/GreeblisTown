@@ -2,6 +2,9 @@
 // carries) is the minified decode half of, and that pack.js encodes with. Its encoder output is byte-identical to
 // pack.js's; to change the model, change it here and rebuild model.js and pack.js's encoder from it together.
 // cmz(data, len, enc) is a generator: it yields progress (bytes done) every 16 KB and returns the result.
+// Env: none.
+// Output: none (a module exporting cmz).
+//   const cmz = require('./cmz.js');
 function* cmz(data, len, enc) {
   const NC = 12, TB = 23, MINL = 4, NX = 3 * NC + 3, I = Math.imul;
   const LR1 = 6.4e-9, LR2 = 4e-9, LRF = 1.75e-9;

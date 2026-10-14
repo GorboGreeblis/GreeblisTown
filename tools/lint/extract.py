@@ -1,12 +1,17 @@
-# Cuts the game script (the last bare `<script>` line of index.html, or of GAME) out to game.js in the current
-# folder; prints the `<script>` line's index.html line number (a game.js line plus that number is its index.html
-# line) and the last line.
-#   python3 extract.py   (lint.sh runs it from this folder)
-import re,sys
+"""Cuts the game script out of the page for the lint: every line after the page's last bare `<script>` line up to its
+`</script>`, written to game.js in this folder.
+Env: PAGE (the page to read, default the repo root's index.html; GAME is read too). Once the root is packed, point it
+  at tools/index.html.
+Output: `<offset> <end>`: the `<script>` line's index.html line number (a game.js line plus the offset is its
+  index.html line) and the `</script>` line's; game.js.
+  python3 extract.py   (lint.sh runs it from tools/lint/)
+"""
 import os
-s=open(os.environ.get('GAME',os.path.join(os.path.dirname(os.path.abspath(__file__)),'../../index.html'))).read().split('\n')
-# game: the game script's lines, after its bare `<script>` line up to the closing </script>
-start=max(i for i,l in enumerate(s) if l.strip()=='<script>')
-end=next(i for i in range(start+1,len(s)) if s[i].strip()=='</script>')
-open('game.js','w').write('\n'.join(s[start+1:end])+'\n')
-print(start+1,end)
+
+here = os.path.dirname(os.path.abspath(__file__))
+page = os.environ.get('PAGE') or os.environ.get('GAME') or os.path.join(here, '..', '..', 'index.html')
+s = open(page, encoding='utf-8').read().split('\n')
+start = max(i for i, l in enumerate(s) if l.strip() == '<script>')
+end = next(i for i in range(start + 1, len(s)) if s[i].strip() == '</script>')
+open(os.path.join(here, 'game.js'), 'w', encoding='utf-8').write('\n'.join(s[start + 1:end]) + '\n')
+print(start + 1, end)

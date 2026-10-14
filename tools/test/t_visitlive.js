@@ -1,14 +1,17 @@
-// Visits as they happen on their own: each visit and vignette with the gaps between them, the pairs played and
-// the rate per hour; and, over VISIT_S game seconds, how often each creature went out or was called on.
-//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_visitlive.js   (PART=live,counts runs only those)
+// Visits as they happen on their own: each visit and vignette with the gaps between them, the pairs played and the
+// rate per hour; and how often each creature went out or was called on.
+// Env: PART=live,counts (only those parts); LIVE_S (game s for `live`, default 300; GAME is read too); VISIT_S (game
+//   s for `counts`, default 600); SHY=1 (ZOLLOD stays shy in `counts`).
+// Output: `== part: <name>` and each part's lines (below).
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_visitlive.js
+const { log, start } = require('./lib.js');
 
-// Visits and vignettes as they happen on their own (nothing forced): GAME seconds of game time (default 300), the
-// player parked out of the way. Prints each visit as it starts and how it ends, and each vignette as it starts with
-// the gap between the two creatures (every one must be side by side), then the totals, the pairs played and the
-// rate per hour, and the error count.
-const live = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a), SEC = +(process.env.GAME || 300);
-  await p.mouse.click(100, 60); await W(1500);
+// Visits and vignettes as they happen on their own (nothing forced), the player parked out of the way. Prints each
+// visit as it starts and how it ends, and each vignette as it starts with the gap between the two creatures (every one
+// must be side by side), then the totals, the pairs played, the rate per hour and the error count.
+const live = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms), SEC = +(process.env.LIVE_S || process.env.GAME || 300);
+  await start(p);
   await p.evaluate(() => { At.position.set(0, 0, 44); window.__VL = { seen: {}, vis: {} }; });
   const t0 = await p.evaluate(() => Re.t);
   let far = 0, nVig = 0, nVis = 0, done = 0;
@@ -37,13 +40,13 @@ const live = async (p, out) => {
   log('game minutes', mins.toFixed(1), '| visits started', nVis, 'home again', done, '| vignettes', nVig, 'not side by side', far, '| distinct pairs', s.pairs, 'of', s.all, '| rate', Math.round((nVig / mins) * 60), 'an hour | err', s.err);
 };
 
-// The visits as they run on their own (no visit forced): over VISIT_S seconds of game time (default 600), who went
-// visiting and who was called on, how often the church's ANCIENT was visited, and whether anyone ended up off its
-// own ground. ZOLLOD takes part only once OVERCOMING SHYNESS has freed him (SHY=1 runs him still shy: he must then
-// neither visit nor be visited). Prints the counts per creature and per pair, then the ones left off home ground.
-const counts = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+// The visits as they run on their own (no visit forced): who went visiting and who was called on, how often the
+// church's ANCIENT was visited, and whether anyone ended up off its home ground (JGP.homeGround). ZOLLOD takes part
+// only once OVERCOMING SHYNESS has freed him (with SHY=1 he stays shy and must neither visit nor be visited). Prints
+// the visits made every 120 game s, the counts per creature, then the ones left off home ground and the error count.
+const counts = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const secs = +(process.env.VISIT_S || 600), shy = process.env.SHY === '1';
   await p.evaluate((shy) => { window.__gbNoThrottle = 1; Kt.shyFree = !shy; At.position.set(0, 0, 2); window.__t0 = Re.t; }, shy);
   let last = 0;

@@ -1,14 +1,19 @@
-// Z-fighting scan over everything visible: every depth-tested triangle of every mesh (instanced ones too) in
-// world space is grouped by its plane; two triangles closer than TOL (default 6 mm, about what a 24-bit depth
-// buffer resolves at 100 m with VR's 0.15 m near plane) in nearly the same plane that genuinely overlap (by
-// more than MINA m², default 2 cm², not just meeting at an edge) and can be seen from the same side are a
-// clash. Clashes are grouped by the two parts (material colour, mesh name, owning creature or building) with
-// a world position for each, so every one can be found and fixed. Transparent surfaces that don't write
-// depth (and polygon-offset ones) are left out: they cannot z-fight.
-// Run after boot: NOSHOT=1 node shot.js <url> x.png ./t_zfight.js   (CREATURES=0 to leave creatures out)
+// Z-fighting scan over everything visible: every depth-tested triangle of every mesh (instanced ones too) in world
+// space is grouped by its plane; two triangles closer than TOL (about what a 24-bit depth buffer resolves at 100 m with
+// VR's 0.15 m near plane) in nearly the same plane that overlap by more than MINA (not just meeting at an edge) and
+// can be seen from the same side are a clash. Clashes are grouped by their two parts (material colour, mesh name,
+// owning creature or building), unnamed scenery located to the nearest 4 m, and kept only when an eye position the
+// player can have sees them. Transparent surfaces that write no depth, and polygon-offset ones, cannot z-fight and are
+// left out. Check a clash on screen with t_zcheck.js.
+// Env: TOL (m, default 0.006); MINA (m², default 0.0002); TOP (clashes printed, default 80); VISALL=1 (skips the
+//   visibility test); CREATURES=0 (leaves the creatures out).
+// Output: `triangles <n>, parts <n>, near-coplanar pairs compared <n>, visible clashes <n> (<n> more that no eye can
+//   see)`, one line per clash (parts, overlaps, area, gap, where, seen at), then `err <n>`.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_zfight.js
+const { log, start, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(100, 60); await W(2500);
+  await start(p, 2500);
   const res = await p.evaluate(({ TOL, MINA, CRE, VISALL }) => {
     const V = THREE.Vector3, tris = [], parts = [], m4 = new THREE.Matrix4(), mi = new THREE.Matrix4();
     const owner = (o) => { for (let a = o; a; a = a.parent) { const e = It.all.find((q) => q.group === a); if (e) return 'creature ' + (e.def && e.def.name); } return null; };
@@ -151,5 +156,5 @@ module.exports = async (p) => {
   }, { TOL: +(process.env.TOL || 0.006), MINA: +(process.env.MINA || 2e-4), CRE: process.env.CREATURES !== '0', VISALL: process.env.VISALL || '' });
   log(`triangles ${res.tris}, parts ${res.parts}, near-coplanar pairs compared ${res.compared}, visible clashes ${res.clashes.length} (${res.hidden} more that no eye can see)`);
   res.clashes.slice(0, +(process.env.TOP || 80)).forEach((c) => log('  ' + c));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

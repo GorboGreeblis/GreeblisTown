@@ -1,16 +1,18 @@
 // The owner's script, the parts that move (SPARKAKUS's are in t_sparkakus.js): ANOMALEE's gaze and sad line,
 // MONTGUMMERY's screen, SOMLET's eyes and sleep through the Event, the Event's pizza, ZOLLOD's Event line.
-//   VW=320 VH=240 node shot.js <url> x.png ./t_script.js   (PART=lines,anomalee runs only those)
+// Env: PART=lines,anomalee (only those parts).
+// Output: `== part: <name>` and each part's lines (below), then `err <n>`.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_script.js
+const { log, start, waitGame, closeDialogs, startEvent, logErrors } = require('./lib.js');
 
-// The owner's script, the rest of the parts that move: ANOMALEE's sad line plays its falling notes (her other lines
-// don't); MONTGUMMERY's screen changes face for his Blossom line and comes back; SOMLET's eyes open while she says
-// her thanks for a Blossom, and she sleeps on at the Post Office through the Garden Event; at the Event (Snacks done)
-// the pizza-box stacks stand round the garden and ANOMALEE eats her own open box a slice at a time; ZOLLOD says his
-// Event line when talked to then, and no one at the Event offers a Blossom option.
-const lines = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
-  const waitGame = async (sec) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 4000 && (await p.evaluate(() => Re.t)) - t0 < sec; k++) await W(200); };
+// ANOMALEE's sad line plays its falling notes (her other lines do not); MONTGUMMERY's screen changes face for his
+// Blossom line and comes back; SOMLET's eyes open while she says her thanks for a Blossom, and she sleeps on at the
+// Post Office through the Garden Event; at the Event (Snacks done) the pizza-box stacks stand round the garden and
+// ANOMALEE eats her own open box a slice at a time; ZOLLOD says his Event line when talked to then, and no one at the
+// Event offers a Blossom option. One line per subject with what was measured.
+const lines = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const said = () => p.evaluate(() => (qt.isOpen ? document.getElementById('dlgText').textContent : null));
   const close = async () => { await p.evaluate(() => { for (let k = 0; k < 8 && qt.isOpen; k++) try { qt.advance(); } catch (e) {} }); await W(300); };
   // ---- ANOMALEE: only her sad line (the second) comes with the falling notes
@@ -22,7 +24,7 @@ const lines = async (p, out) => {
   const m0 = await maps();
   await p.evaluate(() => { Kt.blossoms = 1; te(It.byId.w_mont, 1); }); await W(600);
   const m1 = await maps(), montSaid = await said();
-  await close(); await waitGame(7);
+  await close(); await waitGame(p, 7);
   const m2 = await maps();
   log('MONTGUMMERY screen: textures', m0.length, '| swapped for his Blossom line', m0.filter((u, i) => u !== m1[i]).length, '| swapped again after', m1.filter((u, i) => u !== m2[i]).length, '| says', JSON.stringify(montSaid));
   // ---- SOMLET: her open eyes show (more visible parts, lids squashed flat) only while she says her thanks
@@ -35,11 +37,12 @@ const lines = async (p, out) => {
   const s0 = await som();
   await p.evaluate(() => { Kt.blossoms = 1; te(It.byId.m_somlet, 1); }); await W(700);
   const s1 = await som(), somSaid = await said();
-  await close(); await waitGame(6);
+  await close(); await waitGame(p, 6);
   const s2 = await som();
   log('SOMLET eyes: asleep', JSON.stringify(s0), '| thanks', JSON.stringify(s1), '| after', JSON.stringify(s2), '| says', JSON.stringify(somSaid));
   // ---- THE EVENT with the Snacks quest done: pizza boxes, ANOMALEE eating, SOMLET home, ZOLLOD's line
-  await p.evaluate(() => { window.__gbNoThrottle = 1; JGP.visitAt(9e15); Kt.rewards.seeds = Kt.rewards.stone = Kt.rewards.snacks = !0; Kt.blossoms = 2; At.position.set(0, 0, 3); z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await p.evaluate(() => { window.__gbNoThrottle = 1; JGP.visitAt(9e15); Kt.blossoms = 2; });
+  await startEvent(p, { snacks: true });
   for (let k = 0; k < 600 && (await p.evaluate(() => JGP.eventMove)) !== 'plant'; k++) await W(500);
   const piz = () => p.evaluate(() => {
     const st = C.children.find((g) => g.userData && g.userData[7] && g.userData[7].r === 0.35), a = It.byId.blinker.group.position;
@@ -52,7 +55,7 @@ const lines = async (p, out) => {
   let p1 = p0, tp = await p.evaluate(() => Re.t);
   for (let k = 0; k < 800 && !p1.pie; k++) { await W(400); p1 = await piz(); if ((await p.evaluate(() => Re.t)) - tp > 80) break; }
   const tServed = (await p.evaluate(() => Re.t)) - tp;
-  await waitGame(12); const p2 = await piz();
+  await waitGame(p, 12); const p2 = await piz();
   log('PIZZA at the Event: planting starts', JSON.stringify(p0), '| served after', tServed.toFixed(0), 's', JSON.stringify(p1), '| 12 s on', JSON.stringify(p2));
   const s3 = await som();
   log('SOMLET at the Event:', JSON.stringify(s3), '(off her spot < 0.5 and not planting = home)');
@@ -64,14 +67,15 @@ const lines = async (p, out) => {
   // (no one at the Event offers a Blossom: every creature's menu while the player holds two)
   const menus = await p.evaluate(() => It.all.filter((e) => e.group && e.group.parent && !e.hidden).map((e) => { const q = e.group.position; At.position.set(q.x + 1.1, 0, q.z + 1.1); xe.scan(); return (e.id || e.def.__type) + ':' + xe.actions.map((a) => a.label).join('/'); }));
   log('menus at the Event:', menus.join('  '));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
-// ANOMALEE keeps gazing up at the church window with the player close by and through her Talk lines;
-// she turns to the player (head level) for her Blossom line, and for a Talk line during the Event.
-const anomalee = async (p, out) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(100, 60); await W(1500);
+// ANOMALEE keeps gazing up at the church window with the player close by and through her Talk lines; she turns to the
+// player (head level) for her Blossom line, and for a Talk line during the Event. One line per moment: how far she
+// faces off the window and off the player, and her head's tip.
+const anomalee = async (p) => {
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const look = () => p.evaluate(() => {
     const e = It.byId.blinker, g = e.group, q = g.position;
     const toP = Math.atan2(At.position.x - q.x, At.position.z - q.z), win = e.pattern[1].face;
@@ -80,16 +84,16 @@ const anomalee = async (p, out) => {
     return `off the window ${d(g.rotation.y, win).toFixed(2)} rad, off the player ${d(g.rotation.y, toP).toFixed(2)} rad, head tip ${head ? (-head.rotation.x).toFixed(2) : '?'} (${jt.top}${e.gifting ? ', Blossom line' : ''})`;
   });
   const place = () => p.evaluate(() => { const e = It.byId.blinker, q = e.group.position, f = e.pattern[1].face; At.position.set(q.x + 2.6 * Math.sin(f + 1.6), 0, q.z + 2.6 * Math.cos(f + 1.6)); });
-  const clear = () => p.evaluate(() => { for (let i = 0; i < 20 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });
+  const clear = () => closeDialogs(p);
   await place(); await W(3000); log('player close:', await look());
   await p.evaluate(() => te(It.byId.blinker)); await W(3000); log('Talk line:', await look());
   await clear(); await W(500);
   await p.evaluate(() => { Kt.blossoms = 2; te(It.byId.blinker, !0); }); await W(3000); log('Blossom line:', await look());
   await clear(); await W(4000); log('after it:', await look());
-  await p.evaluate(() => { Kt.rewards.seeds = !0; (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await startEvent(p, { at: null });
   for (let k = 0; k < 40 && !(await p.evaluate(() => It.byId.blinker.busy === 'finale' && !It.byId.blinker.moving && bt.live)); k++) await W(1000);
   await p.evaluate(() => { const e = It.byId.blinker, q = e.group.position; At.position.set(q.x + 2.4, 0, q.z + 0.5); te(e); }); await W(3000); log('Talk line at the Event:', await look());
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };
 
 module.exports = require('./parts.js')({ lines, anomalee });

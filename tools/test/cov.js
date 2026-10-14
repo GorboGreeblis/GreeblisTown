@@ -1,11 +1,17 @@
-// Records precise JS coverage (call counts) over a whole play session made of test modules run in turn.
-// node cov.js <url> <out.json> mod1.js mod2.js ...   (MOBILE=1 for a Pixel 7 Chrome context)
-const { chromium, devices } = require('playwright');
+// Precise JS coverage (call counts) of index.html over one play session made of scene scripts run in turn, each with
+// a time limit, the dialogues and panels closed between them.
+// Env: MOBILE=1 (a Pixel 7 in Chrome instead of a 1280×720 desktop); MODT (ms each scene may take, default 600000).
+// Output: per scene `done <scene> <s>s errors <n>` (or `MODULE <scene> threw …`), then the first 20 console errors;
+//   the coverage of the page's scripts to <out.json> (uncov.js and three/prune3.js read it). Each scene's own output
+//   file is x_<scene>.png in the current folder.
+//   node test/cov.js <url> cov_d.json test/cov_extra.js test/talk.js …
 const path = require('path'), fs = require('fs');
+const { launch, isMobile, contextOptions } = require('./browser.js');
+
 (async () => {
   const [url, out, ...mods] = process.argv.slice(2);
-  const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
-  const ctx = await b.newContext(process.env.MOBILE ? { ...devices['Pixel 7'] } : { viewport: { width: 1280, height: 720 } });
+  const b = await launch(['--autoplay-policy=no-user-gesture-required']);
+  const ctx = await b.newContext(contextOptions(isMobile()));
   const p = await ctx.newPage();
   const cdp = await ctx.newCDPSession(p);
   await cdp.send('Profiler.enable'); await cdp.send('Profiler.startPreciseCoverage', { callCount: true, detailed: true });

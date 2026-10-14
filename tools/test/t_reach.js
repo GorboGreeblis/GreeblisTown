@@ -1,8 +1,13 @@
-// Can the player walk to every place a Flint or Blossom can appear? Floods a 0.25 m grid from where the
-// player starts, using the game's own player collision (buildings, solids, creatures, fence), then
-// checks thousands of spawn spots, plus every live pickup, against it.
+// Every place a Flint or Blossom can appear is reachable on foot: a 0.25 m grid flooded from the player's start with
+// the game's own player collision (buildings, solids, creatures, fence), then 4,000 sampled spawn spots and every live
+// pickup checked against it (a pickup is reachable when a reached cell lies within its 1.1 m pick-up radius).
+// Env: none.
+// Output: one JSON line `{samples, unreachable, badSpots, liveUnreachable, flint, blossoms, reachableCells, err}`.
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_reach.js
+const { start } = require('./lib.js');
+
 module.exports = async (p) => {
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
+  await start(p);
   console.log(await p.evaluate(() => {
     const R = t.player.bodyR, S = 0.25, H = t.parkHalf, X0 = -H, Z0 = -H, NX = Math.ceil((2 * H) / S), NZ = Math.ceil((H + t.parkSouth) / S);
     const lim = t.parkHalf - 0.15 - R, limS = t.parkSouth - 0.15 - R;
@@ -14,7 +19,7 @@ module.exports = async (p) => {
       free[i * NZ + k] = Math.hypot(v.x - x, v.z - z) < 0.02 ? 1 : 0;
     }
     const seen = new Uint8Array(NX * NZ), q = [], idx = (x, z) => Math.floor((x - X0) / S) * NZ + Math.floor((z - Z0) / S);
-    const s0 = idx(At.position.x, At.position.z); // start where the player is
+    const s0 = idx(At.position.x, At.position.z); // (where the player starts)
     let st = s0; if (!free[st]) { for (let d = 1; d < 40 && !free[st]; d++) st = s0 + d; }
     seen[st] = 1; q.push(st);
     while (q.length) { const c = q.pop(), i = Math.floor(c / NZ), k = c % NZ;

@@ -1,10 +1,17 @@
-// The roamers: HENNRICK round the Portal, GEMTOE and MAMA GORBO round the park, GOOWARD round his Gallery, the three Dancers on
-// the dance floor. Watches them for a while: where they go, that they never stand anywhere they should not
-// (outside the square, in a building, the garden, the pond, scenery) and never stay stuck; then has MAMA
-// GORBO and GOOWARD meet. Run with a small viewport (VW=320 VH=240).
+// The roamers: HENNRICK round the Portal, GEMTOE and MAMA GORBO round the park, GOOWARD round his Gallery, the three
+// Dancers on the dance floor. Watched for a while: where they go, that they never stand anywhere they must not
+// (outside the square, in a building, the garden, the pond, scenery) and never stay stuck; then MAMA GORBO and GOOWARD
+// meet; then traps: the player steps in front of a walking roamer every few seconds, and some are dropped in tight
+// spots (against the church, the Juice Bar's back corner, the Portal's frame, off the dance floor by the drum kit).
+// Env: ROAM_S (game s of watching, default 150); TRAP_S (game s of traps, default 90).
+// Output: per roamer its spots, longest stuck, bad spots (and `IN THE GALLERY` when found); `MAMA GORBO and GOOWARD:
+//   met after …` (or `no meeting in 90 s`); per roamer `trap: …, now somewhere fine` (or `SOMEWHERE BAD`); `err <n>`.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_roam.js
+const { log, start, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(100, 60); await W(1500);
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const secs = +(process.env.ROAM_S || 150);
   await p.evaluate(() => { At.position.set(-2, 0, 30); window.__R = {}; window.__t0 = Re.t; JGP.meetAt(1e9); });
   const sample = () => p.evaluate(() => {
@@ -30,7 +37,7 @@ module.exports = async (p) => {
   for (let k = 0; k < 4000; k++) { await W(400); if ((await sample()) > secs) break; }
   log(await p.evaluate(() => Object.entries(__R).map(([id, r]) => `${It.byId[id].def.name}: ${Object.keys(r.spots).length} spots, longest stuck ${r.maxStill.toFixed(1)} s, bad ${r.bad.length ? r.bad.join(' ') : 'none'}${id === 'gratelet' ? ', furthest from the Portal ' + r.far.toFixed(1) + ' m' : ''}${id === 'gorbo' ? ', furthest from his Gallery ' + r.far.toFixed(1) + ' m' : ''}${r.inGal ? ', IN THE GALLERY ' + r.inGal : ''}`).join('\n')));
   // the Gorbos meet
-  await p.evaluate(() => { window.__hearts = 0; const u = Ut.above; Ut.above = function (e, s, c) { s === '♥' && (e.id === 'gorbo' || e.id === 'p_mamagorbo') && __hearts++; return u.apply(this, arguments); }; JGP.meetAt(Re.t); window.__t0 = Re.t; });
+  await p.evaluate(() => { window.__hearts = 0; const u = Ut.above; Ut.above = function (e, s) { s === '♥' && (e.id === 'gorbo' || e.id === 'p_mamagorbo') && __hearts++; return u.apply(this, arguments); }; JGP.meetAt(Re.t); window.__t0 = Re.t; });
   let met = '';
   for (let k = 0; k < 2000; k++) {
     await W(400);
@@ -39,10 +46,8 @@ module.exports = async (p) => {
     if (r.t > 90) { met = 'no meeting in 90 s: ' + JSON.stringify(r); break; }
   }
   log('MAMA GORBO and GOOWARD:', met);
-  // trying to trap them: every few seconds the player steps right in front of a walking roamer, and some
-  // are dropped in tight spots (against the church, the Juice Bar's back corner, the Portal's frame, off
-  // the dance floor by the drum kit). Every roamer must keep going: never still for long away from its
-  // spot, and each must end up somewhere it may stand.
+  // the traps: every roamer must keep going, never still for long away from its spot, and must end up somewhere it
+  // may stand
   const trapS = +(process.env.TRAP_S || 90);
   await p.evaluate(() => {
     const ids = ['gratelet', 'p_gemtoe', 'p_mamagorbo', 'gorbo', 'p_etcher', 'p_glyph', 'w_mont'];
@@ -74,5 +79,5 @@ module.exports = async (p) => {
   for (let k = 0; k < 4000; k++) { await W(400); if ((await p.evaluate(() => Re.t - __t0)) > 20) break; }
   log(await p.evaluate(() => Object.entries(__S).map(([id, r]) => { const e = It.byId[id], q = e.group.position, floor = /^(p_etcher|p_glyph|w_mont)$/.test(id), ok = floor ? JGP.onDance(q.x, q.z, 0.05) : JGP.roamFree(q.x, q.z, 0.25) && (id !== 'gorbo' || JGP.homeGround(e));
     return `trap: ${e.def.name}: blocked ${r.blocked} times, ${r.homes.size} spots, longest still on the way ${r.max.toFixed(1)} s, now ${ok ? 'somewhere fine' : 'SOMEWHERE BAD ' + q.x.toFixed(1) + ',' + q.z.toFixed(1)}`; }).join('\n')));
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

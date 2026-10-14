@@ -1,17 +1,22 @@
-// Creatures visiting each other. First, for every visitor and every host (the twelve who go visiting, all but
-// KING DINO, SOMLET and the church's ANCIENT, who stay put, and the fourteen they visit, those three included; never NEXTESSA
-// or BACKPACKA): that there is a spot beside the host to stand on, and a way there of clear straight walks round
-// everything (but for the last steps into the church, in through the wall where the X is). Then visits played
-// out in game time, each printed as it ends: by default MUSHROOM down off his desk to SOMLET, GEMTOE calling on
-// MUSHROOM, ETCHER to GLYPH, ZOLLOD to KING DINO, SPARKAKUS out of his Library and GLYPH to the Ancient;
-// VISITS=v>h,v>h picks others, VISITS=none only checks the plans. Each gets there, the two exchange their lines,
-// and it walks slowly home and is back at its place (MUSHROOM back up on his desk).
-//   VW=320 VH=240 NOSHOT=1 node shot.js <url> x.png ./t_visits.js
+// Creatures visiting each other. First, for every visitor and every host (the twelve who go visiting, all but KING
+// DINO, SOMLET and the church's ANCIENT, who stay put, and the fourteen they visit, those three included; never
+// NEXTESSA or BACKPACKA): a spot beside the host to stand on, and a way there of clear straight walks round everything
+// (but for the last steps into the church, in through the wall where the X is). Then visits played out in game time:
+// each gets there, the two exchange their lines, and the visitor walks slowly home and is back at its place (MUSHROOM
+// back up on his desk). The default visits: MUSHROOM to SOMLET, GEMTOE to MUSHROOM, GLYPH to ZOLLOD, HENNRICK to
+// SPARKAKUS, FORTIZMO to MONTGUMMERY, ZOLLOD to KING DINO, SPARKAKUS to ETCHER and GLYPH to the ANCIENT. Takes 30 to 60
+// min headless.
+// Env: VISITS (v>h,v>h by id: other visits; none: the plans only).
+// Output: `plans for <id> …` per visitor, `visit plans: <n> pairs | problems: …`, a progress line every 30 s of a
+//   visit, then per visit one line ending in `ok` or `FAIL`; then `err <n>`.
+//   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_visits.js
+const { log, start, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(100, 60); await W(1500);
-  // (ZOLLOD freed by OVERCOMING SHYNESS, as after the sub-quest: his visits are part of the plan and the runs;
-  // the shy gate itself is t_shy.js's)
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
+  // (ZOLLOD freed by OVERCOMING SHYNESS, as after the sub-quest: his visits are part of the plans and the runs; the
+  // shy gate itself is t_zollod.js's)
   await p.evaluate(() => (Kt.shyFree = !0));
   // (one visitor at a time, timed, so a slow plan shows where)
   const WHO = ['gratelet', 'drifter', 'blinker', 'm_kingdino', 'gorbo', 'cutebex', 'm_somlet', 'frog', 'p_etcher', 'p_gemtoe', 'p_glyph', 'w_mont', 'p_mamagorbo', 'keeper', 'slug'];
@@ -43,7 +48,6 @@ module.exports = async (p) => {
   }
   plan.longest = Math.round(plan.longest[0]) + ' m ' + plan.longest[1];
   log('visit plans:', plan.n, 'pairs | problems:', plan.bad.length ? plan.bad.join('; ') : 'none', '| longest way', plan.longest);
-  const waitGame = async (sec, until) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 20000 && (await p.evaluate(() => Re.t)) - t0 < sec; k++) { if (until && (await p.evaluate(until))) return !0; await W(250); } return !1; };
   await p.evaluate(() => At.position.set(0, 0, 3));
   // (no natural visits during the run: each one below is asked for by name)
   await p.evaluate(() => JGP.visitAt(9e15));
@@ -89,5 +93,5 @@ module.exports = async (p) => {
     const dt = (await p.evaluate(() => Re.t)) - t0, cl = await p.evaluate(() => [+__CL.worst.toFixed(2), __CL.what]);
     log(v, '>', h, '| stages', stages.join(' > '), '| played', played, '(lines shown', !!text + ') | gap at the meeting', meetGap, '| ? at the wall', wond, '| took', dt.toFixed(0), 'game s | nearest anything', cl[0], cl[1], '| after:', JSON.stringify(end), /^out,meet(,out,meet)*,back$/.test(stages.join()) && played && meetGap < 6 && cl[0] > -0.05 && (h !== 'slug' || wond) ? 'ok' : 'FAIL');
   }
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

@@ -1,7 +1,11 @@
-// Unpacks a packed page: reads the 7-bit text in <script type="b">, runs the decoder embedded in the page itself,
-// and writes the page the loader would document.write(). Also reports whether the page's decoder is model.js (what
-// pack.js encodes with).
-//   node pack/unpack.js <packed index.html> <out.html>   (from tools/)
+// Unpacks a packed page: reads the 7-bit text in <script type="b">, runs the decoder embedded in the page itself, and
+// writes the page the loader would document.write(); reports whether the page's decoder is model.js (what pack.js
+// encodes with). WARNING: the decoder is code taken from the page and runs unsandboxed in Node. Use this only on pages
+// this repo packed; open an uploaded or otherwise untrusted page only with sandbox/decode.js.
+// Env: none.
+// Output: `packed <bytes> bytes -> <bytes> bytes; decoder matches model.js: <bool>`; the page to <out.html>. Also a
+//   module: { unpack }.
+//   node pack/unpack.js ../index.html check.html
 "use strict";
 const fs = require("fs");
 const path = require("path");

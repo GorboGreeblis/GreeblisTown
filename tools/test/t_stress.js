@@ -1,12 +1,18 @@
-// Collides the game's systems on purpose and checks everything ends up back where it belongs.
-// Run with a tiny viewport (VW=200 VH=150) so game time runs fast.
+// The game's systems collided on purpose: the Garden Event started during a Dance battle, a pizza call as it starts,
+// Talk, Blossoms, the shop, SPARKAKUS and the Summoning Stone during it, an Event without the Seeds, then a bow-out
+// spam in a battle with each Dancer; everyone must end up home.
+// Env: none.
+// Output: the game's state after each step (`{t, ev, phaseLive, busy, top, horn, music, bp, courier, err}`), every
+//   creature's menu at the Event, `after event: all home` (or each creature off home), and a `final` state line.
+//   VW=200 VH=150 NOSHOT=1 node test/shot.js <url> x.png test/t_stress.js
+const { log, start, closeDialogs, startEvent } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  const clear = () => p.evaluate(() => { for (let i = 0; i < 40 && qt.isOpen; i++) try { qt.skipAll(); qt.advance(); } catch (e) {} });
+  const W = (ms) => p.waitForTimeout(ms), clear = () => closeDialogs(p);
   const waitT = async (sec, cond) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 4000; k++) { await W(250); const r = await p.evaluate((c) => [Re.t, c ? eval(c) : 0], cond || null); if (cond && r[1]) return r[0] - t0; if (r[0] - t0 > sec) return -1; } };
   const state = () => p.evaluate(() => JSON.stringify({ t: +Re.t.toFixed(0), ev: me.active, phaseLive: bt.live, busy: It.all.filter((e) => e.busy).map((e) => e.def.name + ':' + e.busy), top: jt.top, horn: gcHorn.phase, music: !!ee.playing, bp: JGP.backpacka.busy(), courier: ue.state, err: Re.errors }));
   const homeCheck = () => p.evaluate(() => It.all.map((e) => { const d = Math.hypot(e.group.position.x - e.home.x, e.group.position.z - e.home.z); return d > 0.6 || e.busy ? e.def.name + ' off ' + d.toFixed(1) + (e.busy ? ' busy=' + e.busy : '') : null; }).filter(Boolean).join(', ') || 'all home');
-  await p.mouse.click(100, 60); await W(1500);
+  await start(p);
   // 1. a battle, then the Event starts while it is open
   await p.evaluate(() => { Kt.blossoms = 5; At.position.set(0, 0, 3); Dbt.start(It.byId.p_glyph); });
   await W(500); log('battle open', await state());
@@ -16,7 +22,7 @@ module.exports = async (p) => {
   // 2. a pizza call right as the Event starts
   await p.evaluate(() => { t.pizza.callDelayMs = 300; try { ue.call(); } catch (e) { console.error('pizza call: ' + e.message); } });
   await W(1500); await clear();
-  if (!(await p.evaluate(() => me.active))) await p.evaluate(() => { Kt.rewards.seeds = !0; (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  if (!(await p.evaluate(() => me.active))) await startEvent(p, { at: null });
   log('event started', await state());
   // 3. during the event: talk to everyone, Blossoms, the shop, SPARKAKUS, a battle, the stone again
   await W(3000);
@@ -35,7 +41,7 @@ module.exports = async (p) => {
   const dur = await waitT(400, '!me.active'); log('event took (game s)', dur.toFixed ? dur.toFixed(0) : dur, await state());
   await waitT(40, 'It.all.every((e) => !e.busy)'); await W(2000); log('after event:', await homeCheck(), await state());
   // 5. no Seeds event
-  await p.evaluate(() => { Kt.rewards.seeds = !1; At.position.set(0, 0, 3); (Kt.rewards.stone = !0), z.list.find((s) => s.id === 'campfire').run(); oe.yes(); });
+  await startEvent(p, { seeds: false });
   const d2 = await waitT(300, '!me.active'); log('no-seeds event took', d2.toFixed ? d2.toFixed(0) : d2, await state());
   await W(2000); log('after no-seeds:', await homeCheck());
   // 6. battle with each dancer after the event, bow out spam

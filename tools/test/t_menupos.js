@@ -1,14 +1,17 @@
-// The action menu's place on screen in the desktop test mode: for each creature in IDS (default a near one, a far
-// one and one off to the side), the avatar is put a few metres from it, the menu opened by a click on its head, and
-// the menu's bottom edge and the creature's top are projected through the game camera: the menu must sit just over
-// the head (a small positive gap, no sideways offset), and still after the camera orbits and the avatar walks a
-// step, since the test modes' camera swings and eases behind the avatar (the owner saw menus too high and off to
-// the side).
-// (the trimmed three.js has no Vector3.project: the view and projection matrices are applied by hand)
-//   VW=800 VH=600 NOSHOT=1 node shot.js <url> x.png ./t_menupos.js
+// The action menu's place on screen in the desktop test mode: for each creature the avatar is put a few metres from
+// it, the menu opened by a click on its head, and the menu's bottom edge and the creature's top projected through the
+// game camera. The menu must sit just over the head (a small positive gap, no sideways offset), also after the camera
+// orbits and after the avatar walks a step: the test modes' camera swings and eases behind the avatar. (The trimmed
+// three.js has no Vector3.project: the view and projection matrices are applied by hand.)
+// Env: IDS (comma list, default p_mamagorbo,p_gemtoe,m_kingdino,keeper: near, far, off to the side, SPARKAKUS).
+// Output: per creature `<id> at [x,z] | opened <bool> | gap/dx px: opened <g>/<dx> | after orbit … | after a step … |
+//   still open <bool>`, then `err <n>`.
+//   VW=800 VH=600 NOSHOT=1 node test/shot.js <url> x.png test/t_menupos.js
+const { log, start, logErrors } = require('./lib.js');
+
 module.exports = async (p) => {
-  const W = (ms) => p.waitForTimeout(ms), log = (...a) => console.log(...a);
-  await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await W(1500);
+  const W = (ms) => p.waitForTimeout(ms);
+  await start(p);
   const ids = (process.env.IDS || 'p_mamagorbo,p_gemtoe,m_kingdino,keeper').split(',');
   const measure = () => p.evaluate(() => {
     const e = window.__mt, cam = B, v = new THREE.Vector3();
@@ -46,5 +49,5 @@ module.exports = async (p) => {
     log(id, 'at', JSON.stringify(at), '| opened', m0.open, '| gap/dx px: opened', m0.gapPx + '/' + m0.dxPx, '| after orbit', m1.gapPx + '/' + m1.dxPx, '| after a step', m2.gapPx + '/' + m2.dxPx, '| still open', m2.open);
     await p.keyboard.press('Escape'); await W(300);
   }
-  log('err', await p.evaluate(() => Re.errors));
+  await logErrors(p);
 };

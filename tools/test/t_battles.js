@@ -1,11 +1,17 @@
-// Dance battles and the Library finale, played through the panel: against w_mont a tie, a loss and a full set of wins, one per step (an
-// Artifact for the first win only), a second full win, wins against p_etcher and p_glyph, then bowing out; then
-// LIB.talk() with all three Artifacts and the rewards after its dialogue. Prints each battle's text and the Artifacts.
-// Run: NOSHOT=1 node shot.js <url> x.png ./t_battles.js
-module.exports = async (p) => { await p.mouse.click(p.viewportSize().width / 2, p.viewportSize().height / 2); await p.waitForTimeout(1500);
+// Dance battles and the Library finale, played through the panel: against MONTGUMMERY a tie, a loss and a full set of
+// wins, one per step (an Artifact for the first win only), a second full win, wins against ETCHER and GLYPH, then
+// bowing out; then SPARKAKUS's finale (LIB.talk()) with all three Artifacts, and the rewards after its dialogue.
+// Env: none.
+// Output: each battle step's panel text and the Artifact count, `err <n>`, the finale's first line, then
+//   `after rewards.artifacts true gem <bool> err <n>` (or a FAIL line).
+//   NOSHOT=1 node test/shot.js <url> x.png test/t_battles.js
+const { start } = require('./lib.js');
+
+module.exports = async (p) => {
+  await start(p);
   console.log(await p.evaluate(() => { const out = [], T = battleText, pick = (lbl) => _t.state.items.find((i) => i.label === lbl).onClick();
     const lbl = (id) => T.moves.find((m) => m.id === id).label, win = (mv) => Object.keys(T.beats).find((k) => T.beats[k] === mv);
-    out.push('artifacts start ' + Kt.artifacts + ' pickups in scene ' + C.children.filter(c => c.userData && c.userData.gemPiece !== undefined).length);
+    out.push('artifacts start ' + Kt.artifacts + ' pickups in scene ' + C.children.filter((c) => c.userData && c.userData.gemPiece !== undefined).length);
     const e = It.byId.w_mont;
     Dbt.start(e); out.push('OPEN: ' + JSON.stringify(_t.state.log) + ' sub ' + JSON.stringify(_t.state.sub) + ' bar ' + JSON.stringify(_t.state.bar && _t.state.bar.label));
     pick(lbl(Dbt.state.mv)); out.push('TIE: ' + JSON.stringify(_t.state.log));
@@ -17,8 +23,7 @@ module.exports = async (p) => { await p.mouse.click(p.viewportSize().width / 2, 
     Dbt.start(e); let n = 0; while (Dbt.state && !Dbt.state.over && n++ < 20) { pick(T.bow); out.push('BOW: ' + JSON.stringify(_t.state.log)); } _t.close();
     out.push('err ' + Re.errors); return out.join('\n'); }));
   await p.waitForTimeout(1000);
-  // with all three, SPARKAKUS's finale runs
-  // (from in front of his counter, as the player talks to him)
+  // with all three, SPARKAKUS's finale runs (from in front of his counter, as the player talks to him)
   console.log(await p.evaluate(() => { const s = z.list.find((q) => q.id === 'stump'); s && (At.position.set(s.x, 0, s.z + 3.2), xe.scan()); try { LIB.talk(); } catch (x) { return 'LIB err ' + x.message; } return 'LIB top ' + jt.top + ' text ' + JSON.stringify((document.getElementById('dlgText').textContent || '').slice(0, 60)); }));
   // (the finale's pages, then the three pieces glued together in the air, 5.6 s of game time, then the Gem speech:
   // its pages are skipped as they open until the rewards are given. Counted in game time, not real time: a headless

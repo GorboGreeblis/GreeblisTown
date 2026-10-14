@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Tile renders into one contact sheet, or show what changed between two renders. Needs Pillow.
+"""Contact sheets of renders, and what changed between two renders. Requires Pillow.
 
-  python3 tile.py sheet out.png COLS W H a.png b.png ...   each image scaled to W x H, COLS to a row
-  python3 tile.py diff out.png a.png b.png [GAIN]           a, b and |a-b| x GAIN (default 6) side by side
-
-The diff is how flicker shows up: two renders that should be identical (t_zcheck.js SHOTS=1 writes such
-pairs) differ only where surfaces fight, so bright specks in the third panel are z-fighting, and scattered
-single pixels on fine edges are only rasterising noise.
+The diff shows flicker: two renders that should be identical (t_zcheck.js with SHOTS=1 writes such pairs) differ only
+where surfaces fight, so bright specks in the third panel are z-fighting; scattered single pixels on fine edges are
+rasterisation noise.
+Env: none.
+Output: the sheet or the diff, written to <out.png>; this text and exit 1 on bad arguments.
+  python3 test/tile.py sheet <out.png> <cols> <w> <h> <a.png> <b.png> ...   each image scaled to w x h px
+  python3 test/tile.py diff <out.png> <a.png> <b.png> [gain]               a, b and |a-b| x gain (default 6)
 """
 import sys
 from PIL import Image, ImageChops

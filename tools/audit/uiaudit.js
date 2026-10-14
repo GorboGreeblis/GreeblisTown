@@ -1,7 +1,9 @@
-// Walks through the game's UI screens in desktop mode (every station, dialogue with the four longest-named creatures,
-// a long stress line) and records any canvas text that had to be condensed to fit (or still runs past its canvas).
-// Screenshots of each screen go to <out>_<name>.png.
-// Run (from this folder): NOSHOT=1 node ../test/shot.js <url> ui.png ./uiaudit.js
+// The interface's screens in the desktop test mode (every station, a dialogue with each of the four longest-named
+// creatures, a long stress line): every canvas text condensed to fit, or still running past its canvas.
+// Env: none.
+// Output: `stations […]`, `condensed [{t, ratio, cw}, …]` (the text, the squeeze ratio, the canvas width), `{"err":<n>}`;
+//   a screenshot per screen, <out>_st_<station>.png, <out>_dlg_<id>.png and <out>_dlg_stress.png.
+//   NOSHOT=1 node test/shot.js <url> ui.png audit/uiaudit.js
 module.exports = async (p, out) => {
   await p.evaluate(() => {
     window.__ui = [];
