@@ -7297,16 +7297,16 @@ const JGP = (() => {
 	// [id, name, builder, def fields, [x, z]]. Ids that already exist in the engine's defs keep their
 	// engine role (companions, battles, quests); the rest are added as stationary NPCs.
 	const ROWS = {
-		// every creature stands in one of two rows along the east side of the square, facing in. The back
-		// row (along the fence, behind the duck pond) holds the creatures still being worked on; the front
-		// row, on the lawn between the pond and Garden Supplies, holds the ones whose models are final.
+		// creatures start along the east side of the square, facing in: GEMTOE behind the duck pond, MAMA GORBO
+		// near Garden Supplies, GOOWARD by the pond (the lawn between the pond and Garden Supplies is the ART
+		// GALLERY's, so no one starts in front of or behind it).
 		// (SPARKAKUS is only at the Library, SOMLET stands in front of the Post Office and ZOLLOD keeps
 		// Garden Supplies: see their rows below)
 		lineup: {
 			face: -Math.PI / 2,
 			list: [
 				// (these are still being worked on; GEMTOE starts here and wanders the whole park: see the roamers)
-				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 16.86]],
+				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 3]],
 				// MAMA GORBO (rebuilt from her artwork, with GORBO's ports and drips); given a Blossom she
 				// shoots her colourful goo at the player, as GOOWARD does
 				["p_mamagorbo", "MAMA GORBO", "born_mamagorbo", {"color": "#ff9f5c", "bodyR": 1.1, "talkR": 3.8, "goo": ["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]}, [34, 28.40]],
@@ -7317,7 +7317,7 @@ const JGP = (() => {
 			list: [
 				// (NEXTESSA and BACKPACKA are not in the park: each appears only for its own event, NEXTESSA
 				// through the portal with the pizza, BACKPACKA at the Garden Event)
-				["gorbo", "GOOWARD", "born_gooward", {"color": "#30b4e4", "bodyR": 1.2}, [27, 4]],
+				["gorbo", "GOOWARD", "born_gooward", {"color": "#30b4e4", "bodyR": 1.2}, [24.2, 14.9]],
 			],
 		},
 		// the three Dancers wander the whole dance floor by the Juice Bar (see the roamers), starting spread
@@ -7413,7 +7413,7 @@ const JGP = (() => {
 			campfire: "Enjoying the SHARED garden… what is this feeling?",
 		},
 		p_mamagorbo: {
-			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for our famous goo burger.|The hubby and I run the local fast food joint.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!"],
+			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for my famous goo burger.|I run the local fast food joint, and the hubby runs the Art Gallery now.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!"],
 			gift: "Gooooooom!",
 			campfire: "Pretty flowers come to life!",
 		},
@@ -10993,7 +10993,8 @@ const JGP = (() => {
 		const signTex = kioskSignTex(th);
 		[-1.6, 1.6].forEach((px) => R(T.box(0.12, 0.7, 0.12), white, o, [px, 4.95 + dh, -0.12]));
 		R(T.box(4.3, 1.05, 0.1), white, o, [0, 5.55 + dh, -0.12]), R(T.plane(4.1, 1.02), x.world(16777215, { map: signTex }), o, [0, 5.55 + dh, -0.04]);
-		// the counter (the desk), crates on either side
+		// the counter (the desk), crates on either side (none in the ART GALLERY: its floor is open)
+		if (th.noDesk) return;
 		const ph = D - 0.22;
 		R(T.box(3.8, ph, 0.1), wall, o, [0, 0.2 + ph / 2, 1.07]), R(T.box(3.84, 0.08, 0.15), white, o, [0, 0.24, 1.075]);
 		// the foot trim stands 2 cm proud of the panel behind as well as in front (its back face lay in the panel's
@@ -12087,6 +12088,81 @@ const JGP = (() => {
 	// Garden Supplies: sage walls, terracotta roof, and plants everywhere: potted shrubs, flowers,
 	// ferns, succulents and little trees, seedling trays, hanging baskets, bags of soil, a
 	// wheelbarrow of flowers and tools leaning on the wall.
+	// The ART GALLERY, opposite the Juice Bar across the park, between the duck pond and Garden Supplies: the
+	// shared kiosk frame with no desk, so its floor is open to walk in. Its back wall is plain (no battens) and
+	// carries one big empty canvas (to be filled later); two generic paintings stand on easels on the lawn in
+	// front, either side of its walk, turned a little toward whoever comes up it.
+	const GALLERY = {
+		// [local x, local z, turn] of each easel, and the easels' and the canvas's footprints (for the colliders)
+		easels: [
+			[-2.3, 3.45, 0.3],
+			[2.3, 3.45, -0.3],
+		],
+	};
+	function buildGallery(o) {
+		kioskFrame(o, { sign: "GOOWARD'S GALLERY", ink: "#3a2a5a", wall: "#e8e0cc", wall2: "#d8cfb8", tin: [88, 66, 132], noBattens: !0, noDesk: !0 });
+		const G = goods(),
+			wood = "#7a5232",
+			gold = "#b8902e";
+		// the big empty canvas, stretched and primed, 1 cm off the back wall's face: its edge shows the stretcher's wood
+		G.box("#f4f1e8", 0, 1.95, -2.33, 4.6, 2.6, 0.06), G.box("#c8a070", 0, 0.62, -2.31, 4.5, 0.03, 0.09);
+		// the easels: two splayed front legs, a raking back leg, a ledge and a top clamp, each holding a framed painting
+		// tilted back a little
+		const paint = [];
+		GALLERY.easels.forEach(([ex, ez, ery], k) => {
+			const base = G.m(ex, 0, ez, 0, ery, 0),
+				at = (px, py, pz, rx, ry, rz, w, h, d) => G.add(G.UBX, wood, base.clone().multiply(G.m(px, py, pz, rx, ry, rz, w, h, d)));
+			[-1, 1].forEach((sx) => at(0.33 * sx, 0.93, 0.06, -0.06, 0, -0.12 * sx, 0.05, 1.9, 0.05));
+			at(0, 0.88, -0.36, 0.34, 0, 0, 0.05, 1.85, 0.05);
+			at(0, 0.82, 0.13, 0, 0, 0, 0.86, 0.05, 0.11), at(0, 1.62, 0.02, 0, 0, 0, 0.14, 0.07, 0.07);
+			G.add(G.UBX, gold, base.clone().multiply(G.m(0, 1.2, 0.07, -0.1, 0, 0, 0.82, 0.64, 0.04)));
+			paint.push(base.clone().multiply(G.m(0, 1.2, 0.07, -0.1, 0, 0)).multiply(G.m(0, 0, 0.022)));
+		});
+		G.done(o);
+		// the two paintings, painted side by side on one texture and drawn as one mesh: a summer landscape (hills, a
+		// tree, a lake under a big sky) and a still life (a jug of flowers and fruit on a table)
+		const tex = b(512, 192, (c) => {
+			const rn = srand(57),
+				dab = (x0, y0, rx, ry, col, al = 1) => ((c.globalAlpha = al), (c.fillStyle = col), c.beginPath(), c.ellipse(x0, y0, rx, ry, rn() * 3, 0, l), c.fill(), (c.globalAlpha = 1));
+			// (the landscape)
+			let g = c.createLinearGradient(0, 0, 0, 120);
+			g.addColorStop(0, "#5a8fd0"), g.addColorStop(1, "#d8e8ee"), (c.fillStyle = g), c.fillRect(0, 0, 256, 192);
+			for (let k = 0; k < 40; k++) dab(30 + 200 * rn(), 20 + 40 * rn(), 8 + 10 * rn(), 4 + 4 * rn(), "#ffffff", 0.25);
+			(c.fillStyle = "#7a9a8a"), c.beginPath(), c.moveTo(0, 120), c.quadraticCurveTo(80, 84, 150, 112), c.quadraticCurveTo(210, 96, 256, 108), c.lineTo(256, 192), c.lineTo(0, 192), c.fill();
+			(c.fillStyle = "#5f9a3a"), c.beginPath(), c.moveTo(0, 140), c.quadraticCurveTo(120, 118, 256, 136), c.lineTo(256, 192), c.lineTo(0, 192), c.fill();
+			(c.fillStyle = "#4f86b8"), c.beginPath(), c.ellipse(170, 156, 60, 10, 0, 0, l), c.fill(), dab(160, 154, 30, 2, "#cfe6f4", 0.6);
+			for (let k = 0; k < 220; k++) dab(256 * rn(), 136 + 56 * rn(), 1.5 + 2 * rn(), 1 + rn(), rn() < 0.5 ? "#3f7a2a" : "#86b84a", 0.6);
+			(c.fillStyle = "#5a3a22"), c.fillRect(66, 100, 6, 44);
+			for (let k = 0; k < 60; k++) dab(69 + 26 * (rn() - 0.5), 92 + 22 * (rn() - 0.5), 6 + 5 * rn(), 5 + 4 * rn(), rn() < 0.5 ? "#2f6a2a" : "#4f8a3a", 0.85);
+			// (the still life)
+			g = c.createLinearGradient(256, 0, 512, 192);
+			g.addColorStop(0, "#5a3a2a"), g.addColorStop(1, "#2a1a14"), (c.fillStyle = g), c.fillRect(256, 0, 256, 192);
+			(c.fillStyle = "#8a5a32"), c.fillRect(256, 138, 256, 54), (c.fillStyle = "rgba(0,0,0,.25)"), c.fillRect(256, 138, 256, 4);
+			g = c.createRadialGradient(370, 112, 4, 384, 120, 40);
+			g.addColorStop(0, "#9ad0e0"), g.addColorStop(1, "#2a6a8a"), (c.fillStyle = g), c.beginPath(), c.moveTo(366, 140), c.quadraticCurveTo(350, 108, 372, 88), c.lineTo(396, 88), c.quadraticCurveTo(418, 108, 402, 140), c.closePath(), c.fill();
+			for (let k = 0; k < 9; k++) {
+				const fx = 384 + 46 * (rn() - 0.5),
+					fy = 52 + 34 * rn(),
+					col = ["#e8409e", "#ffd23a", "#e8301e", "#f6f0dc", "#9a52e0"][k % 5];
+				(c.strokeStyle = "#3f7a2a"), (c.lineWidth = 2), c.beginPath(), c.moveTo(384, 92), c.lineTo(fx, fy), c.stroke();
+				for (let j = 0; j < 6; j++) dab(fx + 6 * Math.cos(j), fy + 6 * Math.sin(j), 4, 3, col, 0.9);
+				dab(fx, fy, 2.5, 2.5, "#3a2a10");
+			}
+			[[306, 146, "#e8301e"], [326, 150, "#ffb030"], [452, 148, "#7ac83a"], [470, 152, "#e8301e"]].forEach(([fx, fy, col]) => (dab(fx, fy, 12, 10, col), dab(fx - 4, fy - 4, 3, 2, "#ffffff", 0.6)));
+			// (the grain of the canvas over both)
+			for (let k = 0; k < 1500; k++) dab(512 * rn(), 192 * rn(), 0.8, 0.8, rn() < 0.5 ? "#ffffff" : "#000000", 0.06);
+		}, { smooth: !0 });
+		const pos = [],
+			uv = [],
+			v3 = new THREE.Vector3();
+		paint.forEach((M, k) => {
+			const quad = [[-0.36, -0.27, k * 0.5, 0], [0.36, -0.27, k * 0.5 + 0.5, 0], [0.36, 0.27, k * 0.5 + 0.5, 1], [-0.36, -0.27, k * 0.5, 0], [0.36, 0.27, k * 0.5 + 0.5, 1], [-0.36, 0.27, k * 0.5, 1]];
+			quad.forEach(([qx, qy, u, w]) => (v3.set(qx, qy, 0).applyMatrix4(M), pos.push(v3.x, v3.y, v3.z), uv.push(u, w)));
+		});
+		const pg = new THREE.BufferGeometry();
+		pg.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)), pg.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)), pg.computeVertexNormals();
+		R(pg, x.world(16777215, { map: tex }), o);
+	}
 	function buildGardenSupplies(o) {
 		kioskFrame(o, { sign: "GARDEN SUPPLIES", ink: "#2f5a2a", wall: "#6f8f5a", wall2: "#5a7a48", tin: [168, 92, 58] });
 		const G = goods(),
@@ -12524,6 +12600,9 @@ const JGP = (() => {
 				return { x, z, ry: A(x, z) };
 			};
 		(K.post = diag(1, -1, 5.9)), (K.sheriff = diag(1, -1, -5.9)), (K.garden = diag(1, 1, 0)), (K.shop = { x: -24.75, z: -24.75, ry: A(-24.75, -24.75) });
+		// (the ART GALLERY, on the east side between the duck pond and Garden Supplies, opposite the Juice Bar, its front to the
+		// garden)
+		K.gallery = { x: 31, z: 14.5, ry: A(31, 14.5) };
 		const W = (k, lx, lz) => {
 			const c = Math.cos(k.ry),
 				sn = Math.sin(k.ry);
@@ -14439,7 +14518,7 @@ const JGP = (() => {
 			["MA", "ZL", 6, "Zollod, dear! Which seeds for a beginner?", "Start small. Love them daily. They'll grow."],
 			["MA", "SM", 2, "Look at her. Sleeping like a baby.", "Zzz..."],
 			["MA", "FZ", 9, "Two carrot juices! For me and the hubby.", "Blossoms first, Mama. House rules."],
-			["MA", "ET", 4, "Etch our burger menu, would you, dear?", "Every topping. For the age of Organics."],
+			["MA", "ET", 4, "Etch my burger menu, would you, dear?", "Every topping. For the age of Organics."],
 			["MA", "GT", 1, "A burger coupon for you too, Gemtoe!", "...Is it worth anything? Then it's mine."],
 			["MA", "GL", 11, "What does that symbol mean, dear?", "Family. The warmest symbol... don't you think?"],
 			["MA", "MG", 8, "Mont, you're too thin! Have a goo burger.", "Mont cannot eat burger. Mont eats VHS."],
@@ -15094,7 +15173,7 @@ const JGP = (() => {
 		G.done(o);
 	}
 
-	const JGP_K = { post: (g) => buildPostOffice(g), garden: (g) => buildGardenSupplies(g), sheriff: (g) => buildSheriff(g), juice: (g) => buildJuiceBar(g) };
+	const JGP_K = { post: (g) => buildPostOffice(g), garden: (g) => buildGardenSupplies(g), sheriff: (g) => buildSheriff(g), gallery: (g) => buildGallery(g), juice: (g) => buildJuiceBar(g) };
 	function swapWorld() {
 		// keep the working stations (garden, library, pond, phone, portal) and
 		// everything that is not scenery; drop the engine's own scenery, then build the town.
@@ -17153,8 +17232,8 @@ const JGP = (() => {
 			B.box("asphalt", "#5c5c60", 0, -0.04, 6, 12, 0.08, 9);
 			return B;
 		};
-		// Mistergummery's: the town's branch of a fast-food franchise founded by MONTGUMMERY's father (MAMA GORBO and
-		// GOOWARD run it), trimmed in MONTGUMMERY's
+		// Mistergummery's: the town's branch of a fast-food franchise founded by MONTGUMMERY's father (MAMA GORBO runs it;
+		// GOOWARD runs the ART GALLERY), trimmed in MONTGUMMERY's
 		// teal. Red and cream tiled walls under a red mansard roof, wraparound windows, big teal "M" arches on
 		// a pylon, a drive-thru lane with a menu board and speaker, umbrella tables, a little red slide, and a
 		// parking lot. Local +Z faces the street.
@@ -17606,6 +17685,17 @@ const JGP = (() => {
 				put("concrete", UBs(segs(2 * half), 1), WALK, S(cx, -0.03, cz, 0, Math.atan2(d.ux, d.uz), 0, 2 * half, 0.12, 2.6));
 			}
 		});
+		// the walk out to the ART GALLERY, from the ring straight to the front of its deck
+		{
+			const G0 = KIOSK_AT.K.gallery,
+				dist = Math.hypot(G0.x, G0.z),
+				ux = G0.x / dist,
+				uz = G0.z / dist,
+				r0 = GARDEN_R + 3.2,
+				len = dist - 2.4 - r0;
+			WALKS.push({ x0: r0 * ux, z0: r0 * uz, ux, uz, wl: len });
+			put("concrete", UBs(1, segs(len)), WALK, S((r0 + len / 2) * ux, -0.05, (r0 + len / 2) * uz, 0, Math.atan2(ux, uz), 0, 2.6, 0.12, len));
+		}
 		// the south walk, to the church steps
 		{
 			const len = CHURCH_AT.sFront + 0.4;
@@ -18310,14 +18400,18 @@ const JGP = (() => {
 		// ---- kiosks: the Post Office and the Sheriff's share the north-east corner (either side of its
 		// walk), Garden Supplies has the south-east; the Library is in the north-west and the
 		// church in the south-west ----
-		["post", "sheriff", "garden"].forEach((name) => {
+		["post", "sheriff", "garden", "gallery"].forEach((name) => {
 			const { x: X, z: Z, ry } = KIOSK_AT.K[name],
 				k0 = new THREE.Group();
 			k0.position.set(X, 0, Z), (k0.rotation.y = ry), (k0.userData.keepInFinale = !0), C.add(k0), JGP_K[name](k0);
 			H(k0), E.add(X, Z, 5.2, "scenery"), keepAt.push([X, Z]);
 			// (the Post Office's mail mountain behind it is solid, and kept clear of pickups and tufts)
 			const mail = "post" === name;
-			F.addBuilding(X, Z, ry, mail ? [-3.4, -6.75, 3.4, 2.45] : KIOSK_AT.hull, mail ? KIOSK_AT.parts.concat([[-3.3, -6.6, 3.3, -2.62]]) : KIOSK_AT.parts, name);
+			// (the ART GALLERY has no counter or crates: its solid parts are its walls and its two easels out front)
+			const gal = "gallery" === name,
+				easels = gal ? GALLERY.easels.map(([ex, ez]) => [ex - 0.45, ez - 0.5, ex + 0.45, ez + 0.35]) : [];
+			F.addBuilding(X, Z, ry, mail ? [-3.4, -6.75, 3.4, 2.45] : gal ? [-3.15, -2.62, 3.15, 3.8] : KIOSK_AT.hull, mail ? KIOSK_AT.parts.concat([[-3.3, -6.6, 3.3, -2.62]]) : gal ? KIOSK_AT.parts.slice(0, 3).concat(easels) : KIOSK_AT.parts, name);
+			gal && GALLERY.easels.forEach(([ex, ez]) => keepAt.push(KIOSK_AT.at("gallery", ex, ez)));
 			if (mail) {
 				const [mx, mz] = KIOSK_AT.at("post", 0, -4.6);
 				E.add(mx, mz, 4.2, "scenery"), keepAt.push([mx, mz]);
@@ -18417,9 +18511,9 @@ const JGP = (() => {
 					f.home.set(ax, f.home.y, z), (waitTo = -1);
 				});
 			}
-			// The roamers: HENNRICK strolls round the Portal, GEMTOE wanders the whole park and the three
+			// The roamers: HENNRICK strolls round the Portal, GEMTOE wanders the whole park, GOOWARD round his Gallery and the three
 			// Dancers wander the dance floor. Whenever one
-			// has stood at a spot for a few seconds it picks another (JGP.portalRoam, JGP.parkRoam: always
+			// has stood at a spot for a few seconds it picks another (JGP.portalRoam, JGP.parkRoam, JGP.galleryRoam: always
 			// open ground with a clear straight walk there), walks there (its home moves; its walk home
 			// takes it to it) and stops, HENNRICK to look at the Portal, GEMTOE looking on the way he came.
 			// Not while it is busy (talking, at the Garden Event, or in a vignette with another creature) or
@@ -18429,7 +18523,7 @@ const JGP = (() => {
 				// HOME GROUND (the owner's rules: a creature's home never changes, and nothing the player does or it meets
 				// on the way may leave it stuck away from home). Each creature's own place is fixed, where it was set
 				// down (def.at), and so is the ground it belongs on: the dance floor for the three Dancers, the open park
-				// for GEMTOE and the Gorbos, round the Portal for HENNRICK, the aisle behind the bar for FORTIZMO, and its
+				// for GEMTOE and MAMA GORBO, round his Gallery for GOOWARD, round the Portal for HENNRICK, the aisle behind the bar for FORTIZMO, and its
 				// spot for everyone else. Its `home` is only where it is walking to now; it always comes back to this.
 				JGP.homeGround = (h) => {
 					if (!h || !h.group || !h.def || !h.def.at) return !0;
@@ -18438,7 +18532,8 @@ const JGP = (() => {
 						a = h.def.at;
 					if (FLOOR_ROAMERS.includes(id)) return JGP.onDance(p.x, p.z, 0.05);
 					if ("gratelet" === id) return Math.hypot(p.x - ot.x, p.z - ot.z) < 9;
-					if ("p_gemtoe" === id || "p_mamagorbo" === id || "gorbo" === id) return JGP.roamFree(p.x, p.z, 0.25);
+					if ("p_gemtoe" === id || "p_mamagorbo" === id) return JGP.roamFree(p.x, p.z, 0.25);
+					if ("gorbo" === id) return Math.hypot(p.x - KIOSK_AT.K.gallery.x, p.z - KIOSK_AT.K.gallery.z) < 12 && JGP.roamFree(p.x, p.z, 0.25);
 					if ("frog" === id) return Math.abs(p.x - JGP.barSpot(0)[0]) < 0.8 && Math.abs(p.z) < 8.5;
 					return Math.hypot(p.x - a[0], p.z - a[1]) < 1.2;
 				};
@@ -18489,7 +18584,7 @@ const JGP = (() => {
 						}
 					});
 				};
-				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.parkRoam, 3, 5);
+				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.galleryRoam, 3, 5);
 				FLOOR_ROAMERS.forEach((id) => roam(id, JGP.floorRoam, 3, 4));
 				// THE WAY HOME, GUARDED: any creature left standing off its own ground (a visit called off by a Dance
 				// battle, a Talk or a Blossom on the way, a walk home blocked by a building, anything at all) is sent
@@ -18526,7 +18621,8 @@ const JGP = (() => {
 					let next = 20 + 20 * Math.random(),
 						st = 0, // 0: apart, 1: on the way, 2: together
 						until = 0;
-					let tryAt = 0;
+					let tryAt = 0,
+						farAt = 0;
 					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
 						free = (h) => h && !h.busy && !h.vig && !h.visiting && !h.hosting && !h.battleDance && !h.nearPlayer && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h),
 						off = (t2, wait) => {
@@ -18543,6 +18639,27 @@ const JGP = (() => {
 							if (t2 < next) return;
 							// (due: they wander toward each other till there is a clear way to meet)
 							(A.seek = B), (B.seek = A);
+							// (GOOWARD keeps to his GALLERY, so from far across the park MAMA GORBO walks over to him by a
+							// planned way, to open ground a few metres from him, the side nearest her)
+							if (t2 >= farAt && free(A) && free(B)) {
+								const a = A.group.position,
+									b = B.group.position,
+									r = A.bodyR || 1;
+								if (Math.hypot(b.x - a.x, b.z - a.z) > 16) {
+									farAt = t2 + 20;
+									let best = null,
+										bd = 1e9;
+									for (let k = 0; k < 40; k++) {
+										const ang = Math.random() * l,
+											j = r + (B.bodyR || 1) + 1.5 + 2.5 * Math.random(),
+											x = b.x + j * Math.cos(ang),
+											z = b.z + j * Math.sin(ang),
+											dd = Math.hypot(x - a.x, z - a.z);
+										dd < bd && JGP.roamApart(x, z, r, A, [A, B]) && JGP.roamFree(x, z, r, !0, A.def.at) && ((bd = dd), (best = [x, z]));
+									}
+									if (best) return void (A.home.set(best[0], A.home.y, best[1]), Be(A, best[0], best[1], t2));
+								}
+							}
 							if (t2 < tryAt || !free(A) || !free(B)) return;
 							tryAt = t2 + 2;
 							const a = A.group.position,
@@ -19312,7 +19429,7 @@ const JGP = (() => {
 		// it, and in the garden the soil, its raised rows, the stepping stones and the border stones. Creatures
 		// are kept on it (see gFit).
 		{
-			const kioskDeck = F.buildings.filter((B) => /^(post|sheriff|garden)$/.test(B.name)),
+			const kioskDeck = F.buildings.filter((B) => /^(post|sheriff|garden|gallery)$/.test(B.name)),
 				bar = F.buildings.find((B) => "juice" === B.name),
 				JXb = -t.parkHalf + 3.6,
 				LK = KIOSK_AT.K.shop,
@@ -19800,6 +19917,29 @@ const JGP = (() => {
 				if (JGP.roamFree(x, z, r) && JGP.roamWalk(p, x, z, r, !1, null, frame)) return [x, z, Math.atan2(ot.x - x, ot.z - z)];
 			}
 			return null;
+		},
+		// a spot for GOOWARD to wander to from p round his ART GALLERY: 6.6 to 10 m from its middle, in front of it
+		// or to either side (never behind), at least 2.5 m from where he is, kept off the other creatures' spots,
+		// with a clear straight walk there (never through the kiosk or its easels). He stops facing his gallery.
+		// Looking for MAMA GORBO (ent.seek), he takes the spot that brings him nearest her.
+		galleryRoam(p, r, own, ent) {
+			const K = KIOSK_AT.K.gallery,
+				to = ent && ent.seek && ent.seek.group.position,
+				near = to ? r + (ent.seek.bodyR || 1) + 1.2 : 0;
+			let best = null,
+				bd = 1e9;
+			for (let k = 0; k < 60; k++) {
+				const a = K.ry + ((Math.random() * 2 - 1) * 110 * Math.PI) / 180,
+					d = 6.6 + 3.4 * Math.random(),
+					x = K.x + d * Math.sin(a),
+					z = K.z + d * Math.cos(a);
+				if (Math.hypot(x - p.x, z - p.z) < 2.5 || !JGP.roamApart(x, z, r, ent) || !JGP.roamFree(x, z, r, !0, own) || !JGP.roamWalk(p, x, z, r, !0, own, offFloor(r))) continue;
+				const sp = [x, z, Math.atan2(K.x - x, K.z - z)];
+				if (!to) return sp;
+				const dd = Math.hypot(x - to.x, z - to.z);
+				dd > near && dd < bd && ((bd = dd), (best = sp));
+			}
+			return best;
 		},
 		// the dance floor's rectangle [x0, z0, x1, z1] (as laid out by the Juice Bar: 10 by 32 tiles of 1.2 m
 		// from 0.9 m in front of the bar's counter, z -9.6 on)

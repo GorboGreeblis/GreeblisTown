@@ -65,6 +65,7 @@ The park is a fenced square from x −37.6 to 37.6 and z −37.6 to 49.6 (`t.par
 | The Library | The north-west corner, centred at (−24.75, −24.75). |
 | The Post Office and the Sheriff's | The north-east corner, side by side on the diagonal. |
 | Garden Supplies | The south-east corner. |
+| GOOWARD'S GALLERY | The east side, between the duck pond and Garden Supplies, at (31, 14.5) facing the garden, opposite the Juice Bar (`KIOSK_AT.K.gallery`). |
 | The Juice Bar and the dance floor | The west side: the bar, then the purple floor before it. KING DINO's drum kit stands on the grass behind the floor's south half. |
 | The duck pond | The east side, at (24.6, 0). |
 | The phone booth | South of the garden, at (−7.2, 23.9). |
@@ -212,21 +213,23 @@ Goo that runs down a body and moves like goo, without clipping:
 - **FORTIZMO** walks the aisle behind the Juice Bar by moving her `home`: every few seconds she picks a spot at least
   3 m along and walks there, then faces the dance floor; not while she is busy or the player is close.
 - **Roamers** (`roam(id, pick, wait…)`) walk their `home` to a new spot picked by `JGP.portalRoam` (HENNRICK: 3.2 to
-  6 m from the Portal, never in its doorway or NEXTESSA's lane), `JGP.parkRoam` (GEMTOE and the Gorbos: 5 to 16 m off,
-  never on the dance floor) or `JGP.floorRoam` (the Dancers: 3 to 12 m off, on the floor). A spot is taken only if
+  6 m from the Portal, never in its doorway or NEXTESSA's lane), `JGP.parkRoam` (GEMTOE and MAMA GORBO: 5 to 16 m off,
+  never on the dance floor), `JGP.galleryRoam` (GOOWARD: 6.6 to 10 m from his Gallery's middle, within 110° of its
+  facing, so in front or to either side, never inside or behind it; he stops facing it) or `JGP.floorRoam` (the Dancers: 3 to 12 m off, on the floor). A spot is taken only if
   `JGP.roamFree` passes it (inside the square, out of the garden, buildings, the pond and every scenery zone) and
   `JGP.roamWalk` passes a straight walk there.
 - A roamer with no headway for 2.5 s, or late, settles where it is and picks again; one boxed in heads back to its
   starting spot. None moves while busy (talking, a vignette, the Event) or with the player close.
-- **MAMA GORBO and GOOWARD** meet every 20 to 40 s (`JGP.meetAt(t)` forces it): they walk to a spot between them, turn
+- **MAMA GORBO and GOOWARD** meet every 20 to 40 s (`JGP.meetAt(t)` forces it): while they seek each other each
+  picker takes the spot nearest the other (GOOWARD's stays by his Gallery); they walk to a spot between them, turn
   face to face and throw goo balls to each other, a heart over the one who catches each.
 
 ### Home ground
 
 No creature is ever left stuck away from home, whatever the player does (the owner's rule).
 - Each creature's place is fixed (`def.at`), and so is the ground it belongs on (`JGP.homeGround`): the dance floor for
-  the Dancers, the open park for GEMTOE and the Gorbos, round the Portal for HENNRICK, the aisle behind the bar for
-  FORTIZMO, its spot for everyone else. Its `home` is only where it is walking to now.
+  the Dancers, the open park for GEMTOE and MAMA GORBO, within 12 m of his Gallery for GOOWARD, round the Portal for
+  HENNRICK, the aisle behind the bar for FORTIZMO, its spot for everyone else. Its `home` is only where it is walking to now.
 - A roamer never settles where its walk stalled unless that is on its ground; off it, it first goes back to its own
   place (`JGP.sendHome`, a planned route; a worker by its way in).
 - A guard sends home anyone left off its ground for 4 s (20 s if still trying to walk) while it has nothing else to do.
@@ -513,7 +516,7 @@ At the end of the south walk, its back to the fence.
 ### The kiosks
 
 - `kioskFrame(o, {sign, ink, wall, wall2, tin})` builds the shared shell (deck, back wall, half side walls, posts, tin
-  roof, counter at 1.12 m). Each kiosk adds its goods through `goods()`, which merges every small item into one
+  roof, counter at 1.12 m; `noDesk` leaves the counter and crates out, as in the Gallery). Each kiosk adds its goods through `goods()`, which merges every small item into one
   vertex-coloured mesh. `KIOSK_AT` holds each kiosk's position and its `front`, `spot`, `desk`, `exit` and
   `at(name, lx, lz)` points.
 - **The Sheriff's** back wall is plain (no battens, so they never cross the posters) and carries Wanted posters on
@@ -523,6 +526,11 @@ At the end of the south walk, its back to the fence.
   The Consortium's flag flies over the kiosk from a pole behind the sign, built in the kiosk's own merge (no texture,
   no extra draw): a navy cloth and a gold hem as flat planes, and on each face a cream stem, a red half-disc cap and
   white spots, each layer 1.5 cm further off the cloth than the one under it, so none of them fights another.
+- **GOOWARD'S GALLERY** (`buildGallery`, `GALLERY.easels`): cream walls with no battens, a violet tin roof, no desk.
+  The big empty canvas on the back wall and the two easels' frames are in the goods merge; the two paintings (a
+  landscape and a still life) share one 512 × 192 texture on one merged mesh. Its collider is the frame's walls plus
+  each easel's footprint, its hull reaches to the easels, the easels are kept clear of pickups (`keepAt`) and a walk
+  runs out to its deck from the garden ring. GOOWARD keeps it from outside (`JGP.galleryRoam`).
 - **Garden Supplies'** wheelbarrow of flowers stands on its wheel: two fork rails from under the tray's front edge to
   the axle, the wheel's top level with the tray's bottom, two legs at the back.
 - **The Post Office mail mountain** stands behind the kiosk under its roof line, hidden from the square (a visual joke):
@@ -547,7 +555,7 @@ At the end of the south walk, its back to the fence.
   cattails and the dock; the water only breathes in colour. It carries no effects (the owner asked); Backpacka's
   ripples while he drinks are his own.
 - **The square:** walks with a purpose (each leads somewhere and ends there: the ring round the garden, the Library, a
-  cross walk along the Post Office and Sheriff's fronts, Garden Supplies, the south walk to the church steps). No
+  cross walk along the Post Office and Sheriff's fronts, Garden Supplies, GOOWARD'S GALLERY, the south walk to the church steps). No
   benches, trash cans or flowerbeds. The Town Hall's spire ends in a gilded ball.
 - **The UFO** crosses the sky every 10 minutes, never during the Event (`JGP.ufoNow` sends one now).
 - **The sky dome** fits inside the far plane (`0.85 · t.far`; far is 310 m, 260 m on mobile), or its middle is cut away
@@ -608,7 +616,7 @@ share one atlas. The town is about 101.6k triangles in 24 meshes; `test/t_townvi
   on the roof beside a giant blank cassette, his pots by the door, a tape-return bin and two chewed cassettes, a band of
   cassettes with the last one bitten); the filling station of the far future (charging posts with glowing ports, the
   canopy in his teal, a lightning bolt on the pylon); the schoolhouse beside the courthouse (below).
-- **Mistergummery's** (a franchise founded by MONTGUMMERY's father; MAMA GORBO and GOOWARD run the town's branch): MONTGUMMERY's teal (`#55b8c6`) wherever a burger chain would have its yellow (the building,
+- **Mistergummery's** (a franchise founded by MONTGUMMERY's father; MAMA GORBO runs the town's branch): MONTGUMMERY's teal (`#55b8c6`) wherever a burger chain would have its yellow (the building,
   trim, lot and menu); the pylon is just the big teal M on a beam, about as tall as the Main Street rooftops, beside the
   restaurant's front corner, meant to show over the rooftops from the square.
 - **The south street, the homes:** SPARKAKUS (royal blue, his vines painted between the floors, daffodils, his star
