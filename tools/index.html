@@ -4462,7 +4462,8 @@ const le = (() => {
 						t.busy && It.release(t, t.busy), (t.busy = e), (t.group.visible = !0), (t.viaK = !via || inside ? 0 : via.length), (t.vbk = -1), clearTimeout(t.bdT), (t.battleDance = !1), (t.goHome = t.gcNavHome = !1), (t.gcNav = null);
 					});
 				const o = Gt(s.concat([null]), gcSinger.angle);
-				bt.seeds && st.join(o.larry),
+				// (SPARKAKUS comes at the cast's pace, 2.4 m/s, so he is in the garden with them)
+				bt.seeds && st.join(o.larry, void 0, void 0, 2.4),
 					s.forEach((t) => {
 						(t.finaleSlot = o.get(t)), (t.ph = Math.random() * l);
 					}),
@@ -13699,7 +13700,7 @@ const JGP = (() => {
 			(ent.finaleSlot = spots[k]), (ent.watching = !1);
 		});
 		const q = sp && spots[list.length];
-		q && st.join({ x: q.x, z: q.z }, Math.atan2(-q.x, -q.z));
+		q && st.join({ x: q.x, z: q.z }, Math.atan2(-q.x, -q.z), void 0, 2.4);
 	}
 	// FORTIZMO doesn't plant: she walks to the garden's edge to play. The librarian SPARKAKUS (who leaves
 	// the Library for it) plants with everyone, at a spot of his own inside the garden, and grows a flower
@@ -13718,13 +13719,17 @@ const JGP = (() => {
 				fz = fin.find(noPlant),
 				aF = fz && fz.finaleSlot ? Math.atan2(fz.finaleSlot.z, fz.finaleSlot.x) : null,
 				gap = null == aF ? 0 : 0.45,
-				rest = fin.filter((en) => !noPlant(en)),
-				ang = (en) => Math.atan2(en.group.position.z, en.group.position.x),
+				// (SPARKAKUS, planting in the garden with them, steps out with them too: `st` stands for him in the order)
+				rest = fin.filter((en) => !noPlant(en)).concat(bt.seeds && st.away() ? [st] : []),
+				pos = (en) => (en === st ? st.pos() : en.group.position),
+				ang = (en) => Math.atan2(pos(en).z, pos(en).x),
 				a0 = null == aF ? (rest.length ? ang(rest[0]) : 0) : aF,
 				rel = (en) => (((ang(en) - a0) % l) + l) % l;
 			rest.sort((p, q) => rel(p) - rel(q)).forEach((en, k) => {
-				const a = a0 + gap + ((k + (gap ? 0.5 : 0)) / rest.length) * (l - 2 * gap);
-				(en.watching = !0), (en.finaleSlot = { x: R0 * Math.cos(a), z: R0 * Math.sin(a) });
+				const a = a0 + gap + ((k + (gap ? 0.5 : 0)) / rest.length) * (l - 2 * gap),
+					x = R0 * Math.cos(a),
+					z = R0 * Math.sin(a);
+				en === st ? st.join({ x, z }, Math.atan2(-x, -z), void 0, 2.4) : ((en.watching = !0), (en.finaleSlot = { x, z }));
 			});
 		},
 		eventActor = (ent) => !!ent && AT_POST.includes(ent.id);
@@ -13756,7 +13761,9 @@ const JGP = (() => {
 	{
 		let spRound = 0, spWait = 0;
 		L.push((tt) => {
-			if (!bt.live || !me.active || !st.away() || !st.there() || spRound === garden.round || garden.round < 1) return void (st.away() || (spWait = 0));
+			// (only at his spot inside the garden: arrived at his place on the ring for the dance, he plants nothing)
+			const sp0 = st.away() && st.pos();
+			if (!bt.live || !me.active || !st.away() || !st.there() || Math.hypot(sp0.x, sp0.z) > GARDEN_R || spRound === garden.round || garden.round < 1) return void (st.away() || (spWait = 0));
 			if (!spWait) return void (spWait = tt + 1.5);
 			if (tt < spWait) return;
 			(spRound = garden.round), (spWait = 0);
@@ -14348,7 +14355,8 @@ const JGP = (() => {
 				const fin = It.all.filter((en) => "finale" === en.busy),
 					fz = fin.find(noPlant);
 				// (the 20 s start when the last planter reaches the garden, or 30 s in whatever happens)
-				!inAt && (fin.every((en) => en === fz || there(en)) || tt - plantedAt > 30) && (inAt = tt);
+				// (SPARKAKUS, out planting with them, counts too)
+				!inAt && ((fin.every((en) => en === fz || there(en)) && (!(bt.seeds && st.away()) || st.there())) || tt - plantedAt > 30) && (inAt = tt);
 				// (and FORTIZMO has to be at her spot to play: she is given 15 s more at most)
 				if (inAt && tt - inAt > 20 && (!fz || there(fz) || tt - inAt > 35)) {
 					(phase = 2), (ringAt = tt), toRing(fin);
@@ -20544,7 +20552,11 @@ if (
 							});
 						}
 						// (SPARKAKUS dances and plants only when he is at the Event, not when he steps out of the Library to speak)
-						st.group && n.push({ key: "keeper", grp: st.group, ent: null, want: st.away() && me.active && bt.seeds ? (music ? "dance" : o ? "plant" : null) : null });
+						// (as the cast: only standing at his spot, never on the way; he plants only at his spot in the garden, and
+						// dances at his place on the ring with everyone)
+						const spAt = st.away() && me.active && bt.seeds && st.there(),
+							spIn = spAt && Math.hypot(st.pos().x, st.pos().z) < JGP.GARDEN_R;
+						st.group && n.push({ key: "keeper", grp: st.group, ent: null, want: spAt && !("dialogue" === jt.top && st.talking) ? (music ? "dance" : o && spIn ? "plant" : null) : null });
 						for (const o of n) {
 							let n = bt.tg.get(o.grp);
 							// (each creature's idle footprint sample is offset by its place in the list, so the samples, every 0.25 s, never all
