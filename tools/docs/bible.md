@@ -649,8 +649,10 @@ This section gives the Event's lore and sequence; its design and timing are in 5
   motions at the same spots and grow nothing; the garden stays as the first Event left it. "All that grows, grows
   again." / "Then my work is never done. Good."
 - **Without the Seeds**, nobody comes to plant and FORTIZMO does not play; BACKPACKA still comes and sprays, but
-  nothing grows and no rainbow comes out.
-- **The Event lines** (each creature's words when talked to during it) are listed with the cast (2.1 to 2.17).
+  nothing grows and no rainbow comes out. Talked to, everyone says its everyday lines, never its Event line, and no
+  Blossom is taken.
+- **The Event lines** (each creature's words when talked to during it) are listed with the cast (2.1 to 2.17). They
+  are said only at an Event with the Seeds.
 
 ### 1.15 Written things
 
@@ -6327,7 +6329,8 @@ Its lore is in 1.14.
 - **The Seeds decide the Event** (`bt.seeds`, fixed for the whole Event as it starts):
   - **With Seeds:** everyone comes, plants and dances, FORTIZMO plays, and flowers grow.
   - **Without Seeds:** nobody leaves home, no horn, no music. BACKPACKA still comes about 20 s in and sprays the
-    garden, but nothing grows and no rainbow shows.
+    garden, but nothing grows and no rainbow shows. No Event lines: a creature talked to says its everyday lines
+    (Blossoms stay off, as at every Event).
 - The Event can be replayed any number of times.
 
 **Who comes:** the whole park cast except KING DINO (at his drums), SOMLET (asleep at the Post Office), NEXTESSA

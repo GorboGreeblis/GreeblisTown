@@ -183,6 +183,15 @@ Rules for how creatures act towards the player and the park. The systems are in
    inside (see [bible.md](bible.md#14-the-five-kiosks)).
 7. Only one batch of flowers ever grows at the Garden Event: the first Event's. Every planting creature (SPARKAKUS
    included) must grow a flower at its spot then; a repeated Event must never add more.
+8. A creature speaking to the player must face the player, wherever it is (at home, out on a visit, on its way
+   home) and for every page of what it says, including the moments of a speech or scene between pages. The only
+   exceptions are ones the owner has set: ANOMALEE keeps gazing up at the church window through her Talk lines, and
+   the church's Ancient never turns. This holds in every Greeblis game.
+9. While a creature's scripted scene plays (its effects, animations and dialogue: SPARKAKUS's Gem speech, for one),
+   nothing takes it away: no visit goes on or ends, no walk home, wander, meeting or vignette starts, until the scene
+   is over.
+10. A creature says its Garden Event line only at an Event with the Seeds, when everyone comes to the garden. Without
+    the Seeds nobody comes, and everyone says its everyday lines.
 
 ## Names and text
 
