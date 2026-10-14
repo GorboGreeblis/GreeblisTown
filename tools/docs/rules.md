@@ -275,3 +275,4 @@ Descriptive material lives in the document that owns it.
 | [`testing.md`](testing.md) | Test runners, probes, audits and the game globals they use |
 | [`release.md`](release.md) | The final pass: strip, minify, pack, check; the codec; trimming three.js; dead code |
 | [`tasks.md`](tasks.md) | The running list of open tasks: what is being worked on, what is queued, what waits on the owner |
+| [`benchmarks.md`](benchmarks.md) | Performance benchmarks across builds, measured the same way for every build (`test/bench.js`) |
