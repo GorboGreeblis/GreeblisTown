@@ -18621,7 +18621,8 @@ const JGP = (() => {
 					let next = 20 + 20 * Math.random(),
 						st = 0, // 0: apart, 1: on the way, 2: together
 						until = 0;
-					let tryAt = 0;
+					let tryAt = 0,
+						farAt = 0;
 					const pair = () => [It.byId.p_mamagorbo, It.byId.gorbo],
 						free = (h) => h && !h.busy && !h.vig && !h.visiting && !h.hosting && !h.battleDance && !h.nearPlayer && !h.goHome && !h.gcNavHome && !("dialogue" === jt.top && xe.lastTarget === h),
 						off = (t2, wait) => {
@@ -18638,6 +18639,27 @@ const JGP = (() => {
 							if (t2 < next) return;
 							// (due: they wander toward each other till there is a clear way to meet)
 							(A.seek = B), (B.seek = A);
+							// (GOOWARD keeps to his GALLERY, so from far across the park MAMA GORBO walks over to him by a
+							// planned way, to open ground a few metres from him, the side nearest her)
+							if (t2 >= farAt && free(A) && free(B)) {
+								const a = A.group.position,
+									b = B.group.position,
+									r = A.bodyR || 1;
+								if (Math.hypot(b.x - a.x, b.z - a.z) > 16) {
+									farAt = t2 + 20;
+									let best = null,
+										bd = 1e9;
+									for (let k = 0; k < 40; k++) {
+										const ang = Math.random() * l,
+											j = r + (B.bodyR || 1) + 1.5 + 2.5 * Math.random(),
+											x = b.x + j * Math.cos(ang),
+											z = b.z + j * Math.sin(ang),
+											dd = Math.hypot(x - a.x, z - a.z);
+										dd < bd && JGP.roamApart(x, z, r, A, [A, B]) && JGP.roamFree(x, z, r, !0, A.def.at) && ((bd = dd), (best = [x, z]));
+									}
+									if (best) return void (A.home.set(best[0], A.home.y, best[1]), Be(A, best[0], best[1], t2));
+								}
+							}
 							if (t2 < tryAt || !free(A) || !free(B)) return;
 							tryAt = t2 + 2;
 							const a = A.group.position,
