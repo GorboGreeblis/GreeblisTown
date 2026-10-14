@@ -102,6 +102,10 @@ Rules for how changes are made, checked and recorded.
 11. PRs must be opened often: each finished batch of work goes up as its own PR as soon as it passes its checks,
     rather than waiting for a large set. Opening a PR is never a stopping point: work goes on with the next open task
     in [tasks.md](tasks.md) for as long as tasks remain, the branch restarting from `main` once the PR is merged.
+12. **(every game)** Performance must be benchmarked every so often: after any performance pass, after a change that
+    adds or reworks much of what is drawn, every few PRs, and whenever the owner asks. Each run is measured the same
+    way for every build (here `tools/test/bench.js`), and its results are always saved in a document in the tools
+    folder ([benchmarks.md](benchmarks.md)), one row per build, kept across the life of the game.
 
 ## Locks and approvals
 
