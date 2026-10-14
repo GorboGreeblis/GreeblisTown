@@ -8212,24 +8212,37 @@ const JGP = (() => {
 			cr.position.set(0.5 * sx, 2.02, -0.02), (cr.rotation.z = -0.35 * sx), body.add(cr), crests.push(cr);
 			[-0.5, 0, 0.5].forEach((a) => R(T.sphere(1, 12, 8), gold, cr, [0.12 * a, 0.26, 0], [0, 0, -a * 0.9], [0.12, 0.32, 0.05]));
 		});
-		// his painter's beret (added at the owner's request): soft deep violet felt (the Gallery's ink), tilted over the
-		// left side of his head behind the port and clear of the gold crest, a band round its rim, a little stalk on its
-		// crown and flecks of his own goo paint on it. Its +z is the head's outward normal there (faceTo).
+		// his painter's beret (added at the owner's request): soft deep violet felt (the Gallery's ink), worn on the
+		// right side of his head over the side bubble, behind the port and clear of the gold crest, a band round its rim, a
+		// little stalk on its crown and flecks of his own goo paint on it. Built flat (+z out of the head) and then bent
+		// round a sphere of radius BR so it hugs the bubble; the group sits on the bubble's surface, +z its outward normal.
 		{
 			const beret = new THREE.Group(),
 				felt = x.clay("#4a2a6a", { shininess: 8 }),
-				rf = srand(83);
-			beret.position.set(-0.84, 1.8, -0.28), faceTo(beret, new c0(-0.78, 0.55, -0.3).normalize()), body.add(beret);
-			R(T.sphere(1, 24, 12), felt, beret, [0.05, -0.04, 0.1], null, [0.5, 0.5, 0.15]);
-			R(T.torus(0.33, 0.045, 8, 28), x.clay("#3a1e56", { shininess: 12 }), beret, [0, 0, 0.02]);
-			R(T.cyl(0.03, 0.045, 0.1, 8), felt, beret, [0.05, -0.04, 0.29], [Math.PI / 2, 0, 0]);
-			["#3ae8ff", "#ff3ac8", "#a8e830", "#3ae8ff", "#ffd23a"].forEach((col, k) => {
+				rf = srand(83),
+				n = new c0(-0.75, 0.55, -0.37).normalize(),
+				BR = 0.6,
+				bent = (geo) => {
+					const P = geo.attributes.position;
+					for (let i = 0; i < P.count; i++) {
+						const px = P.getX(i),
+							py = P.getY(i),
+							d = Math.hypot(px, py),
+							r = BR + P.getZ(i),
+							k = d > 1e-6 ? (r * Math.sin(d / BR)) / d : 1;
+						P.setXYZ(i, px * k, py * k, r * Math.cos(d / BR) - BR);
+					}
+					return geo.computeVertexNormals(), geo;
+				};
+			beret.position.set(-0.72, 1.55, -0.12).addScaledVector(n, 0.47), faceTo(beret, n), body.add(beret);
+			R(bent(new THREE.SphereGeometry(1, 28, 14).scale(0.5, 0.5, 0.13).translate(0.04, -0.03, 0.07)), felt, beret);
+			R(bent(new THREE.TorusGeometry(0.4, 0.04, 8, 32)), x.clay("#3a1e56", { shininess: 12 }), beret);
+			R(bent(new THREE.CylinderGeometry(0.03, 0.045, 0.1, 8).rotateX(Math.PI / 2).translate(0.04, -0.03, 0.24)), felt, beret);
+			["#3ae8ff", "#ff3ac8", "#a8e830", "#3ae8ff", "#ffd23a"].forEach((col) => {
 				const a2 = l * rf(),
 					d = 0.12 + 0.24 * rf(),
-					px = 0.05 + d * Math.cos(a2),
-					py = -0.04 + d * Math.sin(a2),
-					pz = 0.1 + 0.15 * Math.sqrt(Math.max(0, 1 - (d / 0.5) ** 2)) + 0.004;
-				R(T.sphere(1, 8, 6), x.clay(col, { shininess: 60 }), beret, [px, py, pz], [0, 0, a2], [0.05 + 0.03 * rf(), 0.035, 0.012]);
+					pz = 0.07 + 0.13 * Math.sqrt(Math.max(0, 1 - (d / 0.5) ** 2)) + 0.004;
+				R(bent(new THREE.SphereGeometry(1, 8, 6).scale(0.05 + 0.03 * rf(), 0.035, 0.012).rotateZ(a2).translate(0.04 + d * Math.cos(a2), -0.03 + d * Math.sin(a2), pz)), x.clay(col, { shininess: 60 }), beret);
 			});
 		}
 		// the purple octagon ports GORBO and MAMA share, one on each side

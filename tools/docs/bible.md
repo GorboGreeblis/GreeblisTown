@@ -1256,7 +1256,8 @@ each creature's entry gives a one-line look and the design section to read.
 - **Post:** wanders round his gallery, 6.6 to 10 m from its middle, in front of it or to either side, never inside or
   behind it, and stops facing it. He shares the Gorbos' house.
 - **Look:** an egg-shaped jelly of fused bubbles, cyan above and peach below, with white "+" eyes, crystal wings, a
-  small smile and a ribbon tongue; see 3.4.
+  small smile, a ribbon tongue and a deep violet painter's beret flecked with goo paint, worn on the right side of
+  his head; see 3.4.
 - **Personality:** cheerful, eager, affectionate and easily cowed.
 - **Voice:** says only "Gomp". Meaning is carried by repetition, length, capitals and punctuation ("Gomp?",
   "Goooooomp!", "GOOMP"); actions are stage directions between asterisks ("* His crystal wings flutter *").
@@ -2630,7 +2631,7 @@ This section specifies GOOWARD's model, materials, face and motion.
 #### Overview
 
 - **Lock.** Locked (the builder is marked final in code). His small smile and ribbon tongue are an approved exception
-  to the no-smile rule.
+  to the no-smile rule. The painter's beret was added later with the owner's permission to alter the model.
 - **Builder and id.** `BORN.gooward` (roster builder `born_gooward`); id `gorbo`. Def: name colour `#30b4e4`, bodyR
   1.2, talkR 3.4 (default); thrown-goo colours `#37b3e8`, `#ff5fb0`, `#a8e830`, `#f2c72e`, `#8a3ffc`, `#35d0c5`,
   `#ff7a2f`.
@@ -2643,7 +2644,8 @@ This section specifies GOOWARD's model, materials, face and motion.
   radiating over the ground.
 - Signatures: (1) the float ring, the widest part, with white stripes; (2) two gold three-leaf crests splayed outward;
   (3) crystal wing spikes fanning behind the upper back.
-- Secondary reads: white "+" eyes, pastel root tendrils, purple octagon ports on the upper sides.
+- Secondary reads: white "+" eyes, pastel root tendrils, purple octagon ports on the upper sides, the violet beret
+  on his right side.
 
 #### Proportions
 
@@ -2700,6 +2702,10 @@ Positions are local to the body group (y 0.55) unless marked.
 | Valve | cylinder + cap | on top at his front right (−x), 0.4 rad from −x toward +z | 0.05 → 0.06 × 0.1; cap 0.035 | `#e040c8`; cap `#fbf8f0` | clay | 60; cap 14 |
 | Under-ring | torus 0.1 below | | 1.28 / 0.2 | `#e040c8` | clay | 50 |
 | AP tag | octagon circle, red octagon texture with bold white "AP" | ring-local (0.95, −0.12, 1.02), turned 0.75: front left (+x) of the under-ring | r 0.17 | `#e83a2a` | Phong canvas | 30 |
+| Beret | sphere 28 × 14 squashed to a 0.5 × 0.5 × 0.13 disc at +0.07 (offset 0.04, −0.03), bent round a sphere of radius 0.6 so it hugs the head | group on the right upper bubble's surface, 0.47 out from its centre along (−0.75, 0.55, −0.37): ≈ (−1.07, 1.81, −0.29), +z the outward normal (`faceTo`) | 1.0 across | `#4a2a6a` | clay | 8 |
+| Beret band | torus, bent the same way | at the beret's rim, z 0 | 0.40 / 0.04 | `#3a1e56` | clay | 12 |
+| Beret stalk | cylinder along +z, bent | on the crown, z 0.24 | r 0.03 → 0.045, 0.1 long | `#4a2a6a` | clay | 8 |
+| Paint flecks ×5 | flattened spheres on the crown's top surface, bent | 0.12–0.36 from the crown centre, seeded (`srand(83)`) | 0.05–0.08 × 0.035 × 0.012 | `#3ae8ff`, `#ff3ac8`, `#a8e830`, `#3ae8ff`, `#ffd23a` | clay | 60 |
 | Roots ×9 | `ao` from (0.3, 0.55) under the body out through 0.75 at y 0.18 to the ground at y 0.03/0.01, curling 0.2–0.4 rad | on the root | r 0.045 → 0.012; reach 1.55–2.05 | `#c7a0f0`, `#b8e858`, `#f4f4f4`, `#e8a0d8` in turn | clay | 30 |
 
 #### Palette
@@ -2716,6 +2722,7 @@ Positions are local to the body group (y 0.55) unless marked.
 | `#d8f0ff` (emissive `#203848`), `#e8faff` | wings, jelly bubbles |
 | `#c8f03a`, `#fbf8f0`, `#e040c8`, `#e83a2a` | ring, stripes and valve cap, valve and under-ring, AP tag |
 | `#c7a0f0`, `#b8e858`, `#f4f4f4`, `#e8a0d8` | roots |
+| `#4a2a6a`, `#3a1e56`; `#3ae8ff`, `#ff3ac8`, `#a8e830`, `#ffd23a` | beret felt and band (the Gallery's ink); its goo-paint flecks |
 
 #### Surfaces and materials
 
@@ -2762,6 +2769,9 @@ Positions are local to the body group (y 0.55) unless marked.
 - The ring is its own group; stripes use tube 0.265 over 0.26 against z-fighting. Eye layers are offset in z (ink
   1.13, white 1.16).
 - Bubbles skip the face zone (abs(sin a) > 0.75, cos a > 0, y 0.9–1.9).
+- The beret is built flat (+z out of the head) and every part's geometry is then bent round a sphere of radius 0.6
+  (a point at distance d from the axis and height z goes to angle d / 0.6 on a shell of radius 0.6 + z), so its rim
+  follows the head instead of standing off it. It sits behind the port and below the crest, touching neither.
 - Roots lie static on the root at y 0.01–0.03. The drips' lowest point (≈ world y 0.44) stays above the ring's lower
   edge.
 
@@ -2776,6 +2786,7 @@ Positions are local to the body group (y 0.55) unless marked.
 - **Do** keep two gold three-leaf crests splayed outward, two wavy teal brows, purple octagon ports and faceted
   crystal wing fans behind.
 - **Do** keep the nine pastel roots splayed over the ground.
+- **Do** keep the beret soft deep violet, hugging the right side of his head, clear of the port and the crest.
 - **Don't** give him round eyes, pupils, lids, teeth or a wider or bigger mouth.
 - **Don't** attach the wings to the breathing body, or let bubbles cover the face.
 - **Don't** make the ring matte or drop its stripes.
