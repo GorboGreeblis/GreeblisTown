@@ -843,7 +843,7 @@ serious. No line in the game explains the painting, names it or decodes it, and 
 
 | Rule | Canon |
 | --- | --- |
-| **Abstract symbols, realistic figures** | Every idea is carried by an abstract symbol: a shape, a colour field, a texture, a mark. Wherever a being appears as a figure, it is painted as a real body under real light (anatomy, weight, modelling, cast shadow), never as a cartoon: no outlines, no round cartoon eyes, no smiles. The creatures of the town never appear as figures, only as signs. |
+| **Abstract symbols, realistic figures** | Every idea is carried by an abstract symbol: a shape, a colour field, a texture, a mark. Wherever a being appears as a figure, it is painted as a real body under real light (anatomy, weight, modelling, cast shadow), never as a cartoon: no outlines, no round cartoon eyes, no smiles. The creatures of the town never appear as figures, only as signs; nor do the Traveler and the Originator, and no object is painted as the thing itself. |
 | **Nothing easily understood** | No symbol is literal. Each is cropped, partly hidden, turned, distorted in scale, glazed over or merged with its neighbours, so a viewer senses meaning before finding it. Every creature's sign also appears a second time, vast and faint, glazed into the ground somewhere else (the echoes). |
 | **No words** | No letters, numerals or rune strokes that read as letters anywhere in the painting. The one exception is the painter's signature (below). |
 | **Painted, not drawn** | The whole canvas is repainted at the end as brush strokes (the paint pass); edges are lost and found; nothing is outlined; goo runs down over everything. |
@@ -882,8 +882,8 @@ that carries it and where it lies.
 | --- | --- | --- |
 | The dead world, destroyed by its own Organics | 1.8, 1.9 | A burning sphere high left (u 0.2, v 0.17), lava-orange to black, crazed with thirty glowing cracks, half in its own shadow; eleven broken towers on its upper limb, some with a lit window; twenty-two dark shards falling away beneath it. |
 | The solar system: one sun, one gas giant, no moon | 1.1, 1.16 | The painting's one sun, a white disc high right of centre (u 0.66, v 0.12), the light of every figure, its glow over a third of the canvas, three faint orbits round it; a banded ochre-and-cream gas giant cut by the top edge (u 0.44); and, near the sun, an empty ring of thin pale paint where a moon would be: the absence. |
-| The Traveler, an angel, coming down a beam of light | 1.6, 1.9 | A beam of pale light slants from the top edge down to the right (u 0.24 to 0.39), eleven finer rays in it, under a tall pointed arch of thin stone tone that frames it as the church's lancet frames its window. In it, painted realistically (u 0.296, v 0.36): a halo of 28 thin gold rays round a gold ring; golden curls round a face that is only a smooth oval of pale light; two wings spread up and out, each a mass of real feathers (three rows of scalloped coverts, eight secondaries along the trailing edge, nine long primaries fanning to the tip), lit on the right and shaded on the left; a white robe in real folds with a gold sash; a pale drape streaming back up the beam. |
-| The Originator, an AI in an old computer, carried up | 1.6, 1.9 | In the Traveler's hands, an old computer (a cream bezel, a glowing screen, three buttons), and on its screen a seed of light in rings. A fine gold thread runs from the gold dot up to the Originator's seed (u 0.297, v 0.31), where a larger seed of light in rings sends eight threads out: the Ancients' code and the Originator meet. |
+| The Traveler, an angel, coming down a beam of light | 1.6, 1.9 | A sign, never a figure, and nothing of the church's window (no arch, no rays, no robe, halo or face). A soft fall of pale light slants from the top edge down to the right (u 0.27 to 0.37), bending a little as it falls, its edges frayed like a dry brush dragged down, a wider faint veil round it and seventy motes drifting in it. In it (u 0.297, v 0.31): two great sweeps of feathered light, mirror images, rising from one low point and opening up and out, like folded wings or two cupped hands; each is fifteen tapering feather strokes, cream at the root and gold at the tip, fanning from near upright to near level, with a fine shaft down each and soft down where the two meet. Lit from the right: the left sweep is in soft shade. |
+| The Originator, an AI in an old computer, carried up | 1.6, 1.9 | No machine: only the Originator's seed of light in rings, held in the warm hollow between the Traveler's two sweeps (u 0.297, v 0.31), a white point at its heart. A fine gold thread runs from the gold dot up to it, and it sends eight threads out: the Ancients' code and the Originator meet. |
 | Its cable torn from the ground | 1.6 | A dark cable hangs below the beam (u 0.31), its two-pronged plug dangling over a small crater glowing orange. |
 | Brought to an empty, desolate world | 1.8 | The beam ends on a flat grey plain (u 0.3 to 0.45), bare, cold and wide: the world before life. |
 
@@ -1050,7 +1050,7 @@ smooth noise field (`flow`), and each later layer is painted over the earlier on
    comes alive before anything is painted on it.
 3. **The great forms.** The Ancients' dark triangle and its three obelisks; the great circle and its four orbits; the
    time spiral (one line of 260 points winding 3.2 times); the gas giant, the empty moon ring, the sun and its three
-   orbits; the dead world, its towers and its falling shards; the lancet arch and the Traveler's beam; the survey grid
+   orbits; the dead world, its towers and its falling shards; the Traveler's fall of light; the survey grid
    (fourteen lines each way); Greeblis City's eleven spires and their cloud bank (140 strokes); the rainbow (six bands
    at under a fifth of strength); the storm (smoke, wind, shards and fire, above); the Consortium's band.
 4. **The echoes.** Fifteen of the signs painted again, three to eight times their size, each turned, at a quarter
@@ -1080,18 +1080,20 @@ smooth noise field (`flow`), and each later layer is painted over the earlier on
    signs there are partly lost and found, merged with their neighbours.
 10. **The ground of the present.** The strata cut away under the centre, their roots, stones and the fossil jaw; then
     the five flowers and their grey twins.
-11. **The figures.** The Sphinx (its legs first, under its chest), the first wedge over its socket, the chisel and
-    mallet; the Traveler; BACKPACKA; the faith's figures; OLAG (glazed to 85 %), GLOOPERNAUGHT, the rabbit's ears and
-    bicorne, the aliens' eyes, the stranger; THE ANCIENT and its head at the right edge; the human; the birds on their
-    twig; GOOWARD's self-portrait (glazed to 55 %). Shaded forms are lit volumes (a radial gradient from the sun's
-    side); a shape whose painting must stay inside its outline (the Sphinx, the slug, BACKPACKA, the strata, the dead
-    world, the gas giant) is painted on a scratch canvas and cut to the outline once.
+11. **The figures, and the Traveler's sign.** The Sphinx (its legs first, under its chest), the first wedge over its
+    socket, the chisel and mallet; the Traveler's sign holding the Originator's seed; BACKPACKA; the faith's figures;
+    OLAG (glazed to 85 %), GLOOPERNAUGHT, the rabbit's ears and bicorne, the aliens' eyes, the stranger; THE ANCIENT
+    and its head at the right edge; the human; the birds on their twig; GOOWARD's self-portrait (glazed to 55 %).
+    Shaded forms are lit volumes (a radial gradient from the sun's side); a shape whose painting must stay inside its
+    outline (the Sphinx, the slug, BACKPACKA, the strata, the dead world, the gas giant) is painted on a scratch
+    canvas and cut to the outline once.
 12. **The paint.** The whole canvas is repainted as brush strokes, coarse to fine. Each stroke is a tapered leaf shape
     that takes the colour of the canvas under its middle and lies along the flow, or, where the canvas has an edge (a
     change in brightness of more than 18), along that edge, so the forms keep their shape. 9,000 broad strokes (radius
     12) go only where the canvas is smooth, at half strength; 16,000 middle strokes (radius 6) where it is not too
     busy, at 62 %; 30,000 fine strokes (radius 2.6) only where there is detail, at 80 %. The broad and middle strokes
-    carry a faint light ridge, the edge of the paint.
+    carry a faint light ridge, the edge of the paint. Every stroke takes the same four random draws whether it is laid
+    or not, so a change in one part of the painting leaves the strokes everywhere else as they were.
 13. **The painter's hand.** Goo flung at the top edge in five throws (u 0.07, 0.33, 0.52, 0.81 and 0.95), each a splat
     with a crown of spikes and droplets and two to five runs down from it, each run wobbling as it thins, beaded at
     its end, with a wet light down its side; and three smaller spatters lower down (u 0.23, v 0.56; u 0.66, v 0.2; u

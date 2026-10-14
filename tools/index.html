@@ -12308,16 +12308,28 @@ const JGP = (() => {
 			}
 		}
 		yield;
-		// the lancet arch and the Traveler's beam slanting down to the right
+		// the way the Traveler came: a soft fall of pale light slanting down to the right and bending a little as it falls,
+		// its edges frayed like a dry brush dragged down, a wider veil round it and motes drifting in it (no frame, no rays,
+		// nothing of a window); its own random sequence, so the painting's stays as it was
 		{
-			const x0 = U(0.255), x1 = U(0.345), y0 = V(0.06), y1 = V(0.8);
-			c.strokeStyle = "rgba(200,190,170,0.3)", (c.lineWidth = 5), c.beginPath();
-			c.moveTo(x0, y1), c.lineTo(x0, y0 + 90), c.quadraticCurveTo(x0, y0, (x0 + x1) / 2, y0 - 10), c.quadraticCurveTo(x1, y0, x1, y0 + 90), c.lineTo(x1, y1), c.stroke();
-			c.fillStyle = grad(0, 0, 0, V(0.8), [[0, "rgba(255,250,225,0.62)"], [0.7, "rgba(255,246,215,0.3)"], [1, "rgba(255,246,215,0.04)"]]);
-			c.beginPath(), c.moveTo(U(0.24), 0), c.lineTo(U(0.3), 0), c.lineTo(U(0.39), V(0.8)), c.lineTo(U(0.3), V(0.8)), c.fill();
-			for (let k = 0; k < 11; k++) {
-				const t = k / 10;
-				line([[U(0.24) + U(0.06) * t, 0], [U(0.3) + U(0.09) * t, V(0.8)]], "rgba(255,255,240,0.16)", 1.1);
+			let q = 4111;
+			const lr = () => (q = (q * 16807) % 2147483647) / 2147483647,
+				at = (t) => [U(0.27) + U(0.075) * t + 22 * Math.sin(Math.PI * t), V(0.8) * t],
+				hw = (t) => U(0.026) + U(0.02) * t,
+				fall = (k, stops) => {
+					const L = [], R = [];
+					for (let i = 0; i <= 40; i++) {
+						const t = i / 40, [x, y] = at(t), w = hw(t) * k;
+						L.push([x - w + (lr() - 0.5) * 12 * k, y]), R.push([x + w + (lr() - 0.5) * 12 * k, y]);
+					}
+					c.fillStyle = grad(0, 0, 0, V(0.8), stops), c.beginPath(), c.moveTo(...L[0]);
+					L.forEach((p) => c.lineTo(...p)), R.reverse().forEach((p) => c.lineTo(...p)), c.fill();
+				};
+			fall(1.9, [[0, "rgba(255,250,225,0.2)"], [0.7, "rgba(255,246,215,0.1)"], [1, "rgba(255,246,215,0)"]]);
+			fall(1, [[0, "rgba(255,250,225,0.55)"], [0.7, "rgba(255,246,215,0.26)"], [1, "rgba(255,246,215,0.03)"]]);
+			for (let k = 0; k < 70; k++) {
+				const t = lr(), [x, y] = at(t);
+				ell(x + (lr() - 0.5) * 2 * hw(t), y, 0.8 + lr() * 1.2, 2 + lr() * 3, -0.12, "rgba(255,250,228," + (0.3 + 0.4 * lr()).toFixed(2) + ")");
 			}
 		}
 		yield;
@@ -13042,13 +13054,14 @@ const JGP = (() => {
 			for (const [r, n, el, minEdge, maxEdge, al] of [[12, 9000, 1.5, 0, 14, 0.5], [6, 16000, 1.5, 0, 40, 0.62], [2.6, 30000, 1.6, 8, 999, 0.8]]) {
 				for (let k = 0; k < n; k++) {
 					if (k % 400 === 0) yield;
-					const x = rnd() * W, y = rnd() * H, i = at(x, y);
+					// (every stroke takes the same four draws, kept or not, so a change in one place leaves the rest as it was)
+					const x = rnd() * W, y = rnd() * H, i = at(x, y), lk = rr(0.8, 1.3), wk = rr(0.75, 1.05), ak = rr(0.7, 1);
 					const gx = lum(at(x + 3, y)) - lum(at(x - 3, y)), gy = lum(at(x, y + 3)) - lum(at(x, y - 3)), g = Math.hypot(gx, gy);
 					if (g < minEdge || g > maxEdge) continue;
 					const a = g > 18 ? Math.atan2(gx, -gy) : flow(x, y),
-						len = r * el * (g > 18 ? 0.8 : rr(0.8, 1.3)),
-						w = r * rr(0.75, 1.05);
-					c.save(), c.translate(x, y), c.rotate(a), (c.globalAlpha = al * rr(0.7, 1));
+						len = r * el * (g > 18 ? 0.8 : lk),
+						w = r * wk;
+					c.save(), c.translate(x, y), c.rotate(a), (c.globalAlpha = al * ak);
 					c.fillStyle = "rgb(" + src[i] + "," + src[i + 1] + "," + src[i + 2] + ")";
 					c.beginPath(), c.moveTo(-len, 0), c.quadraticCurveTo(0, -w, len, 0), c.quadraticCurveTo(0, w, -len, 0), c.fill();
 					// a faint light edge on the stroke's lit side (the ridge of the paint), on the broad strokes only
@@ -13621,57 +13634,43 @@ const JGP = (() => {
 			ell(x + h * 0.01, y - h * 0.86, h * 0.12, h * 0.14, 0, "rgba(255,250,220,0.35)");
 		}
 		function traveler(x, y) {
-			// the halo: a ring of thin gold rays behind the head
-			const hx = x, hy = y - 66;
-			for (let k = 0; k < 28; k++) {
-				const a = (k / 28) * TAU;
-				line([[hx + Math.cos(a) * 16, hy + Math.sin(a) * 16], [hx + Math.cos(a) * (24 + (k % 2) * 6), hy + Math.sin(a) * (24 + (k % 2) * 6)]], "rgba(255,214,90,0.75)", 1.1);
-			}
-			c.strokeStyle = "rgba(255,220,110,0.9)", c.lineWidth = 1.6, c.beginPath(), c.ellipse(hx, hy, 15, 15, 0, 0, TAU), c.stroke();
-			// the wings, each a mass of real feathers: rows of scalloped coverts over the shoulder, the secondaries along the
-			// trailing edge, the long primaries fanning out to the tip; lit from the right, the under-feathers in shade
+			// the Traveler, as a sign (no figure, no face, no halo, no machine): two great sweeps of feathered light, mirror
+			// images, rising from one low point and opening up and out, like folded wings or two cupped hands; and held in the
+			// warm hollow between them the Originator, only its seed of light in rings (where the gold thread of the code
+			// arrives). Lit from the right, the left sweep in soft shade. Its own random sequence, so the painting's stays.
+			let q = 9173;
+			const lr = () => (q = (q * 16807) % 2147483647) / 2147483647,
+				cx = U(0.297), cy = V(0.31), bx = x, by = cy + 62;
+			c.fillStyle = rgrad(cx, cy, 2, 74, [[0, "rgba(255,250,232,0.6)"], [1, "rgba(255,250,232,0)"]]), c.beginPath(), c.arc(cx, cy, 74, 0, TAU), c.fill();
+			// one feather of light: a quadratic sweep, thin at the root, fullest a third of the way out, drawn to a point
+			const sweep = (x0, y0, mx, my, x1, y1, w, c0, c1, sh) => {
+				const N = 18, P = [];
+				for (let i = 0; i <= N; i++) {
+					const s = i / N, u = 1 - s;
+					P.push([u * u * x0 + 2 * u * s * mx + s * s * x1, u * u * y0 + 2 * u * s * my + s * s * y1, s]);
+				}
+				const L = [], R = [];
+				P.forEach(([px, py, s], i) => {
+					const [ax, ay] = P[Math.max(0, i - 1)], [bx2, by2] = P[Math.min(N, i + 1)], d = Math.hypot(bx2 - ax, by2 - ay) || 1,
+						nx = -(by2 - ay) / d, ny = (bx2 - ax) / d, hw = w * (0.25 + Math.pow(Math.sin(Math.PI * Math.min(1, s * 1.35 + 0.05)), 0.7) * (1 - s * 0.55));
+					L.push([px + nx * hw, py + ny * hw]), R.push([px - nx * hw, py - ny * hw]);
+				});
+				c.fillStyle = grad(x0, y0, x1, y1, [[0, c0], [1, c1]]), c.beginPath(), c.moveTo(...L[0]);
+				L.forEach((p) => c.lineTo(...p)), R.reverse().forEach((p) => c.lineTo(...p)), c.fill();
+				curve(P.slice(1, N - 1).map(([px, py]) => [px, py]), sh, 0.7);
+			};
 			[-1, 1].forEach((sd) => {
-				const feather = (bx, by, a, len, w, col, sh) => {
-					c.save(), c.translate(bx, by), c.rotate(a);
-					c.fillStyle = grad(0, -w, 0, w, [[0, col], [1, sh]]);
-					c.beginPath(), c.moveTo(0, -w * 0.4), c.quadraticCurveTo(len * 0.55, -w, len, -w * 0.15), c.quadraticCurveTo(len * 1.02, w * 0.3, len * 0.92, w * 0.5), c.quadraticCurveTo(len * 0.5, w * 0.9, 0, w * 0.4), c.fill();
-					line([[2, 0], [len * 0.95, -w * 0.1]], "rgba(150,130,100,0.45)", 0.7), c.restore();
-				};
-				const lit = sd > 0, base = lit ? "#fbf6ea" : "#e6dcc6", shade = lit ? "#d8ccb0" : "#b8aa8c";
-				c.fillStyle = grad(x, y - 120, x + sd * 90, y - 20, [[0, lit ? "#f4ecda" : "#d8ccb2"], [1, lit ? "#d0c4a8" : "#a89a7c"]]);
-				c.beginPath(), c.moveTo(x + sd * 12, y - 48), c.quadraticCurveTo(x + sd * 40, y - 120, x + sd * 96, y - 128), c.quadraticCurveTo(x + sd * 92, y - 70, x + sd * 70, y - 26), c.quadraticCurveTo(x + sd * 40, y - 22, x + sd * 14, y - 30), c.fill();
-				for (let k = 0; k < 9; k++) {
-					const t = k / 8, bx = x + sd * (40 + t * 26), by = y - 96 - t * 18, a = sd > 0 ? -0.95 + t * 0.55 : Math.PI + 0.95 - t * 0.55;
-					feather(bx, by, a, 46 + t * 22, 7, base, shade);
+				const lit = sd > 0, base = lit ? "#fbf6ea" : "#e2d8c2", tip = lit ? "#ecc868" : "#c8a458", sh = lit ? "rgba(170,140,80,0.4)" : "rgba(120,100,70,0.45)";
+				for (let k = 0; k < 15; k++) {
+					const t = k / 14, a = 0.22 + 1.08 * t, len = 150 - 56 * t + 10 * lr(), w = 10 - 4 * t;
+					const ex = bx + sd * Math.sin(a) * len, ey = by - Math.cos(a) * len,
+						mx = bx + sd * Math.sin(a * 0.35) * len * 0.55, my = by - Math.cos(a * 0.35) * len * 0.55;
+					sweep(bx + sd * 2, by, mx, my, ex, ey, w, base, tip, sh);
 				}
-				for (let k = 0; k < 8; k++) {
-					const t = k / 7, bx = x + sd * (16 + t * 46), by = y - 44 - t * 34, a = sd > 0 ? 0.9 - t * 0.9 : Math.PI - 0.9 + t * 0.9;
-					feather(bx, by, a, 34 + t * 10, 6.5, base, shade);
-				}
-				for (let r = 0; r < 3; r++) for (let k = 0; k < 6 - r; k++) ell(x + sd * (18 + k * 9 + r * 6), y - 58 - k * 9 - r * 8, 6.5, 4.2, sd * 0.7, mix(base, shade, 0.25 + ((k + r) % 2) * 0.25), 0.9);
+				// the soft down where the sweeps meet
+				for (let k = 0; k < 7; k++) ell(bx + sd * (4 + k * 3.5), by - 6 - k * 5, 5, 3.4, sd * 0.8, mix(base, tip, 0.2 + (k % 2) * 0.2), 0.85);
 			});
-			// the drape streaming back up the beam behind the figure
-			c.fillStyle = grad(x, y + 60, x - 50, y - 80, [[0, "rgba(250,246,236,0.75)"], [1, "rgba(250,246,236,0)"]]);
-			c.beginPath(), c.moveTo(x - 22, y + 46), c.quadraticCurveTo(x - 50, y - 10, x - 64, y - 90), c.quadraticCurveTo(x - 40, y - 20, x - 6, y + 20), c.fill();
-			// the robe with a gold sash, in real folds, from the shoulders down and streaming back into the beam
-			c.fillStyle = grad(x - 22, 0, x + 22, 0, [[0, "#b8b0a4"], [0.5, "#fcf8f0"], [1, "#d8d0c4"]]);
-			c.beginPath(), c.moveTo(x - 14, y - 52), c.quadraticCurveTo(x - 30, y - 10, x - 24, y + 50), c.quadraticCurveTo(x - 4, y + 70, x + 30, y + 60), c.quadraticCurveTo(x + 22, y, x + 14, y - 52), c.fill();
-			for (let k = 0; k < 6; k++) curve([[x - 10 + k * 4, y - 40], [x - 14 + k * 6, y + 10], [x - 20 + k * 9, y + 56]], "rgba(140,130,115,0.35)", 0.9);
-			curve([[x - 18, y - 16], [x, y - 12], [x + 18, y - 18]], "#d8a83a", 3.5), curve([[x + 6, y - 13], [x + 10, y + 10], [x + 8, y + 30]], "#d8a83a", 2.4);
-			// golden curls round a face that is only a smooth oval of pale light
-			for (let k = 0; k < 14; k++) {
-				const a = (k / 14) * TAU;
-				ell(hx + Math.cos(a) * 9, hy + Math.sin(a) * 10.5, 3.6, 3.2, a, k % 2 ? "#e8b84a" : "#c8902a");
-			}
-			ell(hx, hy + 1, 7.5, 9.5, 0, "#fffbe8"), ell(hx, hy + 1, 11, 13, 0, "rgba(255,252,230,0.4)");
-			// the old computer in its arms: bezel, screen, buttons, a little stand; on the screen the Originator's seed of light
-			const cx = x + 2, cy = y - 22;
-			poly([[cx - 16, cy - 12], [cx + 16, cy - 12], [cx + 16, cy + 12], [cx - 16, cy + 12]], "#c8c0a8");
-			c.fillStyle = rgrad(cx, cy - 1, 1, 12, [[0, "#f8ffff"], [0.4, "#7ae8e0"], [1, "#14303a"]]), c.fillRect(cx - 12, cy - 9, 24, 16);
-			for (let k = 1; k < 4; k++) (c.strokeStyle = "rgba(220,255,250,0.6)"), (c.lineWidth = 0.6), c.beginPath(), c.arc(cx, cy - 1, k * 2.5, 0, TAU), c.stroke();
-			[[-10, 10], [-6, 10], [-2, 10]].forEach(([dx, dy]) => ell(cx + dx, cy + dy, 1, 1, 0, "#5a5040"));
-			// its hands round the computer
-			ell(cx - 17, cy + 2, 4, 5, 0.3, "#f0d8c0"), ell(cx + 17, cy + 2, 4, 5, -0.3, "#f0d8c0");
+			G.seed(cx, cy, 0.9), ell(cx, cy, 5, 5, 0, "rgba(255,255,255,0.9)");
 		}
 		function human(x, y) {
 			// a woman from behind, small and real: a yellow sun dress with a white flower print, copper hair in a low
