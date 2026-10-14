@@ -6505,13 +6505,18 @@ const xe = (() => {
 				'<div class="btns"><button data-k="talk">TALK</button><button data-k="give">GIVE</button></div>' +
 				'<div id="jgpDiag" class="min"></div>';
 			document.body.appendChild(root);
-			// the GIVE button shows only when the creature in front of you can be given a Blossom (you have one)
+			// the GIVE button shows only when the creature in front of you can be given a Blossom (you have one), and the TALK
+			// button only when there is someone or something in talking range (or a menu is open, whose first option it picks)
 			{
-				const give = root.querySelector('[data-k="give"]');
-				let shown = !0;
+				const give = root.querySelector('[data-k="give"]'),
+					talk = root.querySelector('[data-k="talk"]');
+				let shown = !0,
+					tShown = !0;
 				setInterval(() => {
-					const on = xe.actions.some((a) => "give" === a.verb);
+					const on = xe.actions.some((a) => "give" === a.verb),
+						tOn = ae.open || ("playing" === jt.top && xe.actions.some((a) => "interact" === a.verb));
 					on !== shown && ((shown = on), (give.style.display = on ? "" : "none"));
+					tOn !== tShown && ((tShown = tOn), (talk.style.display = tOn ? "" : "none"));
 				}, 200);
 			}
 			// joystick
@@ -7359,7 +7364,7 @@ const JGP = (() => {
 			campfire: "Enjoying the SHARED garden… what is this feeling?",
 		},
 		p_mamagorbo: {
-			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for my famous goo burger.|I run the local fast food joint, and the hubby runs the Art Gallery now.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!"],
+			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for my famous goo burger.|I run the local fast food joint, and the hubby runs the Art Gallery now.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!", "My hubby is quite the artist."],
 			gift: "Gooooooom!",
 			campfire: "Pretty flowers come to life!",
 		},

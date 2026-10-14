@@ -1115,6 +1115,7 @@ each creature's entry gives a one-line look and the design section to read.
     3. "What a beautiful day in Greeblis Park!"
     4. "I hear there is a book that can help anyone overcome shyness."
     5. "The hubby and I met over a spilled goo shake. / Love at first splat!" (*flavour*)
+    6. "My hubby is quite the artist." (*flavour*)
   - Blossom: "Gooooooom!"
   - Event: "Pretty flowers come to life!"
   - Vignettes: the MAMA GORBO rows of the pair register ([2.20.4](#2204-the-pair-register)) and its row in THE

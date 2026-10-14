@@ -769,7 +769,7 @@ automatically on Android.
 | Mode | Controls | Layout |
 | --- | --- | --- |
 | Desktop | WASD or arrows walk; drag (or Q / E) looks; wheel zooms; click picks | Quest HUD top left; frame rate and error count bottom left (`#jgpDeskErr`) with a `copy errors` button; nothing top right. |
-| Mobile | Joystick bottom left; TALK / GIVE bottom right | fps and resolution chip top left (`#jgpDiag`; tap for the diagnostics panel); quest HUD top right; no zoom buttons. |
+| Mobile | Joystick bottom left; TALK / GIVE bottom right (TALK shows only with someone or something in talking range or a menu open; GIVE only when a Blossom can be given) | fps and resolution chip top left (`#jgpDiag`; tap for the diagnostics panel); quest HUD top right; no zoom buttons. |
 
 - **Taps:** a tap or click advances dialogue page by page and closes it after the last; a tap outside the action menu
   or a panel closes it. In VR the trigger advances dialogue.
