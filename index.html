@@ -5293,6 +5293,7 @@ const xe = (() => {
 			return (vW = o), (vS = a), a;
 		}
 		const F = {};
+		// the player's avatar (test modes only). (The avatar's design is final: keep it as it is.)
 		function W(e = 0) {
 			const o = e || 1,
 				a = new THREE.Group(),
@@ -13834,6 +13835,7 @@ const JGP = (() => {
 	// slowly and sprays the water out of his feet in four arcs that sweep the whole garden. Plants
 	// bloom where it lands, a rainbow comes out, and he slims back down and flies off.
 	// Everything is a function of the time since he set off (pose(e)), so any moment can be shown.
+	// (BACKPACKA's model is final: keep it as it is.)
 	let PONDO = null;
 	const BP = (() => {
 		// (his visit, slow and unhurried: 16 s flying in to the pond, 14 s drinking, 12 s to the garden,
@@ -17351,7 +17353,7 @@ const JGP = (() => {
 				}
 		};
 		// cardinal(X, Z, s, ry): the bough leaves the trunk at (X, Z) (a tree of scale s) toward ry, 2.75 m up, rising a
-		// little; the bird stands on it halfway out, side-on to the square
+		// little; the bird stands on it halfway out, side-on to the square (the cardinal's model is final: keep it as it is)
 		const cardinal = (X, Z, s, ry) => {
 			const o = new THREE.Group();
 			o.position.set(X, 0, Z), (o.rotation.y = ry), (o.userData.jgpKeep = !0), (o.userData.keepInFinale = !0), C.add(o);
@@ -17439,6 +17441,7 @@ const JGP = (() => {
 		// with a white ring round each eye and a white throat streaked dark, a slim yellow beak, a rusty orange breast
 		// and belly over white under the tail, wings folded along the sides a shade darker than the back, a longish dark
 		// tail with white corners, and long thin legs. It stands taller and straighter than the cardinal.
+		// (The robin's model is final: keep it as it is.)
 		const robin = (X, Z, s, ry) => {
 			const o = new THREE.Group();
 			o.position.set(X, 0, Z), (o.rotation.y = ry), (o.userData.jgpKeep = !0), (o.userData.keepInFinale = !0), C.add(o);
