@@ -10900,6 +10900,9 @@ const JGP = (() => {
 			D = th.desk || 1.12,
 			// (the half width, to the side walls' middles: 3 m, the ART GALLERY's 4 m)
 			hw = th.hw || 3,
+			// (the deck's top: 20 cm up, or at ground level for a kiosk the player walks into, the ART GALLERY, so feet
+			// never sink into it; its walls and posts reach down to it, the roof stays where it is)
+			dl = 0.2 - (th.floor === undefined ? 0.2 : th.floor),
 			deck = front(KIT.surf("wood", "#a8865c", { rep: 2, bump: 0.03, shine: 12 })),
 			wall = front(KIT.surf("wood", th.wall, { rep: 1, bump: 0.03, shine: 10 })),
 			wall2 = front(KIT.surf("wood", th.wall2, { rep: 1, bump: 0.03, shine: 10 })),
@@ -10915,15 +10918,15 @@ const JGP = (() => {
 			tin = new THREE.MeshPhongMaterial({ map: tinTex, shininess: 60, specular: 3355443, side: THREE.DoubleSide });
 		(tinTex.wrapS = tinTex.wrapT = THREE.RepeatWrapping), tinTex.repeat.set((5 * (2 * hw + 0.9)) / 6.9, 1);
 		// deck, back wall with battens, half side walls, posts and beam
-		R(T.box(2 * hw + 0.4, 0.2, 5.0), deck, o, [0, 0.1, -0.1]), R(T.box(2 * hw + 0.5, 0.08, 0.12), white, o, [0, 0.2, 2.42]);
+		R(T.box(2 * hw + 0.4, 0.2, 5.0), deck, o, [0, 0.1 - dl, -0.1]), R(T.box(2 * hw + 0.5, 0.08 - dl / 4, 0.12), white, o, [0, 0.2 - dl, 2.42]);
 		// the back wall stops inside the corner posts (flush end faces would flicker against them)
-		R(T.box(2 * hw - 0.04, 3.3 + dh, 0.16), wall, o, [0, 1.85 + dh / 2, -2.45]);
+		R(T.box(2 * hw - 0.04, 3.3 + dh + dl, 0.16), wall, o, [0, 1.85 + (dh - dl) / 2, -2.45]);
 		// (the SHERIFF'S back wall is plain — its battens sat right in the Wanted posters' plane and cut
 		// across them, so the owner had them taken off; every other kiosk keeps its battens)
 		if (!th.noBattens) for (let k = 0; k < 11; k++) R(T.box(0.08, 3.3 + dh, 0.06), wall2, o, [-2.6 + 0.52 * k, 1.85 + dh / 2, -2.35]);
 		[-1, 1].forEach((sx) => {
-			R(T.box(0.16, 1.0, 4.6), wall, o, [hw * sx, 0.7, -0.15]), R(T.box(0.2, 0.08, 4.7), white, o, [hw * sx, 1.24, -0.15]);
-			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4 + dh, 0.24), white, o, [hw * sx, 1.9 + dh / 2, pz]));
+			R(T.box(0.16, 1.0, 4.6), wall, o, [hw * sx, 0.7 - dl, -0.15]), R(T.box(0.2, 0.08, 4.7), white, o, [hw * sx, 1.24 - dl, -0.15]);
+			[2.15, -2.42].forEach((pz) => R(T.box(0.24, 3.4 + dh + dl, 0.24), white, o, [hw * sx, 1.9 + (dh - dl) / 2, pz]));
 			// gable ends under the roof
 			const tri = new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(2.6, 3.5 + dh), new THREE.Vector2(-2.45, 3.5 + dh), new THREE.Vector2(0.12, 4.62 + dh)])).rotateY(Math.PI / 2);
 			R(tri, Object.assign(wall.clone(), { side: THREE.DoubleSide }), o, [(hw + 0.08) * sx, 0, 0]);
@@ -13791,7 +13794,7 @@ const JGP = (() => {
 		],
 	};
 	function buildGallery(o) {
-		kioskFrame(o, { sign: "GOOWARD'S GALLERY", ink: "#3a2a5a", wall: "#e8e0cc", wall2: "#d8cfb8", tin: [88, 66, 132], noBattens: !0, noDesk: !0, hw: GALLERY.hw });
+		kioskFrame(o, { sign: "GOOWARD'S GALLERY", ink: "#3a2a5a", wall: "#e8e0cc", wall2: "#d8cfb8", tin: [88, 66, 132], noBattens: !0, noDesk: !0, hw: GALLERY.hw, floor: 0.02 });
 		const G = goods(),
 			wood = "#7a5232",
 			gold = "#b8902e";

@@ -617,6 +617,7 @@ boxes take front-only material clones ([§11](#11-no-clipping-no-flicker)).
 | `dh` | Raises the roof and everything above the walls by that many metres (`SHERIFF_DH` 1). |
 | `desk` | Counter-top height; default 1.12 m (`SHERIFF_DESK` 1.5). |
 | `noDesk` | Omits the counter and crates (Gallery). |
+| `floor` | The deck's top height; default 0.2 m (Gallery 0.02: the player walks in, so feet never sink into it). The deck, its front lip, the half walls and the posts follow it; the roof does not. |
 | `hw` | Half width to the side walls' middles; default 3 m (Gallery `GALLERY.hw` 4). Deck, walls, beam, roof and ridge follow it; the sign does not. |
 
 - Goods are added through `goods()`, which merges all small items into one vertex-coloured mesh.
