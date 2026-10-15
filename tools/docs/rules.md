@@ -99,6 +99,13 @@ Rules for how changes are made, checked and recorded.
     and every question waiting on the owner. It is updated whenever a task is added, started, paused or finished, and
     committed with the work. A finished task is taken off the list (its record is the PR and the docs). It holds work,
     never anything personal.
+11. PRs must be opened often: each finished batch of work goes up as its own PR as soon as it passes its checks,
+    rather than waiting for a large set. Opening a PR is never a stopping point: work goes on with the next open task
+    in [tasks.md](tasks.md) for as long as tasks remain, the branch restarting from `main` once the PR is merged.
+12. **(every game)** Performance must be benchmarked every so often: after any performance pass, after a change that
+    adds or reworks much of what is drawn, every few PRs, and whenever the owner asks. Each run is measured the same
+    way for every build (here `tools/test/bench.js`), and its results are always saved in a document in the tools
+    folder ([benchmarks.md](benchmarks.md)), one row per build, kept across the life of the game.
 
 ## Locks and approvals
 
@@ -272,3 +279,4 @@ Descriptive material lives in the document that owns it.
 | [`testing.md`](testing.md) | Test runners, probes, audits and the game globals they use |
 | [`release.md`](release.md) | The final pass: strip, minify, pack, check; the codec; trimming three.js; dead code |
 | [`tasks.md`](tasks.md) | The running list of open tasks: what is being worked on, what is queued, what waits on the owner |
+| [`benchmarks.md`](benchmarks.md) | Performance benchmarks across builds, measured the same way for every build (`test/bench.js`) |

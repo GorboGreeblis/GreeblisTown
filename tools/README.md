@@ -13,7 +13,7 @@ This section maps each path in `tools/` to its contents.
 | Path | Contents |
 | --- | --- |
 | `index.html` | The readable copy of the game, never compressed: byte-identical to the root `index.html` until the final pass packs the root, and the only readable page after it. Every change is copied here before a push (`test/copycheck.sh` checks). |
-| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](docs/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md), [open tasks](docs/tasks.md). |
+| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](docs/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md), [open tasks](docs/tasks.md), [benchmarks](docs/benchmarks.md). |
 | [`test/`](test) | The runners and their shared modules, the probes, and the render, coverage and pixel-compare tools. |
 | [`audit/`](audit) | Scene audits: stale bounds, the scene's mesh and triangle budget, dead builders, collisions, creatures off home, interface text, state dumps. |
 | [`lint/`](lint) | ESLint over the game script, and the unread-property finder. |
@@ -93,6 +93,7 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | `portraits.js` | Isolated creature portraits on open lawn. |
 | `t_eval.js` | Prints an expression evaluated in the running game. |
 | `pxcmp.js` | Pixel comparison of two builds over ten fixed views. |
+| `bench.js` | Build benchmark read from outside the game (draw calls, triangles, CPU per frame, size, load, heap), for any build; results in [benchmarks.md](docs/benchmarks.md). |
 | `cov.js`, `cov_extra.js` | Precise JS coverage over a session of scene scripts, and the scene that reaches the rest. |
 | `uncov.js` | The code that never ran, largest first. |
 | `tile.py` | Contact sheets and amplified render differences. |
