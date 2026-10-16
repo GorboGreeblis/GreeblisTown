@@ -18,6 +18,7 @@ physical Quest 3S tracking, comfort, GPU performance and Android touch hardware 
 - Freed ZOLLOD's additional Talk was inaccessible through mobile's Talk button. The button now exposes Shop/Talk
   choices and preserves the rule that tapping a creature does not interact.
 - GEMTOE retained a roaming-creature pickup exemption after gaining a fixed home. Her home now excludes pickup spawns, as other posted creatures do.
+- The wrist HUD used a two-sided material behind its visibility check. It now culls its back in the renderer too, including while simulation/UI updates pause for the Universal Menu.
 - The Pillar's blocked-interaction title used the item's name. It now reads SUMMONING PILLAR.
 - SPARKAKUS's mist inflated interaction placement. Ear height now determines the model's interaction height.
 

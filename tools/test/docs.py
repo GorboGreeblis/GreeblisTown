@@ -26,7 +26,7 @@ for p in (root/'tools').rglob('*.md'):
   elif anchor and q.suffix=='.md' and anchor not in anchors(q):errors.append(f'{p.relative_to(root)}: anchor {dest}')
   n+=1
 s=bible.read_text()
-assert not re.search(r'\b[\w/-]+\.(?:md|html|jpg|png|pdf)\b',prose(bible)), 'Bible outside filename'
+assert not re.search(r'\b[\w/-]+\.(?:md|html|jpg|jpeg|png|pdf|txt|csv|yaml|yml)\b',s), 'Bible outside filename'
 for term in ['Summoning Pillar','Summoning Stone','Digital World','age of Dinosaurs','age of Synthetics','age of the Ancients','Alien Alliance','Ollaag','First Bank of Greeblis','Cave']:
  assert term in s,term
 for p in (root/'tools').rglob('*.md'):

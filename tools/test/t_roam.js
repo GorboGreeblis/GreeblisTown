@@ -7,7 +7,7 @@
 // Output: per roamer its spots, longest stuck, bad spots (and `IN THE GALLERY` when found); `MAMA GORBO and GOOWARD:
 //   met after …` (or `no meeting in 90 s`); per roamer `trap: …, now somewhere fine` (or `SOMEWHERE BAD`); `err <n>`.
 //   VW=320 VH=240 NOSHOT=1 node test/shot.js <url> x.png test/t_roam.js
-const { log, start, logErrors } = require('./lib.js');
+const { log, start, logErrors, waitGame } = require('./lib.js');
 
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
@@ -75,9 +75,12 @@ module.exports = async (p) => {
     window.__t0 = Re.t;
   });
   for (let k = 0; k < 4000; k++) { await W(400); if ((await p.evaluate(() => Re.t - __t0)) > trapS) break; }
-  await p.evaluate(() => { window.__trapFn = () => {}; At.position.set(-2, 0, 30); window.__t0 = Re.t; });
-  for (let k = 0; k < 4000; k++) { await W(400); if ((await p.evaluate(() => Re.t - __t0)) > 20) break; }
-  log(await p.evaluate(() => Object.entries(__S).map(([id, r]) => { const e = It.byId[id], q = e.group.position, floor = /^(p_etcher|p_glyph|w_mont)$/.test(id), ok = floor ? JGP.onDance(q.x, q.z, 0.05) : JGP.roamFree(q.x, q.z, 0.25) && (id !== 'gorbo' || JGP.homeGround(e));
+  await p.evaluate(() => { window.__trapFn = () => {}; At.position.set(-2, 0, 30); JGP.visitAt(9e15); JGP.meetAt(9e15); });
+  const recovered = await waitGame(p, 180, () => ['gratelet','p_gemtoe','p_mamagorbo','gorbo','p_etcher','p_glyph','w_mont'].every(id => {
+    const e=It.byId[id]; return !e.visiting && !e.hosting && !e.busy && !e.goHome && !e.gcNavHome && JGP.homeGround(e);
+  }));
+  require('node:assert/strict').equal(recovered,true,'trap recovery must finish on home ground');
+  log(await p.evaluate(() => Object.entries(__S).map(([id, r]) => { const e = It.byId[id], q = e.group.position, floor = /^(p_etcher|p_glyph|w_mont)$/.test(id), ok = id === 'p_gemtoe' ? JGP.homeGround(e) : floor ? JGP.onDance(q.x, q.z, 0.05) : JGP.roamFree(q.x, q.z, 0.25) && (id !== 'gorbo' || JGP.homeGround(e));
     return `trap: ${e.def.name}: blocked ${r.blocked} times, ${r.homes.size} spots, longest still on the way ${r.max.toFixed(1)} s, now ${ok ? 'somewhere fine' : 'SOMEWHERE BAD ' + q.x.toFixed(1) + ',' + q.z.toFixed(1)}`; }).join('\n')));
   await logErrors(p);
 };

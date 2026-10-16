@@ -968,3 +968,6 @@ This section lists coding rules that apply across systems. Test and lint routine
   Ollaag's Wanted name is spelled in full.
 - Gem assembly holds dialogue while glue drips slowly. Drops begin at2.2s and take3.2s to fall;
   pieces join from12.5–15s; completion runs once at15s, then the speech resumes after0.7s.
+
+The wrist HUD explicitly uses a front-only material as well as the facing visibility check. Back-face culling
+continues while Universal Menu focus pauses UI updates, so tracked hand motion cannot expose mirrored text.

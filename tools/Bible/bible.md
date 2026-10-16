@@ -7426,3 +7426,5 @@ She may leave for visits or the Garden Event and returns by that entrance; the A
 The great Gallery painting preserves its complete quality and resolution. Its depictions of former park wildlife
 and the historical navy pennant remain elements of the painting; the living park and current flag follow the
 updated designs above.
+
+The wrist HUD uses front-only rendering in addition to its facing check, including during the Universal Menu pause.

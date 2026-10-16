@@ -14,6 +14,7 @@ module.exports = async p => {
   assert.equal(after.yaw, before.yaw); assert.equal(after.dist, before.dist); assert.equal(after.blossoms, before.blossoms); assert.equal(after.dialogue, false);
   await p.mouse.move(200, 180); await p.mouse.down(); await p.mouse.move(245, 190, { steps: 3 }); await p.mouse.up();
   assert.notEqual(await p.evaluate(() => __jgpDk.yaw), before.yaw);
+  assert.equal(await p.evaluate(() => __jgpDk.grip.children.find(m => m.isMesh && m.userData.xrUI).material.side), await p.evaluate(() => THREE.FrontSide), 'HUD must cull its back even between paused UI updates');
   const hudX = await p.evaluate(() => __jgpDk.grip.position.x);
   assert.ok(mobile ? hudX < 0 : hudX > 0, 'HUD must occupy requested corner');
   const diagnostics = await p.evaluate(() => (document.getElementById('jgpDiag') || document.getElementById('jgpDeskErr')).textContent);
@@ -57,11 +58,11 @@ module.exports = async p => {
     };
     await menuTap('m1');
     assert.equal(await p.evaluate(() => qt.isOpen), true, 'biology Talk is reachable through menu');
-    assert.match(await p.evaluate(() => document.getElementById('dlgText').textContent), /curling trunk/);
+    await p.waitForFunction(() => /curling trunk/.test(document.getElementById('dlgText').textContent), {}, { timeout:10000 });
     await p.evaluate(() => qt.skipAll()); await p.waitForTimeout(400);
     await p.locator('#jgpTouch [data-k="talk"]').click(); await p.waitForTimeout(400);
     await menuTap('m0');
-    assert.equal(await p.evaluate(() => _t.kind), 'shop', 'shop is still reachable');
+    assert.equal(await p.evaluate(() => jt.has('panel') && _t.kind === 'shop'), true, 'shop is still reachable');
 
   } else {
     await p.evaluate(() => { Kt.shyFree = true; ne.open(); });

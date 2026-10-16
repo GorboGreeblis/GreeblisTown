@@ -5745,6 +5745,7 @@ const xe = (() => {
 								// (the HUD's canvas runs on down below the quests for the items in hand; its plane is moved down
 								// so the quests keep their place, and the panel is drawn only as tall as what it shows)
 								(F.hud = v(256, 368, 0.15, { order: 9998 })),
+							F.hud.mesh.material.side = THREE.FrontSide,
 								F.hud.mesh.geometry.translate(0, (0.5 * 176) / 368 - 0.5, 0),
 								(F.anchor = new THREE.Group()),
 								C.add(F.anchor),
@@ -6606,7 +6607,7 @@ const xe = (() => {
 			}
 		}
 
-		// DESKTOP: the frame rate and the error count, bottom left (the quest HUD has the top left), with a button
+		// DESKTOP: the error count, bottom left (the quest HUD has the top right), with a button
 		// that copies the errors to paste anywhere
 		function deskErrors() {
 			if (MOB || document.getElementById("jgpDeskErr")) return;
@@ -13853,7 +13854,7 @@ const JGP = (() => {
 		easels: [
 			[-2.6, 3.45, 0.3],
 			[2.6, 3.45, -0.3],
-			// (the third, the deep teal one, outside the left wall, turned a little out toward the park)
+			// (the third landscape, outside the left wall, turned a little out toward the park)
 			[-5.4, 0.2, -0.45],
 		],
 	};
@@ -14001,8 +14002,7 @@ const JGP = (() => {
 			paint.push(base.clone().multiply(G.m(0, 1.2, 0.07, -0.1, 0, 0)).multiply(G.m(0, 0, 0.03)));
 		});
 		G.done(o);
-		// the two paintings, painted side by side on one texture and drawn as one mesh: GOOWARD's goo-ball splats, one on
-		// cream, one on deep violet-black
+		// Three landscape panels share one texture and one mesh.
 		const tex = b(1536, 384, (c) => paintLandscapes(c), { smooth: !0 });
 		const pos = [],
 			uv = [],
@@ -15447,7 +15447,7 @@ const JGP = (() => {
 		}
 	}
 	// PIZZA AT THE EVENT (only once the Snacks quest is complete: NEXTESSA has brought you a pie). Stacks of pizza boxes stand
-	// round the outside of the garden's stone ring, beside the seed sacks, for as long as the Event runs (kept
+	// round the outside of the garden's stone ring, beside the outer paths, for as long as the Event runs (kept
 	// clear by everyone, as fixed bodies), and ANOMALEE gets an open box of her own at her spot instead of
 	// planting: she eats it a slice at a time.
 	const PIZZA = (() => {

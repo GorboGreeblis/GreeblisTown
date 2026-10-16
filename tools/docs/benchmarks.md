@@ -28,6 +28,11 @@ To benchmark an old build, write it beside the readable copy and serve the repo 
     NOSHOT=1 node test/shot.js http://localhost:8765/tools/old.html x.png test/bench.js
     MOBILE=1 NOSHOT=1 node test/shot.js http://localhost:8765/tools/old.html x.png test/bench.js
 
+The first build (`c2ae8e494fe2186f5c517a2b37761c6015bce69c`) predates the Mobile test mode. Its Android
+sample therefore runs the desktop fallback inside the Pixel 7 browser profile. The current Android sample uses
+its dedicated Mobile settings. These are historical build measurements, not an isolated comparison of the same
+camera and quality settings.
+
 ## Results
 
 | Build | Date | Mode | Size (gzip) | Load | Draws mean / max | Triangles mean / max | CPU ms mean / median / p95 | Heap | Errors |
