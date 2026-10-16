@@ -27,7 +27,7 @@ wins, labels and comments stripped).
 
 This section is the release procedure, from the readable page to the packed `index.html`.
 
-1. **Keep the readable copy.** Copy the readable page to `tools/index.html` (`cp index.html tools/index.html`;
+1. **Keep the readable copy.** Copy the readable page to `tools/Uncompressed/index.html` (`cp index.html tools/Uncompressed/index.html`;
    `test/copycheck.sh` confirms). That copy is never minified or packed; once the root is packed, it is the only
    readable page and every later change starts from it.
 2. **Start clean.** The game starts with no quest or item progress; the tests grant themselves what they need.
@@ -52,7 +52,7 @@ This section is the release procedure, from the readable page to the packed `ind
    probes rely on the global names, so the readable page is tested and the minified one shipped.
 7. **Reassemble:** put `game.min.js` back in place of the game script, giving `page.html`, and boot-test it with
    `test/ordtest.js`, desktop and `MOBILE=1`.
-8. **Pack:** `node pack/pack.js page.html ../index.html "Greeblis Town"` (the root page; `tools/index.html` stays the
+8. **Pack:** `node pack/pack.js page.html ../index.html "Greeblis Town"` (the root page; `tools/Uncompressed/index.html` stays the
    readable copy). Check the round trip with `node pack/unpack.js ../index.html check.html`: it must report
    `decoder matches model.js: true`, and `check.html` must be identical to `page.html`.
 9. **Test the packed page** with `test/ordtest.js`, desktop and `MOBILE=1`, and complete the
@@ -190,7 +190,7 @@ with these tools, never in Node or a normal page ([rules.md](rules.md#working-on
 
 This section lists the conditions a release must meet before it ships.
 
-- [ ] `tools/index.html` holds the readable page, made before the root was minified or packed
+- [ ] `tools/Uncompressed/index.html` holds the readable page, made before the root was minified or packed
       (`test/copycheck.sh`).
 - [ ] The test modes are cut (`pack/cutmodes.js`): a desktop browser shows the game's name and the VR notice; the
       Quest shows the game's name and "Press A to enter VR".

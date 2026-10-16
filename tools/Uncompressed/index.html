@@ -119,9 +119,7 @@ const t = {
 			eyeHeight: 1.62,
 			near: 0.15,
 			stickDead: 0.15,
-			snapAngle: 0.5236,
-			snapThreshold: 0.7,
-			snapRearm: 0.35,
+			turnSpeed: 1.35,
 
 			driftMax: 6,
 			flash: 0.85,
@@ -138,7 +136,7 @@ const t = {
 			uiView: 0.7,
 			uiCloseDist: 25,
 			menuScale: 0.55,
-			lift: 1.5,
+			lift: 0,
 			// (the VR quality ladder, best first: the render resolution as a share of the headset's own, and the fixed
 			// foveation, 0 off to 1 strongest. It starts at the headset's full resolution with no foveation, so thin and
 			// high-contrast edges everywhere stay steady (at 72% and full foveation they shimmered: the owner saw it on
@@ -5428,12 +5426,13 @@ const xe = (() => {
 					return a && "world" === a.kind
 						? (function (t, o) {
 								const a = t.target;
+								if (dk.on && window.__jgpMobile && (a.kind || a.gift)) return;
 								if ((Y(o, 0.3, 30), t.blossom)) return le.take(a);
 								if (t.acorn) return ce.take(a);
 								// (a station with a Blossom option, SPARKAKUS at his Library, gets the menu like any creature)
 								if (!a.kind && !a.gift) return (xe.lastTarget = a), a.run();
 								const s = xe.actionsFor(a);
-								if (1 === s.length) return (xe.lastTarget = a), s[0].run();
+								if (!s.length) return;
 								!(function (t) {
 									const o = xe.actionsFor(t || null);
 									(ae.options = o.map((e) => ({
@@ -5473,7 +5472,7 @@ const xe = (() => {
 				const q = Ee(pt),
 					// (a station's `top` is a set height; one with a body of its own, SPARKAKUS's, gives the real top of
 					// his head, wherever he is and whatever he is doing)
-					top = pt.group || !t.pickObj ? q.top : (ie.setFromObject(t.pickObj[0]), t.pickObj.slice(1).forEach((ob) => ie.union(he.setFromObject(ob))), ie.max.y),
+					top = t.id === "stump" ? st.pos().y + st.height : pt.group || !t.pickObj ? q.top : (ie.setFromObject(t.pickObj[0]), t.pickObj.slice(1).forEach((ob) => ie.union(he.setFromObject(ob))), ie.max.y),
 					c = B.getWorldPosition(i),
 					d = Math.max(1.5, Math.hypot(q.x - c.x, q.z - c.z));
 				a.position.set(q.x, 0, q.z),
@@ -5724,7 +5723,6 @@ const xe = (() => {
 		let Oe = null,
 			qe = null,
 			Le = [],
-			Ne = !0,
 			Ye = null;
 		const Ue = (t, e) =>
 			Le.push(
@@ -5852,7 +5850,7 @@ const xe = (() => {
 				(a = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "bounded-floor"] })),
 					(O.xr.enabled = !0),
 					O.xr.setFramebufferScaleFactor(e.quality[Ge.level]),
-					(o.floorOffset = 0);
+					(o.floorOffset = 0), (o.calibrateHeight = !0);
 				try {
 					O.xr.setReferenceSpaceType("local-floor"), await O.xr.setSession(a);
 				} catch (n) {
@@ -5988,8 +5986,16 @@ const xe = (() => {
 				Xe();
 			}
 		}),
-			(o.update = function (t, a) {
+			(o.update = function (t, a, frame) {
 				if (dk.on) return dkUpdate(t, a);
+				// Calibrate once from a valid tracked pose; later leaning remains real head movement.
+				if (o.calibrateHeight && frame) {
+					const pose = frame.getViewerPose(O.xr.getReferenceSpace());
+					if (pose && Number.isFinite(pose.transform.position.y)) {
+						o.floorOffset = e.eyeHeight - pose.transform.position.y;
+						o.calibrateHeight = !1;
+					}
+				}
 				const n = performance.now();
 				!(function (t, o) {
 					t > 0 &&
@@ -6042,17 +6048,9 @@ const xe = (() => {
 				h && Math.hypot(h.x, h.y) > e.stickDead && ((o.move.x = u(h.x, -1, 1)), (o.move.y = u(-h.y, -1, 1)), (c = p));
 				const d = q(l),
 					m = d ? d.x : 0;
-				Math.abs(m) > e.snapThreshold
-					? Ne && (Qe(-Math.sign(m) * e.snapAngle), (Ne = !1), (F.flash = e.flash), Y(l, 0.3, 40))
-					: Math.abs(m) < e.snapRearm && (Ne = !0),
+				Math.abs(m) > e.stickDead && Qe(-Math.sign(m) * (Math.abs(m) - e.stickDead) / (1 - e.stickDead) * e.turnSpeed * t),
 					i && N(i, 4) && J(i),
-					r &&
-						N(r, 4) &&
-						(function (t) {
-							if ("playing" === jt.top && xe.current && xe.actions.some((t) => "give" === t.verb))
-								return xe.run("give");
-							s.set(0, 0, 0), (F.flash = e.flash), Y(t, 0.4, 30), o.log("recentred");
-						})(r),
+					r && N(r, 4) && J(r),
 					r && N(r, 5) && ve();
 				const M = B.position.x,
 					E = B.position.z;
@@ -6353,7 +6351,9 @@ const xe = (() => {
 							? (o.mesh.parent !== e.grip && e.grip.add(o.mesh),
 								o.mesh.position.set(0, 0.05, 0.06),
 								o.mesh.rotation.set(-1, 0, 0),
-								(o.mesh.visible = !0))
+								(o.mesh.visible = !0),
+								o.mesh.updateMatrixWorld(!0),
+								(o.mesh.visible = dk.on || new c(0, 0, 1).transformDirection(o.mesh.matrixWorld).dot(B.getWorldPosition(new c()).sub(new c().setFromMatrixPosition(o.mesh.matrixWorld))) > 0))
 							: (o.mesh.visible = !1),
 							null !== Ce.blossoms && Kt.blossoms > Ce.blossoms && U(0.3, 35),
 							null !== Ce.met && a > Ce.met && U(0.5, 70),
@@ -6451,11 +6451,11 @@ const xe = (() => {
 		 * Third-person camera on a regular desktop browser. Reuses the VR UI
 		 * pipeline: the mouse acts as the right-hand pointer ray and a fixed
 		 * camera-mounted "grip" holds the wrist HUD.
-		 *   WASD / arrows  move          drag mouse / Q,E   orbit camera
-		 *   mouse wheel    zoom          click              point & select
-		 *   F              talk/interact G                  give blossom
-		 *   Space / Enter  advance text  1-9                pick panel item
-		 *   Esc            close menu/panel
+		 *   WASD / arrows  move          drag mouse         orbit camera
+		 *   click                       point & select
+		 *   Talk / Give                 interaction menu
+		 *   Space / Enter               advance text
+		 *   B                           close menu/panel
 		 * ================================================================== */
 		Object.assign(dk, {
 			yaw: 0,
@@ -6495,7 +6495,7 @@ const xe = (() => {
 				"#jgpTouch .btns{position:absolute;right:14px;bottom:22px;display:grid;grid-template-columns:repeat(2,74px);gap:10px;pointer-events:auto}" +
 				"#jgpTouch button{height:52px;border-radius:14px;border:3px solid #0d0d1a;background:#8a3ffc;color:#fff;font:bold 14px 'Courier New',monospace;touch-action:manipulation}" +
 				"#jgpTouch button:active{background:#a8e830;color:#0d0d1a}" +
-				"#jgpDiag{position:absolute;left:8px;top:8px;max-width:62vw;padding:6px 8px;border-radius:8px;background:rgba(13,13,26,.72);color:#e8e8ff;font:11px/1.35 'Courier New',monospace;white-space:pre;pointer-events:auto}" +
+				"#jgpDiag{position:absolute;right:8px;top:8px;max-width:62vw;padding:6px 8px;border-radius:8px;background:rgba(13,13,26,.72);color:#e8e8ff;font:11px/1.35 'Courier New',monospace;white-space:pre;pointer-events:auto}" +
 				"#jgpDiag b{color:#a8e830}#jgpDiag .bad{color:#ff5fb0}#jgpDiag button{height:28px;margin-top:4px;font-size:11px;border-width:2px;border-radius:8px;padding:0 8px}";
 			document.head.appendChild(css);
 			const root = document.createElement("div");
@@ -6513,7 +6513,7 @@ const xe = (() => {
 				let shown = !0,
 					tShown = !0;
 				setInterval(() => {
-					const on = xe.actions.some((a) => "give" === a.verb),
+					const on = "playing" === jt.top && !qt.isOpen && xe.actions.some((a) => "give" === a.verb),
 						tOn = ae.open || ("playing" === jt.top && xe.actions.some((a) => "interact" === a.verb));
 					on !== shown && ((shown = on), (give.style.display = on ? "" : "none"));
 					tOn !== tShown && ((tShown = tOn), (talk.style.display = tOn ? "" : "none"));
@@ -6614,24 +6614,15 @@ const xe = (() => {
 			const el = document.createElement("div");
 			(el.id = "jgpDeskErr"),
 				(el.style.cssText = "position:fixed;left:10px;bottom:10px;z-index:45;padding:5px 8px;border-radius:8px;background:rgba(13,13,26,.72);color:#e8e8ff;font:bold 12px 'Courier New',monospace;display:flex;gap:8px;align-items:center"),
-				(el.innerHTML = '<span></span><span></span><button style="font:bold 11px \'Courier New\',monospace;border:2px solid #0d0d1a;border-radius:6px;background:#8a3ffc;color:#fff;padding:2px 6px;cursor:pointer">copy errors</button>');
-			const fpsEl = el.children[0],
-				n = el.children[1],
-				bt = el.children[2];
+				(el.innerHTML = '<span></span><button style="font:bold 11px \'Courier New\',monospace;border:2px solid #0d0d1a;border-radius:6px;background:#8a3ffc;color:#fff;padding:2px 6px;cursor:pointer">copy errors</button>');
+			const n = el.children[0],
+				bt = el.children[1];
 			// (its clicks stay on it, not on the game)
 			["pointerdown", "mousedown", "click"].forEach((k) => el.addEventListener(k, (e) => e.stopPropagation()));
 			bt.addEventListener("click", () => copyErrors(bt));
 			document.body.appendChild(el);
-			// (frames counted as the browser draws them: the game's own loop draws on the same beat)
-			let frames = 0,
-				since = performance.now(),
-				last = -1;
-			const count = () => (frames++, requestAnimationFrame(count));
-			requestAnimationFrame(count);
+			let last = -1;
 			setInterval(() => {
-				const now = performance.now(),
-					fps = Math.round((1e3 * frames) / Math.max(1, now - since));
-				(frames = 0), (since = now), (fpsEl.textContent = "fps " + fps), (fpsEl.style.color = fps >= 50 ? "#a8e830" : fps >= 30 ? "#f3c43a" : "#ff5fb0");
 				const k = Re.errors + (window.__jgpShaderErrors || 0);
 				k !== last && ((last = k), (n.textContent = "errors " + k), (n.style.color = k ? "#ff5fb0" : "#a8e830"));
 			}, 500);
@@ -6649,13 +6640,13 @@ const xe = (() => {
 			pr !== mob.pr && ((mob.pr = Math.round(10 * pr) / 10), O.setPixelRatio(mob.pr), O.setSize(innerWidth, innerHeight));
 			if (!mob.diag) return;
 			if (mob.diag.classList.contains("min"))
-				return void (mob.diag.innerHTML = "<b>" + mob.fps + " fps</b> x" + mob.pr + ((window.__jgpShaderErrors || Re.errors) ? ' <span class="bad">! ' + (Re.errors + (window.__jgpShaderErrors || 0)) + "</span>" : "") + " ▾");
+				return void (mob.diag.innerHTML = "<b>TEST</b> x" + mob.pr + ((window.__jgpShaderErrors || Re.errors) ? ' <span class="bad">! ' + (Re.errors + (window.__jgpShaderErrors || 0)) + "</span>" : "") + " ▾");
 			const gl = O.getContext(),
 				info = O.info,
 				se2 = window.__jgpShaderErrors || 0;
 			mob.diag.innerHTML =
 				"<b>MOBILE TEST MODE</b>\n" +
-				"fps " + mob.fps + "  res x" + mob.pr + "\n" +
+				"res x" + mob.pr + "\n" +
 				"calls " + info.render.calls + "  tris " + Math.round(info.render.triangles / 1e3) + "k\n" +
 				"tex " + info.memory.textures + "  geo " + info.memory.geometries + "  depth " + (window.__jgpDepthBits || "?") + " bits\n" +
 				(O.capabilities.isWebGL2 ? "WebGL2" : '<span class="bad">WebGL1</span>') +
@@ -6719,33 +6710,20 @@ const xe = (() => {
 					vo(e, "desktop-click");
 				}
 			});
-			cv.addEventListener(
-				"wheel",
-				(e) => {
-					e.preventDefault(), (dk.dist = u(dk.dist + 0.004 * e.deltaY, 3, 16));
-				},
-				{ passive: !1 },
-			);
+
 			addEventListener("blur", () => dk.keys.clear());
 			addEventListener("keyup", (e) => dk.keys.delete(e.code));
 			addEventListener("keydown", (e) => {
 				if ((dk.keys.add(e.code), e.repeat)) return;
 				const k = e.code;
 				try {
-					if ("Escape" === k) return ae.open ? re() : void (jt.has("panel") && _t.close());
+					if ("KeyB" === k) return ae.open ? re() : void (jt.has("panel") && _t.close());
 					if ("Space" === k || "Enter" === k || "NumpadEnter" === k) {
 						if ((e.preventDefault(), qt.isOpen)) return qt.advance();
 						if (jt.has("panel")) return _t.confirm();
 						return;
 					}
-					if (/^(Digit|Numpad)[1-9]$/.test(k)) {
-						const n = +k.slice(-1);
-						if (ae.open) return ae.options[n - 1] && ae.options[n - 1].run();
-						if (jt.has("panel")) return _t.pick(n);
-						return;
-					}
-					if ("KeyF" === k && "playing" === jt.top && !ae.open) return xe.run("interact");
-					if ("KeyG" === k && "playing" === jt.top && !ae.open) return xe.run("give");
+
 				} catch (e) {
 					vo(e, "desktop-key");
 				}
@@ -6771,8 +6749,7 @@ const xe = (() => {
 				ml = Math.max(1, Math.hypot(mx, my));
 			(o.move.x = mx / ml), (o.move.y = my / ml);
 			MOB && mobileTick(performance.now());
-			const turn = (K("KeyQ") ? 1 : 0) - (K("KeyE") ? 1 : 0);
-			dk.yaw += 1.8 * turn * t;
+
 			const moving =
 				Math.hypot(mx, my) > 0.08 && ("playing" === jt.top || "dialogue" === jt.top || "panel" === jt.top);
 			if (moving) {
@@ -6852,9 +6829,8 @@ const xe = (() => {
 					off = dk.hudOff || (dk.hudOff = new c(0, 0.05, 0.06).applyEuler(dk.grip.rotation)),
 					k2 = (0.62 - off.z) / 0.62, // the HUD is nearer the camera than the grip, so less of it fits
 					m = 0.012;
-				// on phones the HUD sits top right (the fps / quality chip has the top left); on desktop top left (the
-				// fps / errors panel has the bottom left)
-				dk.grip.position.set((MOB ? hw * k2 - 0.075 - m : -hw * k2 + 0.075 + m) - off.x, hh * k2 - 0.0516 - m - off.y, -0.62);
+				// Mobile HUD sits top left; desktop HUD sits top right.
+				dk.grip.position.set((MOB ? -hw * k2 + 0.075 + m : hw * k2 - 0.075 - m) - off.x, hh * k2 - 0.0516 - m - off.y, -0.62);
 			}
 		}
 		// screen-aligned placement of the dialogue / panel (VR places them in the world instead)
@@ -6903,7 +6879,7 @@ const xe = (() => {
 		) {
 			($e.textContent = "-Greeblis Town-"),
 				(Ke.textContent = "Press A to enter VR"),
-				(mo("gateVer").textContent = "v1.0"),
+				(mo("gateVer").textContent = "v0.2"),
 				Ze.classList.add("on");
 			const t = () => {
 				o.presenting || je();
@@ -6928,9 +6904,9 @@ const xe = (() => {
 			// ---- TEST-MODE-BEGIN: the Desktop and Mobile test modes, cut for the final build (see tools/docs/release.md) ----
 			($e.textContent = "-Greeblis Town-"),
 				(Ke.textContent = MOB
-					? "MOBILE TEST MODE\n(temporary, VR is the real game)\n\nTap to start\n\nleft stick: move · drag: look\ntap a creature or use TALK / GIVE\ntap the screen to go on or close"
-					: "DESKTOP TEST MODE\n(temporary, VR is the real game)\n\nClick to start\n\nWASD move · drag / Q E orbit · wheel zoom\nclick select · F talk · G give blossom\nSpace advance · 1-9 pick · Esc close"),
-				(mo("gateVer").textContent = "v0.1 prototype"),
+					? "MOBILE TEST MODE\n(temporary, VR is the real game)\n\nTap to start\n\nleft stick: move · drag: look\nuse TALK / GIVE\ntap the screen to go on or close"
+					: "DESKTOP TEST MODE\n(temporary, VR is the real game)\n\nClick to start\n\nWASD move · drag to look\nclick to select interaction menus\nSpace advance · B close"),
+				(mo("gateVer").textContent = "v0.2"),
 				Ze.classList.add("on"),
 				(o.onPresenting = (t) => Ze.classList.toggle("on", !t));
 			const t = (e) => {
@@ -6979,15 +6955,20 @@ const Re = (() => {
 				vo(e, t);
 			}
 		}
-		function l() {
-			// Paused sessions keep both the world and its clock still; discard the gap before resuming.
-			if (!we.presenting || we.blurred) return void (e = 0);
+		function l(timestamp, frame) {
+			// Paused XR keeps submitting tracked views; only simulation/input and the game clock stop.
+			if (!we.presenting) return void (e = 0);
+			if (we.blurred) {
+				e = 0;
+				O.xr && O.xr.isPresenting && !Ho.contextLost && i("render", () => O.render(C, B));
+				return;
+			}
 			const t = performance.now(),
 				l = e ? t - e : 16.7;
 			e = t;
 			let c = l / 1e3;
 			c > 1 && (c = 1 / 60), (c = Math.min(c, 0.1)), (o += c);
-			i("xr", () => we.update(c, o)), i("input", () => bo.update(c)), i("player", () => Te(c));
+			i("xr", () => we.update(c, o, frame)), i("input", () => bo.update(c)), i("player", () => Te(c));
 			const h = jt.has("panel"),
 				p = It.all;
 			// the per-entity and per-callback loops run every frame: no closures or label strings here
@@ -8532,7 +8513,7 @@ const JGP = (() => {
 		for (let k = 0; k < MN; k++) spawn(k), (mLife[k] = Math.random());
 		mistGeo.setAttribute("position", new THREE.BufferAttribute(mPos, 3)), mistGeo.setAttribute("color", new THREE.BufferAttribute(mCol, 3));
 		const mist = new THREE.Points(mistGeo, new THREE.PointsMaterial({ size: 0.35, map: puff, vertexColors: !0, transparent: !0, opacity: 0.85, depthWrite: !1, blending: THREE.AdditiveBlending }));
-		(mist.frustumCulled = !1), tail.add(mist);
+		(mist.frustumCulled = !1), (mist.userData.notModel = !0), tail.add(mist);
 		let mistT = 0;
 		return born(g, {
 			height: 2.85,
@@ -22158,7 +22139,7 @@ if (
 										return () => (e.parent === t ? e.getWorldPosition(wp) : e.position);
 									})()),
 									(st.group = e),
-									(st.height = 4.4);
+									(st.height = 2.85 * g);
 								const S = n,
 									P = a;
 								L.push((s, c) => {

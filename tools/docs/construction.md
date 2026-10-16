@@ -3,7 +3,7 @@
 This reference covers how the game is built and how it behaves at runtime: page structure, creature construction and
 behaviour, gameplay systems, the Garden Event, audio, the park, the town, platforms, depth correctness and
 performance. Code is cited by identifier and section banner, never by line number. Per-creature builds are in
-[creatures.md](creatures.md), binding rules in [rules.md](rules.md), lore and visual style in [bible.md](bible.md),
+[creatures.md](creatures.md), binding rules in [rules.md](rules.md), lore and visual style in [bible.md](../Bible/bible.md),
 test tools in [testing.md](testing.md), and the release pipeline in [release.md](release.md).
 
 Contents:
@@ -355,7 +355,7 @@ two on their way out or meeting at once. Every pair's two vignettes play within 
 ## 5. Gameplay systems
 
 This section specifies pickups, quests, the shop, Dance battles and the quest chains at the level of state and code.
-Their design is in [bible.md, Game design](bible.md#5-game-design).
+Their design is in [bible.md, Game design](../Bible/bible.md#5-game-design).
 
 ### Pickups
 
@@ -389,7 +389,7 @@ building hull. Pickups are instanced ([Performance](#12-performance)).
 
 ### Dance battles
 
-Rules, moves and panel are specified in [bible 5.11](bible.md#511-dance-battles). A battle (`Dbt`) starts
+Rules, moves and panel are specified in [bible 5.11](../Bible/bible.md#511-dance-battles). A battle (`Dbt`) starts
 only from a Blossom given to a Dancer, so each costs one Blossom; ten won rounds win it, and LEAVE is available from
 round one. The panel shows only the Dancer's move; the bar counts steps remaining.
 
@@ -413,7 +413,7 @@ round one. The panel shows only the Dancer's move; the bar counts steps remainin
 ### Flavour lines
 
 Talk cycles (`SCRIPT[id].lines`) play only outside the Event; during it Talk gives the `campfire` line. The code has
-no flag for a creature's lore (flavour) line; [bible part 2](bible.md#2-the-cast) marks it. SPARKAKUS's Talk follows
+no flag for a creature's lore (flavour) line; [bible part 2](../Bible/bible.md#2-the-cast) marks it. SPARKAKUS's Talk follows
 his quest instead of a cycle.
 
 ---
@@ -421,7 +421,7 @@ his quest instead of a cycle.
 ## 6. The Garden Event
 
 This section specifies the Event's trigger, timeline, roles, planting and growth. Its design is in
-[bible 5.12](bible.md#512-the-garden-event).
+[bible 5.12](../Bible/bible.md#512-the-garden-event).
 
 ### Trigger
 
@@ -522,13 +522,13 @@ line, "ORIGINATOR…").
 ## 8. Park set pieces
 
 This section specifies how the park's structures are built. Their visual style and colours are in
-[bible 6.1](bible.md#61-environment).
+[bible 6.1](../Bible/bible.md#61-environment).
 
 ### Garden and Event flowers
 
 - Tilled rings every 2 m from 2.6 m (13 cm ridges), four stepping-stone paths, and a border of stones that creatures
   step over (all part of `JGP.groundAt`).
-- **Event flowers** (locked; each built only from the owner's photos): `PLANT_KINDS` maps each kind to a builder
+- **Event flowers** (locked; five distinct established designs): `PLANT_KINDS` maps each kind to a builder
   `(add) => …`: creeping thistle, scentless mayweed, chicory, common milkweed, zebra mallow. One merged
   vertex-coloured mesh per kind, drawn at `PLANT_SIZE` 2.4; leaves sit 0.11 model units up to clear a row's ridge.
 - **Toolkit inside `PLANT_KINDS`:**
@@ -566,17 +566,17 @@ Open ground with no walls, roof or raised floor (`LIB_LAYOUT`).
 | Spine bands | Pale bands sit 8 mm clear of each book's actual spine face, including its random depth and inset, on both sides of every case. Their positions use the same random samples as the books so the seeded arrangement stays intact. |
 | Colliders | The bookcases and banner posts. The Library is kept explicitly when the engine clears scenery (it is wider than the 12 m that rule spares). |
 | Banner | LIBRARY sign on two 4.3 m posts behind the back row, high enough to show over it. |
-| Shelf features (`LIB_LAYOUT.features`) | One item face-out in a gap on each of nine shelves: six cloth hardbacks (covers: [bible 1.15](bible.md#115-written-things); 0.30 × 0.40 m, OVERCOMING SHYNESS 0.34 × 0.44 m, each title fitted to its cover for VR legibility), a potted Wish Blossom (crystal turning, halo bobbing), an Electric Blossom (head turning) and an Acorn. |
+| Shelf features (`LIB_LAYOUT.features`) | One item face-out in a gap on each of nine shelves: six cloth hardbacks (covers: [bible 1.15](../Bible/bible.md#115-written-things); 0.30 × 0.40 m, OVERCOMING SHYNESS 0.34 × 0.44 m, each title fitted to its cover for VR legibility), a potted Wish Blossom (crystal turning, halo bobbing), an Electric Blossom (head turning) and an Acorn. |
 | Rug (`LIB_LAYOUT.rug`) | 11 × 7.8 m paisley. One seamless 128 px tile at 0.75 scale; material tinted `0xa29a98` so the open sky does not wash it out. A 4 cm slab with its top 3 cm up (`LIB_LAYOUT.rugTop`), part of `JGP.groundAt`. |
 
 ### Church
 
-- **Exterior:** built from the owner's two photos of a Gothic Revival stone church; stone bin tinted `#8a8880`,
-  limestone dressings `#cdc5b4`, slate roof `#3a3c44` (full design: [bible 1.6](bible.md#16-the-church) and
-  [bible 6.1](bible.md#61-environment)).
+- **Exterior:** a Gothic Revival stone church; stone bin tinted `#8a8880`,
+  limestone dressings `#cdc5b4`, slate roof `#3a3c44` (full design: [bible 1.6](../Bible/bible.md#16-the-church) and
+  [bible 6.1](../Bible/bible.md#61-environment)).
 - **Roof geometry:** a `GABLE` prism's slopes rise from its outer edge, so with eaves the base must sit below the wall
   tops by `height · overhang / half-width` (0.5 m here) for the slopes to meet the walls.
-- **Secret room** (locked; built only from the owner's photo of a slug at night): entered through the wall under the
+- **Secret room** (approved for detail refinement): entered through the wall under the
   right-hand Garden window, marked only by a small red X. The building's parts leave a 2.6 m gap there, and every mode
   moves the same body through it. Floor, walls and ceiling share one ground texture, lit most strongly at the floor.
   Panels overlap a few centimetres at every corner, each overlap offset, so no seam shows and nothing z-fights.
@@ -629,8 +629,8 @@ boxes take front-only material clones ([§11](#11-no-clipping-no-flicker)).
 
 | Kiosk | Construction specifics |
 | --- | --- |
-| Sheriff's | Roof raised 1 m (`SHERIFF_DH`), raised desk (`SHERIFF_DESK`), plain back wall carrying eight non-overlapping parchment Wanted posters (0.62 × 0.78 m planes, 128 × 160 px canvases; subjects: [bible 1.10](bible.md#110-factions-and-forces)). **Consortium flag** (the only flag: [rules](rules.md#the-world)) on a pole rising from the roof behind the sign, built in the kiosk's `goods()` merge (no texture, no extra draw): a 2.1 × 1.4 m navy cloth and gold hem as flat planes; on each face a cream stem, red half-disc cap and white spots, each layer 1.5 cm further from the cloth than the one beneath, so no layer z-fights another. |
-| GOOWARD'S GALLERY | `buildGallery` (`noBattens`, `noDesk`, `hw` 4: 2 m wider than the other kiosks). The `GALLERY.cw` × `GALLERY.ch` (6.9 × 2.6 m) canvas (1 cm off the back wall), the three easel frames, fifteen paint cans (seven on the lawn outside, out of the walk and clear of the easels; eight on the deck inside, at its 2 cm floor, three of them scaled 2 to 2.5 times) six brushes, a paint roller and a wide house-painting brush on the deck (no colliders) are in the goods merge; easels at local (±2.6, 3.45), turned ±0.3 rad, and (−5.4, 0.2), turned −0.45 (`GALLERY.easels`). The three easel paintings (`paintSplats`) share one 768 × 192 px texture (three 256 px panels) on one mesh. **The great painting** ([bible 1.18](bible.md#118-goowards-painting)) is `paintGallery(c, W, H, mk)`: a seeded generator that paints a 2048 × 772 layout at any resolution (the canvas's width over W is the scale) and yields between steps; `mk(w, h)` makes its scratch canvases. `paintArt(mat)` paints it at `ART.s` 1.5 (3072 × 1158 px) in a Worker made from the two functions' source (an OffscreenCanvas, `willReadFrequently`); the returned ImageBitmap becomes the image of a new texture swapped into the material (a bitmap is not flipped on upload, so its rows are read bottom up: `repeat.y` −1, `offset.y` 1), and the 4 × 2 px primed placeholder is disposed, so no full-size blank canvas is made or uploaded first. If no Worker can be made it steps the generator on the main thread about 6 ms at a time and the painted canvas becomes the texture's image. The texture lies on a plane 1 cm proud of the canvas, unlit (`x.basic`, colour `#e8e8e8`) so the roof's shade and the lawn's light do not mute it; its unique material shows primed cream until painted. Parts: the three walls at the wider half width plus each easel's footprint (the third, outside the hull, too); hull `[-4.15, -2.62, 4.15, 3.8]` reaches the easels, which are also in `keepAt`. A walk runs from the garden ring to its deck. GOOWARD keeps it from outside (`JGP.galleryRoam`). |
+| Sheriff's | Roof raised 1 m (`SHERIFF_DH`), raised desk (`SHERIFF_DESK`), plain back wall carrying eight non-overlapping parchment Wanted posters (0.62 × 0.78 m planes, 128 × 160 px canvases; subjects: [bible 1.10](../Bible/bible.md#110-factions-and-forces)). **Consortium flag** (the only flag: [rules](rules.md#the-world)) on a pole rising from the roof behind the sign, built in the kiosk's `goods()` merge (no texture, no extra draw): a 2.1 × 1.4 m navy cloth and gold hem as flat planes; on each face a cream stem, red half-disc cap and white spots, each layer 1.5 cm further from the cloth than the one beneath, so no layer z-fights another. |
+| GOOWARD'S GALLERY | `buildGallery` (`noBattens`, `noDesk`, `hw` 4: 2 m wider than the other kiosks). The `GALLERY.cw` × `GALLERY.ch` (6.9 × 2.6 m) canvas (1 cm off the back wall), the three easel frames, fifteen paint cans (seven on the lawn outside, out of the walk and clear of the easels; eight on the deck inside, at its 2 cm floor, three of them scaled 2 to 2.5 times) six brushes, a paint roller and a wide house-painting brush on the deck (no colliders) are in the goods merge; easels at local (±2.6, 3.45), turned ±0.3 rad, and (−5.4, 0.2), turned −0.45 (`GALLERY.easels`). The three easel paintings (`paintSplats`) share one 768 × 192 px texture (three 256 px panels) on one mesh. **The great painting** ([bible 1.18](../Bible/bible.md#118-goowards-painting)) is `paintGallery(c, W, H, mk)`: a seeded generator that paints a 2048 × 772 layout at any resolution (the canvas's width over W is the scale) and yields between steps; `mk(w, h)` makes its scratch canvases. `paintArt(mat)` paints it at `ART.s` 1.5 (3072 × 1158 px) in a Worker made from the two functions' source (an OffscreenCanvas, `willReadFrequently`); the returned ImageBitmap becomes the image of a new texture swapped into the material (a bitmap is not flipped on upload, so its rows are read bottom up: `repeat.y` −1, `offset.y` 1), and the 4 × 2 px primed placeholder is disposed, so no full-size blank canvas is made or uploaded first. If no Worker can be made it steps the generator on the main thread about 6 ms at a time and the painted canvas becomes the texture's image. The texture lies on a plane 1 cm proud of the canvas, unlit (`x.basic`, colour `#e8e8e8`) so the roof's shade and the lawn's light do not mute it; its unique material shows primed cream until painted. Parts: the three walls at the wider half width plus each easel's footprint (the third, outside the hull, too); hull `[-4.15, -2.62, 4.15, 3.8]` reaches the easels, which are also in `keepAt`. A walk runs from the garden ring to its deck. GOOWARD keeps it from outside (`JGP.galleryRoam`). |
 | Garden Supplies | Wheelbarrow geometry: two fork rails from under the tray's front edge to the axle, wheel top level with the tray bottom, two rear legs. |
 | Post Office | Mail mountain behind the kiosk, below its roof line and hidden from the square: a heightfield of 19 overlapping cones under about 2,300 envelopes, bundles, parcels and stacks. Five readable kraft parcels (labels chosen by the owner) sit half-sunk round the heap, never stacked; each label stands 6 mm proud and faces straight out. `buildPostOffice` adds another in one line, clear of the others. Solid: hull `[-3.4, -6.75, 3.4, 2.45]` plus a 4.2 m keep-clear zone. |
 
@@ -674,7 +674,7 @@ boxes take front-only material clones ([§11](#11-no-clipping-no-flicker)).
 ## 9. The town
 
 This section specifies how the town outside the park is built and where its pieces stand. Its content (each
-building's emblems and meaning) is canonical in [bible 1.7](bible.md#17-the-town); its constraints are in
+building's emblems and meaning) is canonical in [bible 1.7](../Bible/bible.md#17-the-town); its constraints are in
 [rules.md](rules.md#the-world).
 
 ### Build method
@@ -705,7 +705,7 @@ building's emblems and meaning) is canonical in [bible 1.7](bible.md#17-the-town
   above the windows.
 - No far scenery beyond the ring of streets round the square, and no cars.
 - Words outside the park are limited to FIRST BANK OF GREEBLIS, Mistergummery's and its menu board, the stop signs and
-  the billboard ([bible 1.15](bible.md#115-written-things)).
+  the billboard ([bible 1.15](../Bible/bible.md#115-written-things)).
 
 ### Placements
 
@@ -745,11 +745,11 @@ browser and headless Chromium always pass.
 ### VR
 
 - Start screen: "Press A to enter VR".
-- **Game clock:** `Re` pauses its clock and frame work while no session is presenting or the XR session is blurred.
+- **Game clock:** `Re` pauses simulation, input and its clock while no session is presenting or the XR session is blurred. A blurred XR session keeps rendering tracked headset views, so the Universal Menu never freezes the view.
   Paused frames reset its previous timestamp, so returning does not advance Event or creature timers by the time away.
-- Input: left stick moves; right stick snap-turns (`t.xr.snapAngle` 0.5236 rad); either trigger selects along that
+- Input: left stick moves; right stick turns smoothly (`t.xr.turnSpeed` 1.35 rad/s); A or X selects along that
   controller's pointer beam (every connected controller has one; `t.xr.pickRange` 16 m); the quest HUD sits on the
-  left grip. WebXR input sources
+  left grip, with its back hidden when facing away. Seated entry calibrates tracked eye height to 1.62 m once per session, preserving subsequent leaning. Talk and Give are selected from the interaction menu. WebXR input sources
   must be re-read every frame, as controllers connect and disconnect mid-session.
 - Rendering: full headset resolution unless frame rate requires a step down (`t.xr.quality` 1, 0.9, 0.82, 0.74,
   0.66 with matching `t.xr.foveation`; target 72 Hz). Near plane 0.15 m (`t.xr.near`).
@@ -772,14 +772,14 @@ automatically on Android.
 
 | Mode | Controls | Layout |
 | --- | --- | --- |
-| Desktop | WASD or arrows walk; drag (or Q / E) looks; wheel zooms; click picks | Quest HUD top left; frame rate and error count bottom left (`#jgpDeskErr`) with a `copy errors` button; nothing top right. |
-| Mobile | Joystick bottom left; TALK / GIVE bottom right (TALK shows only with someone or something in talking range or a menu open; GIVE only when a Blossom can be given) | fps and resolution chip top left (`#jgpDiag`; tap for the diagnostics panel); quest HUD top right; no zoom buttons. |
+| Desktop | WASD or arrows walk; drag looks; click opens the interaction menu; B closes | Quest HUD top right; error count bottom left (`#jgpDeskErr`) with a `copy errors` button. |
+| Mobile | Joystick bottom left; TALK / GIVE bottom right (TALK shows only with someone or something in talking range or a menu open; GIVE only when a Blossom can be given) | resolution/error chip top right (`#jgpDiag`; tap for diagnostics); quest HUD top left; no FPS counter. |
 
 - **Taps:** a tap or click advances dialogue page by page and closes it after the last; a tap outside the action menu
-  or a panel closes it. In VR the trigger advances dialogue.
+  or a panel closes it. In VR A or X advances dialogue. Mobile creature taps do not interact; TALK and GIVE are the creature controls, hidden while dialogue is open.
 - **Action menu** (`placeMenu`): above the creature's head, at the creature's distance from the camera, facing it,
   and re-placed every frame while open (the camera swings and eases behind the avatar). A station's `top` is a fixed
-  height; SPARKAKUS reports his real head top. In VR the menu is placed once from the head.
+  height; SPARKAKUS reports his ear top (2.85 × 1.16 m), with tail mist excluded from all interaction bounds. In VR the menu is placed once from the head.
 - **Camera:** starts near level (`dk.pitch` 0.2) so KING DINO's billboard is in the first frame. Near plane 0.2 m.
 - **Error counting:** every error is counted in one place, `vo()` (frame loop, click, key, button), so the counter
   and the copied report agree.

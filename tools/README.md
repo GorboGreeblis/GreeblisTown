@@ -2,7 +2,7 @@
 
 This folder holds everything used to build, check, measure and release **Greeblis Town**. The game itself is the
 single file `index.html` at the repo root; nothing in `tools/` ships inside it. The binding rules are in
-[rules.md](docs/rules.md); the world's lore, design and style are in the [bible](docs/bible.md).
+[rules.md](docs/rules.md); the world's lore, design and style are in the [bible](Bible/bible.md).
 
 Contents: [Layout](#layout) · [Setup](#setup) · [Workflow](#workflow) · [Tool index](#tool-index)
 
@@ -12,8 +12,9 @@ This section maps each path in `tools/` to its contents.
 
 | Path | Contents |
 | --- | --- |
-| `index.html` | The readable copy of the game, never compressed: byte-identical to the root `index.html` until the final pass packs the root, and the only readable page after it. Every change is copied here before a push (`test/copycheck.sh` checks). |
-| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](docs/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md), [open tasks](docs/tasks.md), [benchmarks](docs/benchmarks.md). |
+| `Uncompressed/index.html` | The readable copy of the game, never compressed: byte-identical to the root `index.html` until the final pass packs the root, and the only readable page after it. Every change is copied here before a push (`test/copycheck.sh` checks). |
+| [`Bible/`](Bible) | The self-contained Greeblis Bible. |
+| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](Bible/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md), [open tasks](docs/tasks.md), [benchmarks](docs/benchmarks.md). |
 | [`test/`](test) | The runners and their shared modules, the probes, and the render, coverage and pixel-compare tools. |
 | [`audit/`](audit) | Scene audits: stale bounds, the scene's mesh and triangle budget, dead builders, collisions, creatures off home, interface text, state dumps. |
 | [`lint/`](lint) | ESLint over the game script, and the unread-property finder. |
@@ -70,7 +71,9 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | `shot.js` | The runner: headless Chromium, desktop or phone (`MOBILE=1`), scene script, screenshot, console log. |
 | `mob.js` | An alias of `MOBILE=1 node test/shot.js`. |
 | `ordtest.js` | The game as an ordinal, in a sandboxed iframe under ord's CSP. |
-| `copycheck.sh` | Checks that `tools/index.html` is the readable copy. |
+| `copycheck.sh` | Checks that `tools/Uncompressed/index.html` is the readable copy. |
+| `xrcontrols.js` | Actual XR pose calibration and smooth turning/button logic with synthetic poses; `node test/xrcontrols.js`. |
+| `t_controls.js` | Desktop and mobile controls, HUD corner, hidden dialogue buttons and creature-tap protection; run through `shot.js`. |
 | `clock.js` | Checks the actual frame clock with deterministic time: active, exited, blurred and resumed sessions; `node test/clock.js [index.html]` from `tools/` (defaults to the readable copy). |
 | `parts.js` | Runs a multi-part probe's parts, each on a fresh page. |
 | `lib.js`, `lib.sh`, `browser.js` | Shared modules: the probes' helpers, the runners' common steps and summary, the browser setup. |

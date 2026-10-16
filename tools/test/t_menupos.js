@@ -16,7 +16,7 @@ module.exports = async (p) => {
   const measure = () => p.evaluate(() => {
     const e = window.__mt, cam = B, v = new THREE.Vector3();
     const toScr = (x, y, z) => { v.set(x, y, z).applyMatrix4(cam.matrixWorldInverse).applyMatrix4(cam.projectionMatrix); return [((v.x + 1) / 2) * innerWidth, ((1 - v.y) / 2) * innerHeight]; };
-    const gp = new THREE.Vector3().setFromMatrixPosition(e.group.matrixWorld), box = new THREE.Box3().setFromObject(e.group), top = toScr(gp.x, box.max.y, gp.z);
+    const gp = new THREE.Vector3().setFromMatrixPosition(e.group.matrixWorld), box = new THREE.Box3().setFromObject(e.group), top = toScr(gp.x, e.spark ? gp.y + st.height : box.max.y, gp.z);
     const M = window.__jgpMenu, m = M.mesh(), sy = m.scale.y, r = (sy * M.solidH()) / M.h(), bottomY = m.position.y + sy / 2 - r;
     // (the visible menu's bottom edge, at the mesh's x, z; its centre x for the sideways check)
     const mb = toScr(m.position.x, bottomY, m.position.z);
@@ -28,7 +28,7 @@ module.exports = async (p) => {
       // (a Blossom in hand, so the menu has two choices and opens rather than running the one Talk straight away)
       Kt.blossoms = 3;
       // (SPARKAKUS, 'keeper', is no It creature: his model lives in the Library's frame, so world positions throughout)
-      const e = id === 'keeper' ? { group: st.group } : It.byId[id] || It.all.find((q) => q.def && q.def.__type === id); window.__mt = e;
+      const e = id === 'keeper' ? { group: st.group, spark: true } : It.byId[id] || It.all.find((q) => q.def && q.def.__type === id); window.__mt = e;
       e.group.updateMatrixWorld(!0);
       const g = new THREE.Vector3().setFromMatrixPosition(e.group.matrixWorld), a = Math.atan2(-g.x, -g.z) + 0.35, d = 4.5;
       At.position.set(g.x + d * Math.sin(a), 0, g.z + d * Math.cos(a)); At.rotation.y = Math.atan2(g.x - At.position.x, g.z - At.position.z);
@@ -37,7 +37,7 @@ module.exports = async (p) => {
     }, id);
     await W(600);
     // (click on its head, as the player does)
-    const head = await p.evaluate(() => { const e = window.__mt, v = new THREE.Vector3(), gp = new THREE.Vector3().setFromMatrixPosition(e.group.matrixWorld), box = new THREE.Box3().setFromObject(e.group); v.set(gp.x, box.max.y - 0.3, gp.z).applyMatrix4(B.matrixWorldInverse).applyMatrix4(B.projectionMatrix); return [((v.x + 1) / 2) * innerWidth, ((1 - v.y) / 2) * innerHeight]; });
+    const head = await p.evaluate(() => { const e = window.__mt, v = new THREE.Vector3(), gp = new THREE.Vector3().setFromMatrixPosition(e.group.matrixWorld), box = new THREE.Box3().setFromObject(e.group); v.set(gp.x, (e.spark ? gp.y + st.height : box.max.y) - 0.3, gp.z).applyMatrix4(B.matrixWorldInverse).applyMatrix4(B.projectionMatrix); return [((v.x + 1) / 2) * innerWidth, ((1 - v.y) / 2) * innerHeight]; });
     await p.mouse.click(head[0], head[1]); await W(400);
     const m0 = await measure(), st0 = await p.evaluate(() => ({ top: jt.top, dlg: qt.isOpen, tgt: xe.lastTarget && (xe.lastTarget.id || (xe.lastTarget.def && xe.lastTarget.def.name)), near: It.all.filter((q) => Math.hypot(q.group.position.x - At.position.x, q.group.position.z - At.position.z) < 3).map((q) => q.id) }));
     m0.open || log('  (no menu after the click:', JSON.stringify(st0) + ')');
@@ -47,7 +47,7 @@ module.exports = async (p) => {
     await p.keyboard.down('w'); await W(350); await p.keyboard.up('w'); await W(500);
     const m2 = await measure();
     log(id, 'at', JSON.stringify(at), '| opened', m0.open, '| gap/dx px: opened', m0.gapPx + '/' + m0.dxPx, '| after orbit', m1.gapPx + '/' + m1.dxPx, '| after a step', m2.gapPx + '/' + m2.dxPx, '| still open', m2.open);
-    await p.keyboard.press('Escape'); await W(300);
+    await p.keyboard.press('b'); await W(300);
   }
   await logErrors(p);
 };

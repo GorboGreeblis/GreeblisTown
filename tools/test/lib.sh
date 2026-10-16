@@ -30,6 +30,7 @@ core() {
   grep -v "'p' is not modified in this loop" "$LOG.lint" | grep -q . && echo "FAIL: lint findings beyond the known warning" | tee -a "$LOG"
   rm -f "$LOG.lint"
   h "game clock"; run 30 clock.js
+  h "XR controls"; run 30 xrcontrols.js
   h "boot, desktop"; NOSHOT=1 run 300 shot.js "$U" x.png ./boot.js
   h "boot, mobile, and the GIVE button"; MOBILE=1 run 300 shot.js "$U" x_mob.png ./t_give.js
   h "ordinal sandbox, desktop"; run 300 ordtest.js "$G" x_ord.png

@@ -26,8 +26,8 @@ Rules for what the game is, where it lives and what its final file must meet.
    The full requirements for the packed page are in [release.md](release.md#the-packed-page).
 3. The game is `index.html` at the repo root. Everything else (tools, guides, notes) must live in `tools/` and
    nowhere else.
-4. **(every game)** A readable copy of the game, `tools/index.html`, must exist at all times and must never be
-   compressed. Every change to `index.html` must be copied there before the push (`cp index.html tools/index.html`).
+4. **(every game)** A readable copy of the game, `tools/Uncompressed/index.html`, must exist at all times and must never be
+   compressed. Every change to `index.html` must be copied there before the push (`cp index.html tools/Uncompressed/index.html`).
    Once the final pass packs the root `index.html`, the copy is the only readable page and every later change must
    start from it.
 5. **(every game)** Content must never be cut to save size or time; size and speed come from minifying, packing and
@@ -41,7 +41,7 @@ Rules for what the game is, where it lives and what its final file must meet.
 8. **(every game)** The Meta Quest decides performance. The game must be fully playable in the Meta Quest Browser, in
    VR and flat, holding the headset's frame rate; the Quest's draw-call, triangle and CPU budgets are the binding
    ones. Testing must cover Android phone and Quest screen sizes and frame rates throughout development.
-9. Greeblis Town is the bible: its lore, designs and style ([bible.md](bible.md)) are canonical for every future
+9. Greeblis Town is the bible: its lore, designs and style ([bible.md](../Bible/bible.md)) are canonical for every future
    Greeblis game, and its established lore points must never change. The earlier Greeblis games must never be worked
    on again. One may be remade as an experiment; a remake must follow the bible like any new game.
 10. Desktop and Mobile are test modes and must be removed from the final build; until the owner has them cut, they
@@ -54,7 +54,7 @@ Rules for what the game is, where it lives and what its final file must meet.
     - The player's avatar is not a test-mode part and must never be cut: it appears in the Shop's mirror while the
       Shop menu is open (VR included), and it is maintained for the final game.
 11. Anything newly introduced (an element, a symbol, a line, a design) must always fit the established lore in
-    [bible.md](bible.md).
+    [bible.md](../Bible/bible.md).
 12. Creative, improvised elements must never overpower the existing lore: they may only support and connect what is
     established, kept smaller and quieter than it.
 
@@ -122,12 +122,12 @@ Rules for what is finished and who may change it.
      in);
    - the Event flowers: the five plant models the Garden Event grows, and only those.
 
-   BACKPACKA, the two park birds and the player's avatar are final and locked as well.
+   BACKPACKA and the player's avatar are final and locked as well. Robin and Cardinal are unlocked and retired.
 4. **(every game)** Once the owner declares the general environment (the town, the park, the buildings and their
    props, the scenery) done, it is locked as finished models are, and any change to it needs the owner's approval
    first. Greeblis Town's environment is not yet declared done; the church's inside and its secret room are.
 5. A creature carried into another game must keep its model exactly.
-6. GOOWARD's painting ([bible 1.18](bible.md#118-goowards-painting)) must keep its quality as fully as possible.
+6. GOOWARD's painting ([bible 1.18](../Bible/bible.md#118-goowards-painting)) must keep its quality as fully as possible.
    Any change to it, or to how the game paints and shows it (for performance, size, the fallback, a fix nearby), must
    keep its resolution (3072 × 1158), its detail, its colours, its brushwork and every symbol; a change that would cost
    any of these is put to the owner first. Each such change is checked by rendering the painting before and after and
@@ -179,11 +179,8 @@ Rules for how creatures, plants and other modelled things are built. The methods
 
 1. Creatures are the most important part of the game: their models, behaviour and interactions must be given the
    time to be done well.
-2. Plant and flower models matter just as much. Each must be built from the images the owner gave for it, and only
-   from those (shape, colours, leaves, buds, branching; nothing the photos do not show), rendered from several angles
-   beside the photos and refined until it matches. The same applies to anything else the owner asks to be built from
-   an image.
-3. A creature rebuilt from artwork must take the artwork's shape and features, and keep its current colour and size
+2. Plant and flower models matter just as much. Preserve each approved shape, colours, leaves, buds and branching. Check it from several angles and refine it until the design is correct. Documentation describes designs directly.
+3. A creature rebuilt on request must preserve its approved shape and features, and keep its current colour and size
    when asked. An ambiguous shape must be put to the owner, never guessed.
 4. A merge must be a new, cohesive creature that blends its parents' silhouettes, palettes and signature features,
    never parts glued together.
@@ -222,7 +219,7 @@ Rules for how creatures act towards the player and the park. The systems are in
 5. Menus must never have an X in the top right. They close by their own button (LEAVE, DONE, No), and in the test
    modes a tap off them closes them too.
 6. Every kiosk must keep creatures out: no creature may walk into a kiosk or get stuck in one; only its keeper stands
-   inside (see [bible.md](bible.md#14-the-five-kiosks)).
+   inside (see [bible.md](../Bible/bible.md#14-the-five-kiosks)).
 7. Only one batch of flowers ever grows at the Garden Event: the first Event's. Every planting creature (SPARKAKUS
    included) must grow a flower at its spot then; a repeated Event must never add more.
 8. A creature speaking to the player must face the player, wherever it is (at home, out on a visit, on its way
@@ -249,14 +246,14 @@ Rules for names, currency and written content.
 ## The world
 
 Rules for the park's surroundings and the world's design. The town's build is in
-[construction.md](construction.md#9-the-town); its lore is in [bible.md](bible.md#17-the-town).
+[construction.md](construction.md#9-the-town); its lore is in [bible.md](../Bible/bible.md#17-the-town).
 
 1. The town outside the park must be given time and care, made as interesting as possible and drawn from the park's
    lore, style and design: its creatures, the Consortium, the Portal and Greeblis City, goo and VHS. It must be built
    into the town's merged meshes and sign atlas. Small, measured increases in the background's complexity are allowed,
    as long as they stay merged.
 2. No national flag, the US flag included, may appear anywhere in the game. The Consortium's flag (a red toadstool on
-   navy) is the only flag; it flies over the Sheriff's kiosk, never at the courthouse.
+   orange) is the only flag; it flies over the Sheriff's kiosk, never at the courthouse.
 3. Flint knapping must never appear in the game's elements (not shown, built or played), and nothing outside the park
    may come from the church's Ancient. A joke in a line is allowed: MONTGUMMERY's tape "Flint Knapping for Beginners".
 4. **(every game)** Show, don't tell. In the background outside the park, lore must come through visual elements,
@@ -273,10 +270,26 @@ Descriptive material lives in the document that owns it.
 | --- | --- |
 | `index.html` (repo root) | The game |
 | [`tools/README.md`](../README.md) | The tools folder's layout, setup and everyday commands |
-| [`bible.md`](bible.md) | Lore, design and style: the canonical world reference |
+| [`bible.md`](../Bible/bible.md) | Lore, design and style: the canonical world reference |
 | [`construction.md`](construction.md) | How the game is built: systems, code structure, methods, rendering, performance |
 | [`creatures.md`](creatures.md) | Per-creature build and behaviour reference |
 | [`testing.md`](testing.md) | Test runners, probes, audits and the game globals they use |
 | [`release.md`](release.md) | The final pass: strip, minify, pack, check; the codec; trimming three.js; dead code |
 | [`tasks.md`](tasks.md) | The running list of open tasks: what is being worked on, what is queued, what waits on the owner |
 | [`benchmarks.md`](benchmarks.md) | Performance benchmarks across builds, measured the same way for every build (`test/bench.js`) |
+
+## Current standing additions
+
+These owner instructions supersede older conflicting descriptions throughout the documentation.
+
+- **Every game:** every owner note is a task; keep all remaining work in the task list.
+- **Every game:** do not reference source media, photographs or visual inspiration in any documentation.
+- **Every game:** the Lore Bible lives in `tools/Bible/` and is self-contained; no references or links to other documents.
+- **Every game:** the readable game lives in `tools/Uncompressed/`. Mirror every game-file change there except compression.
+- **Every build:** verify a self-contained file with no outside calls and playability as a Bitcoin ordinal.
+- **Every game, VR:** pointing then selecting with A is the primary interaction; moving over pickup objects is the primary pickup method. X selects like A; Talk and Give are interaction-menu actions.
+- **Every game, VR:** prefer smooth turning and seated play. On entry, seated eye height matches the standing avatar. System menus pause game action while tracked views keep rendering.
+- **Every game:** standard Desktop and Mobile test modes remain fenced and removable; both are removed from the release build.
+- **Release only, every game:** version is v1.0; lock every creature/environment design, with later changes only on explicit request.
+- **Separate pre-release tasks, every game:** remove unused application code; remove comments/labels; then compress. Keep only code necessary to run the final application and retain the uncompressed copy.
+- Current development version: v0.2. Robin and Cardinal are unlocked and scheduled for removal. Explicit model-edit permission covers ZOLLOD articulation, Ancient/Cave details and ETCHER's two small currency scales.

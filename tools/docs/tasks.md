@@ -17,3 +17,55 @@ their section.
 ## Waiting on the owner
 
 Quest 3S confirmation of distant fence/building-edge comfort and frame rate (highest-priority task above).
+
+## Current request batch — v0.2
+
+Every note is a task. These rows remain until implementation and validation finish.
+
+### Comfort and controls
+
+- [ ] VR pointing then A is the primary interaction; moving over pickups is the primary pickup method.
+
+### Bible, lore and text — priority
+
+- [ ] Remove media/source references everywhere in documentation, including Ancient/Cave and Wanted descriptions.
+- [ ] Update lore: Greeblis and all its beings are digital/code-born; this is little known in-world.
+- [ ] Age of Dinosaurs: early Organics, births of KING DINO, BACKPACKA and GEMTOE; construction of Summoning Pillar and Stone.
+- [ ] Portal built during age of Synthetics; Ancient withdrew into the Cave during age of Ancients; details forgotten.
+- [ ] Distinguish Summoning Pillar structure from Summoning Stone item in all UI/dialogue/lore.
+- [ ] Ollaag spelling and lore: evil leader of four alien factions, Alien Alliance, planning invasion; his people resemble him and travel in UFOs, not Portals.
+- [ ] GEMTOE runs First Bank of Greeblis.
+- [ ] Audit all flavor text against lore; add one creative, non-Event biology/mechanics Talk line per normal-talking creature.
+- [ ] Add exactly one Zortoe's Home Cooking book and exactly one Traveler's Truth book.
+- [ ] Make OVERCOMING lettering more prominent on OVERCOMING SHYNESS.
+
+### Gallery and environment
+
+- [ ] Fix label z-fighting on Gallery's large purple paint can.
+- [ ] Add plentiful colorful floor goo splats to Gallery kiosk.
+- [ ] Replace three small splat paintings with realistic landscape paintings; retain the large painting's quality.
+- [ ] Correct Ollaag Wanted poster name; replace blue/green alien Wanted posters with the same Gray Alien poster twice.
+- [ ] Remove pond dock, lily pads and bulrushes.
+- [ ] Remove Robin and Cardinal and their model locks; add animated Blue Jay that stays in one tree.
+- [ ] Remove beige/yellow pineapple-shaped objects and wooden marker sticks around Garden circle.
+- [ ] Thin excessive generic Garden Supplies plants and check performance.
+- [ ] GEMTOE home inside gazebo; add Gemtoe's Gazebo sign and gold coin stacks; validate home/visits/Event/trade/collisions.
+- [ ] Consortium flag: red mushroom on orange background.
+- [ ] Remove exterior church clock textures.
+
+### Models and scripted scenes
+
+- [ ] ZOLLOD walking: add articulation (explicit permission to edit final model).
+- [ ] Ancient and Cave: add more visual detail (explicit permission); detail direction received: low curved body, granular skin, rooted stalks, gritty ground and embedded angular stones.
+- [ ] ETCHER: subtle Ethereum symbol on one small scale and Bitcoin symbol on another (explicit permission).
+- [ ] Extend Gem gluing scene with dialogue pause and comically slow glue drips.
+
+### Audits and standing/release rules
+
+- [ ] Analyze progression bugs; reproduce and repair confirmed issues.
+- [ ] Analyze stability bugs; reproduce and repair confirmed issues.
+- [ ] Every build: standalone/no external calls and Bitcoin ordinal verification, desktop and Android.
+- [ ] Release only: v1.0; remove fenced Desktop/Mobile test modes; lock all creature/environment designs unless explicitly requested.
+- [ ] Separate pre-release task: remove unused application code.
+- [ ] Separate pre-release task: remove comments and labels (only executable necessities remain).
+- [ ] Separate pre-release task: compress final root file; keep tools/Uncompressed/ readable and validate final ordinal.

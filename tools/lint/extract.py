@@ -1,7 +1,7 @@
 """Cuts the game script out of the page for the lint: every line after the page's last bare `<script>` line up to its
 `</script>`, written to game.js in this folder.
 Env: PAGE (the page to read, default the repo root's index.html; GAME is read too). Once the root is packed, point it
-  at tools/index.html.
+  at tools/Uncompressed/index.html.
 Output: `<offset> <end>`: the `<script>` line's index.html line number (a game.js line plus the offset is its
 index.html line) and the `</script>` line's; game.js.
   python3 extract.py   (lint.sh runs it from tools/lint/)
