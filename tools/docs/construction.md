@@ -844,6 +844,28 @@ never on creatures.
   double-sided box's inner faces meet its outer faces along every edge, which shimmers at grazing angles.
   `kioskFrame` uses front-only clones for this reason; apply the same to any closed solid whose edges show.
 
+### Distant thin edges
+
+The park fence keeps its 3 cm pickets and 5 cm rails nearby. Between 18 and 28 m, measured per fragment in each
+camera's view space, it blends into a subdivided plane carrying the same pattern. The far material integrates the
+picket pattern over the pixel footprint (`fwidth`) and filters each horizontal rail by coverage. Subpixel bars then
+contribute partial opacity instead of alternating between a solid dark pixel and nothing. It uses smooth alpha
+blending, without alpha testing, stipple, extra render targets or per-frame JavaScript. Posts and brick pillars stay
+as geometry. The far plane is excluded from `unfightParts`: it is a rendering representation, not another solid.
+Near bars use front faces and write depth; fully faded fragments discard. Both materials retain Lambert lighting
+and fog. The far sheet renders before the near bars (orders −2/−1, including chunked bins), then the park's translucent
+creatures/effects composite over them. Open fence ends are unchanged.
+
+Closed `BoxGeometry` instances in the town use front-only clones of their original bin materials (constructor
+identity is used because the bundled engine strips geometry type labels). Clones share the original emissive colour
+so the existing night updater still reaches them. This removes rear
+faces along wall, roof-trim and window-frame edges; open geometry keeps its original materials. Mirrored placements
+still have their winding corrected by `mergeBin`. This does not replace silhouette antialiasing: the Quest path
+continues to request an antialiased XR layer at native resolution initially, with the existing performance ladder.
+
+Check with `t_vrcomfort.js` for isolated head-nudge coverage and full-scene near/far/back/oblique renders. Desktop
+simulation cannot establish comfort or frame rate on the Quest; headset confirmation remains required.
+
 ### Locating flicker
 
 1. Render the view three times with the near plane nudged; changed pixels are depth ties.

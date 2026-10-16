@@ -83,12 +83,13 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | Creatures and quests | `talk.js`, `t_flavor.js`, `t_battles.js`, `t_battlecost.js`, `t_gem.js`, `t_pizza.js`, `t_stone.js`, `t_sparkakus.js`, `t_zollod.js`, `t_script.js`, `t_church.js`, `t_library.js`, `t_avatar.js` |
 | Movement and life | `t_roam.js`, `t_fortizmo.js`, `t_nearstop.js`, `t_reach.js`, `t_visits.js`, `t_visitlive.js`, `t_stuck.js`, `t_vigall.js`, `t_ground.js`, `t_baked.js`, `soak.js` |
 | The Garden Event and music | `t_event.js`, `t_dance.js`, `t_plants.js`, `t_jazz.js`, `t_stress.js` |
-| Rendering | `t_zfight.js`, `t_zcheck.js`, `t_shimmer.js`, `t_perf.js`, `t_townview.js` |
+| Rendering | `t_zfight.js`, `t_zcheck.js`, `t_shimmer.js`, `t_vrcomfort.js`, `t_perf.js`, `t_townview.js` |
 
 **Render and measuring tools** (`test/`, see [testing.md](docs/testing.md#render-and-measuring-tools))
 
 | Tool | Purpose |
 | --- | --- |
+| `t_vrcomfort.js` | Isolated fence coverage in the central 20% of the eye under four subpixel head nudges, plus full-scene near/transition/far/back/oblique renders per-eye counts, foreground/background transparency and window day/night checks. `NOSHOT=1 VW=320 VH=240 node test/shot.js <url> x.png test/t_vrcomfort.js`; optional `PX=1200 EYE=3.12 THRESH=40`. |
 | `t_views.js` | Town views by building, parcel or position, and creature close-ups. |
 | `t_detail.js` | Close shots from given camera positions. |
 | `portraits.js` | Isolated creature portraits on open lawn. |

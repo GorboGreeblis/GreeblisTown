@@ -17991,8 +17991,61 @@ const JGP = (() => {
 			// stays tiny at grazing angles) keeps them in front where depth precision is low
 			sign: { m: lam({ map: atlasTx, alphaTest: 0.5, side: THREE.DoubleSide, polygonOffset: !0, polygonOffsetFactor: 0, polygonOffsetUnits: -4 }), uv: !0 },
 		};
+		// Thin ironwork needs coverage filtering as it becomes smaller than a headset pixel. Keep the real
+		// bars nearby, then blend into a continuous, analytically filtered image of the same bars (no alpha test
+		// or stipple). Derivatives follow the pixel footprint in each eye and at oblique viewing angles.
+		const fenceMaterial = (far) => {
+			const m = new THREE.MeshLambertMaterial({ color: "#1e2226", vertexColors: !far, transparent: !0, depthWrite: !far, side: far ? THREE.DoubleSide : THREE.FrontSide });
+			m.extensions = { derivatives: !0 };
+			m.defines = { GB_FENCE_FAR: far ? 1 : 0 };
+			m.onBeforeCompile = (sh) => {
+				sh.uniforms.gbFencePitch = { value: 0.16 / LOD };
+				sh.vertexShader = "varying vec3 gbFenceView; varying vec2 gbFenceUV;\n" + sh.vertexShader;
+				sh.vertexShader = sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\ngbFenceView = (modelViewMatrix * vec4(transformed, 1.0)).xyz;\n#if GB_FENCE_FAR\ngbFenceUV = uv;\n#endif");
+				sh.fragmentShader = `varying vec3 gbFenceView;
+varying vec2 gbFenceUV;
+uniform float gbFencePitch;
+float gbFenceIntegral(float x, float duty) { return floor(x) * duty + min(fract(x), duty); }
+float gbFenceBand(float x, float lo, float hi, float footprint) {
+ return clamp((min(x + footprint * 0.5, hi) - max(x - footprint * 0.5, lo)) / footprint, 0.0, 1.0);
+}
+` + sh.fragmentShader;
+				sh.fragmentShader = sh.fragmentShader.replace("#include <alphatest_fragment>", `
+float gbFar = smoothstep(18.0, 28.0, length(gbFenceView));
+#if GB_FENCE_FAR
+ vec2 fw = max(fwidth(gbFenceUV), vec2(0.00001));
+ float phase = (gbFenceUV.x - 0.16 + 0.015) / gbFencePitch;
+ float span = fw.x / gbFencePitch;
+ float bars = clamp((gbFenceIntegral(phase + span * 0.5, 0.03 / gbFencePitch) - gbFenceIntegral(phase - span * 0.5, 0.03 / gbFencePitch)) / span, 0.0, 1.0);
+ bars *= smoothstep(0.145 - fw.x * 0.5, 0.145 + fw.x * 0.5, gbFenceUV.x);
+ float rails = min(1.0, gbFenceBand(gbFenceUV.y, 0.155, 0.205, fw.y) + gbFenceBand(gbFenceUV.y, 0.875, 0.925, fw.y));
+ diffuseColor.a *= gbFar * (bars + rails - bars * rails);
+#else
+ diffuseColor.a *= 1.0 - gbFar;
+#endif
+if (diffuseColor.a < 0.001) discard;
+#include <alphatest_fragment>`);
+			};
+			return m;
+		};
+		BIN.fence = { m: fenceMaterial(!1) };
+		BIN.fenceFar = { m: fenceMaterial(!0), uv: !0 };
 		const bins = {},
-			put = (bin, geo, color, m) => (bins[bin] || (bins[bin] = [])).push({ geo, color, matrix: m });
+			put = (bin, geo, color, m) => {
+				// Closed town boxes need only their outer faces. Keep open roofs, foliage and signs double-sided.
+				if (geo instanceof THREE.BoxGeometry && bin !== "fence") {
+					const solid = bin + "Solid";
+					if (!BIN[solid]) {
+						const material = BIN[bin].m.clone();
+						material.side = THREE.FrontSide;
+						// Night lighting updates the original bin's emissive colour in place.
+						material.emissive = BIN[bin].m.emissive;
+						BIN[solid] = Object.assign({}, BIN[bin], { m: material });
+					}
+					bin = solid;
+				}
+				(bins[bin] || (bins[bin] = [])).push({ geo, color, matrix: m });
+			};
 		// merge one bin: world-projected uvs for the tiling materials (picked per face from its normal),
 		// per-vertex tint (placement colour x baked geometry shade x a little ground darkening)
 		const mergeBin = (list, def) => {
@@ -20208,8 +20261,11 @@ const JGP = (() => {
 				const len = b2 - a,
 					mid = (a + b2) / 2,
 					at = (u, y, w, h, d) => (alongX ? S(u, y, c, 0, 0, 0, w, h, d) : S(c, y, u, 0, 0, 0, d, h, w));
-				[0.18, 0.9].forEach((y) => put("plain", UBs(segs(len), 1), iron, at(mid, y, len, 0.05, 0.05)));
-				for (let u = a + 0.16; u < b2 - 0.08; u += 0.16 / LOD) put("plain", upick, iron, at(u, 0.52, 0.03, 1.04, 0.03));
+				[0.18, 0.9].forEach((y) => put("fence", UBs(segs(len), 1), "#ffffff", at(mid, y, len, 0.05, 0.05)));
+				for (let u = a + 0.16; u < b2 - 0.08; u += 0.16 / LOD) put("fence", upick, "#ffffff", at(u, 0.52, 0.03, 1.04, 0.03));
+				const sheet = new THREE.PlaneGeometry(len, 1.04, segs(len), 1), uv = sheet.attributes.uv;
+				for (let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k) * len, uv.getY(k) * 1.04);
+				put("fenceFar", sheet, "#ffffff", S(alongX ? mid : c, 0.52, alongX ? c : mid, 0, alongX ? 0 : -Math.PI / 2, 0));
 				for (let u = a + 2.4; u < b2 - 0.5; u += 2.4) put("plain", UB, iron, at(u, 0.6, 0.08, 1.2, 0.08)), put("plain", ucone(4), iron, at(u, 1.27, 0.1, 0.16, 0.1));
 			};
 			run(-FH + 0.35, FH - 0.35, -FH, !0), run(-FH + 0.35, FS - 0.35, -FH, !1), run(-FH + 0.35, FS - 0.35, FH, !1);
@@ -21391,19 +21447,26 @@ const JGP = (() => {
 			};
 		{
 			const all = [];
-			for (const key in bins) for (const pt of bins[key]) all.push(pt);
+			for (const key in bins) if (key !== "fenceFar") for (const pt of bins[key]) all.push(pt);
 			// (no z-fighting: see unfightParts)
 			unfightParts(all);
 		}
 		for (const key in bins) {
 			if (!bins[key].length) continue;
 			if (triCount(bins[key]) < 12e3) {
-				R(mergeBin(bins[key], BIN[key]), BIN[key].m, grp).name = "town_" + key;
+				const mesh = R(mergeBin(bins[key], BIN[key]), BIN[key].m, grp);
+				mesh.name = "town_" + key;
+				if (key === "fenceFar") mesh.renderOrder = -2;
+				if (key === "fence") mesh.renderOrder = -1;
 				continue;
 			}
 			const parts = {};
 			for (const pt of bins[key]) (parts[chunkOf(pt)] || (parts[chunkOf(pt)] = [])).push(pt);
-			for (const c in parts) R(mergeBin(parts[c], BIN[key]), BIN[key].m, grp).name = "town_" + key + "_" + c;
+			for (const c in parts) {
+				const mesh = R(mergeBin(parts[c], BIN[key]), BIN[key].m, grp);
+				mesh.name = "town_" + key + "_" + c;
+				if (key === "fence") mesh.renderOrder = -1;
+			}
 		}
 
 		// ---- a UFO that crosses the sky once every 10 minutes (never during the Garden Event: a pass
