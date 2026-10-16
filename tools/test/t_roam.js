@@ -1,4 +1,4 @@
-// The roamers: HENNRICK round the Portal, GEMTOE and MAMA GORBO round the park, GOOWARD round his Gallery, the three
+// The roamers: HENNRICK round the Portal, GEMTOE at her gazebo and MAMA GORBO round the park, GOOWARD round his Gallery, the three
 // Dancers on the dance floor. Watched for a while: where they go, that they never stand anywhere they must not
 // (outside the square, in a building, the garden, the pond, scenery) and never stay stuck; then MAMA GORBO and GOOWARD
 // meet; then traps: the player steps in front of a walking roamer every few seconds, and some are dropped in tight

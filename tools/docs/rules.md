@@ -292,4 +292,4 @@ These owner instructions supersede older conflicting descriptions throughout the
 - **Every game:** standard Desktop and Mobile test modes remain fenced and removable; both are removed from the release build.
 - **Release only, every game:** version is v1.0; lock every creature/environment design, with later changes only on explicit request.
 - **Separate pre-release tasks, every game:** remove unused application code; remove comments/labels; then compress. Keep only code necessary to run the final application and retain the uncompressed copy.
-- Current development version: v0.2. Robin and Cardinal are unlocked and scheduled for removal. Explicit model-edit permission covers ZOLLOD articulation, Ancient/Cave details and ETCHER's two small currency scales.
+- Current development version: v0.2. Robin and Cardinal are unlocked and retired. Explicit model-edit permission covers ZOLLOD articulation, Ancient/Cave details and ETCHER's two small currency scales.

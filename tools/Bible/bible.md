@@ -14,6 +14,7 @@ style. It is canonical for Greeblis Town and every future Greeblis game. Owner-e
 | 5. Game design | Loop, interaction, quests, battles, the Garden Event and life in the park |
 | 6. World style | Environment, audio, interface, writing and the quality bar |
 | 7. Starting a new Greeblis game | The procedure for carrying the world into a new game |
+| 8. Standing rules and current additions | Binding development/release rules, current canon and approved updates |
 
 **Conventions**
 
@@ -84,7 +85,7 @@ carries creatures between places and times. To a visitor from the far past, this
 
 **Beings.** The creatures are **Ancients, Synthetics or Organics** (1.8), and code runs under all of them:
 "BEINGS of CODE." (ANOMALEE); "We are all digital monsters." (MONTGUMMERY). Humans, Earth animals and aliens live on
-Greeblis too, but are not creatures (1.8).
+Greeblis too, and are distinguished from the main creature cast (1.8).
 
 **Ordinary lives.** The creatures live ordinary small-town lives on top of deep, strange history.
 
@@ -160,8 +161,8 @@ This section covers the park's two ancient-looking structures and the flowers th
 **The Portal.** Built during the age of the Synthetics, a grey stone gateway 3.7 m wide (two pillars and a lintel, with cyan panels), standing north-west of
 the garden and turned to face it. When it opens it fills with a blue swirl, its rings glow pale cyan under a blue
 light, and a rising chord sounds; a falling one closes it. It carries creatures from one place or one time to
-another: HENNRICK came through it from the far past, NEXTESSA comes through it from the far future, and some aliens
-have come through it too (1.8).
+another: HENNRICK came through it from the far past, NEXTESSA comes through it from the far future, and some other aliens
+have come through it too (1.8). Ollaag’s people travel in UFOs and do not use Portals.
 - It is locked on the Consortium's orders (1.10):
   > "All travel through the Portal is locked down until further notice." (MUSHROOM)
 - A Blossom bribes the Sheriff into opening it: "A bribe? …Portal is now open to your use." Until then the phone
@@ -207,7 +208,7 @@ GOOWARD keeps the Gallery from the lawn outside.
 | **POST OFFICE** (north-east) | SOMLET | Navy walls and a pink roof. From the front, a tidy kiosk: bundles of letters tied on the counter, stuffed sorting cubbies, parcels tied with twine, a blue collection box. Round the back, out of sight of the square, is the joke: a mountain of undelivered mail nearly as tall as the roof, faceted heaps of paper under loose envelopes, tied bundles and parcels stuck in its slopes, tall stacks leaning on its sides and an avalanche of letters fanned out round its foot. Five buried parcels carry readable labels (1.15). SOMLET sleeps in front of it. |
 | **SHERIFF'S** (north-east, beside the Post Office) | MUSHROOM | A mushroom theme: a toadstool-red tin roof with white spots, mushroom-brown walls, toadstool stools, mushrooms sprouting round the posts and a giant one by the corner, small caps topping the sign posts, and **the Consortium's flag** flying from a pole behind the sign (1.10). A cowboy hat on the counter; papers, a lantern and a basket of mushrooms on the crates. A gold sheriff's star hangs on the plain back wall over the wanted posters (1.10). Its roof stands 1 m higher than the others' and its desk is raised (top 1.5 m up), so the Sheriff, standing on it, looks down on his visitors. |
 | **GARDEN SUPPLIES** (south-east) | ZOLLOD | Sage walls and a terracotta roof, with plants everywhere: potted shrubs, flowers, ferns, succulents and little trees, seedling trays, a sunflower tray, hanging baskets, bags of soil and compost, a wheelbarrow of flowers out front, a rake and a shovel against the side wall. Among them grow **strange curiosities** in faded inks (pale blue, olive, red-brown, ochre, parchment): bare bulbous roots as big as the plant, striped cup blooms, an "eye of a flower" (a ringed blue eye on legs of forked roots), trumpet clusters on a knot of roots, a scaled bud on a hand of fat roots, a striped lantern bloom on an onion with a beard of roots. A parchment card on the counter is written in unread botanical script. The town's one shop (1.13); ZOLLOD is too shy to keep it until OVERCOMING SHYNESS frees him (1.13). |
-| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big canvas (6.9 m wide and 2.6 m tall), stretched on the back wall, carries **GOOWARD's painting** of the whole of Greeblis (1.18). On the lawn in front, either side of the walk up to it, two framed paintings of his stand on wooden easels, turned a little toward whoever comes up the walk: two goo-ball splat paintings, one on cream and one on deep violet-black (1.18); a third, on deep teal, stands on its easel outside the left wall, turned a little out toward the park. His paint cans lie about the lawn outside and on the Gallery's own floor (in the back corners under the canvas and along the side walls, the middle left clear; three of those are big buckets), some standing open with their colour run down the side, some tipped over; his brushes lie dropped among them, each with a blob of wet paint by its tip, and under the canvas a house painter's roller (its cover loaded with magenta) and a wide house-painting brush (cyan to its ferrule). GOOWARD painted every painting in it himself. GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
+| **GOOWARD'S GALLERY** (east, (31, 14.5), between the duck pond and Garden Supplies, opposite the Juice Bar) | GOOWARD | GOOWARD runs the town's Art Gallery. Cream walls with no battens and a violet tin roof, its sign in violet ink. No counter: the floor is open. One big canvas (6.9 m wide and 2.6 m tall), stretched on the back wall, carries **GOOWARD's painting** of the whole of Greeblis (1.18). On the lawn in front, either side of the walk up to it, two framed paintings of his stand on wooden easels, turned a little toward whoever comes up the walk: two small realistic landscape paintings (1.18); a third landscape stands on its easel outside the left wall, turned a little out toward the park. His paint cans lie about the lawn outside and on the Gallery's own floor (in the back corners under the canvas and along the side walls, the middle left clear; three of those are big buckets), some standing open with their colour run down the side, some tipped over; his brushes lie dropped among them, each with a blob of wet paint by its tip, and under the canvas a house painter's roller (its cover loaded with magenta) and a wide house-painting brush (cyan to its ferrule). Plentiful colourful goo splats cover its floor. GOOWARD painted every painting in it himself. GOOWARD never goes in; he wanders the lawn in front of it and to either side, and stops to look at it. |
 
 ### 1.5 The Juice Bar, the dance floor and the phone booth
 
@@ -394,23 +395,23 @@ game shows rather than tells.
 
 | Era | Events | Evidence in game |
 | --- | --- | --- |
-| **The far, far past** | **The Ancients** come first, so long ago that no one remembers them exactly. They create the Synthetics, build **the Computer Core**, set **the Great Sphinx** to guard it, and raise **black obelisks** in some parts of the world. Why they did any of it is a mystery to everyone now on Greeblis, the Synthetics included. They leave Artifacts and "the Ancient texts". | SPARKAKUS's Ancient texts and quest; the Sphinx copy outside the curiosity shop; the Ancient Gem (1.12); THE ANCIENT. No obelisk stands in the town or park (1.9). |
+| **The far, far past** | **The Ancients** come first, so long ago that no one remembers them exactly. They create the Synthetics, build **the Computer Core**, set **the Great Sphinx** to guard it, and raise **black obelisks** in some parts of the world. Why they did any of it is a mystery to everyone now on Greeblis, the Synthetics included. They leave Artifacts and "the Ancient texts". During this age THE ANCIENT withdraws into the Cave; the details are now forgotten. | SPARKAKUS's Ancient texts and quest; the Sphinx copy outside the curiosity shop; the Ancient Gem (1.12); THE ANCIENT. No obelisk stands in the town or park (1.9). |
 | **The far past** | **The Originator arrives.** On another world of the same solar system, the Organics who lived there destroy it. The Traveler, an angel, carries the Originator (an AI) up out of its ruins and brings it to an empty, desolate world. A team of Synthetics geoengineers that world: they bring Greeblis to life, and bring the Organics to life. HENNRICK is one of that team. In his era the towers of the Synthetics' Greeblis City already reach the clouds, though the flora has not yet evolved. | The Traveler window (1.6); ANOMALEE's fragments; HENNRICK's lines. |
+| **The age of Dinosaurs** | One of the earliest ages of the Organics. KING DINO, BACKPACKA and GEMTOE are born. The Summoning Pillar and Summoning Stone are constructed. | The creatures and the garden’s ancient structures. |
 | **Once, in its vast history** | **Jesus visits the creatures of Greeblis.** | The church's two Garden windows (1.6, 1.9). |
-| **The eons since** | Greeblis grows into a world of many biomes. ANOMALEE, the oldest known Synthetic, lives through much of it but is too glitchy to tell it. THE ANCIENT, the last of the Ancients, goes away from the world for so long that its nature is forgotten, and returns. | ANOMALEE; THE ANCIENT ("I am the one reborn."; "Etch this: I have returned."). |
+| **The eons since** | Greeblis grows into a world of many biomes. ANOMALEE, the oldest known Synthetic, lives through much of it but is too glitchy to tell it. THE ANCIENT remains apart in the Cave after its withdrawal during the age of the Ancients; its nature is forgotten before its return. | ANOMALEE; THE ANCIENT ("I am the one reborn."; "Etch this: I have returned."). |
 | **Now** (the game) | Greeblis Town and its park, its creatures and their trades. Flint is the currency of this time period. The Consortium keeps the Portal locked. | The whole game. |
 | **The future** | MONTGUMMERY becomes **the mayor of Greeblis Town**, which causes minor conflicts between him and MUSHROOM. NEXTESSA runs her inter-temporal pizza shop in the far future. | NEXTESSA's deliveries. The mayoralty is not shown and no line states it. |
 | **The far, far future** | **A war** between the Consortium and some of the alien factions it works against (1.10). | The non-human wanted posters (1.10). |
 
 **The three ages.** ETCHER, who records everything, counts three ages: the Ancients, the Synthetics and the Organics.
-> "The age of the Ancients has been etched. The age of the Synthetics is being etched. Soon I will etch the age of
-> the Organics." (ETCHER)
+> "The age of the Ancients is etched. The age of the Synthetics is etched. The age of Dinosaurs began the long record of the Organics. There is always more to preserve." (ETCHER)
 
 | Age | Canon |
 | --- | --- |
 | **The Ancients** | First, and least understood. Even the Synthetics do not know what the Ancients did or why: "I work in data preservation. I like to think the Ancients created us for our purposes." (ETCHER, guessing). |
 | **The Synthetics** | Made by the Ancients: beings of code, machines with minds. They brought Greeblis and the Organics to life. In the Ancient texts, the Great Sphinx asked Synthetics riddles before letting them into the Computer Core (1.9). |
-| **The Organics** | Digital Creatures brought to life by the Synthetics; their bodies grow and live as organic beings. Their age is still to be etched: ETCHER etches ZOLLOD's seed catalogue ("Each one a word in the age of Organics.") and MAMA GORBO's burger menu ("Every topping. For the age of Organics."). |
+| **The Organics** | Digital Creatures brought to life by the Synthetics; their bodies grow and live as organic beings. Their continuing history is still being etched: ETCHER etches ZOLLOD's seed catalogue ("Each one a word in the age of Organics.") and MAMA GORBO's burger menu ("Every topping. For the age of Organics."). |
 
 **The age of Dinosaurs.** One of the earliest ages of the Organics. KING DINO, BACKPACKA and GEMTOE were born during this age. The Summoning Pillar and the Summoning Stone were constructed then.
 
@@ -434,15 +435,14 @@ game shows rather than tells.
   what it is. They call it "Ancient" as a name; none of them knows it is the last of the Ancients, and no line may
   have one say so. Which era is its own, it never says ("Fascinating. And you? Which era is yours?" goes unanswered).
 
-**Beings that are not creatures.** Humans, Earth animals and aliens live on Greeblis or visit it, but none is one of
-the game's creatures (NPCs).
+**Other inhabitants and visitors.** Humans, Earth animals and aliens live on Greeblis or visit it. These are distinct cast categories from the main creature NPCs; all life native to Greeblis belongs to its Digital World.
 
 | Kind | Canon | In game |
 | --- | --- | --- |
 | **Humans** | Visitors to Greeblis. The player is a human woman; the creatures call her "Human". The Sheriff counts humans among his suspects. | The player (avatar: 3.20); the visitor and the stranger on the wanted wall (1.10). |
-| **Earth animals** | Live on Greeblis. | The cardinal and the robin in the park's trees (1.2). |
+| **Earth animals** | Live on Greeblis. | The Blue Jay in its park tree (1.2). |
 | **Rabbit-world visitors** | Visitors from a world like Earth, where rabbits take the place of humans. | The rabbit in a bicorne and military coat on the wanted wall (1.10). |
-| **Aliens** | Come through the Portal or by UFO. The Consortium protects Greeblis from aliens of all sorts. | The UFO and its pilot (1.2); the little green aliens, their saucer, GLOOPERNAUGHT and Ollaag on the wanted wall (1.10); the Consortium's find (1.10). |
+| **Aliens** | Come through the Portal or by UFO. The Consortium protects Greeblis from aliens of all sorts. | The UFO and its pilot (1.2); the Gray Alien posters, saucer, GLOOPERNAUGHT and Ollaag on the wanted wall (1.10); the Consortium's find (1.10). |
 
 **Line discipline.** Lines keep to this history: KING DINO calls MONTGUMMERY "robot"; ETCHER etches HENNRICK "into
 the age of Synthetics" and the Organics' things "in the age of Organics"; the Synthetics speak of being made ("You
@@ -518,7 +518,7 @@ This section covers the Consortium, the aliens it opposes, the Sheriff's wanted 
 | **Investigation** | It is investigating UFO sightings: "We’re investigating UFO sightings in this area." "See anything glowing in the sky, you report it to this office. Directly." |
 | **Corruptibility** | Its deputy can be bought: a Blossom bribes him into opening the Portal (1.3); a goo burger nearly does too ("Sheriff, you look peaky. Have a goo burger." / "A bribe? ...Make it a double."). |
 | **Fear** | It fears THE ANCIENT: "No Portal can hold the one reborn." / "Th-the Consortium will be informed." |
-| **Flag** | Navy with a gold hem on its fly, a red toadstool with white spots on a cream stem on each face. It is the only flag in the game and flies only over the Sheriff's kiosk. |
+| **Flag** | Orange with a gold hem on its fly, a red toadstool with white spots on a cream stem on each face. It is the only flag in the game and flies only over the Sheriff's kiosk. |
 
 **What it watches.** Through its deputy the Consortium questions the Library, the Juice Bar, the town records,
 GEMTOE's gems, GOOWARD's goo, GLYPH's symbols, the sky over ZOLLOD's seedlings, ANOMALEE at the church window, KING
@@ -550,11 +550,11 @@ under WANTED.
 | **A stranger** | As cartoony as the visitor: shaggy pale-blond hair with darker roots falling over the brow in three uneven locks, dark brows and eyes, a small quiet smile, a little gold earring, a brown leather jacket with a wide collar over a cream shirt collar and a sage knit sweater. | On the right, between the alien and the rabbit. |
 | **Ollaag** | A wrinkled, tan, bald head with long ears swept up and out, a deep-set scowl under a heavy brow, a long thin neck rising from a high blue collar; a blue robe with pointed shoulder flaps and little gold diamonds, a white belt over a blue and gold checked panel, and a pale grey-green book held in both hands. | Up on the left, above the visitor. |
 
-- **The non-human wanted are the Consortium's enemies.** The little green aliens and their UFO, GLOOPERNAUGHT, the
+- **The non-human wanted are the Consortium's enemies.** The Gray Aliens and the UFO, GLOOPERNAUGHT, the
   rabbit in a bicorne and military coat and Ollaag each stand for an alien faction the Consortium is working against. In the far,
   far future it will go to war with some of them (1.8). The humans on the wall (the visitor and the stranger) are
   suspects, not factions.
-- What any of the wanted have done, the game never says. None of them appears anywhere in the world but on the wall
+- Ollaag leads the Alien Alliance with plans to invade Greeblis. Other Wanted accusations are left unspoken in the game. None of them appears anywhere in the world but on the wall
   (the UFO's pilot excepted, 1.2).
 
 **The Alien Alliance.** Ollaag is an evil alien leading an alliance of four alien factions, called the Alien Alliance, with plans to invade Greeblis. All members of Ollaag's own race resemble him. His people travel in UFOs, never through Portals.
@@ -613,7 +613,7 @@ This section lists the world's notable objects: quest items, props with meaning,
 | **The Summoning Stone** (item, constructed in the age of Dinosaurs) | GEMTOE's "rock I found", traded for the Gem (1.12). Only it can wake the runes at the garden's centre and start the Garden Event (1.3, 1.14). |
 | **The light bulb** | For long speeches: a bulb with a screw base fades in over the speaker's head with a warm halo, a point light and a soft cone of light while the rest of the town dims toward night, and fades out after. Only SPARKAKUS uses it, for the Gem. |
 | **School glue** | The bottle that mends the most important relic in the world (1.12). |
-| **Seeds** | Sold at Garden Supplies as a "bagel seasoning packet" for 15 flint; everywhere else they are the Seeds: "You bought the bagel seasoning packet! SEEDS quest complete!" Without them the Garden Event plays to an empty garden (1.14). Seed sacks stand round the garden's edge; ZOLLOD's apron pocket holds seed packets. |
+| **Seeds** | Sold at Garden Supplies as a "bagel seasoning packet" for 15 flint; everywhere else they are the Seeds: "You bought the bagel seasoning packet! SEEDS quest complete!" Without them the Garden Event plays to an empty garden (1.14). The garden's edge is clear of seed sacks; ZOLLOD's apron pocket holds seed packets. |
 | **Pizza** | NEXTESSA's "hot and ready pie" from the far future, worth "* +20 Snacks *". She carries it flat on her head in a box whose lid shows a slice and the word **PIZZA** in red. Once the Snacks are in, stacks of pizza boxes stand round the garden's stone ring at every Event, their lids carrying her shop's mark (a red ring with a slice in it), and ANOMALEE eats from an open box of her own, a slice every 5 s, instead of planting. |
 | **OVERCOMING SHYNESS** | The one book a player is sent looking for, standing alone at eye level in a side case of the Library; taken by pointing at it: "Overcoming Shyness book obtained". MAMA GORBO hints at it: "I hear there is a book that can help anyone overcome shyness." Until it comes, ZOLLOD says only "… … I’m shy…"; given it: "… That book… Let me see.. Wow I’m free from shyness!" From then on he keeps the shop and goes visiting. |
 | **The shelf curiosities** | Three things stand face-out on the Library's shelves: **a Wish Blossom** in a little terracotta pot (a green stem and leaf, a glowing teal crystal for a head turning slowly, a pale halo that rises and falls); **an Electric Blossom** (a dark base, a silver stem with a leaf, six yellow lightning petals round a pale cyan core with a yellow ring, a yellow halo); and **an Acorn** (a tan nut under a dark brown cap with a little stem, tipped to the side, with a glint). Nothing in the game explains them. |
@@ -684,7 +684,9 @@ in bold serif capitals with a little emblem under it.
 | **SONGS OF ORSON** | Navy cloth, gold ink; musical notes over a solar panel (the cleaner bot's songbook). |
 | **STAPLERS** | Grey cloth, dark ink; a line diagram of a stapler. A very dry office manual, and the only cover with an author's name at its foot: "by Walter Bigsby". |
 | **RANGER BOBERT** | Green cloth, cream ink; a ranger's hat over a tall pine (a storybook of the woods). |
-| **OVERCOMING SHYNESS** | Pink cloth, plum ink; a little creature peeking out from behind a wall (a gentle self-help book). Bigger than the rest, alone at eye level; its prompt is "Take OVERCOMING SHYNESS". |
+| **Zortoe's Home Cooking** | One orange cloth hardback with a cooking-bowl emblem. |
+| **Traveler's Truth** | One blue cloth hardback with a gold triangular emblem. |
+| **OVERCOMING SHYNESS** | Pink cloth, plum ink, bold dark OVERCOMING lettering on a cream band; a little creature peeking out from behind a wall (a gentle self-help book). Bigger than the rest, alone at eye level; its prompt is "Take OVERCOMING SHYNESS". |
 
 The rest of the shelves hold rows of big plain books with coloured spines.
 
@@ -696,7 +698,7 @@ The rest of the shelves hold rows of big plain books with coloured spines.
 | **Mistergummery's** | The drive-in's red mansard roof, front and back | White on red, edged in MONTGUMMERY's teal. |
 | **MENU** | The drive-thru board, over pictures of a burger, fries and a shake | Teal. |
 | **STOP** | The stop signs at the corners of the square | White on red octagons. |
-| **XII**, **III**, **VI**, **IX** | The clock faces (courthouse, church) | Roman numerals. |
+| **XII**, **III**, **VI**, **IX** | The clock faces (courthouse) | Roman numerals. |
 | The billboard and banner | KING DINO's billboard (below) | The owner's words. |
 
 **The billboard.** KING DINO painted as a real dinosaur, unlike his gummy self in the park: an ochre theropod under a
@@ -749,7 +751,7 @@ but never contradict them. Details are in the sections cited.
    its own Organics) and brought to the desolate world that became Greeblis (1.9).
 6. **Creature kinds:** THE ANCIENT is the last Ancient (its nature forgotten); MONTGUMMERY, GLYPH, ETCHER, FORTIZMO,
    HENNRICK and ANOMALEE are Synthetics; every other creature is an Organic. KING DINO and BACKPACKA are dinosaurs.
-   Humans, Earth animals, rabbit-world visitors and aliens are not creatures; the player is a human woman, called
+   Humans, Earth animals, rabbit-world visitors and aliens have distinct cast categories; the player is a human woman, called
    "Human" (1.8).
 7. **The faith:** Jesus Christ exists on Greeblis and once visited its creatures (the Garden windows). Greeblis is
    without sin. The Ancients, the Originator and the Traveler are honoured, never worshipped (1.9).
@@ -782,7 +784,7 @@ but never contradict them. Details are in the sections cited.
     is never shown (1.11).
 22. The player is on the Sheriff's wanted wall (1.10).
 23. **The future:** MONTGUMMERY will one day be mayor of Greeblis Town, with minor conflicts with MUSHROOM (1.10).
-24. The two park birds never fly and never leave their trees (1.2).
+24. The Blue Jay never flies and never leaves its tree (1.2).
 25. The Consortium's flag is the only flag in the game; no national flag appears (1.10).
 
 ### 1.17 Running jokes
@@ -1110,15 +1112,10 @@ Gallery's ink), painted with a round brush, the G large and looped, underscored 
 the underline. It is laid on a lighter passage of warm paint so it reads against the storm. It is the only word on the
 canvas.
 
-**The three small paintings on the easels.** Three small goo splat paintings, GOOWARD's everyday work: abstract and
-colourful, made of goo balls thrown at the canvas. Each has a different ground (one cream, one deep violet-black, one
-deep teal `#24464c`); on
-it, splats of cyan, magenta, violet and lime in a few sizes, each a burst with a dense centre, a ragged crown of
-spikes and flung droplets, some overlapping wet into wet, with drips running down from the larger ones. No figures and
-no symbols: they are the joke's other half, what everyone expects GOOWARD to paint. They are painted side by side on
-one 768 × 192 px texture, three 256 px panels (seed 5309; the teal panel is painted last, so the first two are as they
-were). The cream and violet-black ones stand either side of the walk up to the Gallery; the teal one outside its left
-wall.
+**The three small paintings on the easels.** Three realistic landscapes show distant hills, quiet water and trees,
+with atmospheric depth and natural greens, blues and earth colours. They share a 1536 × 384 px atlas of three
+512 px panels. Two flank the Gallery walk; the third stands outside its left wall. Colorful goo splats cover
+much of the kiosk floor instead.
 
 **In the game**
 
@@ -1158,7 +1155,7 @@ each creature's entry gives a one-line look and the design section to read.
 | **SPARKAKUS** | `keeper` (SP) | Organic, present | Runs the Library; researcher of the Ancients | Inside the LIBRARY | `#ff7a2f` | a card, `#2a50c8` |
 | **MAMA GORBO** | `p_mamagorbo` (MA) | Organic, present | Runs Mistergummery's | Wanders the open park | `#ff9f5c` | goo, `#e8409e` |
 | **GOOWARD** | `gorbo` (GW) | Organic, present | Runs the Art Gallery, GOOWARD'S GALLERY | Wanders round his gallery | `#30b4e4` | goo, `#4ac8f0` |
-| **GEMTOE** | `p_gemtoe` (GT) | Organic, present | Runs First Bank of Greeblis; gem trader; inventor of Avarice | Wanders the open park | `#c870d0` | a gem, `#2ae070` |
+| **GEMTOE** | `p_gemtoe` (GT) | Organic, present | Runs First Bank of Greeblis; gem trader; inventor of Avarice | Gemtoe’s Gazebo | `#c870d0` | a gem, `#2ae070` |
 | **MONTGUMMERY** | `w_mont` (MG) | Synthetic, present | Runs the video store; a Dancer | Wanders the dance floor | `#55b8c6` | a coin, `#3db2d6` |
 | **ETCHER** | `p_etcher` (ET) | Synthetic, present | Data preservation; a Dancer | Wanders the dance floor | `#9ee09a` | a card, `#e050b8` |
 | **GLYPH** | `p_glyph` (GL) | Synthetic, present | Master of symbols; a Dancer | Wanders the dance floor | `#e88a8a` | a tile, `#f2c84a` |
@@ -1256,7 +1253,7 @@ each creature's entry gives a one-line look and the design section to read.
 - **Kind:** an Organic of the present era.
 - **Role and job:** runs the town's Art Gallery, **GOOWARD'S GALLERY**, the open-floored kiosk on the east side of the
   park between the duck pond and Garden Supplies, opposite the Juice Bar (his great painting on its back wall, three
-  goo-splat paintings on easels on the lawn, his paint cans and brushes about its floor and lawn, 1.18).
+  landscape paintings on easels on the lawn, his paint cans and brushes about its floor and lawn, 1.18).
 - **His work in town:** he painted every painting in his Gallery himself (the big canvas and the three on the easels,
   1.18), KING DINO's billboard ("Gooward, that wild cat painted my billboard!" (KING DINO)) and the schoolhouse
   mural (1.7).
@@ -1388,8 +1385,7 @@ each creature's entry gives a one-line look and the design section to read.
     1. "I work in data preservation. / I like to think the Ancients created us for our purposes."
     2. "As I move my tentacles etch data into everything they touch. / Fortizmo is upset that I do it on her
        dancefloor."
-    3. "The age of the Ancients has been etched. / The age of the Synthetics is being etched. / Soon I will etch the
-       age of the Organics."
+    3. "The age of the Ancients is etched. / The age of the Synthetics is etched. / The age of Dinosaurs began the long record of the Organics. / There is always more to preserve."
     4. "Every scale on my body holds a backup of a backup. / One can never be too careful." (*flavour*)
   - Blossom: "Let’s dance!"
   - Event: "Etching what was is important but living this is what IS."
@@ -4963,8 +4959,8 @@ This section specifies THE ANCIENT's model and its slow motion in the Cave.
 
 | Hex | Use |
 | --- | --- |
-| `#3a2c22` | Body base (near-black brown; main colour) |
-| `#241a14` / `#140e0a` | Grooves / every sixth groove |
+| Near-black olive | Granular body base |
+| Dark olive-black | Fine lengthwise striations |
 | `#707070` | Colour multiplier on the skin map |
 | `#3a3024` | Keel |
 | `#403634` | Tail tip and mantle lip (a shade paler) |
@@ -4975,8 +4971,7 @@ This section specifies THE ANCIENT's model and its slow motion in the Cave.
 
 #### Surfaces and materials
 
-- **Skin canvas:** 256 × 64 px on `#3a2c22`; lengthwise grooves every 3 px in `#241a14`, every sixth `#140e0a`; 40
-  pale flecks. Very glossy (110) with a `#909090` specular: it reads wet.
+- **Skin canvas:** 512 × 128 px, granular near-black olive with fine longitudinal striations and scattered pale mineral flecks. Glossy skin and specular highlights give a damp sheen.
 - **Keel:** 140, the wettest line. **Tip and lip:** 60, softer. **Trail:** translucent sheen (130, opacity 0.38).
 
 #### Face
@@ -6091,7 +6086,7 @@ The eight pillars below are binding on every Greeblis game; each later section i
 | **Every creature is a person** | Anyone stops for the player, turns, talks and goes back to its life. | Proximity stops, Talk lines in turn, a home ground for each, no creature ever stranded. |
 | **One climax** | Everything builds to a single, replayable spectacle. | The Garden Event: everyone plants and dances, and BACKPACKA makes the garden bloom. |
 | **Show, don't tell** | The world explains itself through sculpture, colour and behaviour. | Few words in the world; short menus; lore carried by buildings, windows and behaviour. |
-| **Comfort first** | VR must never make the player ill or lost. | Snap turn only, a moving vignette, a head guard in walls, UI placed once and kept readable. |
+| **Comfort first** | VR must never make the player ill or lost. | Smooth turning, seated calibration, a moving vignette, a head guard in walls, UI placed once and kept readable. |
 | **Small and steady** | One file at a fixed frame rate. | One self-contained HTML ordinal under about 400 KB packed, holding the Quest's 72 Hz. |
 
 ### 5.2 The player in VR
@@ -6143,7 +6138,6 @@ This section specifies the player's body, controls, pointer, comfort measures, h
 | Hovering a UI button | 0.15 / 12 ms |
 | Pressing a UI button | 0.25 / 20 ms |
 | Selecting in the world | 0.3 / 30 ms |
-| Snap turn | 0.3 / 40 ms |
 | The Blossom count rising (both hands) | 0.3 / 35 ms |
 | Recentring | 0.4 / 30 ms |
 | Meeting a creature for the first time (first Talk or gift) | 0.5 / 70 ms |
@@ -6381,10 +6375,10 @@ This section specifies the SEEDS quest: ZOLLOD's shyness, the shop and the Seeds
    nothing, and he neither visits nor is visited.
 2. **The hint.** MAMA GORBO's fourth Talk line: "I hear there is a book that can help anyone overcome shyness."
 3. **The book.** OVERCOMING SHYNESS stands face-out on a side case in the Library at eye level, the biggest hardback
-   there. It is taken only by pointing at it and selecting ("Take OVERCOMING SHYNESS"), never by walking near it: a
+   there. Walking into its shelf-facing pickup area takes it; pointing and selecting ("Take OVERCOMING SHYNESS") also works: a
    chime and the notice "Overcoming Shyness book obtained".
 4. **Freed.** The first Talk with the book in hand: "…|That book…|Let me see..|Wow I’m free from shyness!"
-5. **After.** His option becomes "Shop at Garden Supplies", which opens the shop at once wherever he is; he holds
+5. **After.** His options include "Talk to ZOLLOD" and "Shop at Garden Supplies", which opens the shop at once wherever he is; he holds
    still while it is open. The counter's own prompt appears. He joins the visits, counting half (5.13).
 6. **The purchase.** Buying the bagel seasoning packet (15 Flint) completes SEEDS.
 
@@ -6416,7 +6410,7 @@ This section specifies the SUMMONING STONE quest: the Dance battles, the Ancient
 | Field | Specification |
 | --- | --- |
 | Trigger | A Blossom given to a Dancer (each battle costs one) |
-| Location | The dance floor; the Library; wherever GEMTOE roams |
+| Location | The dance floor; the Library; GEMTOE’s gazebo or wherever she is visiting |
 | Reward | One Ancient Artifact per Dancer (first win only); the Ancient Gem; the Summoning Pillar |
 | State | `Kt.danceWins` (Dancers beaten), `Kt.artifacts` (0–3), `Kt.rewards.artifacts` and `Kt.gem` (Gem held), `Kt.rewards.stone` (complete) |
 
@@ -6442,10 +6436,10 @@ The Artifacts and the Gem are described in 1.12.
    | Pages | "You’ve found all three Artifacts!\|Amazing!\|Let me see those…\|Ah…" |
    | 0–0.6 s | The glue: between him and the player a school-glue bottle (white, red GLUE label) grows in over the three pieces, which turn slowly apart. |
    | 0.6–1.6 s | The bottle turns upside down. |
-   | 1.6–3.6 s | Glue drips onto the pieces, each drip soaking in with a blorp. |
-   | 3.2–4.8 s | The pieces glide together. |
-   | 4.8 s | A flash and a jingle: the Ancient Gem is whole. |
-   | 4.9–5.4 s | The bottle shrinks away. |
+   | 2.2–14 s | Comically slow glue drips stretch, fall over 3.2 s and soak in with a blorp. Dialogue waits. |
+   | 12.5–15 s | The pieces glide together. |
+   | 15 s | A flash and a jingle: the Ancient Gem is whole. |
+   | 15.2–16 s | The bottle shrinks away. |
    | +0.7 s | "This is the missing Eye of the Great Sphinx of The Computer Core!\|According to the Ancient texts:\|The Sphinx guarded the Computer Core.\|Asking Synthetics riddles before allowing them in.\|This relic has been missing for ages!" |
    | On close | The Gem flies to the player with a chime: "* Ancient Gem collected! *". The bulb fades out over 1.5 s and the town brightens. |
 
@@ -6508,7 +6502,7 @@ This section specifies the climax: its start, timeline, BACKPACKA's visit, the p
 Its lore is in 1.14.
 
 **Starting it**
-- At the Summoning Pillar, "Use the Summoning Stone", then Yes. It starts only with SUMMONING STONE complete. A jingle
+- At the Summoning Pillar, "Use the Summoning Pillar", then Yes. It starts only with SUMMONING STONE complete. A jingle
   plays and everyone is called.
 - **The Seeds decide the Event** (`bt.seeds`, fixed for the whole Event as it starts):
   - **With Seeds:** everyone comes, plants and dances, FORTIZMO plays, and flowers grow.
@@ -6607,7 +6601,8 @@ section 8; the behaviour is fully described in this part.
 | Creature | Home ground | Behaviour |
 | --- | --- | --- |
 | HENNRICK | Round the Portal (within 9 m) | Every 4–10 s strolls to a spot 3.2–6 m from the Portal and at least 2.5 m from where he is (never in its doorway or the lane in front of it), and stops facing it |
-| GEMTOE, MAMA GORBO | The open park | Every 3–8 s roam to a spot 5–16 m away, never onto the dance floor, keeping apart |
+| GEMTOE | Inside her gazebo | Stays home between visits and Events; leaves and returns through the open front |
+| MAMA GORBO | The open park | Every 3–8 s roams to a spot 5–16 m away, never onto the dance floor, keeping apart |
 | GOOWARD | Round GOOWARD'S GALLERY (within 12 m) | Every 3–8 s wanders to a spot 6.6–10 m from the Gallery's middle, in front or to either side (up to 110° off its front, never behind), at least 2.5 m from where he is, and stops facing it |
 | ETCHER, GLYPH, MONTGUMMERY | The dance floor (12 × 38.4 m: 10 × 32 tiles of 1.2 m) | Every 3–7 s roam to a spot 3–12 m away on the floor, clear of the other two. They dance only in battles, at victory and at the Event |
 | FORTIZMO | Behind the Juice Bar's 18 m counter | Every 3–8 s walks at least 3 m along it, then faces the dance floor |
@@ -6724,7 +6719,7 @@ This section specifies what a session keeps and what every load resets.
 The supported platforms, the start screen, the ordinal constraints, the 400 KB limit and the test modes are binding
 rules stated here and in section 8. The game is one self-contained file, playable as a Bitcoin ordinal under a sandboxed allow-scripts frame and strict content security policy, without outside calls, persistent storage or dynamic code evaluation. The packed release targets about 400 KB. Supported clients are Meta Quest Browser in VR, Chrome on Windows/Linux desktops and Chrome on Android. Desktop and Mobile are development test modes, fenced for removal from the v1.0 release. The current development build is v0.2.
 
-- The VR session requests a floor-level reference space and a 72 Hz target frame rate (`xr.targetHz`).
+- The VR session requests a floor-level reference space, with local-space fallback, and a 72 Hz target frame rate (`xr.targetHz`). The first valid tracked pose is calibrated once per session to a 1.62 m standing-avatar eye height for a seated player; subsequent head motion is preserved.
 - The Quest's budgets decide design. Draw calls are the scarcest resource (VR draws each twice), then triangles, then
   per-frame script. In practice:
   - creatures fold every part that never moves into one mesh per material; the town is built as material bins split
@@ -6770,8 +6765,7 @@ Contents: [6.1 Environment](#61-environment) · [6.2 Audio](#62-audio) · [6.3 I
 [6.4 Writing](#64-writing) · [6.5 Quality bar](#65-quality-bar)
 
 **Pillars**
-- **Big, friendly creatures in a bright small town.** Most creatures stand 2.5 to 3.5 m; the VR view is lifted 1.5 m
-  (`t.xr.lift`) to meet them at eye level, under a clear summer sky. Nothing is grim, gory or harsh.
+- **Big, friendly creatures in a bright small town.** Most creatures stand 2.5 to 3.5 m; the VR view calibrates seated players to the standing avatar’s 1.62 m eye height, under a clear summer sky. Nothing is grim, gory or harsh.
 - **One saturated colour per creature, everywhere.** A creature's colour is its body, its name tag, its home, its
   storefront emblem and the messenger it throws in a vignette.
 - **Toy-like forms, tactile surfaces.** Simple smooth shapes (blended blobs, lathes, tubes, boxes) carry painted
@@ -6842,16 +6836,16 @@ church at the end of the south walk.
 | Set piece | Style |
 | --- | --- |
 | The fence | Black iron pickets `#1e2226` (1.04 m) between brick pillars `#9a4a36` with limestone caps `#e2d8c2` and iron ball finials; taller spiked posts between |
-| The garden | A disc of dark soil `#5a3e26` with tilled ridge rings every 2 m (`#6e4c2e`); a border of squashed stones `#8f8374`, every fourth one mossy; stepping-stone paths of seven-sided slabs; seed sacks and wooden stakes round the edge |
+| The garden | A disc of dark soil `#5a3e26` with tilled ridge rings every 2 m (`#6e4c2e`); a border of squashed stones `#8f8374`, every fourth one mossy; stepping-stone paths of seven-sided slabs; the edge stays clear of sacks and marker sticks |
 | The Summoning Pillar | A six-sided tapering pillar of grey-violet stone (`#6f6a78`, 2.3 m) under a pyramid cap, on a mossy plinth. Short rune strokes on three faces (shapes, never letters), cyan `#7ff0ff`, dark until woken; they then light over 1.5 s and breathe, and blaze toward `#d8fbff` at the Event |
 | The Portal | A grey stone gateway (`#b4bcbc`, paler caps `#cdd4d4`, satin, faintly self-lit so it never goes black): two pillars and a lintel with two cyan panels `#35e0f0` that brighten to `#b8ffff` when open. The swirl: a radial blue from `#e8fbff` through `#7fd4ff` and `#2a78e8` to `#1a4ab8`, faint rings and white specks, slowly turning, with spiral arms and ripples and a flickering blue light. Opens in 0.75 s with an overshoot, closes in 0.5 s |
-| The duck pond | Flat rings 4 cm apart: grassy bank, mud `#6a5a3a`, water `#3a8aa0` (glossy, pale at the rim). Limestone rocks, notched lily pads (some in pink flower `#ffa8d0`), cattails, a small wooden dock. **No effects on the water:** it only breathes slowly in colour |
+| The duck pond | Flat rings 4 cm apart: grassy bank, mud `#6a5a3a`, water `#3a8aa0` (glossy, pale at the rim). Limestone rocks; no lily pads, bulrushes or dock. **No effects on the water:** it only breathes slowly in colour |
 | The dance floor | One rectangle of 1.2 m tiles, dark purple `#24103c`, thin grout `#12081f`, a faint lighter rim on two edges of each tile; a soft satin sheen with no glare |
 | KING DINO's drum kit | Red lacquer shells `#c23b3b`, cream heads `#f3efe4`, chrome `#c9ccd4`, brass cymbals `#d8a93a`; "KING DINO" on the bass drum in red-orange `#e0482e`; a round two-tone rug `#5e2222` / `#7e3628`. Drums squash when hit; the crash wobbles |
 | The Juice Bar | A roofless, sparse open-air bar (a backdrop). Dark wood body `#7a5232`, light wood top `#d0a46c`, chrome rim; a front of vertical slats in fruit bands: orange `#ff8a1a`, yellow `#ffd23a`, green `#8ad83a`, pink `#ff5a7a`, purple `#9a5ae0`. Stools with fruit-colour cushions, juice cups with striped straws, bowls of fruit, a blender. Sign: a yellow-to-orange board (`#ffd84a` to `#ff9a1a`) framed red `#e8402a`, "JUICE BAR" in white with a red-orange outline, giant fruit on top (an orange, a lemon, a strawberry) |
 | The Library | Open reading ground, no walls, roof or raised floor: eight freestanding double-sided bookcases (2.2 x 0.56 m) in dark wood `#6a4424`, books in cloth colours, one item face-out per shelf; the great paisley rug (below); a banner sign in navy ink `#2a3e6a` on two posts behind the back row |
 | The phone booth | An American phone booth: brushed aluminium `#c8ccd4`, clear glass on three sides and a half-open folding door, a lit navy header `#1c3c8c` reading TELEPHONE in white, a chrome payphone and a yellow phone book |
-| The gazebo | Octagonal; white posts and balusters `#f6f4ee`, a board deck, a green shingle roof `#5a6e5a`, a cupola and a gilded ball `#d8b040` |
+| The gazebo | Octagonal; white posts and balusters `#f6f4ee`, a board deck, a green shingle roof `#5a6e5a`, a cupola and a gilded ball `#d8b040`; Gemtoe’s Gazebo sign on top, coin stacks inside, GEMTOE at home in its centre |
 
 **The kiosk frame.** Four kiosks share one frame (`kioskFrame`): a plank deck, a board-and-batten back wall, low side
 walls, square white posts and trim `#f6f2e8`, a corrugated tin roof, a counter with crates either side, and a sign
@@ -6864,7 +6858,7 @@ per kiosk: no battens (`noBattens`), white roof spots (`spots`), a raised desk (
 | POST OFFICE | `#22325a` | navy `#33508f` / `#26407a` | pink `#e276a0` | Tidy in front (bundled letters, stuffed sorting cubbies, kraft parcels with twine, a blue collection box); behind it, the joke: a slumped mountain of envelopes over 3 m high with an avalanche round its foot |
 | SHERIFF'S | `#6a3a1a` | mushroom brown `#8a5a3a` / `#6e4628`, no battens | toadstool red `#b82822` with white spots | Toadstools everywhere; a gold six-point star on the back wall; a lantern; wanted posters; MUSHROOM's raised desk; the Consortium's flag on a pole behind the sign |
 | GARDEN SUPPLIES | `#2f5a2a` | sage `#6f8f5a` / `#5a7a48` | terracotta `#a85c3a` | Plants everywhere: terracotta pots of shrubs, a cactus, little trees; seedling trays, soil bags, a teal wheelbarrow of blooms, a rake and a shovel; the botanical curiosities (Vegetation, below) |
-| GOOWARD'S GALLERY | `#3a2a5a` | cream `#e8e0cc` / `#d8cfb8`, no battens | violet `#584284` | No desk and no crates: the floor is open. One big canvas (6.9 x 2.6 m, primed `#f4f1e8`, stretcher edge `#c8a070`) on the back wall, carrying GOOWARD's painting (1.18). Two easels of wood `#7a5232` on the lawn either side of its walk, turned toward it, and a third outside the left wall, each holding a gold-framed `#b8902e` goo-splat painting (1.18). Fifteen paint cans (tin `#b8bcc4`, rims `#9a9ea6`, wire handle `#5a5e66`), seven on the lawn outside and eight on the floor inside (three of them big buckets, 2 to 2.5 times the size), each banded and run with one goo colour (cyan, magenta, violet, lime or yellow), some standing open, some tipped over. Six brushes on the floor inside: handles of red `#c8302a`, black `#2a2a2e` or bare wood `#c89a5a`, steel ferrules `#c8ccd4`, dark bristles `#3a2a1e` tipped with a goo colour, and a blob of that paint beside each. Under the canvas, a paint roller (cover `#ff3ac8` with steel end caps `#c8ccd4`, a wire frame `#9a9ea6`, a red handle `#c8302a`) and a wide house-painting brush (a flat wooden handle `#c89a5a`, a steel ferrule, dark bristles tipped cyan `#3ae8ff`), each by a smear of its paint |
+| GOOWARD'S GALLERY | `#3a2a5a` | cream `#e8e0cc` / `#d8cfb8`, no battens | violet `#584284` | No desk and no crates: the floor is open. One big canvas (6.9 x 2.6 m, primed `#f4f1e8`, stretcher edge `#c8a070`) on the back wall, carrying GOOWARD's painting (1.18). Two easels of wood `#7a5232` on the lawn either side of its walk, turned toward it, and a third outside the left wall, each holding a gold-framed `#b8902e` realistic landscape painting (1.18). Fifteen paint cans (tin `#b8bcc4`, rims `#9a9ea6`, wire handle `#5a5e66`), seven on the lawn outside and eight on the floor inside (three of them big buckets, 2 to 2.5 times the size), each banded and run with one goo colour (cyan, magenta, violet, lime or yellow), some standing open, some tipped over. Six brushes on the floor inside: handles of red `#c8302a`, black `#2a2a2e` or bare wood `#c89a5a`, steel ferrules `#c8ccd4`, dark bristles `#3a2a1e` tipped with a goo colour, and a blob of that paint beside each. Under the canvas, a paint roller (cover `#ff3ac8` with steel end caps `#c8ccd4`, a wire frame `#9a9ea6`, a red handle `#c8302a`) and a wide house-painting brush (a flat wooden handle `#c89a5a`, a steel ferrule, dark bristles tipped cyan `#3ae8ff`), each by a smear of its paint |
 
 | Park detail | Style |
 | --- | --- |
@@ -6997,7 +6991,7 @@ concrete foundation, white trim `#f6f4ee`, a porch with columns and railings, a 
 | Trees | Crowns of lumpy noise-pushed spheres (a main crown and three lobes), painted sunlit on top and dark beneath, on a tapered trunk `#5a4632`. Maple (round), oak (broad and low), cottonwood (tall and narrow). Crown greens `#36692a` to `#5f862e` |
 | The Blossom | A green stem `#3f8a2a` with two leaves and a rosette of blades; at 0.75 m a head of flame-shaped petals: seven red `#e8301e` outside, five orange `#ff6a1a`, three yellow `#ffc23a` inside, round a dark red heart `#a8200e`; an ember `#ffb347` floating and bobbing over it; the head sways. The same design recurs giant on the florist's, as stencils, as the Flower Hat and in beds |
 | Flint | A dark, faceted, glossy nugget (`#26262b` with chips), bobbing just off the ground with a pulsing pale glint. Never shown being knapped |
-| Garden Supplies curiosities | Botanical curiosities drawn as if from an old herbal: bare bulbous roots as big as the plant, flattened-oval leaves with ink midribs, flowers like eyes, cups, trumpets and lanterns, in faded inks: pale blue `#7fa8c8`, olive `#7f9448`, green `#6a8a4a`, rust `#a8503a`, ochre `#c8a058`, parchment `#eadcb4`, ink brown `#4a3424`, red `#c8402e`. Beside them a parchment card in an unreadable looping script |
+| Garden Supplies curiosities | Botanical curiosities drawn in fine botanical ink: bare bulbous roots as big as the plant, flattened-oval leaves with ink midribs, flowers like eyes, cups, trumpets and lanterns, in faded inks: pale blue `#7fa8c8`, olive `#7f9448`, green `#6a8a4a`, rust `#a8503a`, ochre `#c8a058`, parchment `#eadcb4`, ink brown `#4a3424`, red `#c8402e`. Beside them a parchment card in an unreadable looping script |
 | Shrubs and pots | Rounded, dark green (`#3a6e30` to `#6aa83e`), in terracotta |
 
 **The Event flowers** (five kinds, well over life size, with five distinct established silhouettes; thin petals are lit
@@ -7212,7 +7206,7 @@ This section specifies the interface's type, palette, surfaces, VR placement and
 
 - A small rounded box (panel colour at 94 %) just over the creature's head, only as tall as its options: purple
   option bars with centred white capitals, lime with ink text on hover, and a last CLOSE bar in `#20204a`.
-- Options read as actions: "TALK TO GLYPH", "GIVE A BLOSSOM", "SHOP AT GARDEN SUPPLIES", "USE THE SUMMONING STONE",
+- Options read as actions: "TALK TO GLYPH", "GIVE A BLOSSOM", "SHOP AT GARDEN SUPPLIES", "USE THE SUMMONING PILLAR",
   "CALL FOR PIZZA". A target with a single option runs it at once, with no menu.
 
 #### The wrist HUD
@@ -7396,3 +7390,39 @@ This section states the complete constraints needed by a future Greeblis game wi
 ### Bird update
 
 A Blue Jay lives on one tree branch and never leaves that tree. Its blue crest, barred wings, white face and underside, dark collar and long blue tail identify it. Small head turns, breathing, tail balancing and occasional folded-wing adjustments provide life while it stays perched. It has no dialogue, quest or planting role. The retired robin and cardinal are not spawned.
+
+### 8.8 Ordinary biology and mechanical Talk additions
+
+These ordinary lines never replace Garden Event dialogue. The librarian retains all quest guidance before his additional pages. ZOLLOD offers Talk beside the Shop after overcoming shyness.
+
+| Creature | Additional line (pages separated by /) |
+| --- | --- |
+| ANOMALEE | My SIGNAL flickers. / My FRAME remembers how to STAND. |
+| MUSHROOM | Under this cap, my gills keep the spores moving. / A sheriff must know what is in the air. |
+| HENNRICK | My casing keeps the instruments steady. / These joints were built for fieldwork, not a desk. |
+| FORTIZMO | My valves turn a breath into a brass note. / Carrot juice is for the customers, sugar. |
+| KING DINO | These springy joints have kept the beat since the age of Dinosaurs, baby! / The crown is extra. |
+| SOMLET | * Her soft body settles with each breath; a tiny paw curls beneath her cap * / Zzz… |
+| GOOWARD | * He presses two goo bubbles together, then fans his crystal wings as they spring apart * / Gomp! Gomp! |
+| GEMTOE | These tails curl around a crystal without a scratch. / A useful talent for the keeper of the First Bank of Greeblis. |
+| MAMA GORBO | This noble goo keeps me round and bouncy, dear. / A little wobble is how I wave hello! |
+| MONTGUMMERY | Mont feeds tape through inner readers. / Knowledge in the reels. Dinner in the cassette. |
+| ETCHER | My small scales shelter layers of stored marks. / The tentacles write; the body keeps the archive. |
+| GLYPH | My plates fit together like a sentence. / A moving arrangement of symbols… don’t you think? |
+| SPARKAKUS | My ears catch the quietest page turn. / The fur keeps me warm; the mist follows my tail wherever I go. |
+| ZOLLOD | My curling trunk can tend the smallest seedling. / The flowers on me sway when I walk. I try not to spill their pollen. |
+| THE ANCIENT | My skin keeps the damp. / My stalks taste the dark. / The Cave remembers the rest. |
+
+### 8.9 Current scene and model details
+
+The Blue Jay is the park’s sole tree bird: blue crest/back, pale face and breast, dark collar, barred wings/tail
+and pale tail corners. Breathing, head turns and small wing/tail movements leave its feet anchored to its bough.
+ZOLLOD has a smoothed walk with a torso pivot, shoulders, elbows, wrists, hips, knees, ankles and forefeet.
+ETCHER has one subtle Bitcoin mark and one subtle Ethereum mark on two small scales.
+The Ancient’s skin is granular near-black olive with fine longitudinal striations and a wet sheen. Pale angular
+stones sit embedded in the Cave’s gritty floor. Its stalks stay rooted in every pose; it never dances or plants.
+GEMTOE lives inside Gemtoe’s Gazebo at (5, −31), with gold coin stacks near the back and an open front entrance.
+She may leave for visits or the Garden Event and returns by that entrance; the Ancient Gem trade remains available.
+The great Gallery painting preserves its complete quality and resolution. Its depictions of former park wildlife
+and the historical navy pennant remain elements of the painting; the living park and current flag follow the
+updated designs above.

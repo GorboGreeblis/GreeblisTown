@@ -1,5 +1,5 @@
 // The flavour Talk lines (the owner's): every creature's Talk outside the Event goes through all its lines in turn, the
-// last (the flavour line) included; SPARKAKUS keeps his quest Talk only (the owner's call); at the Garden Event each
+// last (the flavour line) included; SPARKAKUS retains quest Talk plus ordinary biology pages; at the Garden Event each
 // creature's Talk gives only its Event line, never a flavour line, SPARKAKUS's included (beside him at his garden
 // spot).
 // Env: none.
@@ -13,7 +13,7 @@ module.exports = async (p) => {
   await start(p);
   // (the whole line, every page, as handed to the dialogue)
   await p.evaluate(() => { const o = qt.open; window.__said = null; qt.open = function (a, b, t, ...r) { window.__said = t; return o.call(this, a, b, t, ...r); }; });
-  const said = () => p.evaluate(() => { const t = __said; __said = null; try { qt.close(); } catch (e) {} return t; });
+  const said = () => p.evaluate(() => { const t = __said; __said = null; qt.skipAll(); return t; });
   const ids = ['blinker', 'drifter', 'gratelet', 'frog', 'm_kingdino', 'm_somlet', 'gorbo', 'p_gemtoe', 'p_mamagorbo', 'w_mont', 'p_etcher', 'p_glyph'];
   for (const id of ids) {
     const r = [];
@@ -21,11 +21,31 @@ module.exports = async (p) => {
     for (let k = 0; k < n; k++) { await p.evaluate((id) => { const e = It.all.find((q) => q.id === id || q.def.__type === id); Kt.gem = !1; te(e); }, id); r.push(await said()); }
     log(id, n, 'lines | last:', JSON.stringify(r[n - 1]), '| all distinct:', new Set(r).size === n);
   }
-  // (SPARKAKUS has no flavour line: his Talk is his quest)
+  // SPARKAKUS keeps the quest guidance and its extra ordinary biology pages.
   const sp = [];
   await p.evaluate(() => { Kt.artifacts = 1; });
   for (let k = 0; k < 2; k++) { await p.evaluate(() => LIB.talk()); sp.push(await said()); }
   log('SPARKAKUS, 1 Artifact, two Talks:', JSON.stringify(sp));
+  // Without Seeds the Event keeps ordinary dialogue and never offers Give.
+  await startEvent(p, { seeds: false });
+  const noSeeds = await p.evaluate(() => {
+    const failures = []; Kt.blossoms = 3;
+    for (const e of It.all) {
+      if (!e.def.lines || !e.def.lines.length) continue;
+      const actions = xe.actionsFor(e), talk = actions.find(a => a.verb === 'interact');
+      if (actions.some(a => a.verb === 'give')) failures.push(e.def.name + ': Give');
+      if (Xt(e) === 'cutebex') continue;
+      talk && talk.run();
+      if (!talk || !e.def.lines.includes(__said)) failures.push(e.def.name + ': ordinary Talk missing');
+      qt.skipAll();
+    }
+    const s = z.list.find(s => s.id === 'stump'); s.run();
+    if (!String(__said).includes('My ears catch')) failures.push('SPARKAKUS ordinary Talk missing');
+    qt.skipAll(); me.wrap();
+    return failures;
+  });
+  require('node:assert/strict').deepEqual(noSeeds, []);
+  log('Event without Seeds keeps ordinary Talk and hides Give: passed');
   // ---- the Event: the station's Talk run on each, twice
   await p.evaluate(() => { Bulb.hold = !1; });
   await startEvent(p);

@@ -52,6 +52,15 @@ for (const state of [{ presenting: false, blurred: false }, { presenting: true, 
   step(10);
   assert.ok(Math.abs(clock.t - resumedAt - 0.01) < 1e-9, 'normal timing must resume');
 }
+context.we.blurred = false;
+context.Ho.contextLost = true;
+const stoppedAt = clock.t, stoppedWork = work;
+step(100);
+assert.equal(clock.t, stoppedAt, 'lost context must pause game time');
+assert.equal(work, stoppedWork, 'lost context must pause simulation and input');
+context.Ho.contextLost = false;
+step(180000);
+assert.ok(clock.t - stoppedAt < .017, 'context restoration must discard lost time');
 context.we.blurred = true;
 context.Ho.contextLost = true;
 const lostAt = renders;

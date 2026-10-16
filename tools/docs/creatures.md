@@ -10,7 +10,7 @@ states only what is particular to each creature.
 The builders of SPARKAKUS, MAMA GORBO, GOOWARD, GEMTOE, MONTGUMMERY, ETCHER, GLYPH, KING DINO, FORTIZMO, SOMLET,
 MUSHROOM, ZOLLOD, ANOMALEE, HENNRICK, NEXTESSA and THE ANCIENT are marked final in the code: these models are locked,
 so parts, proportions and palette change only with the owner's approval ([rules](rules.md#locks-and-approvals));
-animation changes on request are allowed. BACKPACKA, the two birds and the avatar are
+animation changes on request are allowed. BACKPACKA and the avatar are
 marked final in the code and locked as well.
 
 Contents: [The cast](#the-cast) · [Placement and movement](#placement-and-movement) ·
@@ -63,7 +63,7 @@ This table gives each creature's start spot, facing, exit route, movement and ho
 | SPARKAKUS | Library frame (0, −0.45); Library at `KIOSK_AT.K.shop` (−24.75, −24.75) | Library frame | Out by the Library front (`JGP.libFront()`) | Browses the floor band (local x −5.3 to 5.3, z −2.15 to 0.6), 0.8 m clear of every bookcase | The Library (worker `st`; not tested by `homeGround`) |
 | MAMA GORBO | (34, 28.4) | −π/2 rad | none | `JGP.parkRoam`, wait 3 + 5·rand s | Any `roamFree` ground |
 | GOOWARD | (24.2, 14.9) | −π/2 rad | none | `JGP.galleryRoam`, wait 3 + 5·rand s | Within 12 m of `KIOSK_AT.K.gallery` (31, 14.5), on `roamFree` ground |
-| GEMTOE | (34, 3) | −π/2 rad | none | `JGP.parkRoam`, wait 3 + 5·rand s | Any `roamFree` ground |
+| GEMTOE | (5, −31), gazebo centre | −π/2 rad | `JGP.gazeboVia()`, three points through open front | Fixed home between visits/Events | Within 1.2 m of `def.at` |
 | MONTGUMMERY | `JGP.floorSpot(2)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
 | ETCHER | `JGP.floorSpot(0)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
 | GLYPH | `JGP.floorSpot(1)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
@@ -387,16 +387,12 @@ Design: [bible 3.18](../Bible/bible.md#318-the-ancient).
 
 Design: [bible 3.19](../Bible/bible.md#319-the-birds).
 
-| | Cardinal | Robin |
-| --- | --- | --- |
-| Call | `cardinal(31, -33.5, 1.15, Math.atan2(-31, 6 + 33.5))` | `robin(-17, -34, 1.2, Math.atan2(17, 6 + 34))` |
-| Tree | The maple by the north-east corner | The oak by the north fence's west half |
-
-- `X, Z` is the trunk, `s` the tree scale, `ry` the bough's heading (toward the square); the bough leaves the trunk
-  2.75 m up. Each bird is its own group with `userData.jgpKeep` and `userData.keepInFinale`, so scene clears and the
-  Event keep it.
-- Neither is an `It` entity: no talk, no visits, no vignettes. A bird never flies and never leaves its tree; one
-  bird to a tree.
+One Blue Jay lives on the maple by the north-east corner, anchored to a bough at (31, −33.5).
+Its blue crest and back, pale face and breast, dark collar, barred wings/tail and pale tail corners identify it.
+Static geometry is batched within independent body, head, tail and folded-wing pivots. Feet remain fixed;
+breathing, head turns, tail balancing and small wing adjustments never displace it from its tree.
+It is scenery, not an `It` entity: no Talk, visits or quests. It remains present during the Event.
+Robin and Cardinal and their builders have been removed; their model locks are retired.
 
 ## The player's avatar
 
@@ -411,3 +407,19 @@ Design: [bible 3.20](../Bible/bible.md#320-the-players-avatar).
   it to 0 for collisions; the bob must never be applied earlier.
 - **Outfits:** shop items `flowerhat` (slot `hat`), `sundress` (`dress`) and `frogshoes` (`shoes`), 3 Flint each, put
   on by `Eo`; without the Sun Dress the dress material takes the base print (`baseTex`), never a bare colour.
+
+## v0.2 creature refinements
+
+- ZOLLOD keeps his approved silhouette and colours with an independent torso/pelvis, elbow and wrist motion,
+  articulated forefeet and toe roll. Gait strength eases rather than switching on abruptly. Existing hips,
+  knees and ankles remain active. The body and shoulder foliage counter-sway with the stride.
+- ETCHER retains all scales. Two small upper body scales carry low contrast marks: one Bitcoin, one Ethereum.
+  The marks sit above the curved scale surfaces, each 6.5 cm across, rather than dominating his appearance.
+- The Ancient's skin canvas is 512 × 128, granular near-black olive with long fine striations and a damp sheen.
+  Angular pale and grey stones are embedded in the Cave floor. All rooted stalks and interaction/collision
+  routes remain; the Ancient still never dances, plants or leaves its spot.
+- GEMTOE's fixed home is the gazebo at (5, −31). A three-point route through its open front serves visits,
+  returns and Event travel. She runs the First Bank of Greeblis; she continues to trade the Ancient Gem.
+- Ordinary Talk adds a biology or mechanical line for each normal speaker. GOOWARD's and SOMLET's physical
+  descriptions preserve their limited voices. SPARKAKUS appends ordinary pages after quest guidance; ZOLLOD
+  has a separate Talk choice after the book frees him; the Ancient alternates its two normal lines.

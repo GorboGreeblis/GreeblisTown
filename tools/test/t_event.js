@@ -52,6 +52,14 @@ const planters = async (p) => {
     return 'planters ' + planters.length + ' + SPARKAKUS | plants ' + g.plants.length + ' | missing a flower: ' + (missing.join(', ') || 'none') + ' | SPARKAKUS flower: ' + spFlower + ' | ZOLLOD frames inside his kiosk during the Event: ' + __EV.zIn + ' | err ' + Re.errors;
   }));
   log('the ANCIENT:', await ancientReport(p));
+  // Exercise the Event's real wrap/return path from the planting state.
+  await p.evaluate(() => { qt.skipAll(); At.position.set(0,0,3); me.wrap(); JGP.visitAt(9e15); });
+  const returned = await require('./lib.js').waitGame(p, 180, () => {
+    const e=It.byId.p_gemtoe; return !e.busy && !e.goHome && JGP.homeGround(e);
+  });
+  require('node:assert/strict').equal(returned,true,'Gemtoe must return inside her gazebo after Event wrap');
+  log('GEMTOE returns inside gazebo after Event wrap: passed');
+
 };
 
 // Three Garden Events in a row: only the first grows flowers (one per planter); the second and third send

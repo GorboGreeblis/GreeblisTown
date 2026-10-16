@@ -3,7 +3,7 @@
 // Env: PART=lock,courier (only those parts).
 // Output: `== part: <name>` and each part's lines (below), `err <n>`.
 //   NOSHOT=1 node test/shot.js <url> x.png test/t_pizza.js
-const { log, start, logErrors } = require('./lib.js');
+const { log, start, logErrors, waitGame, closeDialogs } = require('./lib.js');
 
 // The phone booth (and so NEXTESSA's pizza) is locked until MUSHROOM has been given a Blossom: before, its connection
 // to the Portal is blocked and no courier is called; after, it calls her, and it stays unlocked for the session.
@@ -41,7 +41,7 @@ const lock = async (p) => {
 };
 
 // The pizza courier: the call delay shortened, a pizza called (ue.call) and the dialogue skipped. Prints the courier's
-// name, spawn spot and state, and 20 s later where it is (or `gone`) and the error count.
+// name, spawn spot and state, and 20 s later where it is; then asserts Snacks delivery and departure in game time.
 const courier = async (p) => {
   await start(p);
   await p.evaluate(() => { t.pizza.callDelayMs = 300; At.position.set(-7, 0, 21); ue.call(); });
@@ -51,6 +51,14 @@ const courier = async (p) => {
   await p.waitForTimeout(20000);
   const r2 = await p.evaluate(() => { const c = ue.courier; return (c ? c.group.position.x.toFixed(1) + ',' + c.group.position.z.toFixed(1) + ' ' + ue.state : 'gone') + ' err ' + Re.errors; });
   console.log(r, '|', r2);
+  const delivered = await waitGame(p, 120, () => Kt.rewards.snacks);
+  require('node:assert/strict').equal(delivered,true,'courier must complete Snacks delivery');
+  await closeDialogs(p);
+  const left = await waitGame(p, 130, () => !ue.courier);
+  require('node:assert/strict').equal(left,true,'courier must leave and release order state');
+  require('node:assert/strict').equal(await p.evaluate(() => Re.errors),0);
+  log('courier completes Snacks delivery and leaves: passed');
+
 };
 
 module.exports = require('./parts.js')({ lock, courier });

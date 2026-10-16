@@ -33,6 +33,36 @@ module.exports = async p => {
     await p.evaluate(() => qt.skipAll()); await p.waitForTimeout(400);
     assert.equal(await p.locator('#jgpTouch [data-k="talk"]').isVisible(), true);
     assert.equal(await p.locator('#jgpTouch [data-k="give"]').isVisible(), true);
+    await p.evaluate(() => {
+      qt.skipAll(); Kt.shyFree = true;
+      const e = It.all.find(e => Xt(e) === 'cutebex');
+      e.busy = null; e.moving = false;
+      const g = e.group.position;
+      At.position.set(g.x, 0, g.z + 2.5);
+      const dk = __jgpDk; dk.yaw = dk.cy = Math.PI; dk.pitch = dk.cp = .2;
+      xe.scan();
+    });
+    await p.waitForTimeout(700);
+    await p.locator('#jgpTouch [data-k="talk"]').click();
+    await p.waitForTimeout(400);
+    assert.equal(await p.evaluate(() => __jgpMenu.open()), true, 'Talk exposes freed shopkeeper choices');
+    const menuTap = async id => {
+      const pos = await p.evaluate(id => {
+        const m = __jgpMenu, row = Number(id.slice(1));
+        const v = new THREE.Vector3(0, .5 - (51 + 76 * row)/m.h(), 0);
+        m.mesh().localToWorld(v); v.applyMatrix4(B.matrixWorldInverse).applyMatrix4(B.projectionMatrix);
+        return [(v.x+1)*innerWidth/2, (1-v.y)*innerHeight/2];
+      },id);
+      await p.touchscreen.tap(...pos); await p.waitForTimeout(400);
+    };
+    await menuTap('m1');
+    assert.equal(await p.evaluate(() => qt.isOpen), true, 'biology Talk is reachable through menu');
+    assert.match(await p.evaluate(() => document.getElementById('dlgText').textContent), /curling trunk/);
+    await p.evaluate(() => qt.skipAll()); await p.waitForTimeout(400);
+    await p.locator('#jgpTouch [data-k="talk"]').click(); await p.waitForTimeout(400);
+    await menuTap('m0');
+    assert.equal(await p.evaluate(() => _t.kind), 'shop', 'shop is still reachable');
+
   } else {
     await p.evaluate(() => { Kt.shyFree = true; ne.open(); });
     await p.keyboard.press('b'); await p.waitForTimeout(300);

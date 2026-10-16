@@ -27,7 +27,7 @@ wins, labels and comments stripped).
 
 This section is the release procedure, from the readable page to the packed `index.html`.
 
-1. **Keep the readable copy.** Copy the readable page to `tools/Uncompressed/index.html` (`cp index.html tools/Uncompressed/index.html`;
+1. **Keep the readable copy.** Copy the readable page to `tools/Uncompressed/index.html` (`cp ../index.html Uncompressed/index.html`;
    `test/copycheck.sh` confirms). That copy is never minified or packed; once the root is packed, it is the only
    readable page and every later change starts from it.
 2. **Start clean.** The game starts with no quest or item progress; the tests grant themselves what they need.
@@ -44,18 +44,24 @@ This section is the release procedure, from the readable page to the packed `ind
 
    All later steps work on `cut.html`.
 4. **Cut the game script out** (the last `<script>` in `cut.html`) to `game.js`.
-5. **Strip every label and comment** from `game.js`: every comment and section banner, every object name, and every
+5. **Remove unused code as a separate task.** Inspect the release candidate, remove application code it never uses,
+   and validate the result. Do not treat a minifier’s later dead-code pass as completion of this task.
+6. **Strip every label and comment** from `game.js`: every comment and section banner, every object name, and every
    test-only label or hook (the `window.__jgp…` and `__gb…` hooks, the test modes' text) the game does not need to
-   run. The readable copy keeps all of it.
-6. **Minify:** `node pack/min.js game.js game.min.js` (terser 5.31.0: ECMAScript 2020, top-level mangling, two
-   compress passes, no parentheses wrapped round function arguments; `pack/size.js` uses the same settings). The
-   probes rely on the global names, so the readable page is tested and the minified one shipped.
-7. **Reassemble:** put `game.min.js` back in place of the game script, giving `page.html`, and boot-test it with
+   run. Retain text and identifiers needed for gameplay. Apply the cleaned source to the readable copy as well.
+7. **Freeze the uncompressed release source.** Set the final version to **v1.0**. Reinsert the cleaned, unminified
+   `game.js` into `cut.html`, then apply that page to both root `index.html` and `tools/Uncompressed/index.html`.
+   Both must include mode removal, unused-code removal and comment/label removal. Verify their bytes match before
+   compression. The original development source remains in Git history. Lock creature and environment designs at
+   release; later design changes require an explicit owner request.
+8. **Minify:** `node pack/min.js game.js game.min.js` (terser 5.31.0: ECMAScript 2020, top-level mangling, two
+   compress passes, no parentheses wrapped round function arguments; `pack/size.js` uses the same settings). Release checks must use an external harness compatible with removed test modes/hooks; do not reintroduce development code into the artifact.
+9. **Reassemble:** put `game.min.js` back in place of the game script, giving `page.html`, and boot-test it with
    `test/ordtest.js`, desktop and `MOBILE=1`.
-8. **Pack:** `node pack/pack.js page.html ../index.html "Greeblis Town"` (the root page; `tools/Uncompressed/index.html` stays the
+10. **Pack:** `node pack/pack.js page.html ../index.html "Greeblis Town"` (the root page; `tools/Uncompressed/index.html` stays the
    readable copy). Check the round trip with `node pack/unpack.js ../index.html check.html`: it must report
    `decoder matches model.js: true`, and `check.html` must be identical to `page.html`.
-9. **Test the packed page** with `test/ordtest.js`, desktop and `MOBILE=1`, and complete the
+11. **Test the packed page** with `test/ordtest.js`, desktop and `MOBILE=1`, and complete the
    [release checklist](#release-checklist).
 
 | Pack tool | Behaviour |
@@ -66,7 +72,7 @@ This section is the release procedure, from the readable page to the packed `ind
 | `pack/unpack.js <packed.html> <out.html>` | Unpacks with the page's own decoder and reports whether it is `model.js`. The decoder runs unsandboxed in Node: only for pages this repo packed; an uploaded page is opened only with `sandbox/decode.js`. |
 | `pack/model.js` | The decoder every packed page carries, embedded verbatim (4,353 bytes); text read by `pack.js` and `unpack.js`, not a runnable script. |
 | `pack/cmz.js` | The codec as readable source (see [The codec](#the-codec)). |
-| `pack/size.js [index.html] [outdir]` | The page's weight at each step, without touching the repo: readable; with every script minified (the game script with `pack/min.js`'s settings, the helper scripts without top-level mangling, three.js as is); packed (round trip checked). Writes `page.html` and `index.html` to `<outdir>` (default: a temporary folder) for boot tests. It does not perform step 5. Also `npm run size`. |
+| `pack/size.js [index.html] [outdir]` | The page's weight at each step, without touching the repo: readable; with every script minified (the game script with `pack/min.js`'s settings, the helper scripts without top-level mangling, three.js as is); packed (round trip checked). Writes `page.html` and `index.html` to `<outdir>` (default: a temporary folder) for boot tests. It does not perform the separate source-cleanup and release-freeze tasks (steps 5–7). Also `npm run size`. |
 
 Reference measurement (`pack/size.js`, 14 Oct 2026): readable 1,407,196 B (game script 1,116,159 B), minified
 908,518 B (game script 617,982 B), packed 241,224 B.
@@ -169,8 +175,8 @@ This section is the procedure for removing code the game no longer reaches.
 2. Treat coverage as a lead, not proof. VR, mobile, error handlers and random events (vignettes, the UFO, battle
    moves) are live even when a headless session never reaches them. Remove only what nothing live can reach:
    entries for creatures that are gone, options no caller passes, unread fields.
-3. `node lint/deadprops.js` lists properties nothing reads (see [testing.md](testing.md#lint)). Anything a probe or
-   an audit reads is a test hook and stays.
+3. `node lint/deadprops.js` lists properties nothing reads (see [testing.md](testing.md#lint)). During development, anything a probe or
+   an audit reads stays available. Remove test-only hooks in the separate release cleanup in step 6 above.
 4. Prove a removal lossless: the creatures build the same (`NOSHOT=1 node test/shot.js <url> snap_before.json
    audit/snap.js` before and `snap_after.json` after, compared with
    `python3 audit/snapdiff.py snap_before.json snap_after.json`) and `test/pxcmp.js` shows 0 differing pixels. Then

@@ -15,7 +15,7 @@ h() { echo "== $* [${SECONDS} s]"; }
 run() {
   local t=$1 rc
   shift
-  timeout "$t" node "$@" 2>&1 | grep -v '^$' | cut -c1-400 | tee -a "$LOG"
+  timeout "$t" node "$@" 2>&1 | awk 'length { print substr($0, 1, 400); fflush(); }' | tee -a "$LOG"
   rc=${PIPESTATUS[0]}
   if [ "$rc" = 124 ]; then echo "TIMEOUT after $t s" | tee -a "$LOG"; elif [ "$rc" != 0 ]; then echo "EXIT $rc" | tee -a "$LOG"; fi
 }

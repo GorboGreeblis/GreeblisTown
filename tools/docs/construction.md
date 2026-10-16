@@ -70,7 +70,7 @@ The park is a fenced rectangle from x −37.6 to 37.6 and z −37.6 to 49.6 (`t.
 
 | Feature | Position |
 | --- | --- |
-| Garden and Summoning Stone | Centred on (0, 0), radius 15 m (`GARDEN_R`). |
+| Garden and Summoning Pillar | Centred on (0, 0), radius 15 m (`GARDEN_R`). |
 | Library | North-west corner, centred at (−24.75, −24.75) (`KIOSK_AT.K.shop`). |
 | Post Office and Sheriff's | North-east corner, either side of the diagonal walk (`KIOSK_AT.K.post`, `.sheriff`). |
 | Garden Supplies | South-east corner (`KIOSK_AT.K.garden`). |
@@ -89,11 +89,11 @@ The park is a fenced rectangle from x −37.6 to 37.6 and z −37.6 to 49.6 (`t.
 This section specifies the modelling toolkit, the `born()` contract, merging, and the shared planting and dancing
 layer. Locks on finished models are in [rules.md](rules.md#locks-and-approvals).
 
-### Working from artwork
+### Checking model details
 
-1. List every visible feature in the artwork.
-2. Build all of them; render from four sides; compare with the artwork and iterate.
-3. Ask before interpreting an ambiguous shape.
+1. List the approved silhouette, proportions, colours and surface details.
+2. Build each feature; render from four sides; compare against the design specification and iterate.
+3. Resolve ambiguous shapes before changing an approved design.
 
 ### `blobBody`: sculpted skin
 
@@ -233,7 +233,7 @@ This section specifies placement, movement, home-ground enforcement, routing, vi
 | Roamer | Picker | Spot rule | Faces on arrival |
 | --- | --- | --- | --- |
 | HENNRICK | `JGP.portalRoam` | 3.2 to 6 m from the Portal; never in its doorway or NEXTESSA's lane; walk must not cross the frame | The Portal |
-| GEMTOE, MAMA GORBO | `JGP.parkRoam` | 5 to 16 m away; never on the dance floor | Direction of travel |
+| MAMA GORBO | `JGP.parkRoam` | 5 to 16 m away; never on the dance floor | Direction of travel |
 | GOOWARD | `JGP.galleryRoam` | 6.6 to 10 m from the Gallery's centre, within ±110° of its facing (front or sides, never inside or behind) | The Gallery |
 | ETCHER, GLYPH, MONTGUMMERY | `JGP.floorRoam` | 3 to 12 m away, on the dance floor, clear of the other Dancers | Direction of travel |
 
@@ -261,7 +261,8 @@ No creature may be left stranded away from home, whatever the player does ([rule
 | Creature | Home ground |
 | --- | --- |
 | Dancers | On the dance floor (`JGP.onDance`). |
-| GEMTOE, MAMA GORBO | Any `roamFree` ground. |
+| MAMA GORBO | Any `roamFree` ground. |
+| GEMTOE | Within 1.2 m of her gazebo centre; three entrance waypoints serve travel. |
 | GOOWARD | Within 12 m of the Gallery's centre, on `roamFree` ground. |
 | HENNRICK | Within 9 m of the Portal. |
 | FORTIZMO | The aisle behind the bar: within 0.8 m of its line, \|z\| < 8.5. |
@@ -414,7 +415,7 @@ round one. The panel shows only the Dancer's move; the bar counts steps remainin
 
 Talk cycles (`SCRIPT[id].lines`) play only outside the Event; during it Talk gives the `campfire` line. The code has
 no flag for a creature's lore (flavour) line; [bible part 2](../Bible/bible.md#2-the-cast) marks it. SPARKAKUS's Talk follows
-his quest instead of a cycle.
+his quest instead of a cycle, with additional ordinary biology pages after its guidance.
 
 ---
 
@@ -425,8 +426,8 @@ This section specifies the Event's trigger, timeline, roles, planting and growth
 
 ### Trigger
 
-The Event starts only from the Summoning Stone and only once the Summoning Stone quest is complete. "Use the
-Summoning Stone" opens the GARDEN EVENT panel (Summoning Stone, Seeds and Snacks with their boxes; "Start gardening
+The Event starts only from the Summoning Pillar and only once the Summoning Stone quest is complete. "Use the
+Summoning Pillar" opens the GARDEN EVENT panel (Summoning Stone, Seeds and Snacks with their boxes; "Start gardening
 event?"; Yes / No). Without the Stone, Yes reports that the runes stay dark, and `oe.yes()` refuses.
 
 ### Timeline
@@ -454,7 +455,7 @@ The Backpacka block runs for `t.finale.durationS` (180 s).
 - **Workers:** a kiosk or bar worker exits by its route only from inside; one already outside goes straight to the
   garden.
 - **Displacement:** a planter held off its spot by a neighbour adopts its current position after 1 s if within 1 m.
-- **Pizza** (`Kt.rewards.snacks`): pizza-box stacks stand outside the garden's stone ring beside the seed sacks for
+- **Pizza** (`Kt.rewards.snacks`): pizza-box stacks stand outside the garden's stone ring near the outer paths for
   the whole Event (fixed bodies in `uo.fixed`); ANOMALEE eats a slice every 5 s at her spot instead of planting
   (`PIZZA`).
 
@@ -550,7 +551,7 @@ This section specifies how the park's structures are built. Their visual style a
 - Plants grow from scale 0.01. `JGP.plantShow(kind, x, z, ry)` places a full-grown plant anywhere, for renders.
 - With Snacks complete, ANOMALEE's pizza box moves 0.8 m aside if one of her flowers occupies its spot.
 
-### Summoning Stone
+### Summoning Pillar
 
 A six-sided standing stone on a round plinth, with rune strokes (shapes, not letters) in one merged unlit mesh. The
 runes stay dark until the player uses the stone while holding the Summoning Stone (`garden.stoneAwake` is set when
@@ -630,7 +631,7 @@ boxes take front-only material clones ([§11](#11-no-clipping-no-flicker)).
 | Kiosk | Construction specifics |
 | --- | --- |
 | Sheriff's | Roof raised 1 m (`SHERIFF_DH`), raised desk (`SHERIFF_DESK`), plain back wall carrying eight non-overlapping parchment Wanted posters (0.62 × 0.78 m planes, 128 × 160 px canvases; subjects: [bible 1.10](../Bible/bible.md#110-factions-and-forces)). **Consortium flag** (the only flag: [rules](rules.md#the-world)) on a pole rising from the roof behind the sign, built in the kiosk's `goods()` merge (no texture, no extra draw): a 2.1 × 1.4 m navy cloth and gold hem as flat planes; on each face a cream stem, red half-disc cap and white spots, each layer 1.5 cm further from the cloth than the one beneath, so no layer z-fights another. |
-| GOOWARD'S GALLERY | `buildGallery` (`noBattens`, `noDesk`, `hw` 4: 2 m wider than the other kiosks). The `GALLERY.cw` × `GALLERY.ch` (6.9 × 2.6 m) canvas (1 cm off the back wall), the three easel frames, fifteen paint cans (seven on the lawn outside, out of the walk and clear of the easels; eight on the deck inside, at its 2 cm floor, three of them scaled 2 to 2.5 times) six brushes, a paint roller and a wide house-painting brush on the deck (no colliders) are in the goods merge; easels at local (±2.6, 3.45), turned ±0.3 rad, and (−5.4, 0.2), turned −0.45 (`GALLERY.easels`). The three easel paintings (`paintSplats`) share one 768 × 192 px texture (three 256 px panels) on one mesh. **The great painting** ([bible 1.18](../Bible/bible.md#118-goowards-painting)) is `paintGallery(c, W, H, mk)`: a seeded generator that paints a 2048 × 772 layout at any resolution (the canvas's width over W is the scale) and yields between steps; `mk(w, h)` makes its scratch canvases. `paintArt(mat)` paints it at `ART.s` 1.5 (3072 × 1158 px) in a Worker made from the two functions' source (an OffscreenCanvas, `willReadFrequently`); the returned ImageBitmap becomes the image of a new texture swapped into the material (a bitmap is not flipped on upload, so its rows are read bottom up: `repeat.y` −1, `offset.y` 1), and the 4 × 2 px primed placeholder is disposed, so no full-size blank canvas is made or uploaded first. If no Worker can be made it steps the generator on the main thread about 6 ms at a time and the painted canvas becomes the texture's image. The texture lies on a plane 1 cm proud of the canvas, unlit (`x.basic`, colour `#e8e8e8`) so the roof's shade and the lawn's light do not mute it; its unique material shows primed cream until painted. Parts: the three walls at the wider half width plus each easel's footprint (the third, outside the hull, too); hull `[-4.15, -2.62, 4.15, 3.8]` reaches the easels, which are also in `keepAt`. A walk runs from the garden ring to its deck. GOOWARD keeps it from outside (`JGP.galleryRoam`). |
+| GOOWARD'S GALLERY | `buildGallery` (`noBattens`, `noDesk`, `hw` 4: 2 m wider than the other kiosks). The `GALLERY.cw` × `GALLERY.ch` (6.9 × 2.6 m) canvas (1 cm off the back wall), the three easel frames, fifteen paint cans (seven on the lawn outside, out of the walk and clear of the easels; eight on the deck inside, at its 2 cm floor, three of them scaled 2 to 2.5 times) six brushes, a paint roller and a wide house-painting brush on the deck (no colliders) are in the goods merge; easels at local (±2.6, 3.45), turned ±0.3 rad, and (−5.4, 0.2), turned −0.45 (`GALLERY.easels`). The three easel paintings (`paintLandscapes`) share one 1536 × 384 px texture (three 512 px panels) on one mesh. **The great painting** ([bible 1.18](../Bible/bible.md#118-goowards-painting)) is `paintGallery(c, W, H, mk)`: a seeded generator that paints a 2048 × 772 layout at any resolution (the canvas's width over W is the scale) and yields between steps; `mk(w, h)` makes its scratch canvases. `paintArt(mat)` paints it at `ART.s` 1.5 (3072 × 1158 px) in a Worker made from the two functions' source (an OffscreenCanvas, `willReadFrequently`); the returned ImageBitmap becomes the image of a new texture swapped into the material (a bitmap is not flipped on upload, so its rows are read bottom up: `repeat.y` −1, `offset.y` 1), and the 4 × 2 px primed placeholder is disposed, so no full-size blank canvas is made or uploaded first. If no Worker can be made it steps the generator on the main thread about 6 ms at a time and the painted canvas becomes the texture's image. The texture lies on a plane 1 cm proud of the canvas, unlit (`x.basic`, colour `#e8e8e8`) so the roof's shade and the lawn's light do not mute it; its unique material shows primed cream until painted. Parts: the three walls at the wider half width plus each easel's footprint (the third, outside the hull, too); hull `[-4.15, -2.62, 4.15, 3.8]` reaches the easels, which are also in `keepAt`. A walk runs from the garden ring to its deck. GOOWARD keeps it from outside (`JGP.galleryRoam`). |
 | Garden Supplies | Wheelbarrow geometry: two fork rails from under the tray's front edge to the axle, wheel top level with the tray bottom, two rear legs. |
 | Post Office | Mail mountain behind the kiosk, below its roof line and hidden from the square: a heightfield of 19 overlapping cones under about 2,300 envelopes, bundles, parcels and stacks. Five readable kraft parcels (labels chosen by the owner) sit half-sunk round the heap, never stacked; each label stands 6 mm proud and faces straight out. `buildPostOffice` adds another in one line, clear of the others. Solid: hull `[-3.4, -6.75, 3.4, 2.45]` plus a 4.2 m keep-clear zone. |
 
@@ -646,8 +647,7 @@ boxes take front-only material clones ([§11](#11-no-clipping-no-flicker)).
 
 ### Pond, square and sky
 
-- **Duck pond** (`buildPond`, at the `pool` station): bank, mud and water discs 4 cm apart, rocks, lily pads,
-  cattails and a dock. The water only breathes in colour and must carry no effects; Backpacka's drinking ripples
+- **Duck pond** (`buildPond`, at the `pool` station): bank, mud and water discs 4 cm apart and limestone rocks. The water only breathes in colour and must carry no effects; Backpacka's drinking ripples
   are his own.
 - **Walks:** each leads somewhere and ends there: the ring round the garden, the Library, a cross walk along the Post
   Office and Sheriff's fronts, Garden Supplies, GOOWARD'S GALLERY, and the south walk to the church steps. No
@@ -951,3 +951,20 @@ This section lists coding rules that apply across systems. Test and lint routine
 - A test of one move resets the creature's `bt.tg` state first, or it inherits the previous state.
 - After moving a building, re-check scenery and render spots against its new footprint; render portraits on open
   lawn (`SPAWN=-18,24`).
+
+## v0.2 scene changes
+
+- Gallery paint-can labels use open cylinder sleeves 8 mm outside the tin before can scale, omitting hidden caps.
+  Fifty-eight disjoint colourful floor splashes share the goods batch. The three small easel canvases now use
+  a 1536 × 384 landscape atlas: distant hills, reflective water, foreground trees and atmospheric skies.
+  The great painting remains 3072 × 1158 with its complete composition and painting procedure preserved.
+- Two unique Library covers: Zortoe's Home Cooking and Traveler's Truth. OVERCOMING has a cream title band and
+  darker lettering. Walking into the shelf-facing pickup area takes the shyness book; the shelf's back does not.
+- Pond lily pads, bulrushes and dock, Garden sacks/stakes, and church exterior clock signs are removed.
+  Garden Supplies retains its distinctive plants with fewer generic pots and hanging baskets.
+- The gazebo's centre is open to navigation; individual posts and seven rail sections block walkers.
+  Gemtoe's Gazebo is signed above its roof, with seven gold-coin stacks near the back of its deck.
+- The Consortium flag has a red mushroom on orange. Both Gray Alien posters use the same painter and colour;
+  Ollaag's Wanted name is spelled in full.
+- Gem assembly holds dialogue while glue drips slowly. Drops begin at2.2s and take3.2s to fall;
+  pieces join from12.5–15s; completion runs once at15s, then the speech resumes after0.7s.

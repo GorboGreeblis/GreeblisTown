@@ -39,6 +39,7 @@ python3 -m http.server 8765      # from the repo root, in a second terminal (ser
 | `npm run battery` | `test/battery.sh`, the full battery. |
 | `npm run lint` | `lint/lint.sh`; the first run installs ESLint 8.57.0 into `lint/` (`npm install --no-save`). |
 | `npm run size` | `pack/size.js`, the page's weight readable, minified and packed. |
+| `python3 test/docs.py` | Local documentation links/anchors, Bible self-containment and current canon, and creative attribution phrases. |
 | `npm run deadprops` | `lint/deadprops.js`, the properties the game defines but never reads. |
 
 - Every command in these docs runs from `tools/`. Instead of serving the page, `quick.sh` and `battery.sh` take
@@ -73,6 +74,8 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | `ordtest.js` | The game as an ordinal, in a sandboxed iframe under ord's CSP. |
 | `copycheck.sh` | Checks that `tools/Uncompressed/index.html` is the readable copy. |
 | `xrcontrols.js` | Actual XR pose calibration and smooth turning/button logic with synthetic poses; `node test/xrcontrols.js`. |
+| `t_stability.js` | One-time Gem trade/Seeds costs and real WebGL context loss/restoration; run via `shot.js` at320×240. |
+| `t_v02scene.js` | v0.2 gazebo, anchored Blue Jay, unique books, walkover pickup, ordinary ZOLLOD Talk and slow glue; close renders via `shot.js`. |
 | `t_controls.js` | Desktop and mobile controls, HUD corner, hidden dialogue buttons and creature-tap protection; run through `shot.js`. |
 | `clock.js` | Checks the actual frame clock with deterministic time: active, exited, blurred and resumed sessions; `node test/clock.js [index.html]` from `tools/` (defaults to the readable copy). |
 | `parts.js` | Runs a multi-part probe's parts, each on a fresh page. |
@@ -143,3 +146,5 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | `run.js` | Runs a decoded page with the network blocked. |
 
 Uploaded files are untrusted: they must be opened only through `sandbox/`.
+
+The v0.2 progression and stability audit is recorded in [audits.md](docs/audits.md).

@@ -1,13 +1,12 @@
 // ZOLLOD: his shyness sub-quest played through, and, once freed, his shop opened wherever he is (out visiting,
-// walking home, being visited). Run at the default viewport: the shyness part clicks the book on screen.
+// walking home, being visited). Run at a small viewport; the shyness part walks to the book.
 // Env: PART=shyness,away (only those parts).
 // Output: `== part: <name>` and each part's lines (below), each part ending in `err <n>`.
 //   NOSHOT=1 node test/shot.js <url> x.png test/t_zollod.js
 const { log, start, waitGame, logErrors } = require('./lib.js');
 
 // ZOLLOD's shyness sub-quest, played through: before the book ZOLLOD has one Talk ("…/…/I'm shy…"), no Blossom, no
-// shop, and he neither visits nor is visited; OVERCOMING SHYNESS is taken from its Library shelf by clicking it on
-// screen (as a player points at it: a click, or a tap on a phone, goes the same way), leaves the shelf and says so;
+// shop, and he neither visits nor is visited; OVERCOMING SHYNESS is taken by walking in front of its Library shelf, leaves the shelf and says so;
 // the first Talk with it frees him ("…/That book…/Let me see../Wow I'm free from shyness!"), after which talking to
 // him opens the shop and he visits. Also MAMA GORBO's and GEMTOE's fourth Talk lines. Prints each step.
 const shyness = async (p) => {
@@ -33,34 +32,16 @@ const shyness = async (p) => {
   await p.evaluate(() => JGP.visitAt(Re.t, 'cutebex', 'm_kingdino'));
   await waitGame(p, 6, null, { max: 200 });
   log('  visits with him (asked for one):', JSON.stringify(await p.evaluate(() => JGP.visits().all.filter((q) => q.v === 'cutebex' || q.h === 'cutebex'))));
-  // ---- the book: the player before its shelf, the camera turned to it, and a click where its cover shows on
-  // screen (the pointer pick is the same path a phone tap takes)
+  // Walk to the front of the shelf: ordinary pickups use proximity on every platform.
   const at = await p.evaluate(() => {
-    const s = z.list.find((q) => q.id === 'shybook'), bk = s.pickObj[0], v = new THREE.Vector3();
-    bk.getWorldPosition(v);
-    const n = new THREE.Vector3(0, 0, 1).applyQuaternion(bk.getWorldQuaternion(new THREE.Quaternion())); n.y = 0, n.normalize();
-    At.position.set(v.x + 1.7 * n.x, 0, v.z + 1.7 * n.z);
-    return { label: s.label(), book: [v.x + 0.05 * n.x, v.y, v.z + 0.05 * n.z], n: [n.x, n.z] };
+    const s = z.list.find(q => q.id === 'shybook'), bk = s.pickObj[0], v = bk.getWorldPosition(new THREE.Vector3());
+    const n = new THREE.Vector3(0,0,1).transformDirection(bk.matrixWorld); n.y=0; n.normalize();
+    At.position.set(v.x+n.x,0,v.z+n.z); return s.label();
   });
-  // (the camera zoomed in and dragged round, as a player would, until the cover shows on screen)
-  await p.mouse.move(640, 300), await p.mouse.wheel(0, -1200), await W(400);
-  let scr = null;
-  for (let k = 0; k < 10 && !scr; k++) {
-    scr = await p.evaluate(([x, y, bz]) => {
-      const s = new THREE.Vector3(x, y, bz).applyMatrix4(B.matrixWorldInverse).applyMatrix4(B.projectionMatrix);
-      return Math.abs(s.x) < 0.85 && Math.abs(s.y) < 0.85 && s.z < 1 ? [((s.x + 1) / 2) * innerWidth, ((1 - s.y) / 2) * innerHeight] : null;
-    }, at.book);
-    if (!scr) {
-      await p.mouse.move(640, 300), await p.mouse.down(), await p.mouse.move(520, 300, { steps: 6 }), await p.mouse.up();
-      await W(400);
-    }
-  }
-  log('book:', at.label, '| on screen at', scr && scr.map((q) => Math.round(q)));
-  await p.mouse.click(scr[0], scr[1]); await W(600);
-  // (the click opens the action menu on the book; F runs its first option, as TALK does on a phone)
-  (await p.evaluate(() => Kt.shyBook)) || (await p.keyboard.press('KeyF'), await W(600));
-  log('  clicked and took it:', await p.evaluate(() => Kt.shyBook));
-  log('  then:', JSON.stringify(await pages()), '| in inventory', await p.evaluate(() => Kt.shyBook), '| on the shelf', await p.evaluate(() => z.list.find((q) => q.id === 'shybook').pickObj[0].visible), '| still offered', await p.evaluate(() => z.list.find((q) => q.id === 'shybook').label()));
+  await W(700);
+  require('node:assert/strict').equal(await p.evaluate(() => Kt.shyBook), true);
+  log('book:', at, '| taken by walking:', await p.evaluate(() => Kt.shyBook));
+  log('  then:', JSON.stringify(await pages()), '| on shelf:', await p.evaluate(() => z.list.find(q => q.id === 'shybook').pickObj[0].visible));
   // ---- ZOLLOD with the book
   log('Zollod with the book:', JSON.stringify(await zol()));
   await p.evaluate(() => xe.run('interact')); await W(300);

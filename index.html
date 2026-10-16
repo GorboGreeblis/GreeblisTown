@@ -3835,7 +3835,7 @@ const ee = (function () {
 		},
 		yes() {
 			// (never without the Summoning Stone)
-			_t.close(), Kt.rewards.stone ? me.tryStart() : qt.open("SUMMONING STONE", "#7a6a5a", "The runes stay dark.|Only the Summoning Stone can wake them and start the gardening event.");
+			_t.close(), Kt.rewards.stone ? me.tryStart() : qt.open("SUMMONING PILLAR", "#7a6a5a", "The runes stay dark.|Only the Summoning Stone can wake them and start the gardening event.");
 		},
 	},
 	Eo = {
@@ -4794,7 +4794,7 @@ const le = (() => {
 				(d.visible = !1), drips.push({ m: d, t: -1 });
 			}
 			let t = 0,
-				nextDrip = 1.6,
+				nextDrip = 2.2,
 				flashed = !1,
 				fly = null;
 			const ease = (v) => Wt(Math.max(0, Math.min(1, v))),
@@ -4802,8 +4802,8 @@ const le = (() => {
 					t += dt;
 					const grow = ease(t / 0.6),
 						flip = ease((t - 0.6) / 1),
-						join = ease((t - 3.2) / 1.6),
-						gone = ease((t - 4.9) / 0.5);
+						join = ease((t - 12.5) / 2.5),
+						gone = ease((t - 15.2) / 0.8);
 					// the bottle grows in, turns over (cap down, about its middle) and later shrinks away
 					bottle.scale.setScalar(Math.max(0.001, grow * (1 - gone))), (bottle.visible = gone < 1), (bod.rotation.z = Math.PI * flip);
 					bottle.position.y = 1.25 - 0.15 * flip;
@@ -4818,21 +4818,21 @@ const le = (() => {
 					});
 					// the glue: drops from the nozzle's tip (now pointing down) fall onto the pieces and soak in
 					const tip = bottle.position.y - 0.62 * flip;
-					if (t >= nextDrip && t < 3.6) {
+					if (t >= nextDrip && t < 11.5) {
 						const d = drips.find((d) => d.t < 0);
-						d && ((d.t = 0), (d.x = 0.12 * (Math.random() - 0.5)), (d.z = 0.12 * (Math.random() - 0.5))), (nextDrip += 0.22);
+						d && ((d.t = 0), (d.x = 0.12 * (Math.random() - 0.5)), (d.z = 0.12 * (Math.random() - 0.5))), (nextDrip += 2.8);
 					}
 					drips.forEach((d) => {
 						if (d.t < 0) return;
 						d.t += dt;
-						const f = Math.min(1, d.t / 0.4);
+						const f = Math.min(1, d.t / 3.2);
 						d.m.visible = !0;
 						d.m.position.set(d.x, tip - (tip - 0.2) * f * f, d.z);
-						d.m.scale.set(1, 1.5 - 0.5 * f, 1).multiplyScalar(f < 1 ? 1 : Math.max(0.001, 1 - (d.t - 0.4) / 0.25));
-						f >= 1 && d.t > 0.65 && ((d.t = -1), (d.m.visible = !1), G.blorp && G.blorp());
+						d.m.scale.set(1, 1.5 + 1.8 * Math.sin(f * Math.PI), 1).multiplyScalar(f < 1 ? 1 : Math.max(0.001, 1 - (d.t - 3.2) / 0.5));
+						f >= 1 && d.t > 3.7 && ((d.t = -1), (d.m.visible = !1), G.blorp && G.blorp());
 					});
 					// together: a flash and a jingle, and it is done
-					!flashed && t >= 4.8 && ((flashed = !0), Ut.at(g.position.x, g.position.y + 0.6, g.position.z, "✦", "#62d6c8"), G.jingle(), done && done());
+					!flashed && t >= 15 && ((flashed = !0), Ut.at(g.position.x, g.position.y + 0.6, g.position.z, "✦", "#62d6c8"), G.jingle(), done && done());
 					flashed && !fly && (g.rotation.y += 0.8 * dt);
 					if (fly) {
 						const k = Math.min(1, (fly.t += dt) / 0.6),
@@ -4877,8 +4877,9 @@ const le = (() => {
 			// (from the first finale page until the Gem speech is done he is busy with it: a second Talk in the
 			// assembly gap would start the whole finale, assembly and reward over again)
 			if (Bulb.hold) return;
-			if (Kt.rewards.artifacts) return say(i.done);
-			if (Kt.artifacts < 3) return say(Kt.artifacts ? i.progress(Kt.artifacts) : i.ask);
+			const biology = "My ears catch the quietest page turn.|The fur keeps me warm; the mist follows my tail wherever I go.";
+			if (Kt.rewards.artifacts) return say(i.done + "|" + biology);
+			if (Kt.artifacts < 3) return say((Kt.artifacts ? i.progress(Kt.artifacts) : i.ask) + "|" + biology);
 			// (he speaks where he stands in his open Library, never walking out: the bulb comes on over his head at once)
 			st.ent && st.ent.stay(), Bulb.start(() => st.pos(), st.height), (Bulb.hold = !0);
 			say(i.finale, () => {
@@ -4926,6 +4927,10 @@ const xe = (() => {
 									},
 								},
 					),
+					Kt.shyFree && o.push({ verb: "talk", label: "Talk to " + e.def.name, run: () => {
+						(xe.lastTarget = e), e.onTalk && e.onTalk(e);
+						qt.open(e.def.name, e.def.color || M.orange, "My curling trunk can tend the smallest seedling.|The flowers on me sway when I walk. I try not to spill their pollen.");
+					} }),
 					o
 				);
 			if (e && e.kind && evTalk())
@@ -5433,23 +5438,17 @@ const xe = (() => {
 								if (!a.kind && !a.gift) return (xe.lastTarget = a), a.run();
 								const s = xe.actionsFor(a);
 								if (!s.length) return;
-								!(function (t) {
-									const o = xe.actionsFor(t || null);
-									(ae.options = o.map((e) => ({
-										label: e.label,
-										run: () => {
-											re(), t && (xe.lastTarget = t), e.run();
-										},
-									}))),
-										ae.options.push({ label: "CLOSE", run: re }),
-										(ae.target = t),
-										(ae.open = !0),
-										(F.menu.sig = null),
-										placeMenu(t);
-								})(a);
+								openMenu(a);
 							})(a, t)
 						: void 0;
 			}
+		}
+		function openMenu(t) {
+			const options = xe.actionsFor(t);
+			if (!options.length) return;
+			ae.options = options.map((e) => ({ label: e.label, run: () => { re(); xe.lastTarget = t; e.run(); } }));
+			ae.options.push({ label: "CLOSE", run: re });
+			ae.target = t; ae.open = !0; F.menu.sig = null; placeMenu(t);
 		}
 		const ae = { open: !1, target: null, options: [] };
 		// (for the tests: whether the action menu is open, and its mesh and painted height, to measure its place)
@@ -6546,7 +6545,7 @@ const xe = (() => {
 					e.stopPropagation();
 					const k = bt.dataset.k;
 					try {
-						if ("talk" === k) ae.open ? ae.options[0] && ae.options[0].run() : "playing" === jt.top && xe.run("interact");
+						if ("talk" === k) ae.open ? ae.options[0] && ae.options[0].run() : "playing" === jt.top && (xe.actions.some((a) => "talk" === a.verb) ? openMenu(xe.current) : xe.run("interact"));
 						else if ("give" === k) "playing" === jt.top && !ae.open && xe.run("give");
 					} catch (err) {
 						vo(err, "mobile-btn");
@@ -6957,7 +6956,7 @@ const Re = (() => {
 		}
 		function l(timestamp, frame) {
 			// Paused XR keeps submitting tracked views; only simulation/input and the game clock stop.
-			if (!we.presenting) return void (e = 0);
+			if (!we.presenting || Ho.contextLost) return void (e = 0);
 			if (we.blurred) {
 				e = 0;
 				O.xr && O.xr.isPresenting && !Ho.contextLost && i("render", () => O.render(C, B));
@@ -7154,7 +7153,7 @@ const Ho = (() => {
 			t.preventDefault(), (o.contextLost = !0), i();
 		}),
 		f.addEventListener("webglcontextrestored", () => {
-			(o.contextLost = !1), c(), h(), requestAnimationFrame(c);
+			(o.contextLost = !1), Re.resetClock(), c(), h(), requestAnimationFrame(c);
 		}),
 		Object.assign(o, { capture: i, restore: c })
 	);
@@ -7239,9 +7238,9 @@ const JGP = (() => {
 		lineup: {
 			face: -Math.PI / 2,
 			list: [
-				// (these are still being worked on; GEMTOE starts here and wanders the whole park: see the roamers)
-				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06}, [34, 3]],
-				// MAMA GORBO (rebuilt from her artwork, with GORBO's ports and drips); given a Blossom she thanks the
+				// (GEMTOE lives inside her gazebo and leaves through its front for visits and Events)
+				["p_gemtoe", "GEMTOE", "born_gemtoe", {"color": "#c870d0", "bodyR": 1.15, "talkR": 3.8, "modelScale": 1.06, "via": () => JGP.gazeboVia()}, () => GAZEBO.slice()],
+				// MAMA GORBO (with GORBO's ports and drips); given a Blossom she thanks the
 				// player (only GOOWARD shoots goo at the player); her goo colours are for her goo-ball exchanges with him
 				["p_mamagorbo", "MAMA GORBO", "born_mamagorbo", {"color": "#ff9f5c", "bodyR": 1.1, "talkR": 3.8, "goo": ["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]}, [34, 28.40]],
 			],
@@ -7317,10 +7316,10 @@ const JGP = (() => {
 	// are with them (i and the church); GEMTOE's trade is gemTrade.
 	const SCRIPT = {
 		// ANOMALEE, looking up at the church window
-		blinker: { lines: ["BEINGS of CODE.", "ORIGINATOR…", "WAS there WITHIN.", "The WINDOW REMEMBERS the TRAVELER."], sad: 1, gift: "* Munch *", campfire: "PLANT" },
+		blinker: { lines: ["BEINGS of CODE.", "ORIGINATOR…", "WAS there WITHIN.", "The WINDOW REMEMBERS the TRAVELER.", "My SIGNAL flickers.|My FRAME remembers how to STAND."], sad: 1, gift: "* Munch *", campfire: "PLANT" },
 		// MUSHROOM, looking down at the player from the top of his desk
 		drifter: {
-			lines: ["This town is under the protection of the Consortium.", "All travel through the Portal is locked down until further notice.", "We’re investigating UFO sightings in this area.", "See anything glowing in the sky, you report it to this office.|Directly."],
+			lines: ["This town is under the protection of the Consortium.", "All travel through the Portal is locked down until further notice.", "We’re investigating UFO sightings in this area.", "See anything glowing in the sky, you report it to this office.|Directly.", "Under this cap, my gills keep the spores moving.|A sheriff must know what is in the air."],
 			// (and from now on the phone can reach the Portal: see Kt.phone)
 			gift: "A bribe? …Portal is now open to your use.",
 			campfire: "…",
@@ -7328,32 +7327,32 @@ const JGP = (() => {
 		// (HENNRICK, a Synthetic, is from the far past, when his team was bringing the desolate world to life: to him,
 		// paradoxically, this small American town is the far future)
 		gratelet: {
-			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until the Consortium decides to reopen the Portal.", "In my era, the towers of Greeblis City reach the clouds.|I never imagined the far future would have… picket fences.", "I have catalogued every Blossom in this park.|They grow back faster than my notes can keep up."],
+			lines: ["Good to see you again, Human!", "Much research is still needed in this era.", "I am an unwilling guest of the Sheriff, until the Consortium decides to reopen the Portal.", "In my era, the towers of Greeblis City reach the clouds.|I never imagined the far future would have… picket fences.", "I have catalogued every Blossom in this park.|They grow back faster than my notes can keep up.", "My casing keeps the instruments steady.|These joints were built for fieldwork, not a desk."],
 			gift: "Adding to a collection jar.",
 			campfire: "Sometimes worry that doing these things will alter the timeline…",
 		},
 		frog: {
-			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice.", "I’ve been practicing a song for the coming of the legendary Backpacka."],
+			lines: ["King Dino’s money is no good here!|He stamps those coins himself.", "That lounge lizard never leaves.|He’s been employed on the drums until he plays off his bar tab.", "We only accept Blossoms at this establishment.", "Our house special is carrot juice on the rocks.|Don’t tell the King it’s just carrots and ice.", "I’ve been practicing a song for the coming of the legendary Backpacka.", "My valves turn a breath into a brass note.|Carrot juice is for the customers, sugar."],
 			gift: "Add it to the tip jar.",
 		},
-		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!", "Gooward, that wild cat painted my billboard!"], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
+		m_kingdino: { lines: ["I’m the King of Jazz, baby!", "Feel the beat!", "Hitting you with that prehistoric rhythm!", "These drums have been in the family since the Cretaceous, baby!", "Gooward, that wild cat painted my billboard!", "These springy joints have kept the beat since the age of Dinosaurs, baby!|The crown is extra."], gift: "Yes! I can finally afford another mug of carrot juice!", campfire: "Can’t stop the beat!" },
 		// (asleep through it all: her eyes open only for her thanks, and she sleeps on at home through the Event)
-		m_somlet: { lines: ["Zzz", "Zzz", "Zzz", "* A letter peeks out from under her cap *|Zzz"], gift: "Thank you", campfire: "Zzz" },
-		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!", "Goomp! Goomp! Goomp!", "Goomp?"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
+		m_somlet: { lines: ["Zzz", "Zzz", "Zzz", "* A letter peeks out from under her cap *|Zzz", "* Her soft body settles with each breath; a tiny paw curls beneath her cap *|Zzz…"], gift: "Thank you", campfire: "Zzz" },
+		gorbo: { lines: ["Gomp Gomp Gomp!", "Goooooomp!", "Gomp?", "* His crystal wings flutter *|Gomp Gomp!", "Goomp! Goomp! Goomp!", "Goomp?", "* He presses two goo bubbles together, then fans his crystal wings as they spring apart *|Gomp! Gomp!"], gift: "GOOMP", campfire: "* Happy planting sounds *" },
 		// (with the Ancient Gem in hand, Talk is her trade instead: gemTrade)
 		p_gemtoe: {
-			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?", "I seek the rarest gems.", "My tails never let go of my crystals.|Not even while I sleep."],
+			lines: ["I’ve invented a new concept.|I call it “Avarice”.|In theory: it will improve society some.", "These gems are worth countless flint. I will not part with any.", "Spark collects books and calls it a job.|Why am I so different?", "I seek the rarest gems.", "My tails never let go of my crystals.|Not even while I sleep.", "These tails curl around a crystal without a scratch.|A useful talent for the keeper of the First Bank of Greeblis."],
 			gift: "This is mine now.",
 			campfire: "Enjoying the SHARED garden… what is this feeling?",
 		},
 		p_mamagorbo: {
-			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for my famous goo burger.|I run the local fast food joint, and the hubby runs the Art Gallery now.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!", "My hubby is quite the artist.", "My noble goo can heal many inflictions."],
+			lines: ["Hello dear! I’m so excited to start gardening.", "Please take a coupon for my famous goo burger.|I run the local fast food joint, and the hubby runs the Art Gallery now.", "What a beautiful day in Greeblis Park!", "I hear there is a book that can help anyone overcome shyness.", "The hubby and I met over a spilled goo shake.|Love at first splat!", "My hubby is quite the artist.", "My noble goo can heal many inflictions.", "This noble goo keeps me round and bouncy, dear.|A little wobble is how I wave hello!"],
 			gift: "Thank you, dear.",
 			campfire: "Pretty flowers come to life!",
 		},
 		// (his screen shows a robot for his Blossom line and a shovel for his Event line)
 		w_mont: {
-			lines: ["Hello Human.|Mont will hide you from alien hunting Sheriff.", "Mont knows of humans.|Mont eats many VHS and digests much knowledge of your culture.", "Mont understands the high point of human culture|…|‘Flint Knapping for Beginners’", "We are all digital monsters.", "Mont always rewinds tape before eating.|Mont is polite monster."],
+			lines: ["Hello Human.|Mont will hide you from alien hunting Sheriff.", "Mont knows of humans.|Mont eats many VHS and digests much knowledge of your culture.", "Mont understands the high point of human culture|…|‘Flint Knapping for Beginners’", "We are all digital monsters.", "Mont always rewinds tape before eating.|Mont is polite monster.", "Mont feeds tape through inner readers.|Knowledge in the reels. Dinner in the cassette."],
 			gift: "Let’s dance!",
 			campfire: "Joyful to bring life to our Town.",
 		},
@@ -7361,9 +7360,9 @@ const JGP = (() => {
 			lines: [
 				"I work in data preservation.|I like to think the Ancients created us for our purposes.",
 				"As I move my tentacles etch data into everything they touch.|Fortizmo is upset that I do it on her dancefloor.",
-				"The age of the Ancients has been etched.|The age of the Synthetics is being etched.|Soon I will etch the age of the Organics.",
+				"The age of the Ancients is etched.|The age of the Synthetics is etched.|The age of Dinosaurs began the long record of the Organics.|There is always more to preserve.",
 				"Every scale on my body holds a backup of a backup.|One can never be too careful.",
-			],
+				"My small scales shelter layers of stored marks.|The tentacles write; the body keeps the archive."],
 			gift: "Let’s dance!",
 			campfire: "Etching what was is important but living this is what IS.",
 		},
@@ -7373,7 +7372,7 @@ const JGP = (() => {
 				"Etcher would have nothing to reconstruct with without symbols.|Mont would remain motionless without symbols to translate in binary electrical signals.|Even Dino would have no music to play!",
 				"All things come into being from symbols… don’t you think?",
 				"Even a single footprint is a symbol… don’t you think?",
-			],
+				"My plates fit together like a sentence.|A moving arrangement of symbols… don’t you think?"],
 			gift: "Let’s dance!",
 			campfire: "Growing flowers, it’s a symbol of life.",
 		},
@@ -8706,15 +8705,42 @@ const JGP = (() => {
 		tail.position.set(0, 0.72, -0.32), body.add(tail);
 		R(ao([[0, 0, 0], [0, -0.25, -0.35], [0.1, -0.55, -0.75], [0.22, -0.6, -1.05], [0.3, -0.48, -1.2]], 0.2, 0.05, 22, 10), greenM, tail);
 		R(T.sphere(0.07, 10, 8), x.clay("#e040c8", { shininess: 60 }), tail, [0.3, -0.47, -1.22]);
+		legs.forEach(lg => root.add(lg.hip));
+		body.position.y = .65;
+		body.children.forEach(ch => ch.position.y -= .65);
+		const toes = legs.map(lg => {
+			const toe = new THREE.Group(); toe.position.set(0, .02, .12), toe.userData.keep = !0;
+			lg.foot.children.slice().filter(ch => ch.geometry && ch.geometry.type === "SphereGeometry").forEach(ch => {
+				lg.foot.remove(ch), ch.position.sub(toe.position), toe.add(ch);
+			});
+			lg.foot.add(toe); return toe;
+		});
+		let walk = 0;
 		return born(g, {
 			height: 2.6,
 			lids,
 			step(t, dt, tk, wk) {
-				fronds.forEach((f, k) => (f.rotation.z = 0.08 * Math.sin(1.8 * t + k)));
-				worm.rotation.y = 0.5 * Math.sin(2 * t);
-				(trunk.rotation.x = 0.15 * Math.sin(1.7 * t)), (tail.rotation.y = 0.2 * Math.sin(1.3 * t));
-				arms.forEach((a, k) => (a.sh.rotation.x = 0.15 + 0.08 * Math.sin(1.4 * t + 3 * k) + 0.5 * wk * Math.sin(8 * t + k * Math.PI)));
-				legs.forEach((lg, k) => KIT.stride(lg, 8 * t + k * Math.PI, 0.5 * wk, 0.8 * wk));
+				walk += (wk - walk) * Math.min(1, 9 * dt);
+				const ph = 7.6 * t, sw = Math.sin(ph), bob = Math.abs(Math.sin(ph));
+				body.rotation.set(.035 * walk, .045 * walk * sw, .03 * walk * sw);
+				root.position.y = .025 * walk * bob;
+				fronds.forEach((f, k) => f.rotation.z = .08 * Math.sin(1.8 * t + k) + .06 * walk * Math.sin(ph - .6 + k));
+				worm.rotation.y = .5 * Math.sin(2 * t);
+				trunk.rotation.x = .15 * Math.sin(1.7 * t) + .07 * walk * Math.sin(ph - .8);
+				tail.rotation.y = .2 * Math.sin(1.3 * t) - .12 * walk * sw;
+				arms.forEach((a, k) => {
+					const phase = ph + k * Math.PI;
+					a.sh.rotation.x = .15 + .08 * Math.sin(1.4 * t + 3 * k) + .4 * walk * Math.sin(phase);
+					a.el.rotation.x = -.18 * walk - .24 * walk * Math.max(0, -Math.sin(phase));
+					a.hand.rotation.x = .12 * walk * Math.sin(phase - .5);
+					a.hand.rotation.z = .04 * walk * Math.sin(phase);
+				});
+				legs.forEach((lg, k) => {
+					const phase = ph + k * Math.PI;
+					KIT.stride(lg, phase, .42 * walk, .65 * walk);
+					lg.hip.rotation.z = .025 * walk * sw;
+					toes[k].rotation.x = -.18 * walk * Math.max(0, -Math.sin(phase));
+				});
 			},
 		});
 	};
@@ -9145,7 +9171,7 @@ const JGP = (() => {
 	// KING DINO's drum set at the Juice Bar (built with the town) tells him when to play: on while the
 	// kit is playing; r and l count the strokes of his right and left hands
 	const DRUMS = { on: !1, r: 0, l: 0 };
-	// KING DINO, after the King Dino artwork: an upright lemon-yellow gummy dino with a citrus-peel skin, a
+	// KING DINO: an upright lemon-yellow gummy dino with a citrus-peel skin, a
 	// rounded muzzle with glossy navy bead eyes and a quiet smile line; a glossy turquoise crown (the front
 	// prong tallest, with a knob) under a great feathered plume that runs purple down the back of the head,
 	// over the crown and orange down the front; three square turquoise buttons with green lights down each
@@ -9579,7 +9605,7 @@ const JGP = (() => {
 		});
 	};
 
-	// ETCHER, after the Etcher artwork: a blue-teal serpent-dragon whose body rises like a bell of
+	// ETCHER: a blue-teal serpent-dragon whose body rises like a bell of
 	// overlapping scales from the ground into a long neck, a lizard's head with golden eyes and a row
 	// of little purple knobs, a green gem set into the chest, two stubby clawed front feet, and long
 	// segmented purple tentacle tails spreading out across the ground around him.
@@ -9623,6 +9649,19 @@ const JGP = (() => {
 						s = 0.13 - 0.007 * row,
 						m = R(sc, mats[(row + k) % 4], body, [p.x, p.y, p.z], null, [s, s * 0.35, s * 1.2]);
 					m.quaternion.setFromUnitVectors(new c0(0, 1, 0), n), m.rotateX(-0.35);
+					if (row === 7 && (k === 3 || k === 8)) {
+						const tex = b(96, 96, c => {
+							c.clearRect(0, 0, 96, 96), c.fillStyle = "#80b8bb";
+							if (k === 3) {
+								c.font = "bold 60px Georgia,serif", c.textAlign = "center", c.textBaseline = "middle", c.fillText("₿", 48, 51);
+							} else {
+								c.beginPath(), c.moveTo(48, 12), c.lineTo(69, 48), c.lineTo(48, 60), c.lineTo(27, 48), c.closePath(), c.fill();
+								c.beginPath(), c.moveTo(27, 55), c.lineTo(48, 68), c.lineTo(69, 55), c.lineTo(48, 86), c.closePath(), c.fill();
+							}
+						});
+						const mark = R(T.plane(.065, .065), new THREE.MeshPhongMaterial({ map: tex, transparent: !0, alphaTest: .1, shininess: 40 }), body);
+						mark.position.copy(p).addScaledVector(n, s * .4 + .012), mark.quaternion.setFromUnitVectors(new c0(0, 0, 1), n);
+					}
 				}
 			}
 		}
@@ -9810,7 +9849,7 @@ const JGP = (() => {
 		});
 	};
 
-	// GEMTOE, after the Gemtoe artwork, in red: a crimson feathered dragon with a bird's face. A feathered horned
+	// GEMTOE, in red: a crimson feathered dragon with a bird's face. A feathered horned
 	// head with an amber-orange crest, glowing amber eyes under heavy brows and a hooked pale beak, a little
 	// open, with feather tufts at the cheeks; a deep fur ruff over
 	// the chest; two pairs of great feathered wings; four long scaly tails that run out along the
@@ -10026,7 +10065,7 @@ const JGP = (() => {
 		});
 	};
 
-	// GLYPH, after the Glyph artwork: a crouching blue dinosaur glazed like old porcelain, engraved all
+	// GLYPH: a crouching blue dinosaur glazed like old porcelain, engraved all
 	// over with swirling filigree. One great glowing orange eye on each side of a round head studded
 	// with little bumps, two gold coiled horns, short clawed arms held up in front, thick clawed legs;
 	// overlapping armour plates (dark blue, gold and teal filigree, tiny inset gems) over his back and
@@ -10258,7 +10297,7 @@ const JGP = (() => {
 					const gr = c.createRadialGradient(64, 64, 6, 64, 64, 34);
 					gr.addColorStop(0, "#fff6a0"), gr.addColorStop(0.7, "#ffc030"), gr.addColorStop(1, "#e86a1a"), (c.fillStyle = gr), c.beginPath(), c.arc(64, 64, 32, 0, l), c.fill();
 					(c.strokeStyle = "#7ad8ff"), (c.lineWidth = 4), c.beginPath(), c.arc(64, 64, 38, 0, l), c.stroke();
-					// his symbol from the artwork: a red trident, the stem through a cup of two curved prongs
+					// his symbol: a red trident, the stem through a cup of two curved prongs
 					(c.strokeStyle = "#c8202a"), (c.lineWidth = 6), (c.lineCap = "round"), (c.lineJoin = "round");
 					c.beginPath(), c.moveTo(64, 42), c.lineTo(64, 88), c.stroke();
 					c.beginPath(), c.moveTo(47, 49), c.quadraticCurveTo(46, 71, 64, 73), c.quadraticCurveTo(82, 71, 81, 49), c.stroke();
@@ -10454,7 +10493,7 @@ const JGP = (() => {
 	};
 
 
-	// MAMA GORBO, after the Mama Gorbo artwork, in a bright, vibrant peach and at her old size: a round, glossy
+	// MAMA GORBO, in bright peach and at her established size: a round, glossy
 	// goo drop of a body, a big round head melting down into a foot of goo spread on the ground in a
 	// shiny puddle, with runs of paler goo sliding down her sides, each ending in a hanging drop that
 	// drips and splats; her eyes are the two octagon ports set into her face (magenta rims round
@@ -10502,7 +10541,7 @@ const JGP = (() => {
 			for (let i = 0; i < P.count; i++) P.getY(i) < 0.012 && P.setY(i, 0.012);
 		}
 		keepR(bb.geo, gradMat("goo", { rep: 2, bump: 0.004, shine: 120, spec: 10066329 }), body);
-		// the wet shine high on her head (as in the artwork)
+		// the wet shine high on her head
 		const shineM = new THREE.MeshBasicMaterial({ color: "#fff6ee", transparent: !0, opacity: 0.75, depthWrite: !1 });
 		[[[-0.45, 0.8, 0.4], 0.22, 0.1], [[-0.25, 0.92, 0.3], 0.07, 0.05]].forEach(([d, sx, sy]) => {
 			const { p, n } = hit(C, d),
@@ -10878,7 +10917,7 @@ const JGP = (() => {
 				"function" == typeof d.via && (d.via = d.via());
 				// no Flint or Blossoms under a creature: its spot is kept clear (not for the roamers, who leave
 				// their first spots: the Dancers' floor and HENNRICK's Portal are kept clear as a whole)
-				/^(gratelet|p_gemtoe|p_mamagorbo|gorbo|p_etcher|p_glyph|w_mont)$/.test(id) || E.add(at[0], at[1], 2.4, "still");
+				/^(gratelet|p_mamagorbo|gorbo|p_etcher|p_glyph|w_mont)$/.test(id) || E.add(at[0], at[1], 2.4, "still");
 			});
 		}
 	}
@@ -11033,6 +11072,8 @@ const JGP = (() => {
 				// than the other hardbacks: the one book a player is sent looking for)
 				[5, 1, 2, 0, "shyness"],
 				[4, 1, 1, -0.35, "bobert"],
+				[3, 1, 2, 0.25, "cooking"],
+				[6, -1, 2, 0.15, "truth"],
 			],
 		};
 	})();
@@ -11111,8 +11152,7 @@ const JGP = (() => {
 				bk.position.set(bx, SH[fsh] + bh / 2 + 0.002, bz), bk.rotation.set(-0.08, face, 0, "YXZ"), o.add(bk);
 				R(T.box(bw, bh, 0.035), x.clay(C.cloth), bk);
 				R(new THREE.PlaneGeometry(bw - 0.02, bh - 0.02), new THREE.MeshLambertMaterial({ map: cover(C) }), bk, [0, 0, 0.0215]);
-				// OVERCOMING SHYNESS can be taken: pointed at and selected (a click, or a tap on a phone), it leaves the shelf
-				// for your inventory (ZOLLOD's sub-quest). Only by pointing: standing near it never selects it.
+				// Walking into the shelf-facing pickup area takes OVERCOMING SHYNESS; pointing can take it too.
 				if ("shyness" === what) {
 					const wv = new THREE.Vector3();
 					z.list.push({
@@ -11128,6 +11168,14 @@ const JGP = (() => {
 						run: () => {
 							Kt.shyBook || ((Kt.shyBook = !0), (bk.visible = !1), LIB.tookBook());
 						},
+					});
+					const normal = new THREE.Vector3(), toPlayer = new THREE.Vector3();
+					L.push(() => {
+						if (Kt.shyBook || jt.top !== "playing") return;
+						bk.getWorldPosition(wv);
+						normal.set(0, 0, 1).transformDirection(bk.matrixWorld); normal.y = 0; normal.normalize();
+						toPlayer.copy(At.position).sub(wv); toPlayer.y = 0;
+						if (toPlayer.length() < 1.15 && toPlayer.dot(normal) > .25) z.list.find(q => q.id === "shybook").run();
 					});
 				}
 			});
@@ -11207,7 +11255,11 @@ const JGP = (() => {
 					C.title.forEach(([t, size]) => {
 						let fs = Math.round(1.2 * size);
 						for (; fs > 14 && ((c.font = "bold " + fs + "px Georgia, serif"), c.measureText(t).width > 224); fs -= 2);
-						(ty += fs), c.fillText(t, 128, ty), (ty += 0.18 * fs);
+						(ty += fs);
+						if (t === "OVERCOMING") {
+							c.save(), c.fillStyle = "#fff5db", c.fillRect(20, ty - fs, 216, fs + 12), c.fillStyle = "#271022", c.fillText(t, 128, ty), c.restore();
+						} else c.fillText(t, 128, ty);
+						(ty += 0.18 * fs);
 					});
 					C.by && ((c.font = "italic 20px Georgia, serif"), c.fillText(C.by, 128, 312));
 					(c.fillStyle = c.strokeStyle = C.ink), (c.lineWidth = 4), (c.lineCap = c.lineJoin = "round"), C.emblem(c);
@@ -11284,7 +11336,7 @@ const JGP = (() => {
 		COVERS.shyness = {
 			cloth: "#e8b8c8",
 			ink: "#6a3a5a",
-			text: "#4a2440",
+			text: "#271022",
 			title: [["OVERCOMING", 38], ["SHYNESS", 50]],
 			emblem: (c) => {
 				c.fillRect(140, 196, 18, 92), c.beginPath(), c.arc(140, 236, 24, Math.PI / 2, 1.5 * Math.PI), c.fill();
@@ -11292,8 +11344,16 @@ const JGP = (() => {
 				(c.fillStyle = "#e8b8c8"), c.fillRect(124, 228, 6, 8), (c.fillStyle = "#6a3a5a");
 			},
 		};
+		COVERS.cooking = {
+			cloth: "#b85a28", ink: "#f4df9c", text: "#fff3cc", title: [["Zortoe's", 42], ["Home", 45], ["Cooking", 44]],
+			emblem: c => { c.beginPath(), c.ellipse(128, 255, 53, 27, 0, 0, Math.PI), c.stroke(); c.beginPath(), c.moveTo(77, 255), c.lineTo(179, 255), c.stroke(); },
+		};
+		COVERS.truth = {
+			cloth: "#263a67", ink: "#d4bf79", text: "#fff1bc", title: [["Traveler's", 37], ["Truth", 48]],
+			emblem: c => { c.beginPath(), c.moveTo(128, 205), c.lineTo(170, 274), c.lineTo(86, 274), c.closePath(), c.stroke(); c.beginPath(), c.moveTo(128, 216), c.lineTo(128, 263), c.stroke(); },
+		};
 		LIB_LAYOUT.cases.forEach(bookcase);
-		// THE RUG over the reading ground, under the bookcases and the table, after the owner's paisley fabric:
+		// Surface and silhouette details.
 		// a deep red field printed with paisley teardrops (mustard-gold outlines, a navy band dotted white, teal
 		// and red hearts with little flowers), small red flowers with white eyes and gold fern sprigs between; a
 		// border of the fabric's stripes (a navy band of red flowers and white dots, a teal band of red flowers,
@@ -11895,7 +11955,7 @@ const JGP = (() => {
 		}
 		// small caps topping the sign posts on the ridge
 		[-1.6, 1.6].forEach((px) => G.add(capGeo, "#c82a24", G.m(px, 6.08 + SHERIFF_DH, -0.12, 0, 0, 0, 0.2, 0.12, 0.2)));
-		// the Consortium's flag flying over the kiosk, from a pole up out of the roof behind the sign: navy, a gold hem on
+		// the Consortium's flag flying over the kiosk, from a pole up out of the roof behind the sign: orange, a gold hem on
 		// its fly, and on each face a red toadstool with white spots on a cream stem (flat pieces standing a little off
 		// the cloth, each layer further out than the last, so none of them fights the one under it)
 		{
@@ -11904,7 +11964,7 @@ const JGP = (() => {
 				half = cachedGeo("halfdisc", () => new THREE.CircleGeometry(1, 16, 0, Math.PI)),
 				dot = cachedGeo("dot", () => new THREE.CircleGeometry(1, 8));
 			G.add(T.cyl(0.05, 0.055, 5.8, 8), "#f6f2e8", G.m(0, 7.5 + SHERIFF_DH, pz)), G.add(T.sphere(0.1, 10, 8), "#e8b830", G.m(0, 10.44 + SHERIFF_DH, pz));
-			G.add(T.plane(2.1, 1.4), "#1c2440", G.m(1.1, fy, pz)), G.add(T.plane(0.1, 1.4), "#e8b830", G.m(2.2, fy, pz));
+			G.add(T.plane(2.1, 1.4), "#e87d24", G.m(1.1, fy, pz)), G.add(T.plane(0.1, 1.4), "#e8b830", G.m(2.2, fy, pz));
 			[-1, 1].forEach((s) => {
 				const ry = s < 0 ? Math.PI : 0;
 				G.add(T.plane(1, 1), "#f2e8d0", G.m(1.1, fy - 0.3, pz + 0.015 * s, 0, ry, 0, 0.2, 0.42, 1));
@@ -11913,7 +11973,7 @@ const JGP = (() => {
 			});
 		}
 		G.done(o);
-		// wanted posters on parchment: a little green alien, the UFO it flies, GLOOPERNAUGHT, a goo creature, or OLAG
+		// wanted posters on parchment: a little green alien, the UFO it flies, GLOOPERNAUGHT, a goo creature, or Ollaag
 		const poster = (kind, skin) =>
 			b(
 				128,
@@ -11921,12 +11981,7 @@ const JGP = (() => {
 				(c) => {
 					(c.fillStyle = "#efe0b8"), c.fillRect(0, 0, 128, 160), (c.fillStyle = "#3a2414"), (c.font = "bold 26px Georgia, serif"), (c.textAlign = "center"), c.fillText("WANTED", 64, 28);
 					if ("alien" === kind) {
-						// antennae, a big bulb of a head, huge black almond eyes, a thin mouth, narrow shoulders
-						(c.strokeStyle = skin), (c.lineWidth = 3);
-						[-1, 1].forEach((sd) => {
-							c.beginPath(), c.moveTo(64 + 12 * sd, 52), c.quadraticCurveTo(64 + 22 * sd, 40, 64 + 26 * sd, 36), c.stroke();
-							(c.fillStyle = skin), c.beginPath(), c.arc(64 + 26 * sd, 36, 4, 0, l), c.fill();
-						});
+						// Smooth grey head, large black almond eyes, narrow shoulders.
 						(c.fillStyle = skin), c.beginPath(), c.ellipse(64, 108, 26, 14, 0, Math.PI, 0), c.fill();
 						c.beginPath(), c.moveTo(34, 74), c.quadraticCurveTo(34, 46, 64, 46), c.quadraticCurveTo(94, 46, 94, 74), c.quadraticCurveTo(92, 98, 64, 112), c.quadraticCurveTo(36, 98, 34, 74), c.fill();
 						c.fillStyle = "#14141a";
@@ -11947,7 +12002,7 @@ const JGP = (() => {
 						(c.strokeStyle = skin), (c.lineWidth = 2), [[18, 60, 4], [112, 52, 3], [104, 40, 2]].forEach(([px, py, r]) => (c.beginPath(), c.arc(px, py, r, 0, l), c.stroke()));
 						c.restore();
 					} else if ("rabbit" === kind) {
-						// a brown rabbit dressed as NAPOLEON BONAPARTE, the bicorne especially: long ears up past the hat's
+						// Surface and silhouette details.
 						// peak, the dark crescent with its gold trim and tricolour cockade, a navy coat with red collar,
 						// gold epaulettes and buttons over a cream breast panel — and one paw tucked into the coat
 						const ink = "#1d2436";
@@ -12009,12 +12064,12 @@ const JGP = (() => {
 						[[48, 108], [62, 104], [78, 110], [42, 120], [57, 118], [72, 121], [87, 117]].forEach(([px, py]) => { for (let k = 0; k < 6; k++) c.beginPath(), c.arc(px + 2.4 * Math.cos((k / 6) * l), py + 2.4 * Math.sin((k / 6) * l), 1.1, 0, l), c.fill(); c.beginPath(), c.arc(px, py, 1, 0, l), c.fill(); });
 						[[52, 115], [68, 113], [83, 124], [44, 103], [88, 104], [60, 124]].forEach(([px, py]) => (c.beginPath(), c.arc(px, py, 0.9, 0, l), c.fill()));
 					} else if ("olag" === kind) {
-						// OLAG: the name right under WANTED, then a wrinkled tan bald head
+						// Ollaag: the name right under WANTED, then a wrinkled tan bald head
 						// with long ears swept up and out, a deep-set scowl under a heavy brow, a long thin neck rising from a
 						// high blue collar, a blue robe with pointed shoulder flaps and little gold diamonds, a white belt over
 						// a blue and gold checked panel, and a pale grey-green book held in both hands
 						const robe = "#3a64b4", deep = "#26478a", gold = "#e8c040", lines = "#8a7048";
-						(c.fillStyle = "#3a2414"), (c.font = "bold 16px Georgia, serif"), c.fillText("OLAG", 64, 47);
+						(c.fillStyle = "#3a2414"), (c.font = "bold 16px Georgia, serif"), c.fillText("Ollaag", 64, 47);
 						(c.fillStyle = skin), [-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 12 * sd, 70), c.lineTo(64 + 42 * sd, 54), c.lineTo(64 + 14 * sd, 82), c.closePath(), c.fill()));
 						(c.strokeStyle = lines), (c.lineWidth = 1), [-1, 1].forEach((sd) => (c.beginPath(), c.moveTo(64 + 16 * sd, 72), c.lineTo(64 + 36 * sd, 58), c.stroke()));
 						(c.fillStyle = skin), c.fillRect(58, 86, 12, 14), c.beginPath(), c.ellipse(64, 73, 14, 17, 0, 0, l), c.fill();
@@ -12047,11 +12102,11 @@ const JGP = (() => {
 				{ smooth: !0 },
 			);
 		[
-			[-1.9, 2.75, "alien", "#7ad84a", 0.08],
+			[-1.9, 2.75, "alien", "#a7aaac", 0.08],
 			[1.9, 2.8, "ufo", "", -0.06],
-			[1.62, 1.9, "alien", "#9ae8c8", 0.1],
+			[1.62, 1.9, "alien", "#a7aaac", 0.1],
 			[-1.45, 1.85, "goo", "#5ac83a", -0.05],
-			// (owner's requests: a rabbit dressed like NAPOLEON BONAPARTE, the bicorne especially — front and
+			// Surface and silhouette details.
 			// centre under the star, now that the wall's battens are off — and a drawing of the town's own
 			// visitor, up on the left between the alien and the goo)
 			[0, 1.88, "rabbit", "#8a5a36", 0.04],
@@ -12060,7 +12115,7 @@ const JGP = (() => {
 			// (and, on the right, a stranger, between the alien and the rabbit,
 			// clear of both: no two posters on this wall share any of the same spot, so none can ever flicker)
 			[0.88, 2.2, "stranger", "#f1d7c2", 0.06],
-			// (and OLAG, up on the left above the visitor, between the alien and the star,
+			// (and Ollaag, up on the left above the visitor, between the alien and the star,
 			// clear of all three)
 			[-0.92, 3.08, "olag", "#d2bc90", -0.04],
 		].forEach(([px, py, kind, skin, rz]) => (R(T.plane(0.62, 0.78), x.world(16777215, { map: poster(kind, skin) }), o, [px, py, -2.35], [0, 0, rz]), (LIB_LAYOUT.posters = LIB_LAYOUT.posters || []).push({ kind, obj: o, at: [px, py, -2.35] })));
@@ -12742,8 +12797,8 @@ const JGP = (() => {
 				for (let k = 0; k < 6; k++) { const a = (k / 6) * TAU; line([[x + 6, y - 7], [x + 6 + Math.cos(a) * 5, y - 7 + Math.sin(a) * 5], [x + 6 + Math.cos(a + 0.3) * 8, y - 7 + Math.sin(a + 0.3) * 8]], "#ffe23a", 1); }
 				ell(x + 30, y + 4, 5, 4, 0.8, "#b88a4a"), ell(x + 27, y + 1, 5, 2.5, 0.8, "#5a3a1e"), ell(x + 31, y + 3, 1, 1, 0, "#fff");
 			},
-			// the strange root after an old herbal: a bulb as big as its plant, roots like hair, a ringed blue bloom like an eye
-			voynich: (x, y) => {
+			// the strange root: a bulb as big as its plant, roots like hair, a ringed blue bloom like an eye
+			botanical: (x, y) => {
 				vol(x, y, 14, 11, 0, "#d8b888", "#8a5a3a", 0.85);
 				for (let k = 0; k < 6; k++) curve([[x - 6 + k * 2.5, y + 8], [x - 12 + k * 5, y + 18], [x - 16 + k * 6.5, y + 26]], "#6a4a2a", 1);
 				line([[x, y - 10], [x + 2, y - 30]], "#7f9448", 1.6), ell(x + 2, y - 36, 9, 7, 0, "#eadcb4"), ell(x + 2, y - 36, 6, 5, 0, "#7fa8c8"), ell(x + 2, y - 36, 2.5, 2.5, 0, "#2a2a3a");
@@ -12887,7 +12942,7 @@ const JGP = (() => {
 		yield;
 		G.mail(U(0.8), V(0.395));
 		G.curios(U(0.455), V(0.25));
-		G.voynich(U(0.8), V(0.77));
+		G.botanical(U(0.8), V(0.77));
 		G.bulb(U(0.39), V(0.36));
 		G.glue(U(0.37), V(0.38));
 		G.shard(U(0.64), V(0.5), 0.9, 0.9);
@@ -13507,7 +13562,7 @@ const JGP = (() => {
 			(off.width = Math.ceil(w * S)), (off.height = Math.ceil(h * S)), (c = off.getContext("2d")), c.setTransform(S, 0, 0, S, -x0 * S, -y0 * S), fn(), (c = main);
 			c.save(), (c.globalAlpha = a), c.drawImage(off, x0, y0, off.width / S, off.height / S), c.restore();
 		}
-		// OLAG, half seen in the storm: a long thin neck from a high collar, a wrinkled bald head under a heavy brow, the
+		// Ollaag, half seen in the storm: a long thin neck from a high collar, a wrinkled bald head under a heavy brow, the
 		// long ears swept up and out; the blue robe with pointed shoulder flaps and small gold diamonds, the white belt over
 		// the checked panel, the pale grey-green book held in both hands; painted as a body, lit from the right
 		function olag2(x, y) {
@@ -13739,52 +13794,6 @@ const JGP = (() => {
 		}
 
 	}
-	// GOOWARD's three small goo-ball splat paintings, side by side on one texture, each panel H * 4 / 3 wide (one cream
-	// ground, one deep violet-black, one deep teal): splats of cyan, magenta, violet and lime in a few sizes, each a burst
-	// with a dense centre, a ragged crown of spikes and flung droplets, some overlapping wet into wet, drips running down
-	// from the larger ones.
-	function paintSplats(c, W, H) {
-		let seed = 5309;
-		const rnd = () => ((seed = (seed * 16807) % 2147483647), (seed - 1) / 2147483646),
-			rr = (a, b) => a + (b - a) * rnd(),
-			TAU = Math.PI * 2,
-			GOO = ["#3ae8ff", "#ff3ac8", "#9a5ae8", "#a8e830"];
-		const ell = (x, y, rx, ry, rot, col, a = 1) => ((c.globalAlpha = a), (c.fillStyle = col), c.beginPath(), c.ellipse(x, y, rx, ry, rot, 0, TAU), c.fill(), (c.globalAlpha = 1));
-		const splat = (x, y, r, col, x0, x1) => {
-			// the crown of spikes
-			c.fillStyle = col, c.beginPath();
-			const n = 14 + ((r / 4) | 0);
-			for (let k = 0; k <= n; k++) {
-				const a = (k / n) * TAU, d = r * (k % 2 ? rr(0.75, 0.95) : rr(1.1, 1.7));
-				const px = x + Math.cos(a) * d, py = y + Math.sin(a) * d;
-				k ? c.lineTo(px, py) : c.moveTo(px, py);
-			}
-			c.fill();
-			ell(x, y, r * 0.9, r * 0.85, rr(0, TAU), col);
-			// flung droplets
-			for (let k = 0; k < 10 + r; k++) {
-				const a = rr(0, TAU), d = r * rr(1.5, 3);
-				ell(Math.min(x1 - 3, Math.max(x0 + 3, x + Math.cos(a) * d)), y + Math.sin(a) * d, rr(0.8, 2.6), rr(0.8, 2.6), 0, col);
-			}
-			// a drip from the larger ones
-			if (r > 9) {
-				const dx = x + rr(-r * 0.4, r * 0.4), len = rr(14, 40);
-				c.strokeStyle = col, c.lineWidth = rr(2, 4), c.lineCap = "round", c.beginPath(), c.moveTo(dx, y), c.lineTo(dx + rr(-2, 2), y + r + len), c.stroke();
-				ell(dx, y + r + len + 2, 3, 3.6, 0, col);
-			}
-			// a wet highlight
-			ell(x - r * 0.35, y - r * 0.35, r * 0.28, r * 0.18, -0.6, "rgba(255,255,255,0.55)");
-		};
-		const PW = (H * 4) / 3;
-		[[0, "#f2ead8"], [PW, "#1e1426"], [2 * PW, "#24464c"]].forEach(([x0, ground], p) => {
-			const x1 = x0 + PW;
-			c.fillStyle = ground, c.fillRect(x0, 0, PW, H);
-			for (let k = 0; k < 900; k++) ell(rr(x0, x1), rr(0, H), 0.8, 0.8, 0, rnd() < 0.5 ? "#ffffff" : "#000000", 0.06);
-			c.save(), c.beginPath(), c.rect(x0, 0, PW, H), c.clip();
-			for (let k = 0; k < 16; k++) splat(rr(x0 + 24, x1 - 24), rr(20, H - 40), rr(5, 22), GOO[(k + p) % 4], x0, x1);
-			c.restore();
-		});
-	}
 	// Laying the painting in: it is painted at load off the main thread (in a worker, on a canvas of its own) and drawn
 	// into the texture once when done; where no worker can be made it is painted here, a few milliseconds at a time.
 	// Either way no frame waits on it. It is painted at 1.5 times its layout (3072 x 1158), sharp enough to walk up to
@@ -13832,7 +13841,7 @@ const JGP = (() => {
 	}
 	// The ART GALLERY, opposite the Juice Bar across the park, between the duck pond and Garden Supplies: the
 	// shared kiosk frame with no desk, so its floor is open to walk in. Its back wall is plain (no battens) and
-	// carries GOOWARD's great painting (bible 1.18); two small goo-splat paintings of his stand on easels on the lawn
+	// carries GOOWARD's great painting (bible 1.18); three small landscape paintings stand on easels on the lawn
 	// in front, either side of its walk, turned a little toward whoever comes up it, and his paint cans lie about.
 	const GALLERY = {
 		// the frame's half width (4 m: 2 m wider than the other kiosks, for the wide canvas)
@@ -13848,6 +13857,51 @@ const JGP = (() => {
 			[-5.4, 0.2, -0.45],
 		],
 	};
+	function paintLandscapes(c) {
+		const rand = srand(318), W = 512, H = 384;
+		for (let k = 0; k < 3; k++) {
+			c.save(), c.translate(k * W, 0), c.beginPath(), c.rect(0, 0, W, H), c.clip();
+			const sky = c.createLinearGradient(0, 0, 0, 260);
+			sky.addColorStop(0, ["#7499b7", "#cfb38c", "#9db9c8"][k]), sky.addColorStop(1, "#efe4c8");
+			c.fillStyle = sky, c.fillRect(0, 0, W, H);
+			for (let i = 0; i < 16; i++) {
+				c.fillStyle = "rgba(255,250,230,.16)", c.beginPath();
+				c.ellipse(rand() * W, 40 + rand() * 95, 25 + rand() * 80, 3 + rand() * 10, -.05, 0, l), c.fill();
+			}
+			for (let layer = 0; layer < 4; layer++) {
+				c.fillStyle = ["#9aaab0", "#778e92", "#566e6d", "#3d5550"][layer];
+				c.beginPath(), c.moveTo(0, H);
+				for (let x0 = 0; x0 <= W; x0 += 8) {
+					const y = 170 + layer * 33 - (45 - 6 * layer) * Math.sin(x0 / (68 + 12 * layer) + k + layer) - 13 * Math.sin(x0 / 23 + layer);
+					c.lineTo(x0, y);
+				}
+				c.lineTo(W, H), c.closePath(), c.fill();
+			}
+			// Lake, meadow and coastal inlet: restrained colors, atmospheric distance and fine natural detail.
+			const water = c.createLinearGradient(0, 245, 0, H);
+			water.addColorStop(0, "#bcc7c0"), water.addColorStop(1, ["#5c8291", "#7c9780", "#658c98"][k]);
+			c.fillStyle = water, c.beginPath(), c.moveTo(155, 248), c.lineTo(355, 248), c.lineTo(490, H), c.lineTo(28, H), c.closePath(), c.fill();
+			for (let i = 0; i < 170; i++) {
+				const y = 255 + rand() * 129, x0 = 45 + rand() * 420;
+				c.strokeStyle = i % 3 ? "rgba(228,229,204,.24)" : "rgba(35,62,67,.2)", c.lineWidth = 1,
+				c.beginPath(), c.moveTo(x0, y), c.lineTo(x0 + 4 + rand() * 24, y), c.stroke();
+			}
+			for (let side = 0; side < 2; side++) {
+				c.fillStyle = ["#394c30", "#6c6841", "#414f3a"][k], c.beginPath();
+				c.moveTo(side ? W : 0, 250), c.lineTo(side ? 360 : 150, 265), c.lineTo(side ? 430 : 60, H), c.lineTo(side ? W : 0, H), c.closePath(), c.fill();
+				for (let j = 0; j < 7; j++) {
+					const x0 = side ? 435 + rand() * 75 : rand() * 65, base = 285 + rand() * 99, h = 40 + rand() * 110;
+					c.strokeStyle = "#3d3829", c.lineWidth = 3, c.beginPath(), c.moveTo(x0, base), c.lineTo(x0, base - h), c.stroke();
+					for (let f = 0; f < 14; f++) {
+						const y = base - h + f * h / 15, width = 3 + f * 1.5;
+						c.strokeStyle = f % 3 ? "#263e30" : "#54704a", c.lineWidth = 5,
+						c.beginPath(), c.moveTo(x0 - width, y + 5), c.lineTo(x0, y - 4), c.lineTo(x0 + width, y + 5), c.stroke();
+					}
+				}
+			}
+			c.restore();
+		}
+	}
 	function buildGallery(o) {
 		kioskFrame(o, { sign: "GOOWARD'S GALLERY", ink: "#3a2a5a", wall: "#e8e0cc", wall2: "#d8cfb8", tin: [88, 66, 132], noBattens: !0, noDesk: !0, hw: GALLERY.hw, floor: 0.02 });
 		const G = goods(),
@@ -13872,11 +13926,29 @@ const JGP = (() => {
 				at = (geo, c, px, py, pz, rx, rz, sx = 1, sy = 1, sz = 1) => G.add(geo, c, base.clone().multiply(G.m(px, py, pz, rx, 0, rz, sx, sy, sz)));
 			// the tin, its rolled rims, the paint inside (or spilt from its mouth), a run of paint down its side
 			at(T.cyl(0.085, 0.085, 0.17, 14), "#b8bcc4", 0, 0.085, 0), at(T.cyl(0.089, 0.089, 0.012, 14), "#9a9ea6", 0, 0.172, 0), at(T.cyl(0.089, 0.089, 0.012, 14), "#9a9ea6", 0, 0.006, 0);
-			at(T.cyl(0.0855, 0.0855, 0.07, 14), col, 0, 0.1, 0);
+			at(new THREE.CylinderGeometry(0.093, 0.093, 0.07, 14, 1, !0), col, 0, 0.1, 0);
 			at(T.cyl(0.078, 0.078, 0.004, 14), col, 0, tip ? 0.17 : 0.158, 0);
 			at(T.box(0.03, 0.09, 0.006), col, 0, 0.13, 0.087);
 			at(T.cyl(0.004, 0.004, 0.16, 6), "#5a5e66", 0, 0.19, 0, 0, Math.PI / 2);
 		});
+		const splatRand = srand(276), splatSpots = [];
+		for (let attempt = 0; attempt < 1500 && splatSpots.length < 58; attempt++) {
+			const px = (splatRand() - 0.5) * 7.2, pz = -2.0 + splatRand() * 4.2,
+				radius = 0.07 + splatRand() * 0.19, pts = [], count = 18;
+			if (splatSpots.some(q => Math.hypot(q[0] - px, q[1] - pz) < 1.2 * (q[2] + radius) + .025)) continue;
+			const k = splatSpots.length; splatSpots.push([px, pz, radius]);
+			const ring = Array.from({ length: count }, (_, j) => {
+				const a = j * l / count, r = radius * (0.65 + 0.55 * splatRand());
+				return [px + r * Math.cos(a), pz + r * Math.sin(a)];
+			});
+			for (let j = 0; j < count; j++) {
+				const a = ring[j], b = ring[(j + 1) % count];
+				pts.push(px, 0.042, pz, b[0], 0.042, b[1], a[0], 0.042, a[1]);
+			}
+			const geo = new THREE.BufferGeometry();
+			geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3)), geo.computeVertexNormals();
+			G.add(geo, CAN[k % CAN.length], G.m(0, 0, 0));
+		}
 		// his brushes, dropped on the Gallery's floor near the cans and under the canvas: a lacquered handle tapering to
 		// its end, a steel ferrule, flat bristles loaded with one goo colour, and a blob of that paint on the floor by the tip
 		[
@@ -13931,7 +14003,7 @@ const JGP = (() => {
 		G.done(o);
 		// the two paintings, painted side by side on one texture and drawn as one mesh: GOOWARD's goo-ball splats, one on
 		// cream, one on deep violet-black
-		const tex = b(768, 192, (c) => paintSplats(c, 768, 192), { smooth: !0 });
+		const tex = b(1536, 384, (c) => paintLandscapes(c), { smooth: !0 });
 		const pos = [],
 			uv = [],
 			v3 = new THREE.Vector3();
@@ -13988,7 +14060,7 @@ const JGP = (() => {
 			}
 		};
 
-		// ---- curiosities after the plates of the Voynich manuscript: bare bulbous roots as big as the
+		// ---- curiosities after the plates of the botanical manuscript: bare bulbous roots as big as the
 		// plant, striped cup blooms, an eye of a flower, trumpet clusters, a scaled bud on a hand of
 		// roots and a striped lantern bloom, all in the manuscript's faded inks (pale blue, olive, red
 		// brown, ochre, parchment). voy() builds one at (px, py, pz) with its base (where the roots meet
@@ -14156,7 +14228,7 @@ const JGP = (() => {
 			R(T.plane(0.94, 0.47), x.world(16777215, { map: card, polygonOffset: !0, polygonOffsetFactor: 0, polygonOffsetUnits: -4 }), o, [-1.05, 0.72, 1.15]);
 		}
 		// crates: shelves of pots
-		[-1, 1].forEach((sx) => [-0.95, -0.38, 0.2].forEach((pz, k) => pot(1.42 * sx, 1.0, pz, 0.85, (k + (sx > 0 ? 1 : 3)) % 5)));
+		[-1, 1].forEach((sx) => [-0.95, 0.2].forEach((pz, k) => pot(1.42 * sx, 1.0, pz, 0.85, (k + (sx > 0 ? 1 : 3)) % 5)));
 		// a plank shelf on the back wall with small pots
 		G.box("#8a6a48", 0, 2.6, -2.2, 4.4, 0.06, 0.32);
 		[-1, 1].forEach((sx) => G.box("#6a4a2a", 1.8 * sx, 2.45, -2.25, 0.05, 0.3, 0.28, 0.6 * sx));
@@ -14165,7 +14237,7 @@ const JGP = (() => {
 				? (G.add(T.cyl(0.13, 0.1, 0.1, 12), "#a85a3a", G.m(-1.95 + 0.65 * k, 2.68, -2.2)), voy(-1.95 + 0.65 * k, 2.74, -2.2, 0.32, [3, 4, 0][(k - 1) / 2], 0.6 * k, 60 + k))
 				: pot(-1.95 + 0.65 * k, 2.63, -2.2, 0.6, k % 5);
 		// hanging baskets from the front beam
-		[-2.2, -0.8, 0.8, 2.2].forEach((px, k) => {
+		[-2.2, 2.2].forEach((px, k) => {
 			G.add(T.cyl(0.006, 0.006, 0.5, 4), "#3a3a3e", G.m(px, 3.05, 2.15));
 			G.add(capGeo, "#8a6a3a", G.m(px, 2.78, 2.15, Math.PI, 0, 0, 0.22, 0.16, 0.22));
 			for (let j = 0; j < 4; j++) G.add(leafy, GREENS[(k + j) % 5], G.m(px + 0.12 * Math.cos(1.6 * j), 2.8, 2.15 + 0.12 * Math.sin(1.6 * j), rs(), rs(), 0, 0.12, 0.1, 0.12));
@@ -14176,8 +14248,8 @@ const JGP = (() => {
 			}
 		});
 		// rows of pots on the deck and on the lawn beside the kiosk
-		for (let k = 0; k < 10; k++) pot(-2.6 + 0.42 * (k % 3), 0.2, 1.0 + 0.45 * Math.floor(k / 3), 1.1 + 0.3 * rs(), k % 5);
-		for (let k = 0; k < 6; k++) pot(2.2 + 0.42 * (k % 2), 0.2, 0.9 + 0.5 * Math.floor(k / 2), 1.2, (k + 2) % 5);
+		for (let k = 0; k < 4; k++) pot(-2.6 + 0.42 * (k % 3), 0.2, 1.0 + 0.45 * Math.floor(k / 3), 1.1 + 0.3 * rs(), k % 5);
+		for (let k = 0; k < 2; k++) pot(2.2 + 0.42 * (k % 2), 0.2, 0.9 + 0.5 * Math.floor(k / 2), 1.2, (k + 2) % 5);
 		[0, 1, 2].forEach((k) => pot(4.0, 0, -1.8 + 1.4 * k, 1.6 + 0.4 * (k % 2), k === 1 ? 4 : 1));
 		[0, 1, 2].forEach((k) => {
 			const pz = -1.8 + 1.4 * k;
@@ -14223,11 +14295,11 @@ const JGP = (() => {
 		G.done(o);
 	}
 
-	// A duck pond with a grassy bank, limestone rocks, cattails, lily pads and a little dock (no effects on it)
+	// A pond with a grassy bank, limestone rocks and quiet water
 	// (it replaces the city fountain); o sits at the pool station.
 	function buildPond(o) {
 		PONDO = o;
-		// the flat layers sit 4 cm apart (bank, mud, water, pads) so none of them can win the depth test
+		// the flat layers sit 4 cm apart (bank, mud, water) so none of them can win the depth test
 		// over the one above it at a distance or a grazing angle
 		R(T.circle(4.9, 36), KIT.surf("grass", "#4c7a2c", { rep: 4, shine: 6 }), o, [0, 0.03, 0], [-Math.PI / 2, 0, 0]);
 		R(T.circle(4.1, 36), KIT.surf("soil", "#6a5a3a", { rep: 3, shine: 20 }), o, [0, 0.07, 0], [-Math.PI / 2, 0, 0]);
@@ -14255,35 +14327,6 @@ const JGP = (() => {
 			const q = rnd();
 			R(T.dodeca(s, 1), KIT.surf("stone", q < 0.5 ? "#b8ad98" : q < 0.8 ? "#a49c8c" : "#8a8478", { rep: 1, bump: 0.05, shine: 20 }), o, [r * Math.cos(a), 0.12, r * Math.sin(a)], [rnd(), rnd() * l, 0], [1.2, 0.6, 1]);
 		}
-		for (let k = 0; k < 8; k++) {
-			const a = rnd() * l,
-				r = rr(0.8, 3),
-				px = r * Math.cos(a),
-				pz = r * Math.sin(a);
-			// lily pad with its notch, and every third one in flower
-			R(new THREE.CircleGeometry(0.3, 18, 0.25, l - 0.5), KIT.surf("leaf", k % 2 ? "#4f9a2a" : "#5aa83a", { rep: 1, shine: 40 }), o, [px, 0.15, pz], [-Math.PI / 2, 0, a]);
-			if (!(k % 3)) {
-				for (let j = 0; j < 7; j++) {
-					const pa = (j / 7) * l;
-					R(T.sphere(1, 8, 6), x.clay(j % 2 ? "#ffa8d0" : "#ff8ac0", { shininess: 40 }), o, [px + 0.06 * Math.cos(pa), 0.21, pz + 0.06 * Math.sin(pa)], [0, -pa, 0.7], [0.07, 0.03, 0.035]);
-				}
-				R(T.sphere(0.035, 8, 6), x.clay("#ffd23a"), o, [px, 0.22, pz]);
-			}
-		}
-		for (let k = 0; k < 16; k++) {
-			const a = rnd() * l,
-				r = rr(3.4, 4),
-				h = rr(0.7, 1.3),
-				px = r * Math.cos(a),
-				pz = r * Math.sin(a),
-				tilt = rr(-0.12, 0.12);
-			R(T.cyl(0.018, 0.024, h, 5), x.world("#4f8a2a"), o, [px, h / 2, pz], [tilt, 0, tilt]);
-			k % 2 || R(T.cyl(0.045, 0.045, 0.24, 6), x.world("#6a4422"), o, [px + tilt * h, h - 0.1, pz - tilt * h]);
-		}
-		// a little wooden dock on the side facing the garden
-		const plank = KIT.surf("wood", "#8a6a48", { rep: 1, bump: 0.03, shine: 10 });
-		for (let k = 0; k < 6; k++) R(T.box(2.9, 0.08, 0.2), plank, o, [-4.1, 0.34, 0.4 + 0.22 * k], [0, 0, 0.01 * (k % 2)]);
-		[-5.4, -2.85].forEach((px) => [0.32, 1.58].forEach((pz) => R(T.cyl(0.07, 0.07, 0.6, 7), plank, o, [px, 0.2, pz])));
 		// (the water only breathes in colour: the owner asked for no ripple rings on the pond and nothing rising out
 		// of it, so the two expanding rings and the drifting light points that were here are gone)
 		L.push((tt) => {
@@ -14348,7 +14391,7 @@ const JGP = (() => {
 			};
 		})(),
 		// the park's wanderers (they keep clear of one another)
-		PARK_ROAMERS = ["p_gemtoe", "p_mamagorbo", "gorbo"],
+		PARK_ROAMERS = ["p_mamagorbo", "gorbo"],
 		// (a park wanderer's walk never crosses the dance floor)
 		offFloor = (r) => (x, z) => !(JGP.onDance && JGP.onDance(x, z, r + 0.3));
 	// The church stands at the end of the south walk: its back to the south fence, its steps (and the Traveler window over the door) facing
@@ -14829,9 +14872,7 @@ const JGP = (() => {
 		const soil = KIT.surf("soil", "#5a3e26", { rep: 10, shine: 6, bump: 0.03 }),
 			ridge = KIT.surf("soil", "#6e4c2e", { rep: 6, shine: 6, bump: 0.03 }),
 			stone = KIT.surf("stone", "#8f8374", { rep: 1, bump: 0.05, shine: 12 }),
-			moss = KIT.surf("fur", "#5a8a3a", { rep: 1, bump: 0.03 }),
-			sack = KIT.surf("fabric", "#c8a868", { rep: 1, shine: 8 }),
-			wood = KIT.surf("wood", "#8a5a30", { rep: 1, shine: 12 });
+			moss = KIT.surf("fur", "#5a8a3a", { rep: 1, bump: 0.03 });
 		R(T.circle(GARDEN_R, 48), soil, o, [0, 0.02, 0], [-Math.PI / 2, 0, 0]);
 		// border of stones
 		// (each stone's centre, reach and top are kept for JGP.groundAt, so creatures crossing the border
@@ -14860,15 +14901,7 @@ const JGP = (() => {
 			}
 		// the SUMMONING STONE in the centre (using it starts the Garden Event)
 		summoningStone(o, stone, moss);
-		// seed sacks and a few stakes around the edge
-		for (let k = 0; k < 8; k++) {
-			const a = (k / 8) * l + l / 16,
-				r = GARDEN_R + 0.9;
-			R(T.sphere(0.32, 10, 8), sack, o, [r * Math.cos(a), 0.3, r * Math.sin(a)], null, [1, 1.2, 1]);
-			R(T.cyl(0.1, 0.18, 0.18, 8), sack, o, [r * Math.cos(a), 0.68, r * Math.sin(a)]);
-			R(T.torus(0.11, 0.025, 5, 12), KIT.surf("fabric", "#8a6a3a", { rep: 1 }), o, [r * Math.cos(a), 0.62, r * Math.sin(a)], [Math.PI / 2, 0, 0]);
-			R(T.cyl(0.04, 0.05, 1.3, 6), wood, o, [(GARDEN_R - 0.4) * Math.cos(a + 0.35), 0.65, (GARDEN_R - 0.4) * Math.sin(a + 0.35)]);
-		}
+
 	}
 	// THE SUMMONING STONE: a six-sided standing stone on a round plinth, carved on three faces with
 	// rows of rune strokes (shapes, no letters). The runes stay dark
@@ -14918,7 +14951,7 @@ const JGP = (() => {
 		});
 
 	}
-	// THE PLANTS: five kinds, each built only from the owner's photos, one merged vertex-coloured mesh per kind
+	// Surface and silhouette details.
 	// (every plant of a kind shares it). Nothing grows unless the Seeds quest is done (without the Seeds nobody
 	// comes to plant); with them, what grows is what the creatures plant: one flower each, coming up during the
 	// Event right where its creature planted it, of a kind picked at random. ONLY ONE BATCH EVER GROWS: the
@@ -15085,17 +15118,17 @@ const JGP = (() => {
 				}),
 			// a flower head's frame: at p, facing away from where its stalk comes from (tipped by lean, 0 = up)
 			faceFrom = (p, from, lean) => mul(at(...p), ry(Math.atan2(p[0] - from[0], p[2] - from[2])), rx(-lean));
-		// (The five plant models below, each built only from the owner's photos, are final, and these Event flowers are LOCKED DOWN (the owner, #100): no change
+		// Surface and silhouette details.
 		// to any of them without the owner's approval first.)
 		const kinds = [
-			// PLANT #1: a creeping thistle (only from the owner's photos): three stems from a rosette of spiny, deeply
+			// Surface and silhouette details.
 			// lobed leaves, one leaning far out, one tall, one short, each splitting at the top into a loose spray
 			// of heads on purplish egg-shaped buds: fluffy pink-mauve puffs, a few gone to tan seed fluff, and
 			// closed buds; smaller spiny leaves along the stems
 			(add) => {
 				const E = () => T.sphere(1, 7, 5), ribs = [[thistleRib, "#9ac070"], [thistleSpines, "#d8d890"]];
 				stems(add, [
-					// leaning far out (the photos' left)
+					// Surface and silhouette details.
 					{ n: [[0, 0, 0], [-0.05, 0.24, 0.03], [-0.18, 0.44, 0.05]], side: [[1, 0.5, [-0.1, 0.34, 0.04]]],
 					  h: [[2, [-0.2, 0.52, 0.05], 0], [2, [-0.27, 0.49, 0.08], 0], [2, [-0.25, 0.46, -0.01], 1], [2, [-0.15, 0.5, 0.1], 2], [2, [-0.3, 0.44, 0.02], 0], ["s0", [-0.16, 0.4, 0.12], 0], ["s0", [-0.13, 0.38, -0.03], 2]],
 					  lv: [[0, 0.3, 2.0, 0.2], [0, 0.55, 3.4, 0.19], [0, 0.8, 1.0, 0.17], [1, 0.25, 4.3, 0.14], [1, 0.6, 2.6, 0.11]] },
@@ -15128,7 +15161,7 @@ const JGP = (() => {
 					add(thistleLeaf(), k % 2 ? "#30661f" : "#387224", m), ribs.forEach(([g, col]) => add(g(), col, m.clone()));
 				}
 			},
-			// PLANT #2: a scentless mayweed (only from the owner's photos): a sprawl of branching stems over fine, feathery
+			// Surface and silhouette details.
 			// thread-leaves, each stem ending in daisy heads, a domed yellow centre ringed by white rays, the older
 			// heads' rays swept right back, the centres taller; a few tight green buds
 			(add) => {
@@ -15160,7 +15193,7 @@ const JGP = (() => {
 				// fine leaves round the base (clear of a row's ridge)
 				for (let k = 0; k < 10; k++) add(threadLeaf(), k % 2 ? "#5aa83a" : "#4a9530", mul(at(0, 0.12 + 0.005 * (k % 3), 0), ry((k / 10) * l + 0.4), rx(-0.25 - 0.08 * (k % 3)), sc(0.2, 0.2, 0.2)));
 			},
-			// PLANT #3: a chicory (only from the owner's photo): stiff, bare, branching stems with sky-blue flowers
+			// Surface and silhouette details.
 			// facing out, each a ring of strap-shaped rays with square, toothed tips round pale blue stamens;
 			// small spiky green buds along the stems and a withered head or two
 			(add) => {
@@ -15195,7 +15228,7 @@ const JGP = (() => {
 					},
 				});
 			},
-			// PLANT #4: a common milkweed (only from the owner's photo): a stout stem with broad oval leaves in opposite
+			// Surface and silhouette details.
 			// pairs, each pair turned a quarter from the one below, every leaf with a pale pink midrib; at the top a
 			// round umbel of small flowers on purple-red stalks, each flower's dusky mauve petals turned down under
 			// a white-pink crown, a few still closed buds
@@ -15226,7 +15259,7 @@ const JGP = (() => {
 				};
 				umbel([0.01, 0.62, 0], 0.072, 40);
 			},
-			// PLANT #5: a zebra mallow (only from the owner's photo): an upright stem with two arms reaching out sideways,
+			// Surface and silhouette details.
 			// big round scalloped leaves on long stalks, and flowers of five broad notched petals, pale pink with dark
 			// purple veins streaking out from a pink stamen column; clusters of round green buds in the leaf joints
 			(add) => {
@@ -17212,6 +17245,7 @@ const JGP = (() => {
 				(cx.fillStyle = "rgba(0,0,0,.14)"), cx.fillRect(0, 0.8 * h, w, 0.2 * h);
 			};
 		// tall items first so the shelves pack well
+		slot("gemtoe_gazebo", 768, 128, board("Gemtoe's Gazebo", "#503955", "#f6df91", { face: SANS }));
 		slot("clock", 256, 256, (cx, w) => {
 			(cx.fillStyle = "#f2ede0"), cx.fillRect(0, 0, w, w), (cx.fillStyle = "#1a1a1e"), cx.beginPath(), cx.arc(128, 128, 124, 0, l), cx.fill();
 			(cx.fillStyle = "#fbf8ee"), cx.beginPath(), cx.arc(128, 128, 112, 0, l), cx.fill(), (cx.fillStyle = "#1a1a1e"), (cx.textAlign = "center"), (cx.textBaseline = "middle"), (cx.font = "bold 30px Georgia, serif");
@@ -18412,7 +18446,7 @@ if (diffuseColor.a < 0.001) discard;
 			const B = place(cx, cz, ry),
 				w = 12,
 				h = 8.5,
-				// (after the owner's photos: grey rough stone walls with pale limestone dressings, a dark slate roof with a
+				// Surface and silhouette details.
 				// pale diamond lattice and iron cresting, stepped buttresses with pinnacles, a square tower with a
 				// battlemented top, corner pinnacles and clocks, pointed windows and a deep pointed-arch doorway up stone
 				// steps. The stained-glass windows and the inside are untouched.)
@@ -18456,7 +18490,7 @@ if (diffuseColor.a < 0.001) discard;
 				ye = 0.8 + h - eave,
 				LZ = D + 0.8;
 			B.geo("shingle", GABLE.slopes, roof, 0, ye, -D / 2, LZ, RH, w + 1.2, 0, Math.PI / 2, 0).geo("stone", GABLE.ends, grey, 0, 0.8 + h, -D / 2, D, RH - eave, w, 0, Math.PI / 2, 0);
-			// the pale diamond lattice over the slates (the owner's second photo): bars in two families crossing at
+			// Surface and silhouette details.
 			// right angles on each slope, each cut to the slope's edges, lying off the slates (each bar's turn comes
 			// from its own basis: along the bar, across it in the slope, and the slope's normal). For VR (the owner
 			// found the roof's sides hard to look at): the bars are a softer grey and a little wider, so they no
@@ -18514,13 +18548,13 @@ if (diffuseColor.a < 0.001) discard;
 				});
 			});
 			// THE INSIDE, a secret play area (the player gets in through the right-hand Garden window, marked only by
-			// a small painted X under it: see the church's parts), built only from the owner's photo of a slug at
+			// Surface and silhouette details.
 			// night: floor, walls and ceiling are all the same damp, gritty olive-grey ground, flecked with pale shell
 			// bits and orange and blue-grey grains, lit best at the floor and least at the ceiling, as by a flash;
 			// on the floor lie pebbles, a few big flat dark stones, white flakes of shell, dark cracks and strands of
 			// dry grass; and across the middle crawls the ANCIENT, a big, glossy, near-black slug that can be talked to. Its walls
 			// stand 35 cm inside the outer ones (whose faces only show from outside), the floor at ground level.
-			// (The room and the ANCIENT, built only from that photo, are final. Both are LOCKED DOWN: the owner called the
+			// Surface and silhouette details.
 			// ANCIENT perfect and locked the secret room's design too. No change is made to either without the owner's
 			// approval first.)
 			{
@@ -18550,7 +18584,7 @@ if (diffuseColor.a < 0.001) discard;
 							c.stroke();
 						}
 					}),
-					// (each surface its own copy of the texture, tiled about every 1.8 m; the photo is dim and flash-lit,
+					// Surface and silhouette details.
 					// so the floor is lit best, the walls less and the ceiling least)
 					mat = (rx2, ry2, col) => {
 						const t2 = grit.clone();
@@ -18607,7 +18641,7 @@ if (diffuseColor.a < 0.001) discard;
 					for (let j = 0; j < 6; j++) pts.push(new THREE.Vector3(px + 0.12 * j * Math.cos(a + 0.15 * j), 0.036 + 0.01 * Math.sin(j), pz + 0.12 * j * Math.sin(a + 0.15 * j)));
 					peb.push({ geo: new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.004, 3), color: k % 2 ? "#b8a478" : "#a89468", matrix: S(0, 0, 0) });
 				}
-				// more from the photo: a clustered patch of flat slate-dark chips beside the head; a few bigger
+				// Surface and silhouette details.
 				// stones half sunk in their own shadowed pits; more strands of dry grass, two crossing; little
 				// white curls of shell; and a long shallow crack along the front corner
 				for (let k = 0; k < 13; k++) {
@@ -18645,7 +18679,7 @@ if (diffuseColor.a < 0.001) discard;
 					}
 					peb.push({ ...flat(pts, 0.032), color: "#1c1c16", matrix: S(0, 0, 0) });
 				}
-				// a third look at the photo (the owner asked for more of it): bigger rounded stones with pale faces half
+				// Surface and silhouette details.
 				// sunk in the ground; a cluster of rust-orange stones toward one corner and blue-grey ones here and
 				// there; many more small white shell fragments; low humps in the ground's own colour; and a longer,
 				// wider crack across the lower corner with a lighter rim
@@ -18680,9 +18714,13 @@ if (diffuseColor.a < 0.001) discard;
 					}
 					peb.push({ ...flat(rim, 0.041), color: "#8a8870", matrix: S(0, 0, 0) }), peb.push({ ...flat(crk, 0.0425), color: "#16160f", matrix: S(0, 0, 0) });
 				}
+				for (let k = 0; k < 24; k++) {
+					const [px, pz] = spot(.55), size = .045 + .12 * rnd2();
+					peb.push({ geo: T.dodeca(1, 0), color: ["#c7c7b6", "#dddccd", "#8b948d", "#a7a58c"][k % 4], matrix: S(px, .025, pz, rnd2(), rnd2() * l, .2, size, size * .35, size * .85) });
+				}
 				R(v(peb), new THREE.MeshLambertMaterial({ vertexColors: !0, color: 11579568, side: THREE.DoubleSide }), inner);
 				// the damp sheen the ANCIENT leaves: a faint glossy ribbon trailing from its tail toward the back
-				// wall, catching the light as in the photo (never under the body itself)
+				// Surface and silhouette details.
 				{
 					const tr = [[-0.72, -13.52], [-0.86, -13.72], [-1.06, -13.88], [-1.3, -13.98]], pts = [];
 					for (let j = 0; j < tr.length - 1; j++) {
@@ -18692,7 +18730,7 @@ if (diffuseColor.a < 0.001) discard;
 					const f2 = flat(pts, 0.034);
 					R(f2.geo, new THREE.MeshPhongMaterial({ color: "#2e2b22", shininess: 130, specular: 7368816, transparent: !0, opacity: 0.38, depthWrite: !1 }), inner);
 				}
-				// (and from the photo's edges: a band of shadow along the back wall's foot, and three damp stains
+				// Surface and silhouette details.
 				// darkening the ground here and there, one thin translucent mesh)
 				{
 					const sh = [[-IX, ZB], [IX, ZB], [IX, ZB + 0.5], [-IX, ZB], [IX, ZB + 0.5], [-IX, ZB + 0.5]];
@@ -18706,18 +18744,26 @@ if (diffuseColor.a < 0.001) discard;
 				// floor (low and oval in section, lying on it), the mantle a smooth hump over its front third, two
 				// long eye-stalks with knobs and two short tentacles below; a wet highlight runs along its back
 				{
-					// (its skin: near-black with a brown cast, fine grooves running along the body, a few pale flecks; the
+					// (its skin: granular near-black olive, fine grooves running along the body, a few pale flecks; the
 					// tail's tip a shade paler, the keel along its back wet and glossy)
-					const skinTex = b(256, 64, (c) => {
-							(c.fillStyle = "#3a2c22"), c.fillRect(0, 0, 256, 64);
-							for (let k = 0; k < 64; k += 3) (c.fillStyle = k % 6 ? "#241a14" : "#140e0a"), c.fillRect(0, k, 256, 1);
-							for (let k = 0; k < 40; k++) (c.fillStyle = "rgba(200,190,170,0.5)"), c.fillRect(256 * rnd2(), 64 * rnd2(), 1, 1);
+					const skinTex = b(512, 128, (c) => {
+							(c.fillStyle = "#24251f"), c.fillRect(0, 0, 512, 128);
+							for (let k = 0; k < 1600; k++) {
+								const x0 = rnd2() * 512, y0 = rnd2() * 128, r0 = .4 + rnd2();
+								c.fillStyle = k % 3 ? "rgba(5,8,5,.32)" : "rgba(105,103,83,.2)", c.beginPath(), c.ellipse(x0, y0, 2 + 3 * r0, r0, -.12, 0, l), c.fill();
+							}
+							for (let k = 2; k < 128; k += 4) {
+								c.strokeStyle = "rgba(5,10,7,.3)", c.lineWidth = .6, c.beginPath(), c.moveTo(0, k);
+								for (let j = 1; j <= 16; j++) c.lineTo(j * 32, k + 1.4 * Math.sin(j * .9 + k));
+								c.stroke();
+							}
+							for (let k = 0; k < 40; k++) (c.fillStyle = "rgba(200,190,170,0.5)"), c.fillRect(512 * rnd2(), 128 * rnd2(), 1, 1);
 						}),
 						slug = new THREE.Group(),
 						skin = new THREE.MeshPhongMaterial({ map: skinTex, color: 7368816, specular: 9474192, shininess: 110 }),
 						tipM = new THREE.MeshPhongMaterial({ color: 4208180, specular: 6316128, shininess: 60 }),
 						keelM = new THREE.MeshPhongMaterial({ color: 3813412, specular: 11579568, shininess: 140 }),
-						// (a second look at the owner's photo: the slug 1.15 times bigger about its middle, to carry its details)
+						// Surface and silhouette details.
 						SC = 1.15,
 						CX = -0.07,
 						CZ = -11.65,
@@ -18772,7 +18818,7 @@ if (diffuseColor.a < 0.001) discard;
 					// nods along with its words. It never dances or plants (the owner: it never will).
 					[slug, head, mantle, pore, tail, ...stalks.map(([st]) => st)].forEach((o) => (o.matrixAutoUpdate = !0));
 					const [wx, , wz] = inner.localToWorld(new THREE.Vector3(0.1, 0, -11.6)).toArray();
-					let talking = 0, look = 0, kT = 0;
+					let talking = 0, look = 0, kT = 0, talkLine = 0;
 					const inRoomV = new THREE.Vector3();
 					// one Talk (from anywhere round it, inside) and, with one in hand, a Blossom (the station's own "Give a
 					// blossom": it takes one, as every gift does, and it answers in silence). The script's lines: its Talk,
@@ -18792,7 +18838,7 @@ if (diffuseColor.a < 0.001) discard;
 						// (at the Event it says only "Hello")
 						// (pointed at anywhere on its body, head to tail)
 						pickObj: [slug, head],
-						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", evTalk() ? "Hello" : "I am the one reborn.")),
+						run: () => ((talking = 1), qt.open("ANCIENT", "#9a7a5a", evTalk() ? "Hello" : ["I am the one reborn.", "My skin keeps the damp.|My stalks taste the dark.|The Cave remembers the rest."][talkLine++ % 2])),
 						gift: () => Kt.blossoms > 0 && (Kt.blossoms--, G.heart(), (talking = 1), qt.open("ANCIENT", "#9a7a5a", "...")),
 					});
 					// (a visit's exchange with it: it talks, lifting its head, for so long, see JGP.slug.chat)
@@ -18915,7 +18961,6 @@ if (diffuseColor.a < 0.001) discard;
 			// the belfry stage carries the tower straight up to a dressed cornice, with a string course under it and a
 			// clock on either side face; on each face a pointed, louvred opening in a stone frame
 			B.box("stone", grey, 0, 13.6 + 1.95, 1.0, 4.4, 3.9, 4.4).box("stone", dress, 0, 13.55, 1.0, 4.7, 0.24, 4.7).box("stone", dress, 0, 17.55, 1.0, 4.9, 0.3, 4.9);
-			[-1, 1].forEach((sx) => B.sign("clock", 2.22 * sx, 11.9, 1.0, 1.7, 1.7, (sx * Math.PI) / 2));
 			[0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach((a) => {
 				const Sd = B.sub(2.2 * Math.sin(a), 1.0 + 2.2 * Math.cos(a), a);
 				Sd.geo("stone", frame(1.5, 1.6, 0.65, 1.04, 1.6, 0.45, 0.14), dress, 0, 14.2, 0.0).box("plain", "#2a2a2e", 0, 15.2, -0.03, 1.04, 2.1, 0.06);
@@ -19202,188 +19247,54 @@ if (diffuseColor.a < 0.001) discard;
 					put("plain", crownGeo((k + 2) % 5, d - 1), cols[1], S(X + 0.62 * wid * Math.cos(a), h + 0.35 * tall + 0.3 * k * s, Z + 0.62 * wid * Math.sin(a), 0, a, 0, 0.62 * wid, 0.6 * tall, 0.62 * wid));
 				}
 		};
-		// cardinal(X, Z, s, ry): the bough leaves the trunk at (X, Z) (a tree of scale s) toward ry, 2.75 m up, rising a
-		// little; the bird stands on it halfway out, side-on to the square (the cardinal's model is final: keep it as it is)
-		const cardinal = (X, Z, s, ry) => {
-			const o = new THREE.Group();
-			o.position.set(X, 0, Z), (o.rotation.y = ry), (o.userData.jgpKeep = !0), (o.userData.keepInFinale = !0), C.add(o);
-			const bark = x.clay("#5a4632", { shininess: 4 }),
-				leaf = x.clay("#4a862e", { shininess: 6 });
-			// the bough: out of the trunk's side, tapering, a fork near its end with a few leaves
+		// One Blue Jay stays on this bough; the anchored feet never move from it.
+		const blueJay = (X, Z, ry) => {
+			const o = new THREE.Group(), bird = new THREE.Group(), body = new THREE.Group(), head = new THREE.Group(), tail = new THREE.Group();
+			o.position.set(X, 0, Z), o.rotation.y = ry, o.userData.jgpKeep = o.userData.keepInFinale = !0, C.add(o);
+			const blue = x.clay("#4d8ec5", { shininess: 8 }), pale = x.clay("#e3e5dc", { shininess: 6 }), dark = x.clay("#263343", { shininess: 9 }), ink = x.clay("#111b24", { shininess: 75 }), bark = x.clay("#5a4632", { shininess: 4 });
 			R(T.cyl(0.035, 0.08, 1.9, 7), bark, o, [0, 2.55, 0.95], [Math.PI / 2 - 0.12, 0, 0]);
-			// (the fork: a twig rooted in the bough 1.55 m out, rising off it to the side; leaves at its tip and the bough's)
-			R(T.cyl(0.018, 0.03, 0.7, 6), bark, o, [0.108, 2.775, 1.846], [1.0947, 0, -0.3141]);
-			[[0.24, 2.95, 2.12, 0.4], [0.17, 2.9, 2.17, -0.3], [0.1, 2.72, 1.98, 0.9], [-0.05, 2.68, 1.9, -0.6]].forEach(([px, py, pz, rr2]) => R(T.sphere(0.1, 8, 6), leaf, o, [px, py, pz], [0.3, rr2, 0.15], [0.8, 0.08, 1.1]));
-			// the bird, facing its own +z (across the bough), feet on the bough's top; s2 scales it up from life size
-			// (about 45 cm from beak to tail tip, twice a real one, so it reads from the walks)
-			const P = new THREE.Group(),
-				s2 = 0.8 * s,
-				PY = 2.655;
-			P.position.set(0, PY, 1.445), (P.rotation.y = Math.PI / 2), P.scale.setScalar(s2), o.add(P);
-			const red = KIT.surf("fur", "#e23a1e", { rep: 2, bump: 0.02, shine: 10 }),
-				redL = KIT.surf("fur", "#ee4a28", { rep: 2, bump: 0.02, shine: 10 }),
-				wingM = KIT.surf("fur", "#c4321a", { rep: 2, bump: 0.025, shine: 8 }),
-				tipM = x.clay("#962818", { shininess: 6 }),
-				tailM = x.clay("#b42e1e", { shininess: 8 }),
-				mask = x.clay("#1a1210", { shininess: 10 }),
-				beakM = x.clay("#f08030", { shininess: 40 }),
-				eyeM = x.clay("#141010", { shininess: 90 }),
-				legM = x.clay("#5a4232", { shininess: 10 });
-			// legs and toes gripping the bough
-			[-1, 1].forEach((sx) => {
-				R(T.cyl(0.006, 0.007, 0.075, 6), legM, P, [0.028 * sx, 0.04, 0.01]);
-				[[0.012, 0.6], [0.012, -0.6], [-0.01, 0]].forEach(([dz, ry2]) => R(T.cyl(0.004, 0.0035, 0.045, 5), legM, P, [0.028 * sx, 0.004, 0.01 + dz], [Math.PI / 2, ry2, 0]));
+			bird.position.set(0, 2.655, 1.445), bird.rotation.y = Math.PI / 2, bird.scale.setScalar(1.1), o.add(bird);
+			[-1, 1].forEach(sx => {
+				R(T.cyl(0.006, 0.008, 0.09, 6), dark, bird, [sx * .028, .046, .01]);
+				[-1, 0, 1].forEach(j => R(T.cyl(.0035, .003, .044, 5), dark, bird, [sx * .028 + .009 * j, .006, .025], [Math.PI / 2, j * .32, 0]));
 			});
-			// body: a plump ellipsoid, the breast fuller and a shade brighter; the long tail held down and back
-			R(T.sphere(0.1, 14, 10), red, P, [0, 0.16, 0], null, [1, 0.95, 1.5]);
-			R(T.sphere(0.085, 12, 9), redL, P, [0, 0.15, 0.055], null, [1, 1, 1.1]);
-			const tail = new THREE.Group();
-			tail.position.set(0, 0.145, -0.1), (tail.rotation.x = 0.5), P.add(tail);
-			R(T.box(0.07, 0.012, 0.24), tailM, tail, [0, 0, -0.12]), R(T.box(0.05, 0.012, 0.26), tailM, tail, [0.012, 0.006, -0.13], [0, 0.12, 0]), R(T.box(0.05, 0.012, 0.26), tailM, tail, [-0.012, -0.006, -0.13], [0, -0.12, 0]);
-			// wings folded along the sides, their tips darker
-			const wings = [-1, 1].map((sx) => {
-				const w = new THREE.Group();
-				w.position.set(0.075 * sx, 0.2, 0.02), P.add(w);
-				R(T.sphere(0.07, 12, 9), wingM, w, [0.012 * sx, -0.03, -0.05], null, [0.45, 0.75, 1.5]);
-				R(T.sphere(0.07, 10, 8), tipM, w, [0.006 * sx, -0.06, -0.17], null, [0.3, 0.45, 0.9]);
+			body.position.y = .1, bird.add(body);
+			R(T.sphere(1, 16, 12), blue, body, [0, .07, 0], [-.2, 0, 0], [.093, .12, .17]);
+			R(T.sphere(1, 14, 10), pale, body, [0, .05, .065], null, [.078, .09, .115]);
+			head.position.set(0, .19, .1), body.add(head);
+			R(T.sphere(.073, 16, 12), blue, head);
+			R(T.sphere(1, 12, 10), pale, head, [0, -.02, .035], null, [.066, .055, .05]);
+			R(T.cone(.043, .125, 8), blue, head, [0, .084, -.018], [-.3, 0, 0], [1, 1, .72]);
+			R(T.cone(.019, .075, 8), dark, head, [0, .002, .097], [Math.PI / 2, 0, 0], [1, 1, .65]);
+			[-1, 1].forEach(sx => {
+				R(T.sphere(1, 12, 8), dark, head, [sx * .054, -.04, .005], [0, 0, -.45 * sx], [.014, .037, .038]);
+				R(T.sphere(.009, 10, 8), ink, head, [sx * .066, .009, .034]);
+				R(T.sphere(.0025, 6, 4), pale, head, [sx * .071, .012, .039]);
+			});
+			tail.position.set(0, .055, -.13), tail.rotation.x = .35, body.add(tail);
+			[-1, 0, 1].forEach(j => {
+				R(T.box(.022, .008, .25 - .015 * Math.abs(j)), blue, tail, [j * .019, 0, -.12], [0, -.05 * j, 0]);
+				R(T.box(.021, .009, .028), pale, tail, [j * .019, .001, -.23]);
+			});
+			for (let k = 0; k < 4; k++) R(T.box(.068, .009, .009), dark, tail, [0, .009, -.055 - .038 * k]);
+			const wings = [-1, 1].map(sx => {
+				const w = new THREE.Group(); w.position.set(sx * .076, .12, -.005), body.add(w);
+				R(T.sphere(1, 12, 10), blue, w, [0, -.035, -.035], [-.28, 0, .12 * sx], [.026, .08, .13]);
+				for (let j = 0; j < 4; j++) {
+					R(T.box(.01, .011, .096), dark, w, [sx * .026, -.016 - j * .023, -.025 - .016 * j], [0, 0, -.12 * sx]);
+				}
+				R(T.box(.011, .013, .10), pale, w, [sx * .027, -.036, -.018]);
 				return w;
 			});
-			// the head: round, the crest in two cones swept up and back, the black mask proud of the face round the
-			// beak and down the chin, the orange cone beak, two glossy eyes at the mask's edge
-			const head = new THREE.Group();
-			head.position.set(0, 0.27, 0.1), P.add(head);
-			R(T.sphere(0.075, 14, 10), red, head, [0, 0.02, 0.02]);
-			// (the crest: a tall cone swept up and back out of the crown, a shorter one behind it)
-			R(T.cone(0.042, 0.17, 8), red, head, [0, 0.105, -0.02], [-0.6, 0, 0]), R(T.cone(0.03, 0.12, 8), red, head, [0, 0.09, -0.055], [-0.95, 0, 0]);
-			R(T.sphere(0.05, 12, 9), mask, head, [0, 0.012, 0.065], null, [1.0, 0.85, 0.7]), R(T.sphere(0.035, 10, 8), mask, head, [0, -0.035, 0.05], null, [1.0, 0.8, 0.7]);
-			R(T.cone(0.022, 0.05, 8), beakM, head, [0, 0.01, 0.115], [Math.PI / 2, 0, 0]);
-			// (the eyes sit on the head's surface at the mask's edge, each with a glint so they read on the black)
-			[-1, 1].forEach((sx) => {
-				R(T.sphere(0.012, 8, 6), eyeM, head, [0.046 * sx, 0.039, 0.074]);
-				R(T.sphere(0.004, 6, 5), x.clay("#ffffff"), head, [0.05 * sx, 0.044, 0.083]);
+			// Batched static feathers inside each pivot keep animation independent and inexpensive.
+			KIT.compact(o, new Set([bird, body, head, tail, ...wings]));
+			JGP.blueJay = { group: o, bird, head, tail, wings };
+			L.push(t => {
+				body.scale.set(1, 1 + .015 * Math.sin(2.1 * t), 1);
+				head.rotation.set(.04 * Math.sin(1.3 * t), .22 * Math.sin(.46 * t), .04 * Math.sin(.8 * t));
+				tail.rotation.x = .35 + .045 * Math.sin(1.1 * t);
+				wings.forEach((w, j) => w.rotation.z = (j ? 1 : -1) * .025 * Math.pow(Math.max(0, Math.sin(.7 * t)), 8));
 			});
-			// its little life: it looks about (a new way every few seconds, eased), flicks its tail every so often, and
-			// now and then hops a hand's width along the bough and back with a flutter of its wings
-			const st0 = { look: 0, lookT: 0, nextLook: 2, flickT: -9, nextFlick: 3, hop: 0, hopT: -9, hopFrom: 0, hopTo: 0, nextHop: 7 };
-			L.push((t, dt) => {
-				if (!o.visible) return;
-				if (t > st0.nextLook) (st0.lookT = -0.9 + 1.8 * Math.random()), (st0.nextLook = t + 1.5 + 3 * Math.random());
-				st0.look += (st0.lookT - st0.look) * Math.min(1, 6 * dt);
-				(head.rotation.y = st0.look), (head.rotation.x = -0.1 + 0.12 * Math.sin(1.3 * t) + 0.3 * Math.max(0, Math.sin(0.37 * t)) ** 6);
-				t > st0.nextFlick && ((st0.flickT = t), (st0.nextFlick = t + 2 + 4 * Math.random()));
-				const fl = Math.max(0, Math.sin((Math.PI * (t - st0.flickT)) / 0.3));
-				tail.rotation.x = 0.5 + 0.35 * fl;
-				// (the hop goes along the bough, a hand's width toward the trunk and back, its feet kept on the bough's
-				// top, which falls 9.6 cm a metre that way)
-				if (t > st0.nextHop) (st0.hopT = t), (st0.hopFrom = st0.hop), (st0.hopTo = st0.hop < 0 ? 0 : -0.18), (st0.nextHop = t + 6 + 8 * Math.random());
-				const f = Math.min(1, (t - st0.hopT) / 0.32),
-					hop = f < 1 ? 1 : 0,
-					sm = f * f * (3 - 2 * f);
-				(st0.hop = st0.hopFrom + (st0.hopTo - st0.hopFrom) * sm), (P.position.z = 1.445 + st0.hop), (P.position.y = PY + 0.096 * st0.hop + 0.07 * Math.sin(Math.PI * f) * hop);
-				wings.forEach((w, k) => (w.rotation.z = (k ? 1 : -1) * 0.55 * hop * Math.abs(Math.sin(22 * (t - st0.hopT)))));
-				// (a breath)
-				P.scale.setScalar(s2 * (1 + 0.012 * Math.sin(2.1 * t)));
-			});
-			return o;
-		};
-		// robin(X, Z, s, ry): the same low bough out of another tree's trunk (its fork and leaves on the other side), with
-		// an American robin on it, built from the owner's two photos: an upright grey-brown bird, its head near black
-		// with a white ring round each eye and a white throat streaked dark, a slim yellow beak, a rusty orange breast
-		// and belly over white under the tail, wings folded along the sides a shade darker than the back, a longish dark
-		// tail with white corners, and long thin legs. It stands taller and straighter than the cardinal.
-		// (The robin's model is final: keep it as it is.)
-		const robin = (X, Z, s, ry) => {
-			const o = new THREE.Group();
-			o.position.set(X, 0, Z), (o.rotation.y = ry), (o.userData.jgpKeep = !0), (o.userData.keepInFinale = !0), C.add(o);
-			const bark = x.clay("#5a4632", { shininess: 4 }),
-				leaf = x.clay("#427630", { shininess: 6 });
-			R(T.cyl(0.035, 0.08, 1.9, 7), bark, o, [0, 2.55, 0.95], [Math.PI / 2 - 0.12, 0, 0]);
-			R(T.cyl(0.018, 0.03, 0.7, 6), bark, o, [-0.108, 2.775, 1.846], [1.0947, 0, 0.3141]);
-			[[-0.24, 2.95, 2.12, -0.4], [-0.17, 2.9, 2.17, 0.3], [-0.1, 2.72, 1.98, -0.9], [0.05, 2.68, 1.9, 0.6]].forEach(([px, py, pz, rr2]) => R(T.sphere(0.1, 8, 6), leaf, o, [px, py, pz], [0.3, rr2, 0.15], [0.8, 0.08, 1.1]));
-			// the bird faces its own +z (across the bough), feet on the bough's top; a little bigger than the cardinal,
-			// as a robin is (about 50 cm from beak to tail tip, twice a real one)
-			const P = new THREE.Group(),
-				s2 = 0.85 * s,
-				PY = 2.655;
-			P.position.set(0, PY, 1.445), (P.rotation.y = Math.PI / 2), P.scale.setScalar(s2), o.add(P);
-			const back = KIT.surf("fur", "#5c5248", { rep: 2, bump: 0.02, shine: 8 }),
-				wingM = KIT.surf("fur", "#4c443c", { rep: 2, bump: 0.025, shine: 8 }),
-				breast = KIT.surf("fur", "#c85a26", { rep: 2, bump: 0.02, shine: 10 }),
-				belly = x.clay("#ece6da", { shininess: 6 }),
-				headM = x.clay("#2c2824", { shininess: 10 }),
-				tailM = x.clay("#36302c", { shininess: 8 }),
-				white = x.clay("#f4f0ea", { shininess: 8 }),
-				beakM = x.clay("#e8b22a", { shininess: 40 }),
-				eyeM = x.clay("#141010", { shininess: 90 }),
-				legM = x.clay("#4a3c32", { shininess: 10 });
-			// long thin legs and toes gripping the bough
-			[-1, 1].forEach((sx) => {
-				R(T.cyl(0.006, 0.007, 0.1, 6), legM, P, [0.03 * sx, 0.05, 0]);
-				[[0.012, 0.6], [0.012, -0.6], [-0.01, 0]].forEach(([dz, ry2]) => R(T.cyl(0.004, 0.0035, 0.045, 5), legM, P, [0.03 * sx, 0.004, dz], [Math.PI / 2, ry2, 0]));
-			});
-			// the body stands up at the front (a robin's upright stance): the grey-brown back, the orange breast full and
-			// forward below the throat, white under the tail
-			const Bd = new THREE.Group();
-			Bd.position.set(0, 0.17, -0.01), (Bd.rotation.x = -0.32), P.add(Bd);
-			R(T.sphere(0.1, 14, 10), back, Bd, [0, 0.02, 0], null, [1, 0.95, 1.55]);
-			R(T.sphere(0.09, 12, 9), breast, Bd, [0, -0.012, 0.06], null, [1, 1.18, 1.1]);
-			R(T.sphere(0.05, 10, 8), belly, Bd, [0, -0.072, -0.05], null, [0.9, 0.5, 1.1]);
-			// the tail: three feather boards held a little down, white corners proud of the outer two
-			const tail = new THREE.Group();
-			tail.position.set(0, 0, -0.12), (tail.rotation.x = 0.45), Bd.add(tail);
-			R(T.box(0.065, 0.012, 0.22), tailM, tail, [0, 0, -0.11]);
-			[-1, 1].forEach((sx) => {
-				R(T.box(0.045, 0.012, 0.23), tailM, tail, [0.014 * sx, 0.005 * sx, -0.115], [0, 0.12 * sx, 0]);
-				R(T.box(0.016, 0.016, 0.03), white, tail, [0.044 * sx, 0.005 * sx, -0.218], [0, 0.12 * sx, 0]);
-			});
-			// wings folded along the sides, darker than the back, their tips darker still
-			const wings = [-1, 1].map((sx) => {
-				const w = new THREE.Group();
-				w.position.set(0.08 * sx, 0.035, 0), Bd.add(w);
-				R(T.sphere(0.07, 12, 9), wingM, w, [0.012 * sx, -0.02, -0.06], null, [0.45, 0.7, 1.55]);
-				R(T.sphere(0.07, 10, 8), tailM, w, [0.006 * sx, -0.045, -0.19], null, [0.3, 0.4, 0.9]);
-				return w;
-			});
-			// the head: round and near black, the white ring round each glossy eye, the white throat with its dark
-			// streaks under the slim yellow beak
-			const head = new THREE.Group();
-			head.position.set(0, 0.095, 0.1), Bd.add(head);
-			R(T.sphere(0.068, 14, 10), headM, head, [0, 0.01, 0.01]);
-			R(T.cone(0.013, 0.06, 8), beakM, head, [0, 0.002, 0.097], [Math.PI / 2, 0, 0]);
-			[-1, 1].forEach((sx) => {
-				R(T.sphere(0.017, 10, 8), white, head, [0.051 * sx, 0.026, 0.03], null, [0.6, 1, 1]);
-				R(T.sphere(0.012, 8, 6), eyeM, head, [0.062 * sx, 0.026, 0.03]);
-				R(T.sphere(0.004, 6, 5), x.clay("#ffffff"), head, [0.07 * sx, 0.031, 0.036]);
-			});
-			R(T.sphere(0.028, 10, 8), white, head, [0, -0.04, 0.04], null, [1, 0.6, 0.75]);
-			for (let k = -1; k <= 1; k++) {
-				const a = 0.5 * k;
-				R(T.box(0.003, 0.012, 0.004), x.clay("#4a443e"), head, [0.022 * Math.sin(a), -0.04, 0.04 + 0.02 * Math.cos(a)], [0, a, 0]);
-			}
-			// its little life: it looks about, cocks its head to one side and holds it there a while (a robin listening),
-			// flicks its tail now and then, and every so often hops a hand's width along the bough and back with a
-			// flutter of its wings (along the bough toward the trunk, its feet on the bough's top); it breathes. It never flies
-			// and never leaves its tree (the owner's rule).
-			const st0 = { look: 0, lookT: 0, nextLook: 2.5, cock: 0, cockT: 0, nextCock: 5, flickT: -9, nextFlick: 4, hop: 0, hopT: -9, hopFrom: 0, hopTo: 0, nextHop: 9 };
-			L.push((t, dt) => {
-				if (!o.visible) return;
-				if (t > st0.nextLook) (st0.lookT = -0.8 + 1.6 * Math.random()), (st0.nextLook = t + 1.5 + 3 * Math.random());
-				st0.look += (st0.lookT - st0.look) * Math.min(1, 6 * dt);
-				if (t > st0.nextCock) (st0.cockT = st0.cockT ? 0 : (Math.random() < 0.5 ? -1 : 1) * 0.45), (st0.nextCock = t + (st0.cockT ? 2 + 2 * Math.random() : 4 + 6 * Math.random()));
-				st0.cock += (st0.cockT - st0.cock) * Math.min(1, 5 * dt);
-				(head.rotation.y = st0.look), (head.rotation.z = st0.cock), (head.rotation.x = 0.08 * Math.sin(1.1 * t) + 0.25 * Math.max(0, Math.sin(0.31 * t)) ** 6);
-				t > st0.nextFlick && ((st0.flickT = t), (st0.nextFlick = t + 3 + 5 * Math.random()));
-				const fl = Math.max(0, Math.sin((Math.PI * (t - st0.flickT)) / 0.3));
-				tail.rotation.x = 0.45 + 0.3 * fl;
-				if (t > st0.nextHop) (st0.hopT = t), (st0.hopFrom = st0.hop), (st0.hopTo = st0.hop < 0 ? 0 : -0.18), (st0.nextHop = t + 7 + 9 * Math.random());
-				const f = Math.min(1, (t - st0.hopT) / 0.32),
-					hop = f < 1 ? 1 : 0,
-					sm = f * f * (3 - 2 * f);
-				(st0.hop = st0.hopFrom + (st0.hopTo - st0.hopFrom) * sm), (P.position.z = 1.445 + st0.hop), (P.position.y = PY + 0.096 * st0.hop + 0.07 * Math.sin(Math.PI * f) * hop);
-				wings.forEach((w, k) => (w.rotation.z = (k ? 1 : -1) * 0.55 * hop * Math.abs(Math.sin(22 * (t - st0.hopT)))));
-				P.scale.setScalar(s2 * (1 + 0.012 * Math.sin(2.1 * t)));
-			});
-			return o;
 		};
 		const lampPost = (X, Z) => {
 			const iron = "#1e2226";
@@ -19410,7 +19321,22 @@ if (diffuseColor.a < 0.001) discard;
 			}
 			B.geo("plain", ucyl(8), wh, 0, 3.66, 0, 8.4, 0.3, 8.4, 0, Math.PI / 8, 0).geo("shingle", ucone(8), "#5a6e5a", 0, 4.95, 0, 9.4, 2.4, 9.4, 0, Math.PI / 8, 0);
 			B.geo("plain", ucyl(8), wh, 0, 6.35, 0, 1.0, 0.6, 1.0).geo("shingle", ucone(8), "#5a6e5a", 0, 6.95, 0, 1.4, 0.7, 1.4).geo("plain", usph(8), "#d8b040", 0, 7.4, 0, 0.25, 0.25, 0.25);
-			E.add(X, Z, 4.6, "scenery");
+			const angle = faceIn(X, Z), cs = Math.cos(angle), sn = Math.sin(angle);
+			for (let k = 0; k < 8; k++) {
+				const a = Math.PI / 2 + Math.PI / 8 + k * Math.PI / 4,
+					px = 3.3 * Math.cos(a), pz = 3.3 * Math.sin(a), x0 = X + cs * px + sn * pz, z0 = Z - sn * px + cs * pz;
+				F.add(x0, z0, .17), E.add(x0, z0, .3, "scenery");
+				if (!k) continue;
+				const ra = Math.PI / 2 + k * Math.PI / 4, rx = 3.05 * Math.cos(ra), rz = 3.05 * Math.sin(ra);
+				F.add(X + cs * rx + sn * rz, Z - sn * rx + cs * rz, .9);
+			}
+			B.sign("gemtoe_gazebo", 0, 6.35, .65, 4.3, .62, 0);
+			const coin = ucyl(16);
+			for (let pile = 0; pile < 7; pile++) {
+				const a = Math.PI + (pile - 3) * .25, px = 1.75 * Math.sin(a), pz = 1.75 * Math.cos(a);
+				for (let j = 0; j < 3 + pile % 4; j++) B.geo("plain", coin, j % 2 ? "#d5a52b" : "#e8bf46", px + .015 * Math.sin(j), .105 + j * .065, pz, .26, .055, .26);
+			}
+
 			// no lawn tufts poking up through the low floor
 			keepAt.push([X, Z]);
 			for (let k = 0; k < 6; k++) keepAt.push([X + 2.4 * Math.cos((k * l) / 6), Z + 2.4 * Math.sin((k * l) / 6)]);
@@ -19590,19 +19516,7 @@ if (diffuseColor.a < 0.001) discard;
 			// (a big one in the open corner between the church and the dance floor's south end)
 			[-16, 37, 1.3, 1],
 		].forEach(([X, Z, s, kind]) => (tree(X, Z, s, kind, 2), E.add(X, Z, 1.2 * s, "scenery")));
-		// THE CARDINAL: one bird in one tree of the park, built from the owner's two photos of a male northern cardinal
-		// (a plump bright red bird with a pointed crest swept up and back, a black mask round the base of an orange
-		// cone of a beak and down its chin, wings a shade darker than the body and a long tail darker again, held
-		// down and back). It perches on a low bough grown out of the maple by the north-east corner, on the side
-		// toward the square, a little bigger than life so it reads from the walks. It looks about, flicks its tail,
-		// and now and then hops along its bough with a flutter; it never flies and never leaves its tree (the owner's
-		// rule). Its own small group, kept through every scene clear.
-		cardinal(31, -33.5, 1.15, Math.atan2(-31, 6 + 33.5));
-		// THE ROBIN: the park's second bird, an American robin from the owner's two photos, on the same kind of bough
-		// out of the oak by the north fence's west half (the tree at (-17, -34)), on the side toward the square. It
-		// looks about, cocks its head to listen, flicks its tail and hops along its bough; it never flies and never
-		// leaves its tree (the owner's rule). One bird to a tree.
-		robin(-17, -34, 1.2, Math.atan2(17, 6 + 34));
+		blueJay(31, -33.5, Math.atan2(-31, 39.5));
 		// hydrant and a blue mailbox by the south walk
 		put("plain", ucyl(10), "#c8282a", S(3.2, 0.38, 40.2 + ZS, 0, 0, 0, 0.36, 0.76, 0.36)), put("plain", usph(10, !0), "#c8282a", S(3.2, 0.76, 40.2 + ZS, 0, 0, 0, 0.36, 0.3, 0.36));
 		put("plain", ucyl(8), "#d8d8dc", S(3.2, 0.5, 40.2 + ZS, 0, 0, Math.PI / 2, 0.16, 0.6, 0.16)), E.add(3.2, 40.2 + ZS, 0.5, "scenery");
@@ -20393,7 +20307,8 @@ if (diffuseColor.a < 0.001) discard;
 						a = h.def.at;
 					if (FLOOR_ROAMERS.includes(id)) return JGP.onDance(p.x, p.z, 0.05);
 					if ("gratelet" === id) return Math.hypot(p.x - ot.x, p.z - ot.z) < 9;
-					if ("p_gemtoe" === id || "p_mamagorbo" === id) return JGP.roamFree(p.x, p.z, 0.25);
+					if ("p_gemtoe" === id) return Math.hypot(p.x - GAZEBO[0], p.z - GAZEBO[1]) < 1.2;
+					if ("p_mamagorbo" === id) return JGP.roamFree(p.x, p.z, 0.25);
 					if ("gorbo" === id) return Math.hypot(p.x - KIOSK_AT.K.gallery.x, p.z - KIOSK_AT.K.gallery.z) < 12 && JGP.roamFree(p.x, p.z, 0.25);
 					if ("frog" === id) return Math.abs(p.x - JGP.barSpot(0)[0]) < 0.8 && Math.abs(p.z) < 8.5;
 					return Math.hypot(p.x - a[0], p.z - a[1]) < 1.2;
@@ -20445,7 +20360,7 @@ if (diffuseColor.a < 0.001) discard;
 						}
 					});
 				};
-				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_gemtoe", JGP.parkRoam, 3, 5), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.galleryRoam, 3, 5);
+				roam("gratelet", JGP.portalRoam, 4, 6), roam("p_mamagorbo", JGP.parkRoam, 3, 5), roam("gorbo", JGP.galleryRoam, 3, 5);
 				FLOOR_ROAMERS.forEach((id) => roam(id, JGP.floorRoam, 3, 4));
 				// THE WAY HOME, GUARDED: any creature left standing off its own ground (a visit called off by a Dance
 				// battle, a Talk or a Blossom on the way, a walk home blocked by a building, anything at all) is sent
@@ -21583,6 +21498,10 @@ if (diffuseColor.a < 0.001) discard;
 		libFront: () => KIOSK_AT.at("shop", -1.9, 3.0),
 		// FORTIZMO's aisle behind the Juice Bar's counter (a spot z along it), and her way out through
 		// the counter's gap (z 1.0 to 2.4) to the dance floor
+		gazeboVia: () => {
+			const a = A(GAZEBO[0], GAZEBO[1]);
+			return [2, 4.8, 6].map(d => [GAZEBO[0] + d * Math.sin(a), GAZEBO[1] + d * Math.cos(a)]);
+		},
 		barSpot: (z) => [-t.parkHalf + 3.6 - 1.3, z],
 		barVia: () => [-1.3, 0.23, 2.2].map((dx) => [-t.parkHalf + 3.6 + dx, 1.7]),
 		// HENNRICK's first spot: 4 m to the side of the Portal and a little in front of it
@@ -21950,7 +21869,7 @@ if (
 								solidR: 1.2,
 								waypointR: JGP.GARDEN_R + 1.2,
 								// (always there to look at; it starts the Event only once the Summoning Stone is yours)
-								label: () => (me.active ? null : "Use the Summoning Stone"),
+								label: () => (me.active ? null : "Use the Summoning Pillar"),
 								run: () => {
 									me.active || oe.open();
 								},
