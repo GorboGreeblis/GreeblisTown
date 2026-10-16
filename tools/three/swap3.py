@@ -9,10 +9,13 @@ import sys
 
 if len(sys.argv) != 4:
     sys.exit(__doc__)
-s = open(sys.argv[1], encoding='utf-8').read()
-t = open(sys.argv[2], encoding='utf-8').read()
+with open(sys.argv[1], encoding='utf-8') as f:
+    s = f.read()
+with open(sys.argv[2], encoding='utf-8') as f:
+    t = f.read()
 m = list(re.finditer(r'<script[^>]*>', s))[1]
 e = s.find('</script>', m.end())
 if s[m.end():m.end() + 10] != 'var THREE=':
     raise AssertionError(s[m.end():m.end() + 20])
-open(sys.argv[3], 'w', encoding='utf-8').write(s[:m.end()] + t + s[e:])
+with open(sys.argv[3], 'w', encoding='utf-8') as f:
+    f.write(s[:m.end()] + t + s[e:])

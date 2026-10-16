@@ -13,7 +13,8 @@ import re
 import sys
 
 src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "index.html")
-txt = open(src, encoding="utf-8").read()
+with open(src, encoding="utf-8") as f:
+    txt = f.read()
 K = re.findall(r"(\w\w): \"", re.search(r"const NAMES = \{([^}]*)\}", txt).group(1))
 body = txt[txt.index("PAIRS = [") + 9 : txt.index("// what each creature sends")]
 P = [json.loads(m) for m in re.findall(r"^\s*(\[\"\w\w\", \"\w\w\", \d+, \".*\"\]),$", body, re.M)]
