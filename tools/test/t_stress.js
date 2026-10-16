@@ -9,7 +9,7 @@ const { log, start, closeDialogs, startEvent } = require('./lib.js');
 
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms), clear = () => closeDialogs(p);
-  const waitT = async (sec, cond) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 4000; k++) { await W(250); const r = await p.evaluate((c) => [Re.t, c ? eval(c) : 0], cond || null); if (cond && r[1]) return r[0] - t0; if (r[0] - t0 > sec) return -1; } };
+  const waitT = async (sec, cond) => { const t0 = await p.evaluate(() => Re.t); for (let k = 0; k < 4000; k++) { await W(250); const r = await p.evaluate((c) => [Re.t, c ? new Function('return (' + c + ')')() : 0], cond || null); if (cond && r[1]) return r[0] - t0; if (r[0] - t0 > sec) return -1; } };
   const state = () => p.evaluate(() => JSON.stringify({ t: +Re.t.toFixed(0), ev: me.active, phaseLive: bt.live, busy: It.all.filter((e) => e.busy).map((e) => e.def.name + ':' + e.busy), top: jt.top, horn: gcHorn.phase, music: !!ee.playing, bp: JGP.backpacka.busy(), courier: ue.state, err: Re.errors }));
   const homeCheck = () => p.evaluate(() => It.all.map((e) => { const d = Math.hypot(e.group.position.x - e.home.x, e.group.position.z - e.home.z); return d > 0.6 || e.busy ? e.def.name + ' off ' + d.toFixed(1) + (e.busy ? ' busy=' + e.busy : '') : null; }).filter(Boolean).join(', ') || 'all home');
   await start(p);
