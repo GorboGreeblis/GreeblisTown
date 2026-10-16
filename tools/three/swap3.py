@@ -13,5 +13,6 @@ s = open(sys.argv[1], encoding='utf-8').read()
 t = open(sys.argv[2], encoding='utf-8').read()
 m = list(re.finditer(r'<script[^>]*>', s))[1]
 e = s.find('</script>', m.end())
-assert s[m.end():m.end() + 10] == 'var THREE=', s[m.end():m.end() + 20]
+if s[m.end():m.end() + 10] != 'var THREE=':
+    raise AssertionError(s[m.end():m.end() + 20])
 open(sys.argv[3], 'w', encoding='utf-8').write(s[:m.end()] + t + s[e:])
