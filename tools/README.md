@@ -71,6 +71,7 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | `mob.js` | An alias of `MOBILE=1 node test/shot.js`. |
 | `ordtest.js` | The game as an ordinal, in a sandboxed iframe under ord's CSP. |
 | `copycheck.sh` | Checks that `tools/index.html` is the readable copy. |
+| `clock.js` | Checks the actual frame clock with deterministic time: active, exited, blurred and resumed sessions; `node test/clock.js [index.html]` from `tools/` (defaults to the readable copy). |
 | `parts.js` | Runs a multi-part probe's parts, each on a fresh page. |
 | `lib.js`, `lib.sh`, `browser.js` | Shared modules: the probes' helpers, the runners' common steps and summary, the browser setup. |
 

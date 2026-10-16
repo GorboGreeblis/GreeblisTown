@@ -6980,11 +6980,13 @@ const Re = (() => {
 			}
 		}
 		function l() {
+			// Paused sessions keep both the world and its clock still; discard the gap before resuming.
+			if (!we.presenting || we.blurred) return void (e = 0);
 			const t = performance.now(),
 				l = e ? t - e : 16.7;
 			e = t;
 			let c = l / 1e3;
-			if ((c > 1 && (c = 1 / 60), (c = Math.min(c, 0.1)), (o += c), !we.presenting)) return;
+			c > 1 && (c = 1 / 60), (c = Math.min(c, 0.1)), (o += c);
 			i("xr", () => we.update(c, o)), i("input", () => bo.update(c)), i("player", () => Te(c));
 			const h = jt.has("panel"),
 				p = It.all;
