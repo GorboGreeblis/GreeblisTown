@@ -744,6 +744,8 @@ browser and headless Chromium always pass.
 ### VR
 
 - Start screen: "Press A to enter VR".
+- **Game clock:** `Re` pauses its clock and frame work while no session is presenting or the XR session is blurred.
+  Paused frames reset its previous timestamp, so returning does not advance Event or creature timers by the time away.
 - Input: left stick moves; right stick snap-turns (`t.xr.snapAngle` 0.5236 rad); either trigger selects along that
   controller's pointer beam (every connected controller has one; `t.xr.pickRange` 16 m); the quest HUD sits on the
   left grip. WebXR input sources
