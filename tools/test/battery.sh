@@ -30,7 +30,7 @@ h "KING DINO's jazz"; small 900 shot.js "$U" x.png ./t_jazz.js
 h "FORTIZMO's patrol"; NOSHOT=1 run 400 shot.js "$U" x.png ./t_fortizmo.js
 h "pickups reachable"; NOSHOT=1 run 300 shot.js "$U" x.png ./t_reach.js
 h "the roamers (short; ROAM_S, TRAP_S longer for a full check)"; ROAM_S=40 TRAP_S=40 small 1800 shot.js "$U" x.png ./t_roam.js
-h "walking home: stopping for the player"; small 900 shot.js "$U" x.png ./t_nearstop.js
+h "walking home: stopping for the player"; small 1800 shot.js "$U" x.png ./t_nearstop.js
 h "interrupted visits get home"; small 3000 shot.js "$U" x.png ./t_stuck.js
 h "vignettes"; NOSHOT=1 run 600 shot.js "$U" x.png ./t_vigall.js
 h "visits"; small 4000 shot.js "$U" x.png ./t_visits.js

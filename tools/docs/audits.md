@@ -14,6 +14,8 @@ physical Quest 3S tracking, comfort, GPU performance and Android touch hardware 
   rendering continues without world updates.
 - Desktop/mobile context loss could advance the world while no view was available. The frame loop now pauses on
   context loss and resets its clock on restoration. A real browser context-loss/restoration probe verifies both.
+- NEXTESSA could stop fractionally above her exact delivery radius and never grant Snacks. Arrival now allows
+  1 mm of tolerance; the regression reproduces the original stalled distance with the actual delivery update.
 - X could give a Blossom directly. X now follows the same pointing/selection path as A; gifts require the menu.
 - Freed ZOLLOD's additional Talk was inaccessible through mobile's Talk button. The button now exposes Shop/Talk
   choices and preserves the rule that tapping a creature does not interact.
@@ -33,5 +35,25 @@ physical Quest 3S tracking, comfort, GPU performance and Android touch hardware 
 - Only the first seeded Event grows persistent flowers. Ordinary biology lines do not replace seeded Event lines.
 - GEMTOE's gazebo route uses the open entrance for departures and returns. Trade behavior is independent of home.
 
-These invariants are the audit's selected checks. The validation record distinguishes completed probes from
-outstanding runs; this document does not substitute for observed test results.
+## Observed results
+
+The v0.2 browser checks have confirmed:
+
+- All three Artifact rewards, repeat-win protection, battle cost, the Library finale, Gem trade, Stone gate and
+  one-time Seeds purchase.
+- NEXTESSA's reproduced stopping-boundary stall is fixed. Both that boundary and the complete Snacks delivery
+  and departure pass with no game errors.
+- The 15-second glue pause and single completion, including SPARKAKUS holding position during Talk at home,
+  visiting and hosting.
+- Ordinary biology Talk and seeded/unseeded Event dialogue, including the no-Give rule during the Event.
+- Real WebGL context loss/restoration with simulation paused and no game errors after recovery.
+- Eight interrupted visits: every actor reached its requested travel stage and returned home, with no remaining
+  visit, busy or battle state. GEMTOE returned to [5, -31] inside her gazebo after an interrupted Blossom meeting.
+- All 168 visitor/host route plans and eight complete visit playbacks, including the Cave approach and return.
+  GEMTOE retains her gazebo home; SPARKAKUS returns to the Library.
+- Desktop shortcut removal, drag rotation, HUD placement and the initial mobile dialogue-button checks.
+- Desktop and Android ordinal sandboxes, shader compilation, church/Cave collision checks and pickup spawn checks.
+
+Event return, the strengthened roaming/reachability diagnostics and final mobile menu checks
+remain in the validation queue. Temporary harness failures and timeouts are recorded separately; they do not count
+as passing application checks. Physical Quest 3S comfort and performance still require headset testing.

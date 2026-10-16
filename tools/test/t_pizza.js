@@ -1,6 +1,6 @@
 // The phone and the pizza courier: the phone is locked until MUSHROOM has a Blossom, then calls NEXTESSA for the rest
 // of the session; and the courier's delivery itself.
-// Env: PART=lock,courier (only those parts).
+// Env: PART=lock,arrival,courier (only those parts).
 // Output: `== part: <name>` and each part's lines (below), `err <n>`.
 //   NOSHOT=1 node test/shot.js <url> x.png test/t_pizza.js
 const { log, start, logErrors, waitGame, closeDialogs } = require('./lib.js');
@@ -40,6 +40,25 @@ const lock = async (p) => {
   await logErrors(p);
 };
 
+// Exercise the actual arrival update at its stopping-distance boundary on open ground.
+// Arrival must tolerate floating-point rounding and grant Snacks before the departure dialogue.
+const arrival = async p => {
+  await start(p);
+  await p.evaluate(() => {t.pizza.callDelayMs=1;ue.call();});
+  await closeDialogs(p);
+  await p.waitForFunction(()=>!!ue.courier);
+  const report = await p.evaluate(()=>{
+    At.position.set(0,0,20);
+    const n=ue.courier;
+    n.group.position.set(-.2,0,17.1); n.wallNear=false; ot.trip.phase="met";
+    for(let k=0;k<120 && !Kt.rewards.snacks;k++) ue.update(Re.t+k/60,1/60);
+    return {state:ue.state,snacks:!!Kt.rewards.snacks,gap:Math.hypot(n.group.position.x-At.position.x,n.group.position.z-At.position.z),stop:t.pizza.stopDist,wallNear:!!n.wallNear,err:Re.errors};
+  });
+  log('arrival boundary',JSON.stringify(report));
+  require('node:assert/strict').equal(report.snacks,true,'courier must finish at the stopping-distance boundary');
+  require('node:assert/strict').equal(report.err,0);
+};
+
 // The pizza courier: the call delay shortened, a pizza called (ue.call) and the dialogue skipped. Prints the courier's
 // name, spawn spot and state, and 20 s later where it is; then asserts Snacks delivery and departure in game time.
 const courier = async (p) => {
@@ -61,4 +80,4 @@ const courier = async (p) => {
 
 };
 
-module.exports = require('./parts.js')({ lock, courier });
+module.exports = require('./parts.js')({ lock, arrival, courier });

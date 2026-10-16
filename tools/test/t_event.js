@@ -24,6 +24,8 @@ const planters = async (p) => {
     window.__EV = { zIn: 0, pl: {} };
     L.push(() => {
       if (!me.active) return;
+      const sp = st.away() && st.pos();
+      if (!__EV.sp && bt.live && sp && st.there() && Math.hypot(sp.x,sp.z) < JGP.GARDEN_R) __EV.sp = {x:sp.x,z:sp.z};
       const z0 = It.all.find((q) => q.def.__type === 'cutebex'), KB = F.buildings.find((B) => B.name === 'garden'), q = z0.group.position;
       F.inHull(KB, q.x, q.z) && __EV.zIn++;
       // (each planter's spot, kept: the slots are cleared when the Event ends)
@@ -48,7 +50,8 @@ const planters = async (p) => {
     const g = JGP.garden, planters = Object.entries(__EV.pl);
     const has = (x, z) => g.plants.some((pl) => Math.hypot(pl.g.position.x - x, pl.g.position.z - z) < 1.7);
     const missing = planters.filter(([id, q]) => !(id === 'blinker' && Kt.rewards.snacks) && !has(q.x, q.z)).map(([, q]) => q.name);
-    const sp = st.pos(), spFlower = has(sp.x, sp.z);
+    const sp = __EV.sp, spFlower = !!sp && has(sp.x, sp.z);
+    if (missing.length || !spFlower || __EV.zIn || Re.errors) throw new Error('Event planter check failed: '+JSON.stringify({missing,spFlower,zIn:__EV.zIn,err:Re.errors}));
     return 'planters ' + planters.length + ' + SPARKAKUS | plants ' + g.plants.length + ' | missing a flower: ' + (missing.join(', ') || 'none') + ' | SPARKAKUS flower: ' + spFlower + ' | ZOLLOD frames inside his kiosk during the Event: ' + __EV.zIn + ' | err ' + Re.errors;
   }));
   log('the ANCIENT:', await ancientReport(p));

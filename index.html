@@ -4342,7 +4342,8 @@ const le = (() => {
 						c = l.z - i.z,
 						h = Math.hypot(t, c);
 					// (she stops where she is when a wall keeps her from a player close by, inside a building)
-					if (h > o.stopDist && !n.wallNear) {
+					// Accept the stopping boundary despite floating-point rounding.
+					if (h > o.stopDist + 1e-3 && !n.wallNear) {
 						const t = Math.min(h - o.stopDist, o.speed * e),
 							a = it(i, l, !1);
 						(i.x += a.x * t),

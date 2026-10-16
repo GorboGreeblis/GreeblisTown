@@ -44,23 +44,30 @@ module.exports = async p => {
       xe.scan();
     });
     await p.waitForTimeout(700);
+    let menuVersion = await p.evaluate(() => __jgpMenu.mesh().material.map.version);
     await p.locator('#jgpTouch [data-k="talk"]').click();
-    await p.waitForTimeout(400);
+    await p.waitForFunction(v => __jgpMenu.open() && __jgpMenu.mesh().material.map.version > v, menuVersion);
     assert.equal(await p.evaluate(() => __jgpMenu.open()), true, 'Talk exposes freed shopkeeper choices');
     const menuTap = async id => {
       const pos = await p.evaluate(id => {
         const m = __jgpMenu, row = Number(id.slice(1));
         const v = new THREE.Vector3(0, .5 - (51 + 76 * row)/m.h(), 0);
         m.mesh().localToWorld(v); v.applyMatrix4(B.matrixWorldInverse).applyMatrix4(B.projectionMatrix);
-        return [(v.x+1)*innerWidth/2, (1-v.y)*innerHeight/2];
+        const xy=[(v.x+1)*innerWidth/2, (1-v.y)*innerHeight/2];
+        return {xy,viewport:[innerWidth,innerHeight],element:document.elementFromPoint(...xy)?.id,menuY:m.mesh().position.y};
       },id);
-      await p.touchscreen.tap(...pos); await p.waitForTimeout(400);
+      log('menu tap',id,JSON.stringify(pos));
+      assert.ok(pos.xy[0]>0 && pos.xy[0]<pos.viewport[0] && pos.xy[1]>0 && pos.xy[1]<pos.viewport[1], 'menu choice must be on screen');
+      await p.touchscreen.tap(...pos.xy); await p.waitForTimeout(400);
+      log('after menu tap',JSON.stringify(await p.evaluate(()=>({menu:__jgpMenu.open(),dialogue:qt.isOpen,panel:jt.has('panel'),text:document.getElementById('dlgText').textContent}))));
     };
     await menuTap('m1');
     assert.equal(await p.evaluate(() => qt.isOpen), true, 'biology Talk is reachable through menu');
     await p.waitForFunction(() => /curling trunk/.test(document.getElementById('dlgText').textContent), {}, { timeout:10000 });
     await p.evaluate(() => qt.skipAll()); await p.waitForTimeout(400);
-    await p.locator('#jgpTouch [data-k="talk"]').click(); await p.waitForTimeout(400);
+    menuVersion = await p.evaluate(() => __jgpMenu.mesh().material.map.version);
+    await p.locator('#jgpTouch [data-k="talk"]').click();
+    await p.waitForFunction(v => __jgpMenu.open() && __jgpMenu.mesh().material.map.version > v, menuVersion);
     await menuTap('m0');
     assert.equal(await p.evaluate(() => jt.has('panel') && _t.kind === 'shop'), true, 'shop is still reachable');
 
