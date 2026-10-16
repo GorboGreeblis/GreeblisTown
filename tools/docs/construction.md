@@ -563,6 +563,7 @@ Open ground with no walls, roof or raised floor (`LIB_LAYOUT`).
 | Element | Specification |
 | --- | --- |
 | Bookcases | Eight freestanding double-sided cases, 2.2 m long and 2.1 m tall: two rows behind SPARKAKUS and one down each side, with open aisles. |
+| Spine bands | Pale bands sit 8 mm clear of each book's actual spine face, including its random depth and inset, on both sides of every case. Their positions use the same random samples as the books so the seeded arrangement stays intact. |
 | Colliders | The bookcases and banner posts. The Library is kept explicitly when the engine clears scenery (it is wider than the 12 m that rule spares). |
 | Banner | LIBRARY sign on two 4.3 m posts behind the back row, high enough to show over it. |
 | Shelf features (`LIB_LAYOUT.features`) | One item face-out in a gap on each of nine shelves: six cloth hardbacks (covers: [bible 1.15](bible.md#115-written-things); 0.30 × 0.40 m, OVERCOMING SHYNESS 0.34 × 0.44 m, each title fitted to its cover for VR legibility), a potted Wish Blossom (crystal turning, halo bobbing), an Electric Blossom (head turning) and an Acorn. |

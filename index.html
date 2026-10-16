@@ -11077,9 +11077,11 @@ const JGP = (() => {
 					px += 0.26;
 					continue;
 				}
-				Q.box(c, px + w / 2, y + h / 2, z + 0.02 * (rs() - 0.5), w, h, 0.2 + 0.03 * rs());
-				// a pale band across the spine of some
-				rs() < 0.4 && Q.box(rs() < 0.5 ? "#e8d8a0" : "#c8a040", px + w / 2, y + 0.75 * h, z + (back ? -0.11 : 0.11), w + 0.004, 0.025, 0.01);
+				const bz = z + 0.02 * (rs() - 0.5),
+					d = 0.2 + 0.03 * rs();
+				Q.box(c, px + w / 2, y + h / 2, bz, w, h, d);
+				// the band's inner face stays 8 mm clear of this book's actual spine (its depth and inset vary)
+				rs() < 0.4 && Q.box(rs() < 0.5 ? "#e8d8a0" : "#c8a040", px + w / 2, y + 0.75 * h, bz + (back ? -1 : 1) * (d / 2 + 0.013), w + 0.004, 0.025, 0.01);
 				px += w + 0.004;
 			}
 		};
