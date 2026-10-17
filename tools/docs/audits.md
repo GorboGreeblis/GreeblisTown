@@ -51,9 +51,18 @@ The v0.2 browser checks have confirmed:
   visit, busy or battle state. GEMTOE returned to [5, -31] inside her gazebo after an interrupted Blossom meeting.
 - All 168 visitor/host route plans and eight complete visit playbacks, including the Cave approach and return.
   GEMTOE retains her gazebo home; SPARKAKUS returns to the Library.
-- Desktop shortcut removal, drag rotation, HUD placement and the initial mobile dialogue-button checks.
+- Desktop shortcut removal, drag rotation, HUD placement and real mobile Shop/Talk touches after menu draw readiness.
+- Pickup reachability: 4,000 samples plus the two earlier problem points have no permanent obstruction; all live
+  pickups remain reachable. Moving creatures can temporarily cover some sample points.
+- Seven-actor roaming and obstruction recovery: every actor finishes on its own ground, including GEMTOE inside
+  the gazebo. The earlier short recovery window sampled active return trips.
+- Planned return stops and shop holds: ETCHER stops for the nearby player; ZOLLOD holds still for 20 game seconds
+  with his shop open and returns after it closes.
 - Desktop and Android ordinal sandboxes, shader compilation, church/Cave collision checks and pickup spawn checks.
 
-Event return, the strengthened roaming/reachability diagnostics and final mobile menu checks
-remain in the validation queue. Temporary harness failures and timeouts are recorded separately; they do not count
-as passing application checks. Physical Quest 3S comfort and performance still require headset testing.
+Fresh shader compilation and both ordinal sandboxes pass. All 10 NPC planters plus SPARKAKUS grow their
+flowers; ZOLLOD avoids his kiosk during the Event, the Ancient stays idle and GEMTOE returns inside the gazebo
+after Event wrap. MAMA GORBO, GEMTOE, KING DINO and SPARKAKUS menus stay centred just above their heads
+after orbiting and walking; SPARKAKUS uses his ears, excluding the mist. Temporary harness failures and
+timeouts are recorded separately; passing targeted reruns complete their coverage.
+Physical Quest 3S comfort and performance still require headset testing.

@@ -1,5 +1,5 @@
 // The action menu's place on screen in the desktop test mode: for each creature the avatar is put a few metres from
-// it, the menu opened by a click on its head, and the menu's bottom edge and the creature's top projected through the
+// it, the menu opened by a click on its body, and the menu's bottom edge and the creature's top projected through the
 // game camera. The menu must sit just over the head (a small positive gap, no sideways offset), also after the camera
 // orbits and after the avatar walks a step: the test modes' camera swings and eases behind the avatar. (The trimmed
 // three.js has no Vector3.project: the view and projection matrices are applied by hand.)
@@ -7,7 +7,7 @@
 // Output: per creature `<id> at [x,z] | opened <bool> | gap/dx px: opened <g>/<dx> | after orbit … | after a step … |
 //   still open <bool>`, then `err <n>`.
 //   VW=800 VH=600 NOSHOT=1 node test/shot.js <url> x.png test/t_menupos.js
-const { log, start, logErrors } = require('./lib.js');
+const { log, start, logErrors, waitGame } = require('./lib.js');
 
 module.exports = async (p) => {
   const W = (ms) => p.waitForTimeout(ms);
@@ -35,18 +35,22 @@ module.exports = async (p) => {
       const dk = window.__jgpDk; dk.yaw = dk.cy = At.rotation.y + Math.PI; dk.pitch = dk.cp = 0.2;
       return [+g.x.toFixed(1), +g.z.toFixed(1)];
     }, id);
-    await W(600);
-    // (click on its head, as the player does)
-    const head = await p.evaluate(() => { const e = window.__mt, v = new THREE.Vector3(), gp = new THREE.Vector3().setFromMatrixPosition(e.group.matrixWorld), box = new THREE.Box3().setFromObject(e.group); v.set(gp.x, (e.spark ? gp.y + st.height : box.max.y) - 0.3, gp.z).applyMatrix4(B.matrixWorldInverse).applyMatrix4(B.projectionMatrix); return [((v.x + 1) / 2) * innerWidth, ((1 - v.y) / 2) * innerHeight]; });
-    await p.mouse.click(head[0], head[1]); await W(400);
+    await waitGame(p, .3);
+    const menuVersion = await p.evaluate(() => __jgpMenu.mesh().material.map.version);
+    // (click on the creature, as the player does)
+    const head = await p.evaluate(() => { const e = window.__mt, v = new THREE.Vector3(), gp = new THREE.Vector3().setFromMatrixPosition(e.group.matrixWorld), box = new THREE.Box3().setFromObject(e.group); v.set(gp.x, (e.spark ? gp.y + st.height - .3 : gp.y + .6 * (e.height || box.max.y-gp.y)), gp.z).applyMatrix4(B.matrixWorldInverse).applyMatrix4(B.projectionMatrix); return [((v.x + 1) / 2) * innerWidth, ((1 - v.y) / 2) * innerHeight]; });
+    log('menu click',id,JSON.stringify(head));
+    await p.mouse.click(head[0], head[1]);
+    await p.waitForFunction(v => __jgpMenu.open() && __jgpMenu.mesh().material.map.version > v, menuVersion);
     const m0 = await measure(), st0 = await p.evaluate(() => ({ top: jt.top, dlg: qt.isOpen, tgt: xe.lastTarget && (xe.lastTarget.id || (xe.lastTarget.def && xe.lastTarget.def.name)), near: It.all.filter((q) => Math.hypot(q.group.position.x - At.position.x, q.group.position.z - At.position.z) < 3).map((q) => q.id) }));
     m0.open || log('  (no menu after the click:', JSON.stringify(st0) + ')');
     // (orbit a quarter turn by drag, then walk a step forward)
-    await p.mouse.move(400, 300); await p.mouse.down(); await p.mouse.move(520, 300, { steps: 8 }); await p.mouse.up(); await W(700);
+    await p.mouse.move(400, 300); await p.mouse.down(); await p.mouse.move(520, 300, { steps: 8 }); await p.mouse.up(); await waitGame(p,.3);
     const m1 = await measure();
-    await p.keyboard.down('w'); await W(350); await p.keyboard.up('w'); await W(500);
+    await p.keyboard.down('w'); await W(350); await p.keyboard.up('w'); await waitGame(p,.3);
     const m2 = await measure();
     log(id, 'at', JSON.stringify(at), '| opened', m0.open, '| gap/dx px: opened', m0.gapPx + '/' + m0.dxPx, '| after orbit', m1.gapPx + '/' + m1.dxPx, '| after a step', m2.gapPx + '/' + m2.dxPx, '| still open', m2.open);
+    require('node:assert/strict').ok([m0,m1,m2].every(m => m.open && m.gapPx>=0 && m.gapPx<80 && Math.abs(m.dxPx)<5), 'menu must remain just above the creature');
     await p.keyboard.press('b'); await W(300);
   }
   await logErrors(p);

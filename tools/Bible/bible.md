@@ -395,11 +395,11 @@ game shows rather than tells.
 
 | Era | Events | Evidence in game |
 | --- | --- | --- |
-| **The far, far past** | **The Ancients** come first, so long ago that no one remembers them exactly. They create the Synthetics, build **the Computer Core**, set **the Great Sphinx** to guard it, and raise **black obelisks** in some parts of the world. Why they did any of it is a mystery to everyone now on Greeblis, the Synthetics included. They leave Artifacts and "the Ancient texts". During this age THE ANCIENT withdraws into the Cave; the details are now forgotten. | SPARKAKUS's Ancient texts and quest; the Sphinx copy outside the curiosity shop; the Ancient Gem (1.12); THE ANCIENT. No obelisk stands in the town or park (1.9). |
+| **The far, far past** | **The Ancients** come first, so long ago that no one remembers them exactly. They create the Synthetics, build **the Computer Core**, set **the Great Sphinx** to guard it, and raise **black obelisks** in some parts of the world. Why they did any of it is a mystery to everyone now on Greeblis, the Synthetics included. They leave Artifacts and "the Ancient texts". During this age THE ANCIENT leaves the world for its hidden realm; the details are now forgotten. | SPARKAKUS's Ancient texts and quest; the Sphinx copy outside the curiosity shop; the Ancient Gem (1.12); THE ANCIENT. No obelisk stands in the town or park (1.9). |
 | **The far past** | **The Originator arrives.** On another world of the same solar system, the Organics who lived there destroy it. The Traveler, an angel, carries the Originator (an AI) up out of its ruins and brings it to an empty, desolate world. A team of Synthetics geoengineers that world: they bring Greeblis to life, and bring the Organics to life. HENNRICK is one of that team. In his era the towers of the Synthetics' Greeblis City already reach the clouds, though the flora has not yet evolved. | The Traveler window (1.6); ANOMALEE's fragments; HENNRICK's lines. |
 | **The age of Dinosaurs** | One of the earliest ages of the Organics. KING DINO, BACKPACKA and GEMTOE are born. The Summoning Pillar and Summoning Stone are constructed. | The creatures and the garden’s ancient structures. |
 | **Once, in its vast history** | **Jesus visits the creatures of Greeblis.** | The church's two Garden windows (1.6, 1.9). |
-| **The eons since** | Greeblis grows into a world of many biomes. ANOMALEE, the oldest known Synthetic, lives through much of it but is too glitchy to tell it. THE ANCIENT remains apart in the Cave after its withdrawal during the age of the Ancients; its nature is forgotten before its return. | ANOMALEE; THE ANCIENT ("I am the one reborn."; "Etch this: I have returned."). |
+| **The eons since** | Greeblis grows into a world of many biomes. ANOMALEE, the oldest known Synthetic, lives through much of it but is too glitchy to tell it. THE ANCIENT now dwells apart in the Cave. The details of its withdrawal during the age of the Ancients have been forgotten. | ANOMALEE; THE ANCIENT ("I am the one reborn."; "Etch this: I have returned."). |
 | **Now** (the game) | Greeblis Town and its park, its creatures and their trades. Flint is the currency of this time period. The Consortium keeps the Portal locked. | The whole game. |
 | **The future** | MONTGUMMERY becomes **the mayor of Greeblis Town**, which causes minor conflicts between him and MUSHROOM. NEXTESSA runs her inter-temporal pizza shop in the far future. | NEXTESSA's deliveries. The mayoralty is not shown and no line states it. |
 | **The far, far future** | **A war** between the Consortium and some of the alien factions it works against (1.10). | The non-human wanted posters (1.10). |
@@ -415,7 +415,7 @@ game shows rather than tells.
 
 **The age of Dinosaurs.** One of the earliest ages of the Organics. KING DINO, BACKPACKA and GEMTOE were born during this age. The Summoning Pillar and the Summoning Stone were constructed then.
 
-**THE ANCIENT's withdrawal.** During the age of the Ancients, THE ANCIENT left the world for its hidden realm, the Cave. The details of this departure have been forgotten.
+**THE ANCIENT's withdrawal.** During the age of the Ancients, THE ANCIENT left the world for its hidden realm. The details of this departure have been forgotten.
 
 **The kinds of creature.** Every creature in the game is one of the three.
 
@@ -7383,7 +7383,7 @@ This section states the complete constraints needed by a future Greeblis game wi
 - Creature menus use Talk and optional Give a blossom; ZOLLOD also offers his shop once freed. No X close button. Clothes are shown in the Shop mirror, never as HUD inventory tiles.
 - The Consortium flag is a red mushroom on orange. The only currency is Flint; no Flint-knapping props. Show lore through the town's visual motifs; background words remain sparse. HENNRICK and NEXTESSA do not determine the town's architecture because they are from other eras.
 - The large Gallery painting retains its complete composition, detail, palette and resolution. The three small Gallery paintings depict realistic landscapes. The Gallery floor has many colorful goo splats; paint-can labels have separated depth surfaces.
-- The Cave is THE ANCIENT's hidden realm. Entry, interaction and collisions must remain functional when its approved details are refined.
+- THE ANCIENT's room is called the Cave. Entry, interaction and collisions must remain functional when its approved details are refined.
 - Add exactly one book named “Zortoe's Home Cooking” and exactly one named “Traveler's Truth”; OVERCOMING must stand out on OVERCOMING SHYNESS.
 - The gazebo is GEMTOE's home, labelled “Gemtoe's Gazebo”, with gold coin stacks. Home travel, visits, the Garden Event and the Stone trade must keep working.
 
