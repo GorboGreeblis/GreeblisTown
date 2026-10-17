@@ -15,7 +15,7 @@ h() { echo "== $* [${SECONDS} s]"; }
 run() {
   local t=$1 rc
   shift
-  timeout "$t" node "$@" 2>&1 | grep -v '^$' | cut -c1-400 | tee -a "$LOG"
+  timeout "$t" node "$@" 2>&1 | awk 'length { print substr($0, 1, 400); fflush(); }' | tee -a "$LOG"
   rc=${PIPESTATUS[0]}
   if [ "$rc" = 124 ]; then echo "TIMEOUT after $t s" | tee -a "$LOG"; elif [ "$rc" != 0 ]; then echo "EXIT $rc" | tee -a "$LOG"; fi
 }
@@ -30,6 +30,7 @@ core() {
   grep -v "'p' is not modified in this loop" "$LOG.lint" | grep -q . && echo "FAIL: lint findings beyond the known warning" | tee -a "$LOG"
   rm -f "$LOG.lint"
   h "game clock"; run 30 clock.js
+  h "XR controls"; run 30 xrcontrols.js
   h "boot, desktop"; NOSHOT=1 run 300 shot.js "$U" x.png ./boot.js
   h "boot, mobile, and the GIVE button"; MOBILE=1 run 300 shot.js "$U" x_mob.png ./t_give.js
   h "ordinal sandbox, desktop"; run 300 ordtest.js "$G" x_ord.png

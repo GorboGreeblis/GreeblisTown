@@ -15,7 +15,7 @@ module.exports = async (p) => {
   await adv(3);
   await p.evaluate(() => { Kt.artifacts = 3; LIB.talk(); });
   // (his lines, the glue bottle putting the Gem together, his speech and the Gem collected)
-  for (let i = 0; i < 90 && !(await p.evaluate(() => Kt.gem && !qt.isOpen)); i++) await adv(1);
+  for (let i = 0; i < 240 && !(await p.evaluate(() => Kt.gem && !qt.isOpen)); i++) await adv(1);
   log.push('after sparkakus ' + (await p.evaluate(() => JSON.stringify({ arts: Kt.rewards.artifacts, gem: Kt.gem, stone: Kt.rewards.stone }))));
   // (the spin is sampled on animation frames, not through L: its callbacks wait while her words are open, the spin
   // does not)

@@ -25,7 +25,7 @@ module.exports = async (p) => {
   await p.waitForTimeout(1000);
   // with all three, SPARKAKUS's finale runs (from in front of his counter, as the player talks to him)
   console.log(await p.evaluate(() => { const s = z.list.find((q) => q.id === 'stump'); s && (At.position.set(s.x, 0, s.z + 3.2), xe.scan()); try { LIB.talk(); } catch (x) { return 'LIB err ' + x.message; } return 'LIB top ' + jt.top + ' text ' + JSON.stringify((document.getElementById('dlgText').textContent || '').slice(0, 60)); }));
-  // (the finale's pages, then the three pieces glued together in the air, 5.6 s of game time, then the Gem speech:
+  // (the finale's pages, then the three pieces glued together in the air, 15 s of game time, then the Gem speech:
   // its pages are skipped as they open until the rewards are given. Counted in game time, not real time: a headless
   // browser at full size can run the game at a fifth of real speed)
   let res = '';

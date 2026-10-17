@@ -28,6 +28,11 @@ To benchmark an old build, write it beside the readable copy and serve the repo 
     NOSHOT=1 node test/shot.js http://localhost:8765/tools/old.html x.png test/bench.js
     MOBILE=1 NOSHOT=1 node test/shot.js http://localhost:8765/tools/old.html x.png test/bench.js
 
+The first build (`c2ae8e494fe2186f5c517a2b37761c6015bce69c`) predates the Mobile test mode. Its Android
+sample therefore runs the desktop fallback inside the Pixel 7 browser profile. The current Android sample uses
+its dedicated Mobile settings. These are historical build measurements, not an isolated comparison of the same
+camera and quality settings.
+
 ## Results
 
 | Build | Date | Mode | Size (gzip) | Load | Draws mean / max | Triangles mean / max | CPU ms mean / median / p95 | Heap | Errors |
@@ -36,6 +41,10 @@ To benchmark an old build, write it beside the readable copy and serve the repo 
 | VR comfort | 2026-10-16 | Android | 1,548,098 B (489,590 B) | 98,978 ms | 46 / 46 | 85k / 85k | 13.44 / 12.7 / 20.5 | 98 MB | 0 |
 | `5bad65f` | 2026-10-16 | Android | 1,544,704 B (488,257 B) | 99,892 ms | 43 / 43 | 95k / 95k | 10.26 / 9.4 / 17 | 98 MB | 0 |
 | `5bad65f` | 2026-10-16 | Desktop | 1,544,704 B (488,257 B) | 106,352 ms | 54 / 54 | 118k / 118k | 12.96 / 11.6 / 20.1 | 104 MB | 0 |
+| First (`c2ae8e4`) | 2026-10-16 | Desktop | 1,100,359 B (272,155 B) | 1,050 ms | 99 / 104 | 235k / 238k | 4 / 3.2 / 7 | 98 MB | 0 |
+| First (`c2ae8e4`) | 2026-10-16 | Android | 1,100,359 B (272,155 B) | 1,222 ms | 37 / 40 | 161k / 162k | 3.3 / 2.8 / 5.6 | 98 MB | 0 |
+| v0.2 (`a469223`) | 2026-10-17 | Desktop | 1,540,019 B (488,078 B) | 63,830 ms | 60 / 60 | 110k / 110k | 5.34 / 4.6 / 8 | 104 MB | 0 |
+| v0.2 (`a469223`) | 2026-10-17 | Android | 1,540,019 B (488,078 B) | 62,648 ms | 46 / 46 | 85k / 85k | 6.45 / 5.7 / 11.3 | 242 MB | 0 |
 
 ## VR edge comfort: coverage comparison
 

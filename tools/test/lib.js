@@ -68,7 +68,7 @@ const render = async (p, file, cam, look, opt = {}) => {
   savePng(file, d);
 };
 
-// Starts the Garden Event from the Summoning Stone, as the player does: the Summoning Stone quest done, the Seeds
+// Starts the Garden Event from the Summoning Pillar, as the player does: the Summoning Stone quest done, the Seeds
 // (default) or not, the Snacks set when given, the player at `at` ([x, z], default [0, 3]; null leaves it).
 const startEvent = (p, { seeds = true, snacks = null, at = [0, 3] } = {}) => p.evaluate(([seeds, snacks, at]) => {
   Kt.rewards.seeds = seeds; Kt.rewards.stone = !0;

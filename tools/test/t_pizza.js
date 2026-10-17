@@ -1,9 +1,9 @@
 // The phone and the pizza courier: the phone is locked until MUSHROOM has a Blossom, then calls NEXTESSA for the rest
 // of the session; and the courier's delivery itself.
-// Env: PART=lock,courier (only those parts).
+// Env: PART=lock,arrival,courier (only those parts).
 // Output: `== part: <name>` and each part's lines (below), `err <n>`.
 //   NOSHOT=1 node test/shot.js <url> x.png test/t_pizza.js
-const { log, start, logErrors } = require('./lib.js');
+const { log, start, logErrors, waitGame, closeDialogs } = require('./lib.js');
 
 // The phone booth (and so NEXTESSA's pizza) is locked until MUSHROOM has been given a Blossom: before, its connection
 // to the Portal is blocked and no courier is called; after, it calls her, and it stays unlocked for the session.
@@ -40,8 +40,27 @@ const lock = async (p) => {
   await logErrors(p);
 };
 
+// Exercise the actual arrival update at its stopping-distance boundary on open ground.
+// Arrival must tolerate floating-point rounding and grant Snacks before the departure dialogue.
+const arrival = async p => {
+  await start(p);
+  await p.evaluate(() => {t.pizza.callDelayMs=1;ue.call();});
+  await closeDialogs(p);
+  await p.waitForFunction(()=>!!ue.courier);
+  const report = await p.evaluate(()=>{
+    At.position.set(0,0,20);
+    const n=ue.courier;
+    n.group.position.set(-.2,0,17.1); n.wallNear=false; ot.trip.phase="met";
+    for(let k=0;k<120 && !Kt.rewards.snacks;k++) ue.update(Re.t+k/60,1/60);
+    return {state:ue.state,snacks:!!Kt.rewards.snacks,gap:Math.hypot(n.group.position.x-At.position.x,n.group.position.z-At.position.z),stop:t.pizza.stopDist,wallNear:!!n.wallNear,err:Re.errors};
+  });
+  log('arrival boundary',JSON.stringify(report));
+  require('node:assert/strict').equal(report.snacks,true,'courier must finish at the stopping-distance boundary');
+  require('node:assert/strict').equal(report.err,0);
+};
+
 // The pizza courier: the call delay shortened, a pizza called (ue.call) and the dialogue skipped. Prints the courier's
-// name, spawn spot and state, and 20 s later where it is (or `gone`) and the error count.
+// name, spawn spot and state, and 20 s later where it is; then asserts Snacks delivery and departure in game time.
 const courier = async (p) => {
   await start(p);
   await p.evaluate(() => { t.pizza.callDelayMs = 300; At.position.set(-7, 0, 21); ue.call(); });
@@ -51,6 +70,14 @@ const courier = async (p) => {
   await p.waitForTimeout(20000);
   const r2 = await p.evaluate(() => { const c = ue.courier; return (c ? c.group.position.x.toFixed(1) + ',' + c.group.position.z.toFixed(1) + ' ' + ue.state : 'gone') + ' err ' + Re.errors; });
   console.log(r, '|', r2);
+  const delivered = await waitGame(p, 120, () => Kt.rewards.snacks);
+  require('node:assert/strict').equal(delivered,true,'courier must complete Snacks delivery');
+  await closeDialogs(p);
+  const left = await waitGame(p, 130, () => !ue.courier);
+  require('node:assert/strict').equal(left,true,'courier must leave and release order state');
+  require('node:assert/strict').equal(await p.evaluate(() => Re.errors),0);
+  log('courier completes Snacks delivery and leaves: passed');
+
 };
 
-module.exports = require('./parts.js')({ lock, courier });
+module.exports = require('./parts.js')({ lock, arrival, courier });
