@@ -14,23 +14,23 @@ def show(v):
 
 def walk(x, y, path):
     if type(x) != type(y):
-        print(path, '::', show(x), '->', show(y))
+        print(f"{path} :: {show(x)} -> {show(y)}")
     elif isinstance(x, dict):
         for k in sorted(set(x) | set(y)):
             if k not in x:
-                print(path + '.' + k, ':: + ', show(y[k]))
+                print(f"{path}.{k} :: + {show(y[k])}")
             elif k not in y:
-                print(path + '.' + k, ':: - ', show(x[k]))
+                print(f"{path}.{k} :: - {show(x[k])}")
             else:
-                walk(x[k], y[k], path + '.' + k)
+                walk(x[k], y[k], f"{path}.{k}")
     elif isinstance(x, list):
         if len(x) != len(y):
-            print(path, ':: len', len(x), '->', len(y), show(y))
+            print(f"{path} :: len {len(x)} -> {len(y)} {show(y)}")
             return
         for i, (p, q) in enumerate(zip(x, y)):
-            walk(p, q, path + '[%d]' % i)
+            walk(p, q, f"{path}[{i}]")
     elif x != y:
-        print(path, '::', show(x), '->', show(y))
+        print(f"{path} :: {show(x)} -> {show(y)}")
 
 
 if __name__ == '__main__':

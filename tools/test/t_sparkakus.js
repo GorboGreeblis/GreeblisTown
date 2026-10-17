@@ -33,8 +33,8 @@ const script = async (p, out) => {
   const stump = () => p.evaluate(() => { const s = z.list.find((q) => q.id === 'stump'); At.position.set(s.x, 0, s.z + 3.2); xe.scan(); return xe.current === s ? xe.actions.map((a) => a.label).join(' / ') : 'not the target'; });
   await p.evaluate(() => { Kt.artifacts = 0; Kt.blossoms = 0; });
   log('options, no Blossom:', await stump());
-  await p.evaluate(() => { LIB.talk(); }); await W(400); log('0 Artifacts:', JSON.stringify(await said(p))); await next();
-  await p.evaluate(() => { Kt.artifacts = 2; LIB.talk(); }); await W(400); log('2 Artifacts:', JSON.stringify(await said(p))); await next();
+  await p.evaluate(() => { LIB.talk(); }); await W(400); log('0 Artifacts:', JSON.stringify(await said(p))); await p.evaluate(() => qt.skipAll());
+  await p.evaluate(() => { Kt.artifacts = 2; LIB.talk(); }); await W(400); log('2 Artifacts:', JSON.stringify(await said(p))); await p.evaluate(() => qt.skipAll());
   await p.evaluate(() => { Kt.artifacts = 3; LIB.talk(); }); await W(400);
   const fin = [];
   for (let i = 0; i < 6 && (await p.evaluate(() => qt.isOpen)); i++) fin.push(await said(p)), await next(), await W(300);
@@ -48,7 +48,7 @@ const script = async (p, out) => {
   });
   const seen = [];
   let a0 = null;
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 80; i++) {
     const r = await asm(); r && (a0 = a0 || r.at); seen.push(r ? r.spread + (r.dialogue ? '*' : '') : '-');
     if (i === 6 && a0) { const st0 = await p.evaluate(() => [st.pos().x, At.position.x]); await shot('glue', [a0[0] + 2.6 * Math.sign(st0[1] - st0[0] || 1), a0[1] + 0.4, a0[2] + 2.6], a0); }
     if (r && r.dialogue) break;
@@ -61,7 +61,7 @@ const script = async (p, out) => {
   await waitGame(p, 2);
   log('after:', await p.evaluate(() => JSON.stringify({ gem: Kt.gem, artifacts: Kt.rewards.artifacts, gemLeftInScene: !!C.children.find((c) => c.children.some((q) => q.userData && q.userData.gemPiece !== undefined)) })));
   await waitGame(p, 15);
-  await p.evaluate(() => { LIB.talk(); }); await W(400); log('talk after the Gem:', JSON.stringify(await said(p))); await next();
+  await p.evaluate(() => { LIB.talk(); }); await W(400); log('talk after the Gem:', JSON.stringify(await said(p))); await p.evaluate(() => qt.skipAll());
   // ---- SPARKAKUS given a Blossom
   await waitGame(p, 8);
   await p.evaluate(() => (Kt.blossoms = 1));
@@ -110,7 +110,7 @@ const menu = async (p) => {
   log('then Talk:', await stump());
   await p.evaluate(() => xe.run('interact')); await W(400);
   log('  opens', JSON.stringify(await said(p)));
-  await next(); await W(300);
+  await p.evaluate(() => qt.skipAll()); await W(300);
   // the Event: Blossom in hand, every creature's menu and SPARKAKUS's, wherever he is
   await p.evaluate(() => { window.__gbNoThrottle = 1; });
   await startEvent(p);

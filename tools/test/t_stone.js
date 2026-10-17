@@ -1,4 +1,4 @@
-// The GARDEN EVENT menu at the Summoning Stone (Summoning Stone, Seeds and Snacks with their boxes, "Start gardening
+// The GARDEN EVENT menu at the Summoning Pillar (Summoning Stone, Seeds and Snacks with their boxes, "Start gardening
 // event?", Yes / No) and its rule: without the Summoning Stone quest, Yes only says the runes stay dark and nothing
 // starts; with it, Yes starts the Event.
 // Env: none.

@@ -20,7 +20,7 @@ module.exports = async (p) => {
       ['in the Post Office back wall', ...((q) => [q[0], 1.6, q[1]])(K('post', 0, -2.45))],
       ['in the church nave', ...((q) => [q[0], 1.6, q[1]])(K('church', 0, -3))],
       ['over the Juice Bar counter', ...((q) => [q[0], 1.6, q[1]])(K('juice', 0.2, -4))],
-      ['in the Summoning Stone (walked through: never dark)', 0.2, 1.6, 0.2],
+      ['in the Summoning Pillar (walked through: never dark)', 0.2, 1.6, 0.2],
     ];
   });
   for (const [name, x, y, z] of spots) {

@@ -2,7 +2,7 @@
 
 This folder holds everything used to build, check, measure and release **Greeblis Town**. The game itself is the
 single file `index.html` at the repo root; nothing in `tools/` ships inside it. The binding rules are in
-[rules.md](docs/rules.md); the world's lore, design and style are in the [bible](docs/bible.md).
+[rules.md](docs/rules.md); the world's lore, design and style are in the [bible](Bible/bible.md).
 
 Contents: [Layout](#layout) · [Setup](#setup) · [Workflow](#workflow) · [Tool index](#tool-index)
 
@@ -12,8 +12,9 @@ This section maps each path in `tools/` to its contents.
 
 | Path | Contents |
 | --- | --- |
-| `index.html` | The readable copy of the game, never compressed: byte-identical to the root `index.html` until the final pass packs the root, and the only readable page after it. Every change is copied here before a push (`test/copycheck.sh` checks). |
-| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](docs/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md), [open tasks](docs/tasks.md), [benchmarks](docs/benchmarks.md). |
+| `Uncompressed/index.html` | The readable copy of the game, never compressed: byte-identical to the root `index.html` until the final pass packs the root, and the only readable page after it. Every change is copied here before a push (`test/copycheck.sh` checks). |
+| [`Bible/`](Bible) | The self-contained Greeblis Bible. |
+| [`docs/`](docs) | The guides: [rules](docs/rules.md), [bible](Bible/bible.md), [construction](docs/construction.md), [creatures](docs/creatures.md), [testing](docs/testing.md), [release](docs/release.md), [open tasks](docs/tasks.md), [benchmarks](docs/benchmarks.md). |
 | [`test/`](test) | The runners and their shared modules, the probes, and the render, coverage and pixel-compare tools. |
 | [`audit/`](audit) | Scene audits: stale bounds, the scene's mesh and triangle budget, dead builders, collisions, creatures off home, interface text, state dumps. |
 | [`lint/`](lint) | ESLint over the game script, and the unread-property finder. |
@@ -38,6 +39,7 @@ python3 -m http.server 8765      # from the repo root, in a second terminal (ser
 | `npm run battery` | `test/battery.sh`, the full battery. |
 | `npm run lint` | `lint/lint.sh`; the first run installs ESLint 8.57.0 into `lint/` (`npm install --no-save`). |
 | `npm run size` | `pack/size.js`, the page's weight readable, minified and packed. |
+| `python3 test/docs.py` | Local documentation links/anchors, Bible self-containment and current canon, and creative attribution phrases. |
 | `npm run deadprops` | `lint/deadprops.js`, the properties the game defines but never reads. |
 
 - Every command in these docs runs from `tools/`. Instead of serving the page, `quick.sh` and `battery.sh` take
@@ -70,7 +72,12 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | `shot.js` | The runner: headless Chromium, desktop or phone (`MOBILE=1`), scene script, screenshot, console log. |
 | `mob.js` | An alias of `MOBILE=1 node test/shot.js`. |
 | `ordtest.js` | The game as an ordinal, in a sandboxed iframe under ord's CSP. |
-| `copycheck.sh` | Checks that `tools/index.html` is the readable copy. |
+| `copycheck.sh` | Checks that `tools/Uncompressed/index.html` is the readable copy. |
+| `xrcontrols.js` | Actual XR pose calibration and smooth turning/button logic with synthetic poses; `node test/xrcontrols.js`. |
+| `t_stability.js` | One-time Gem trade/Seeds costs and real WebGL context loss/restoration; run via `shot.js` at320×240. |
+| `t_v02scene.js` | v0.2 gazebo, anchored Blue Jay, unique books, walkover pickup, ordinary ZOLLOD Talk and slow glue; close renders via `shot.js`. |
+| `t_controls.js` | Desktop and mobile controls, HUD corner, hidden dialogue buttons and creature-tap protection; run through `shot.js`. |
+| `clock.js` | Checks the actual frame clock with deterministic time: active, exited, blurred and resumed sessions; `node test/clock.js [index.html]` from `tools/` (defaults to the readable copy). |
 | `parts.js` | Runs a multi-part probe's parts, each on a fresh page. |
 | `lib.js`, `lib.sh`, `browser.js` | Shared modules: the probes' helpers, the runners' common steps and summary, the browser setup. |
 
@@ -82,12 +89,13 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | Creatures and quests | `talk.js`, `t_flavor.js`, `t_battles.js`, `t_battlecost.js`, `t_gem.js`, `t_pizza.js`, `t_stone.js`, `t_sparkakus.js`, `t_zollod.js`, `t_script.js`, `t_church.js`, `t_library.js`, `t_avatar.js` |
 | Movement and life | `t_roam.js`, `t_fortizmo.js`, `t_nearstop.js`, `t_reach.js`, `t_visits.js`, `t_visitlive.js`, `t_stuck.js`, `t_vigall.js`, `t_ground.js`, `t_baked.js`, `soak.js` |
 | The Garden Event and music | `t_event.js`, `t_dance.js`, `t_plants.js`, `t_jazz.js`, `t_stress.js` |
-| Rendering | `t_zfight.js`, `t_zcheck.js`, `t_shimmer.js`, `t_perf.js`, `t_townview.js` |
+| Rendering | `t_zfight.js`, `t_zcheck.js`, `t_shimmer.js`, `t_vrcomfort.js`, `t_perf.js`, `t_townview.js` |
 
 **Render and measuring tools** (`test/`, see [testing.md](docs/testing.md#render-and-measuring-tools))
 
 | Tool | Purpose |
 | --- | --- |
+| `t_vrcomfort.js` | Isolated fence coverage in the central 20% of the eye under four subpixel head nudges, plus full-scene near/transition/far/back/oblique renders per-eye counts, foreground/background transparency and window day/night checks. `NOSHOT=1 VW=320 VH=240 node test/shot.js <url> x.png test/t_vrcomfort.js`; optional `PX=1200 EYE=3.12 THRESH=40`. |
 | `t_views.js` | Town views by building, parcel or position, and creature close-ups. |
 | `t_detail.js` | Close shots from given camera positions. |
 | `portraits.js` | Isolated creature portraits on open lawn. |
@@ -138,3 +146,5 @@ get an entry here ([rules.md](docs/rules.md#working-on-it)).
 | `run.js` | Runs a decoded page with the network blocked. |
 
 Uploaded files are untrusted: they must be opened only through `sandbox/`.
+
+The v0.2 progression and stability audit is recorded in [audits.md](docs/audits.md).

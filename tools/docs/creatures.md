@@ -2,15 +2,15 @@
 
 This register is the engineering reference for every creature: its roster entry, builder and def fields, how it is
 spawned and wrapped, its behaviour states and flags, its quest hooks and its test hooks. Each creature's visual design
-is in [bible part 3](bible.md#3-creature-design), its style in [bible part 4](bible.md#4-creature-style) and its place
-in the world in [bible part 2](bible.md#2-the-cast). The shared methods (`born()`, the planting and dancing layer,
+is in [bible part 3](../Bible/bible.md#3-creature-design), its style in [bible part 4](../Bible/bible.md#4-creature-style) and its place
+in the world in [bible part 2](../Bible/bible.md#2-the-cast). The shared methods (`born()`, the planting and dancing layer,
 roaming, home ground, routing, visits, vignettes) are specified once in [construction.md](construction.md); this file
 states only what is particular to each creature.
 
 The builders of SPARKAKUS, MAMA GORBO, GOOWARD, GEMTOE, MONTGUMMERY, ETCHER, GLYPH, KING DINO, FORTIZMO, SOMLET,
 MUSHROOM, ZOLLOD, ANOMALEE, HENNRICK, NEXTESSA and THE ANCIENT are marked final in the code: these models are locked,
 so parts, proportions and palette change only with the owner's approval ([rules](rules.md#locks-and-approvals));
-animation changes on request are allowed. BACKPACKA, the two birds and the avatar are
+animation changes on request are allowed. BACKPACKA and the avatar are
 marked final in the code and locked as well.
 
 Contents: [The cast](#the-cast) · [Placement and movement](#placement-and-movement) ·
@@ -63,7 +63,7 @@ This table gives each creature's start spot, facing, exit route, movement and ho
 | SPARKAKUS | Library frame (0, −0.45); Library at `KIOSK_AT.K.shop` (−24.75, −24.75) | Library frame | Out by the Library front (`JGP.libFront()`) | Browses the floor band (local x −5.3 to 5.3, z −2.15 to 0.6), 0.8 m clear of every bookcase | The Library (worker `st`; not tested by `homeGround`) |
 | MAMA GORBO | (34, 28.4) | −π/2 rad | none | `JGP.parkRoam`, wait 3 + 5·rand s | Any `roamFree` ground |
 | GOOWARD | (24.2, 14.9) | −π/2 rad | none | `JGP.galleryRoam`, wait 3 + 5·rand s | Within 12 m of `KIOSK_AT.K.gallery` (31, 14.5), on `roamFree` ground |
-| GEMTOE | (34, 3) | −π/2 rad | none | `JGP.parkRoam`, wait 3 + 5·rand s | Any `roamFree` ground |
+| GEMTOE | (5, −31), gazebo centre | −π/2 rad | `JGP.gazeboVia()`, three points through open front | Fixed home between visits/Events | Within 1.2 m of `def.at` |
 | MONTGUMMERY | `JGP.floorSpot(2)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
 | ETCHER | `JGP.floorSpot(0)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
 | GLYPH | `JGP.floorSpot(1)` | Toward (0, 0) | none | `JGP.floorRoam`, wait 3 + 4·rand s | `JGP.onDance(x, z, 0.05)` |
@@ -145,7 +145,7 @@ This section gives, in cast order, each creature's spawn, states, quest hooks, t
 
 ### SPARKAKUS
 
-Design: [bible 3.2](bible.md#32-sparkakus).
+Design: [bible 3.2](../Bible/bible.md#32-sparkakus).
 
 - **Spawn:** built inside the Library builder: group at Library local (0, −0.45), scale 1.16, `keepInFinale`; model
   from `so.born_sparkakus`. A fixed body (r 0.9 m, `"shopkeeper"`) in `uo.fixed`; the Library station `stump` with a
@@ -170,7 +170,7 @@ Design: [bible 3.2](bible.md#32-sparkakus).
 
 ### MAMA GORBO
 
-Design: [bible 3.3](bible.md#33-mama-gorbo).
+Design: [bible 3.3](../Bible/bible.md#33-mama-gorbo).
 
 - **Spawn:** `ROWS.lineup`; def `goo` `["#36d0e8", "#e8409e", "#9a52e0", "#a8e830", "#ff9f5c"]`.
 - **Roaming:** `JGP.parkRoam`: 5 to 16 m from where she stands, `roamFree`, a clear straight walk off the dance floor
@@ -189,7 +189,7 @@ Design: [bible 3.3](bible.md#33-mama-gorbo).
 
 ### GOOWARD
 
-Design: [bible 3.4](bible.md#34-gooward).
+Design: [bible 3.4](../Bible/bible.md#34-gooward).
 
 - **Spawn:** the engine's own def `e.gorbo` (kind `companion`), overlaid by `ROWS.final`; the engine def supplies his
   `goo` palette (seven colours: `#37b3e8`, `#ff5fb0`, `#a8e830`, `#f2c72e`, `#8a3ffc`, `#35d0c5`, `#ff7a2f`).
@@ -204,7 +204,7 @@ Design: [bible 3.4](bible.md#34-gooward).
 
 ### GEMTOE
 
-Design: [bible 3.5](bible.md#35-gemtoe).
+Design: [bible 3.5](../Bible/bible.md#35-gemtoe).
 
 - **Roaming:** `JGP.parkRoam` (as MAMA GORBO); a park roamer for `JGP.roamApart`.
 - **Gem trade:** a Talk while `Kt.gem` is set plays `gemTrade` instead of her line: `Kt.gem` false,
@@ -213,7 +213,7 @@ Design: [bible 3.5](bible.md#35-gemtoe).
 
 ### MONTGUMMERY
 
-Design: [bible 3.6](bible.md#36-montgummery).
+Design: [bible 3.6](../Bible/bible.md#36-montgummery).
 
 - **Model:** `PK_MONT`, registered as `pk_mont` with the packaged models; the screen face is drawn once per state into
   its own texture and swapped in.
@@ -229,7 +229,7 @@ Design: [bible 3.6](bible.md#36-montgummery).
 
 ### ETCHER
 
-Design: [bible 3.7](bible.md#37-etcher).
+Design: [bible 3.7](../Bible/bible.md#37-etcher).
 
 - **Roaming and Event:** as MONTGUMMERY (`JGP.floorRoam`, `OWN_DANCE`).
 - **Dance battle:** `battleText.p_etcher` (stamina 10, bar "Tentacle twists left", `#7a4ab8`, hit sound `drumTom`);
@@ -237,7 +237,7 @@ Design: [bible 3.7](bible.md#37-etcher).
 
 ### GLYPH
 
-Design: [bible 3.8](bible.md#38-glyph).
+Design: [bible 3.8](../Bible/bible.md#38-glyph).
 
 - **Roaming and Event:** as MONTGUMMERY (`JGP.floorRoam`, `OWN_DANCE`).
 - **Dance battle:** `battleText.p_glyph` (stamina 10, bar "Macarena moves left", `#e88a8a`, hit sound `drumKick`);
@@ -245,7 +245,7 @@ Design: [bible 3.8](bible.md#38-glyph).
 
 ### KING DINO
 
-Design: [bible 3.9](bible.md#39-king-dino).
+Design: [bible 3.9](../Bible/bible.md#39-king-dino).
 
 - **Post:** at (−36.35, 19.2) behind the drum kit (kit at (−34.8, 19.2), scale 1.35, `keepInFinale`); `JGP.rug`
   gives the rug's centre, reach and top for `JGP.groundAt`.
@@ -262,7 +262,7 @@ Design: [bible 3.9](bible.md#39-king-dino).
 
 ### FORTIZMO
 
-Design: [bible 3.10](bible.md#310-fortizmo).
+Design: [bible 3.10](../Bible/bible.md#310-fortizmo).
 
 - **Wrapper:** `fortizmoPick` builds `pk_fortizmo`, then recomputes every mesh's bounding sphere and enlarges its
   radius by 1.3, because her geometry is sculpted after its bounds are computed and her horn bends at runtime; without
@@ -278,7 +278,7 @@ Design: [bible 3.10](bible.md#310-fortizmo).
 
 ### SOMLET
 
-Design: [bible 3.11](bible.md#311-somlet).
+Design: [bible 3.11](../Bible/bible.md#311-somlet).
 
 - **Post:** 3.9 m in front of the Post Office; `AT_POST` at the Event; in `STAYS`.
 - **Lying down:** her `step` computes `lie` (0 standing, 1 on her side) only when resting at her spot (not busy,
@@ -290,7 +290,7 @@ Design: [bible 3.11](bible.md#311-somlet).
 
 ### MUSHROOM
 
-Design: [bible 3.12](bible.md#312-mushroom).
+Design: [bible 3.12](../Bible/bible.md#312-mushroom).
 
 - **Post:** on the Sheriff's desk (`standY` 1.545: desk top 1.5 m, feet 4.5 cm under his origin); `gFit` does not
   apply while he is up. A posted creature with a `y` drops to the ground when busy (other than the Event) or heading
@@ -302,7 +302,7 @@ Design: [bible 3.12](bible.md#312-mushroom).
 
 ### ZOLLOD
 
-Design: [bible 3.13](bible.md#313-zollod).
+Design: [bible 3.13](../Bible/bible.md#313-zollod).
 
 - **Identity:** no `id`; `def.__type` `"cutebex"`. Find him with `Xt(ent)` or `It.all.find(e => e.def.__type ===
   "cutebex")`; `Xt` returns `cutebex` as his planting and dancing key.
@@ -316,7 +316,7 @@ Design: [bible 3.13](bible.md#313-zollod).
 
 ### ANOMALEE
 
-Design: [bible 3.14](bible.md#314-anomalee).
+Design: [bible 3.14](../Bible/bible.md#314-anomalee).
 
 - **Wrapper:** `anomaleePeg` builds `pk_anomalee`, then:
   - replaces the hidden hip group at (0.45, −0.55) (her back leg on her left, +x; the code comment's "back-right" is
@@ -331,7 +331,7 @@ Design: [bible 3.14](bible.md#314-anomalee).
 
 ### HENNRICK
 
-Design: [bible 3.15](bible.md#315-hennrick).
+Design: [bible 3.15](../Bible/bible.md#315-hennrick).
 
 - **Roaming:** `JGP.portalRoam`: 3.2 to 6 m from the Portal, at least 2.5 m from where he stands, never in its
   doorway or the lane in front of it (NEXTESSA's), with a straight walk that does not cross the frame; he faces the
@@ -340,7 +340,7 @@ Design: [bible 3.15](bible.md#315-hennrick).
 
 ### NEXTESSA
 
-Design: [bible 3.16](bible.md#316-nextessa).
+Design: [bible 3.16](../Bible/bible.md#316-nextessa).
 
 - **Def:** `s` (name, `color`, `builder`, `bodyR`, `modelScale`, lines `blocked`, `call`, `busy`, `arrive`,
   `snacks` 20).
@@ -355,7 +355,7 @@ Design: [bible 3.16](bible.md#316-nextessa).
 
 ### BACKPACKA
 
-Design: [bible 3.17](bible.md#317-backpacka).
+Design: [bible 3.17](../Bible/bible.md#317-backpacka).
 
 - **Build:** `BP.make()` runs in the Event's phase 2 (the horn and ring dance), followed by `warm()` to compile his
   shaders before the music starts; a mid-song compile stall makes the audio crackle. He is not an `It` entity.
@@ -368,7 +368,7 @@ Design: [bible 3.17](bible.md#317-backpacka).
 
 ### THE ANCIENT
 
-Design: [bible 3.18](bible.md#318-the-ancient).
+Design: [bible 3.18](../Bible/bible.md#318-the-ancient).
 
 - **Build:** made by the church builder inside the secret room; the room and THE ANCIENT are locked together. Not an
   `It` entity.
@@ -385,22 +385,18 @@ Design: [bible 3.18](bible.md#318-the-ancient).
 
 ## The birds
 
-Design: [bible 3.19](bible.md#319-the-birds).
+Design: [bible 3.19](../Bible/bible.md#319-the-birds).
 
-| | Cardinal | Robin |
-| --- | --- | --- |
-| Call | `cardinal(31, -33.5, 1.15, Math.atan2(-31, 6 + 33.5))` | `robin(-17, -34, 1.2, Math.atan2(17, 6 + 34))` |
-| Tree | The maple by the north-east corner | The oak by the north fence's west half |
-
-- `X, Z` is the trunk, `s` the tree scale, `ry` the bough's heading (toward the square); the bough leaves the trunk
-  2.75 m up. Each bird is its own group with `userData.jgpKeep` and `userData.keepInFinale`, so scene clears and the
-  Event keep it.
-- Neither is an `It` entity: no talk, no visits, no vignettes. A bird never flies and never leaves its tree; one
-  bird to a tree.
+One Blue Jay lives on the maple by the north-east corner, anchored to a bough at (31, −33.5).
+Its blue crest and back, pale face and breast, dark collar, barred wings/tail and pale tail corners identify it.
+Static geometry is batched within independent body, head, tail and folded-wing pivots. Feet remain fixed;
+breathing, head turns, tail balancing and small wing adjustments never displace it from its tree.
+It is scenery, not an `It` entity: no Talk, visits or quests. It remains present during the Event.
+Robin and Cardinal and their builders have been removed; their model locks are retired.
 
 ## The player's avatar
 
-Design: [bible 3.20](bible.md#320-the-players-avatar).
+Design: [bible 3.20](../Bible/bible.md#320-the-players-avatar).
 
 - Part of the final game (`At`, built outside the test-mode fences): hidden during VR play, shown in the Shop's mirror
   while the Shop menu is open (VR included), and the third-person figure in the test modes (`dk.on`). It must never be
@@ -411,3 +407,19 @@ Design: [bible 3.20](bible.md#320-the-players-avatar).
   it to 0 for collisions; the bob must never be applied earlier.
 - **Outfits:** shop items `flowerhat` (slot `hat`), `sundress` (`dress`) and `frogshoes` (`shoes`), 3 Flint each, put
   on by `Eo`; without the Sun Dress the dress material takes the base print (`baseTex`), never a bare colour.
+
+## v0.2 creature refinements
+
+- ZOLLOD keeps his approved silhouette and colours with an independent torso/pelvis, elbow and wrist motion,
+  articulated forefeet and toe roll. Gait strength eases rather than switching on abruptly. Existing hips,
+  knees and ankles remain active. The body and shoulder foliage counter-sway with the stride.
+- ETCHER retains all scales. Two small upper body scales carry low contrast marks: one Bitcoin, one Ethereum.
+  The marks sit above the curved scale surfaces, each 6.5 cm across, rather than dominating his appearance.
+- The Ancient's skin canvas is 512 × 128, granular near-black olive with long fine striations and a damp sheen.
+  Angular pale and grey stones are embedded in the Cave floor. All rooted stalks and interaction/collision
+  routes remain; the Ancient still never dances, plants or leaves its spot.
+- GEMTOE's fixed home is the gazebo at (5, −31). A three-point route through its open front serves visits,
+  returns and Event travel. She runs the First Bank of Greeblis; she continues to trade the Ancient Gem.
+- Ordinary Talk adds a biology or mechanical line for each normal speaker. GOOWARD's and SOMLET's physical
+  descriptions preserve their limited voices. SPARKAKUS appends ordinary pages after quest guidance; ZOLLOD
+  has a separate Talk choice after the book frees him; the Ancient alternates its two normal lines.

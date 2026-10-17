@@ -23,8 +23,7 @@ module.exports = async (p) => {
     await tap(...sky);
   }
   log('dialogue pages seen:', JSON.stringify(pages), '| closed:', !(await p.evaluate(() => qt.isOpen)));
-  // ---- the action menu: a Blossom in hand gives a creature two options (Talk, Give), so a tap on it opens the
-  // menu; then a tap off it
+  // ---- creature taps must not open dialogue or a menu; the Talk/Give controls own interaction.
   const scr = await p.evaluate(() => {
     Kt.blossoms = Math.max(1, Kt.blossoms);
     const e = It.all.find((q) => q.def && q.def.__type === 'drifter') || It.all[0], q = e.group.position;
@@ -36,7 +35,8 @@ module.exports = async (p) => {
   if (at) await tap(...at), await W(400);
   const menu = await p.evaluate(() => __jgpMenu.open());
   await tap(...sky);
-  log('action menu opened by a tap on the creature:', menu, at ? '' : '(creature off screen)', '-> after a tap off it:', await p.evaluate(() => __jgpMenu.open()));
+  require('node:assert/strict').equal(menu, false);
+  log('creature tap leaves action menu closed:', !menu, at ? '' : '(creature off screen)');
   // ---- the shop panel, then a tap off it
   await p.evaluate(() => { Kt.shyFree = !0; ne.open(); });
   await W(800);

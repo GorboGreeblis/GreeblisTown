@@ -9,8 +9,9 @@
 const { start, outName } = require('./lib.js');
 
 module.exports = async (p, out) => {
+  await p.setViewportSize({ width: 1280, height: 720 });
   await start(p, 2500);
-  const shot = async (k) => (await p.waitForTimeout(800), p.screenshot({ path: outName(out, k), clip: { x: 0, y: 0, width: 420, height: 420 } }));
+  const shot = async (k) => (await p.waitForTimeout(800), p.screenshot({ path: outName(out, k), clip: { x: p.viewportSize().width - 420, y: 0, width: 420, height: 420 } }));
   await shot('none');
   await p.evaluate(() => { Kt.blossoms = 3; Kt.acorns = 12; Kt.artifacts = 2; Kt.shyBook = !0; });
   await shot('some');
