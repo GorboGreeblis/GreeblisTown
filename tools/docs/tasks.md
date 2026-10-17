@@ -16,6 +16,11 @@ their section.
 
 Quest 3S confirmation of distant fence/building-edge comfort and frame rate (highest-priority task above).
 
+## Current request batch — v0.2
+
+- [ ] Publish the completed, validated v0.2 branch. GitHub rejected the push with HTTP 403 for
+  `coderabbitai[bot]`; repository write access must be restored before retrying.
+
 ## Separate pre-release tasks — v1.0
 
 - [ ] Remove fenced Desktop/Mobile test modes; mark final build v1.0; lock all creature/environment designs.
